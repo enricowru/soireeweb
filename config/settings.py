@@ -25,7 +25,10 @@ SECRET_KEY = 'django-insecure-l(y@)op3+!yl^6fy^i&atbc1&54bi!v&9eidoy+ddq2d#k@_l7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'soireeweb.onrender.com',
+    # Add other allowed hosts if needed (like 'localhost' for development)
+]
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
