@@ -1,0 +1,17 @@
+{
+  "name": "soireeweb-backend",
+  "version": "1.0.0",
+  "description": "Express backend for user registration and login",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Enrico",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "hbs": "^4.2.0",
+    "mongoose": "^7.0.0"
+  }
+}

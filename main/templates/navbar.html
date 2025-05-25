@@ -1,0 +1,19 @@
+{% load static %}
+
+<nav class="navbar">
+    <ul class="nav-links">
+        <li><a href="{% url 'home' %}#services">Services</a></li>
+        <li><a href="{% url 'home' %}#menu">Packages</a></li>
+        <li><a href="{% url 'home' %}#reviews">Reviews</a></li>
+    </ul>
+    <div class="logo">
+        <a href="{% url 'home' %}">
+            <img src="{% static 'images/logo-round.png' %}" alt="Nike Catering Logo">
+        </a>
+    </div>
+    <ul class="nav-links">
+        <li><a href="{% url 'home' %}#about-us">About Us</a></li>
+        <li><a href="{% url 'home' %}#contact-us">Contact Us</a></li>
+        <li><a href="{% url 'login' %}">Login</a></li>
+    </ul>
+</nav>
