@@ -24,4 +24,6 @@ urlpatterns = [
     path('', home, name='home'),
     path('login/', login_view, name='login'),
     path('signup/', login_view, name='signup'),
+    path('moderator/reviews/', views.review_list, name='review_list'),
+    path('moderator/reviews/approve/<int:review_id>/', views.approve_review, name='approve_review'),
 ]
