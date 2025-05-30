@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/editprofile.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/logo-round.png' %}">
+    <title>Nike's Catering Services | Edit Profile</title>
+</head>
+<body>
+    {% include "navbar.html" %}
+
+    <div class="ep-form-center">
+        <div class="ep-profile-form">
+            <div class="ep-form-header">
+                <h2>EDIT PROFILE</h2>
+                <div class="ep-profile-pic-section">
+                    <div class="ep-profile-pic-wrapper">
+                        <img id="ep-profile-pic" src="{% static 'images/default-profile.png' %}" alt="Profile Picture">
+                    </div>
+                    <div class="ep-profile-pic-actions">
+                        <label for="ep-profile-pic-input" class="ep-profile-pic-upload">
+                            <i class="fa fa-camera"></i> Change
+                            <input type="file" id="ep-profile-pic-input" name="profile_pic" accept="image/*" style="display:none;">
+                        </label>
+                        <button type="button" class="ep-profile-pic-remove" id="ep-remove-pic-btn">
+                            <i class="fa fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- End of profile -->
+
+            <form class="ep-form" autocomplete="off" enctype="multipart/form-data">
+                <div class="ep-flex">
+                    <div class="ep-col">
+                        <label for="ep-firstname">First Name:</label>
+                        <input type="text" id="ep-firstname" name="firstname" required value="Jane">
+                    </div>
+                    <div class="ep-col">
+                        <label for="ep-lastname">Last Name:</label>
+                        <input type="text" id="ep-lastname" name="lastname" required value="Doe">
+                    </div>
+                </div>
+                <div class="ep-flex">
+                    <div class="ep-col">
+                        <label for="ep-username">Username:</label>
+                        <input type="text" id="ep-username" name="username" required value="janedoe">
+                    </div>
+                    <div class="ep-col">
+                        <label for="ep-mobile">Mobile Number (PH):</label>
+                        <input type="tel" id="ep-mobile" name="mobile" maxlength="11" placeholder="09XXXXXXXXX" required pattern="^09\d{9}$" inputmode="numeric" value="09123456789">
+                    </div>
+                </div>
+                <label for="ep-email">Email:</label>
+                <input type="email" id="ep-email" name="email" required value="jane@example.com">
+
+                <div class="ep-flex">
+                    <div class="ep-col">
+                        <label for="ep-password1">New Password:</label>
+                        <div class="ep-password-wrapper">
+                            <input type="password" id="ep-password1" name="password"
+                            minlength="8" maxlength ="16">
+                            <i class="fa-solid fa-eye-slash ep-toggle-password" toggle="#ep-password1"></i>
+                        </div>
+                    </div>
+                    <div class="ep-col">
+                        <label for="ep-password2">Confirm New Password:</label>
+                        <div class="ep-password-wrapper">
+                            <input type="password" id="ep-password2" name="password2"
+                            minlength="8" maxlength="16">
+                            <i class="fa-solid fa-eye-slash ep-toggle-password" toggle="#ep-password2"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="ep-submit-btn">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+      // Show/hide password functionality
+      document.querySelectorAll('.ep-toggle-password').forEach(function(eye) {
+        eye.addEventListener('click', function() {
+          const input = document.querySelector(this.getAttribute('toggle'));
+          if (input.type === "password") {
+            input.type = "text";
+            this.classList.remove('fa-eye-slash');
+            this.classList.add('fa-eye');
+          } else {
+            input.type = "password";
+            this.classList.remove('fa-eye');
+            this.classList.add('fa-eye-slash');
+          }
+        });
+      });
+
+      // Profile picture preview and remove
+      const picInput = document.getElementById('ep-profile-pic-input');
+      const picImg = document.getElementById('ep-profile-pic');
+      const removeBtn = document.getElementById('ep-remove-pic-btn');
+      const defaultPic = "{% static 'images/default-profile.png' %}";
+
+      picInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            picImg.src = e.target.result;
+          }
+          reader.readAsDataURL(this.files[0]);
+        }
+      });
+
+      removeBtn.addEventListener('click', function() {
+        picImg.src = defaultPic;
+        picInput.value = "";
+        // Optionally, set a hidden input to signal removal on backend
+      });
+
+      // Handle edit profile form submission
+      document.querySelector('.ep-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const pw1 = document.getElementById('ep-password1').value;
+        const pw2 = document.getElementById('ep-password2').value;
+        if (pw1 && pw1 !== pw2) {
+          alert("Passwords do not match!");
+          return;
+        }
+        // TODO: Add AJAX or form submission logic here
+        alert("✅ Profile updated!");
+      });
+    </script>
+</body>
+</html>
