@@ -4,6 +4,8 @@ from . import views
 urlpatterns = [
     path('', views.main, name='main'),
     path('login/', views.login_view, name='login'),
+    path('moredesign/', views.moredesign, name='moredesign'),
+    path('editprofile/', views.editprofile, name='editprofile')
 
     # ✅ Moderation Routes
     path('moderation/', views.review_moderation, name='review_moderation'),
