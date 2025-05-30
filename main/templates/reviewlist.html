@@ -1,0 +1,10 @@
+<h1>Pending Reviews</h1>
+{% for review in reviews %}
+  <div>
+    <p>{{ review.content }}</p>
+    <form action="{% url 'approve_review' review.id %}" method="post">
+      {% csrf_token %}
+      <button type="submit">Approve</button>
+    </form>
+  </div>
+{% endfor %}
