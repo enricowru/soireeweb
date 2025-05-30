@@ -2,12 +2,15 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.main, name='main'),
+    path('', views.home, name='home'),
     path('login/', views.login_view, name='login'),
+    path('editprofile/', views.editprofile, name='editprofile'),
     path('moredesign/', views.moredesign, name='moredesign'),
-    path('editprofile/', views.editprofile, name='editprofile')
 
-    # ✅ Moderation Routes
-    path('moderation/', views.review_moderation, name='review_moderation'),
-    path('moderation/approve/<int:review_id>/', views.approve_review, name='approve_review'),
+    # API endpoint for mobile review submission
+    path('api/reviews/', views.submit_review, name='submit_review'),
+
+    # Moderator dashboard
+    path('moderator/reviews/', views.review_moderation, name='review_moderation'),
+    path('moderator/reviews/approve/<int:review_id>/', views.approve_review, name='approve_review'),
 ]
