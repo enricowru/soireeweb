@@ -8,8 +8,9 @@
 
     {% for review in reviews %}
         <div style="border: 1px solid #ccc; margin: 10px; padding: 10px;">
-            <p><strong>User:</strong> {{ review.user.username }}</p>
-            <p><strong>Review:</strong> {{ review.content }}</p>
+            <p><strong>User:</strong> {{ review.username }}</p>
+            <p><strong>Review:</strong> {{ review.comment }}</p>
+
             <form method="post" action="{% url 'approve_review' review.id %}">
                 {% csrf_token %}
                 <button type="submit">Approve</button>
