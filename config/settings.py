@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'soireeweb.onrender.com',
+    'https://www.nikescateringservices.com',
+    'nikescateringservices.com'
     # Add other allowed hosts if needed (like 'localhost' for development)
 ]
 
@@ -49,6 +51,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'main.redirect_to_www.RedirectToWwwMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
