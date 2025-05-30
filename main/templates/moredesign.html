@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/moredesign.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/logo-round.png' %}">
+    <title>Nike's Catering Services | More Design</title>
+</head>
+<body>
+    {% include "navbar.html" %}
+
+    <div class="filter-bar">
+        <button class="filter-btn active" data-category="themed_backdrop">Themed Backdrop</button>
+        <button class="filter-btn" data-category="minimalist_setup">Minimalist Setup</button>
+        <button class="filter-btn" data-category="signature_setup">Signature Setup</button>
+    </div>
+
+    <div id="design-grids" class="category-grids">
+        {% for category, sets_list in sets.items %}
+            <div class="category-grid" id="{{ category }}" style="{% if not forloop.first %}display:none;{% endif %}">
+                {% for set in sets_list %}
+                    <div class="design-set">
+                        <div class="set-title">{{ set.title }}</div>
+                        <hr class="title-underline">
+                        <div class="design-grid {% if set.images|length == 4 %}grid-4{% elif set.images|length == 6 %}grid-6{% endif %}">
+                            {% for img in set.images %}
+                                <div class="design-item img-{{ forloop.counter0 }}">
+                                    <img src="{% static img %}" alt="{{ set.title }}">
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        const buttons = document.querySelectorAll('.filter-btn');
+        const grids = document.querySelectorAll('.category-grid');
+    
+        function selectCategory(cat) {
+            buttons.forEach(b => {
+                b.classList.toggle('active', b.getAttribute('data-category') === cat);
+            });
+            grids.forEach(grid => {
+                grid.style.display = (grid.id === cat) ? '' : 'none';
+            });
+        }
+    
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                selectCategory(btn.getAttribute('data-category'));
+            });
+        });
+    
+        // On page load, check for ?category= in URL
+        const params = new URLSearchParams(window.location.search);
+        const cat = params.get('category');
+        if (cat) {
+            selectCategory(cat);
+        }
+    </script>
+    
+</body>
+</html>
