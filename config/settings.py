@@ -26,11 +26,10 @@ SECRET_KEY = 'django-insecure-l(y@)op3+!yl^6fy^i&atbc1&54bi!v&9eidoy+ddq2d#k@_l7
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'soireeweb.onrender.com',
-    'https://www.nikescateringservices.com',
-    'nikescateringservices.com'
-    # Add other allowed hosts if needed (like 'localhost' for development)
-]
+    'www.nikescateringservices.com', 
+    'nikescateringservices.com', 
+    'localhost', 
+    '127.0.0.1']
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
