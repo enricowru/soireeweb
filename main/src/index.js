@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // CONNECT TO MONGODB ATLAS
-mongoose.connect("mongodb+srv://enricowru:test1234@cluster0.yahkvow.mongodb.net/createUser?retryWrites=true&w=majority&appName=Cluster0", {
+mongoose.connect("mongodb+srv://enricowru:1234@cluster0.yahkvow.mongodb.net/createUser?retryWrites=true&w=majority&appName=Cluster0", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
