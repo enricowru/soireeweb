@@ -28,6 +28,6 @@ urlpatterns = [
     path('signup/', login_view, name='signup'),
     path('moredesign/', moredesign, name='moredesign'),
     path('editprofile/', editprofile, name='editprofile'),
-    path('moderator/reviews/', views.review_list, name='review_list'),
+    path('moderator/reviews/', views.review_moderation, name='review_moderation'),
     path('moderator/reviews/approve/<int:review_id>/', views.approve_review, name='approve_review'),
 ]
