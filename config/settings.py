@@ -33,7 +33,7 @@ ALLOWED_HOSTS = [
     'soireeweb.onrender.com']
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
+STATICFILES_DIRS = [BASE_DIR / 'main' / 'static', 
     BASE_DIR / "static",
 ]
 
@@ -66,7 +66,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'main' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
