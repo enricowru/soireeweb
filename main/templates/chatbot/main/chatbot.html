@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="{% static 'main/images/logo-round.png' %}">
+    <title>Virtual Event Assistant</title>
+</head>
+<body>
+    <div id="sidebar" class="sidebar">
+        <h1>The Soiree</h1>
+        <h3>By Nike's Catering Services</h3>
+        <div class="middle" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+            <p style="margin: 0;">Previous conversations</p>
+            <a href="{% url 'new_chat_session' %}" id="newChatBtn" title="New Chat" style="background: white; color: #333; border-radius: 6px; padding: 4px 8px; display: flex; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.04); border: 1px solid #eee; margin-left: 8px;"><i class="fa-solid fa-pen-to-square"></i></a>
+        </div>
+        <hr>
+        <div class="convos">
+            {% for session in saved_sessions %}
+            <div class="convo" data-session-id="{{ session.id }}">
+                <a href="{% url 'load_chat_session' session.id %}">{{ session.title }}</a>
+                {% if session.id == current_session_id %}
+                    {% if session.id %}
+                        <button class="clearCurrentBtn" title="Clear this chat" data-session-id="{{ session.id }}"><i class="fa-solid fa-trash"></i></button>
+                    {% else %}
+                        <button class="clearCurrentBtn" title="Clear this chat" data-session-id="" disabled style="opacity:0.5;cursor:not-allowed;"><i class="fa-solid fa-trash"></i></button>
+                    {% endif %}
+                {% else %}
+                <button class="deleteBtn" data-session-id="{{ session.id }}" title="Remove"><i class="fa-solid fa-trash"></i></button>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div id="main" class="main-content">
+        <div class="top">            
+            <div class="left">
+                <img src="{% static 'main/images/CLogo-Notext.png' %}" alt="Company Logo" width="60">
+                <h2>Virtual Event Assistant</h2>
+            </div>
+            <div class="right">
+                <button id="saveChatBtn">Save Chat</button>
+                <div class="vertical-divider"></div>
+                <img src="{% static 'main/images/sampleprofile.jpg' %}" alt="Profile Picture" width="60" title="Profile">
+            </div>
+        </div>
+
+        <div class="chat-box">
+            {% for msg in chat_history %}
+            <div class="{{ msg.sender }} chat-message">
+                <div class="message-body">
+                    {% if msg.food_menu_images %}
+                        <div class="image-gallery">
+                            {% for img in msg.food_menu_images %}
+                                <a href="{{ img }}" target="_blank">
+                                    <img src="{{ img }}" alt="Food Menu" class="gallery-img">
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if msg.theme_confirm_images %}
+                        <div class="theme-confirm-gallery">
+                            <div style="font-size: 1.15em; font-weight: bold; color: #fff; margin-bottom: 10px;">
+                                Do you want to keep the generated image as the theme design or do you prefer using the ones we have available? Type 'ai' or 'given'.
+                            </div>
+                            <div class="image-gallery">
+                                {% for img in msg.theme_confirm_images %}
+                                    <a href="{{ img }}" target="_blank">
+                                        <img src="{{ img }}" alt="{{ msg.theme_confirm_name }}" class="gallery-img">
+                                    </a>
+                                {% endfor %}
+                            </div>
+                            {% if msg.ai_generated_image %}
+                            <div class="ai-generated-theme" style="margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                                <strong style="display: block; margin-bottom: 10px;">AI Generated Theme Suggestion:</strong>
+                                <a href="{{ msg.ai_generated_image }}" target="_blank">
+                                    <img src="{{ msg.ai_generated_image }}" alt="AI Generated Theme" style="width:200px; border-radius:8px; margin:8px 0; display:block;">
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    {% elif msg.theme_options %}
+                        <div class="theme-guide">
+                            <strong>Theme Options:</strong>
+                            <ol style="margin-bottom: 0;">
+                                {% for name, img in msg.theme_options %}
+                                    <li style="margin-bottom: 18px;">
+                                        {{ name }}<br>
+                                        {% if img %}
+                                            <a href="{{ img }}" target="_blank">
+                                                <img src="{{ img }}" alt="{{ name }}" style="width:200px; border-radius:8px; margin:8px 0; display:block;">
+                                            </a>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ol>
+                            <div style="margin-bottom: 10px; color: #888; font-size: 0.95em;">
+                                Please choose a theme by typing its number or name below.
+                            </div>
+                        </div>
+                    {% elif msg.package_options %}
+                        <div class="theme-guide">
+                            <strong>Package Options:</strong>
+                            <ol style="margin-bottom: 0;">
+                                {% for name, img in msg.package_options %}
+                                    <li style="margin-bottom: 18px;">
+                                        {{ name }}<br>
+                                        {% if img %}
+                                            <a href="{{ img }}" target="_blank">
+                                                <img src="{{ img }}" alt="{{ name }}" style="width:200px; border-radius:8px; margin:8px 0; display:block;">
+                                            </a>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ol>
+                            <div style="margin-bottom: 10px; color: #888; font-size: 0.95em;">
+                                Please choose a package by typing its number below.
+                            </div>
+                        </div>
+                    {% elif msg.package_image_selected %}
+                        <div class="theme-confirm-gallery">
+                            <div style="font-size: 1.15em; font-weight: bold; color: #fff; margin-bottom: 10px;">
+                                You selected: {{ msg.package_image_label }}<br>
+                                <a href="{{ msg.package_image_selected }}" target="_blank">
+                                    <img src="{{ msg.package_image_selected }}" alt="{{ msg.package_image_label }}" class="gallery-img">
+                                </a>
+                            </div>
+                            <div style="margin-bottom: 10px; color: #888; font-size: 0.95em;">
+                                Which package do you want for this? (Type A, B, or C)
+                            </div>
+                        </div>
+                    {% elif msg.text %}
+                        {% if msg.text == 'Here is a summary of your event plan:' and msg.summary_lines %}
+                            <div style="margin-bottom: 16px;">
+                                <div style="margin-bottom: 8px; font-weight: bold;">Here is a summary of your event plan:</div>
+                                <ul style="margin-bottom: 0;">
+                                    {% for line in msg.summary_lines %}
+                                        <li style="margin-bottom: 8px;">
+                                            {{ line.value }}
+                                            {% if line.type == 'theme' and line.img %}<br>
+                                                <a href="{{ line.img }}" target="_blank">
+                                                    <img src="{{ line.img }}" alt="Theme Image" class="gallery-img" style="max-width:180px; max-height:180px; border:2px solid #fff; margin:8px 0;">
+                                                </a>
+                                            {% endif %}
+                                            {% if line.type == 'package' and line.img %}<br>
+                                                <a href="{{ line.img }}" target="_blank">
+                                                    <img src="{{ line.img }}" alt="Package Image" class="gallery-img" style="max-width:180px; max-height:180px; border:2px solid #fff; margin:8px 0;">
+                                                </a>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                                <div style="margin-top: 12px;">Thank you for using the Event theme assistant!</div>
+                            </div>
+                        {% else %}
+                            {{ msg.text|safe }}
+                        {% endif %}
+                    {% endif %}
+                    {% if msg.image %}
+                        <a href="{{ msg.image }}" target="_blank">
+                            <img src="{{ msg.image }}" alt="image" class="chat-image">
+                        </a>
+                    {% elif msg.images %}
+                        <div class="image-gallery">
+                            {% for img in msg.images %}
+                            <a href="{{ img }}" target="_blank">
+                                <img src="{{ img }}" alt="image" class="gallery-img">
+                            </a>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if msg.selected_theme_images %}
+                        <div class="theme-confirm-gallery">
+                            <div class="image-gallery">
+                                {% for img in msg.selected_theme_images %}
+                                    <a href="{{ img }}" target="_blank">
+                                        <img src="{{ img }}" alt="{{ msg.theme_confirm_name }}" class="gallery-img">
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}        
+        </div>
+
+        <form method="post" class="chat-form">
+            {% csrf_token %}
+            <div class="input-wrapper">
+                <textarea name="message" required placeholder="Type your message..." maxlength="200"></textarea>
+                <div class="char-count"><span id="charCount">0</span>/200</div>
+            </div>
+            <button type="submit"><i class="fa-solid fa-paper-plane"></i></button>
+        </form>
+    </div>
+
+    <script>
+        const textarea = document.querySelector('.chat-form textarea');
+        const charCount = document.getElementById('charCount');
+        const sendBtn = document.querySelector('.chat-form button');
+        const MAX_LENGTH = 200;
+
+        textarea.addEventListener('input', () => {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 100) + 'px';
+            const currentLength = textarea.value.length;
+            charCount.textContent = currentLength;
+            sendBtn.disabled = currentLength === 0 || currentLength > MAX_LENGTH;
+            textarea.style.overflowY = textarea.scrollHeight > 100 ? 'auto' : 'hidden';
+        });
+
+        sendBtn.disabled = true;
+
+        // Auto-scroll chat to bottom after each message
+        function scrollChatToBottom() {
+            const chatBox = document.querySelector('.chat-box');
+            if (chatBox) {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+        // Scroll on page load
+        window.addEventListener('DOMContentLoaded', scrollChatToBottom);
+        // Scroll after each form submit
+        document.querySelector('.chat-form').addEventListener('submit', function() {
+            setTimeout(scrollChatToBottom, 100);
+        });
+
+        // Allow Enter to send, Shift+Enter for newline
+        textarea.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (!sendBtn.disabled) {
+                    sendBtn.click();
+                }
+            }
+        });
+
+        // Save Chat button
+        document.getElementById('saveChatBtn').addEventListener('click', () => {
+            fetch("{% url 'save_chat_session' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({ title: "{{ current_title }}" })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.id) {
+                    alert('Chat saved successfully!');
+                    window.location.reload();
+                } else {
+                    alert('Error saving chat.');
+                }
+            });
+        });
+
+        // Delete saved chat session
+        document.querySelectorAll('.deleteBtn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sessionId = btn.getAttribute('data-session-id');
+                if (confirm('Are you sure you want to delete this chat?')) {
+                    fetch(`/chatbot/delete/${sessionId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            btn.closest('.convo').remove();
+                            // If the deleted session is the current one, redirect to new chat
+                            const currentSessionId = "{{ current_session_id }}";
+                            if (sessionId === currentSessionId) {
+                                window.location.href = "{% url 'new_chat_session' %}";
+                            }
+                        } else {
+                            alert('Error deleting chat.');
+                        }
+                    });
+                }
+            });
+        });
+
+        // Clear current chat session
+        document.querySelectorAll('.clearCurrentBtn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (btn.disabled) return;
+                if (confirm('Are you sure you want to clear this chat?')) {
+                    const sessionId = btn.getAttribute('data-session-id');
+                    if (sessionId) {
+                        // Delete from database, then redirect
+                        fetch(`/chatbot/delete/${sessionId}/`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            window.location.href = "{% url 'new_chat_session' %}";
+                        });
+                    } else {
+                        // Just clear session and redirect
+                        window.location.href = "{% url 'new_chat_session' %}";
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
