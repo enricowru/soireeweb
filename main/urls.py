@@ -10,6 +10,7 @@ urlpatterns = [
     path('editprofile/', views.editprofile, name='editprofile'),
     path('moredesign/', views.moredesign, name='moredesign'),
     path('home/', views.home, name='home'),
+    path('home/chatbot/', views.home, name='home'),
     path('signup/', views.signup, name='signup')
 
 
