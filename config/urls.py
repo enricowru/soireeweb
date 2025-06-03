@@ -16,19 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from main.views import home, login_view, moredesign, editprofile
 from main import views
 from main import chatbot_views
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('home/', home, name='home'),
-    path('', home, name='home'),
-    path('login/', login_view, name='login'),
-    path('signup/', login_view, name='signup'),
-    path('moredesign/', moredesign, name='moredesign'),
-    path('editprofile/', editprofile, name='editprofile'),
+    path('home/', views.home, name='home'),
+    path('', views.home, name='home'),
+    path('login/', views.login_view, name='login'),
+    path('signup/', views.signup, name='signup'),
+    path('moredesign/', views.moredesign, name='moredesign'),
+    path('editprofile/', views.editprofile, name='editprofile'),
     path('moderator/reviews/', views.review_moderation, name='review_moderation'),
     path('moderator/reviews/approve/<int:review_id>/', views.approve_review, name='approve_review'),
 
