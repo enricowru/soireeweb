@@ -3,7 +3,14 @@
 <nav class="navbar">
     <ul class="nav-links">
         <li><a href="{% url 'home' %}#services">Services</a></li>
-        <li><a href="{% url 'home' %}#menu">Packages</a></li>
+        <li class="dropdown">
+            <a href="{% url 'home' %}#menu" class="dropbtn">Packages</a>
+            <ul class="dropdown-content">
+                <li><a href="{% url 'home' %}#menu">Menu</a></li>
+                <li><a href="{% url 'home' %}#packages">Event Packages</a></li>
+                <li><a href="{% url 'home' %}#design">Themes &amp; Design</a></li>
+            </ul>
+        </li>
         <li><a href="{% url 'home' %}#reviews">Reviews</a></li>
     </ul>
     <div class="logo">
@@ -16,4 +23,16 @@
         <li><a href="{% url 'home' %}#contact-us">Contact Us</a></li>
         <li><a href="{% url 'login' %}">Login</a></li>
     </ul>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggle = document.querySelector('.navbar-toggle');
+            const navLinks = document.querySelectorAll('.nav-links');
+            if (toggle) {
+                toggle.addEventListener('click', function () {
+                    navLinks.forEach(links => links.classList.toggle('show'));
+                });
+            }
+        });
+    </script>
 </nav>
