@@ -224,7 +224,7 @@ def get_event_package_images(event_type):
     images = []
     for fname in os.listdir(static_dir):
         if fname.lower().startswith(prefix):
-            images.append((fname.replace('.jpg', '').replace('_', ' ').title(), f'/static/main/images/packages/{fname}'))
+            images.append((fname.replace('.jpg', '').replace('_', ' ').title(), f'images/packages/{fname}'))
     images.sort()  # Optional: sort by name
     return images
 
@@ -241,7 +241,7 @@ def get_food_menu_images():
     images = []
     for fname in os.listdir(static_dir):
         if fname.lower().endswith('.jpg'):
-            images.append(f'/static/main/images/foodMenu/{fname}')
+            images.append(f'images/foodMenu/{fname}')
     images.sort()
     return images
 
