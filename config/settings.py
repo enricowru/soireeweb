@@ -15,6 +15,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+SECRET_KEY = 'django-insecure-^j__tk^0+jp^cu^p%uyxpb-s6o^#=&!tty-9!g*9n&di_n#0jf'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django.contrib.staticfiles',
     'main',
+    'fuzzywuzzy'
 ]
 
 MIDDLEWARE = [
@@ -123,6 +125,10 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+
+# DeepAI API Configuration
+DEEPAI_API_KEY = 'c6ea7310-add9-441d-9a53-019f2f12da1f'  # Replace with your actual DeepAI API key
 
 
 # Static files (CSS, JavaScript, Images)
