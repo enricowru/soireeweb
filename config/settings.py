@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'corsheaders',
     'django.contrib.staticfiles',
     'main',
 ]
@@ -58,6 +59,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -138,6 +140,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:19006",  # Expo frontend
     "http://127.0.0.1:3000",   # Web frontend
     "https://soireeweb.onrender.com",  # For local testing
+    "https://nikescateringservices.com" # Domain
 ]
 
 CORS_ALLOWED_ORIGINS = [
