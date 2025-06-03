@@ -3,8 +3,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
 from .models import Review
+from django.views.decorators.http import require_http_methods
 import json
-
 
 @csrf_exempt
 def home(request):
@@ -18,7 +18,7 @@ def login_view(request):
 
 def editprofile(request):
     return render(request, 'editprofile.html')
-
+    
 
 def moredesign(request):
     sets = {
@@ -309,3 +309,41 @@ def approve_review(request, review_id):
     review.is_approved = True
     review.save()
     return redirect('review_moderation')
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def signup(request):
+    try:
+        data = json.loads(request.body)
+        firstname = data.get('firstname')
+        lastname = data.get('lastname')
+        username = data.get('username')
+        email = data.get('email')
+        password = data.get('password')
+        mobile = data.get('mobile')  # Optional: save it in a custom model if needed
+
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({'message': 'Username already taken', 'error': 'conflict'}, status=409)
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=firstname,
+            last_name=lastname
+        )
+
+        # Optional: user.profile.mobile = mobile
+        # user.profile.save()
+
+        response = JsonResponse({'message': 'User created successfully'}, status=201)
+    except Exception as e:
+        response = JsonResponse({'message': 'Registration failed', 'error': str(e)}, status=400)
+
+    # ✅ Fix CORS issue
+    response["Access-Control-Allow-Origin"] = "https://nikescateringservices.com"
+    response["Access-Control-Allow-Credentials"] = "true"
+    return response
+
+
