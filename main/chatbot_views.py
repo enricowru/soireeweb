@@ -63,56 +63,24 @@ def get_event_packages(event_type):
     """Helper function to get packages based on event type"""
     packages = {
         'birthday': [
-            ('50 pax - Package A', static('images/packages/50pax.jpg')),
-            ('70 pax - Package B', static('images/packages/70pax.jpg')),
-            ('80 pax - Package C', static('images/packages/80pax.jpg')),
-            ('100 pax - Package D', static('images/packages/100pax.jpg')),
-            ('120 pax - Package E', static('images/packages/120pax.jpg')),
-            ('130 pax - Package F', static('images/packages/130pax.jpg')),
-            ('150 pax - Package G', static('images/packages/150pax.jpg')),
-            ('160 pax - Package H', static('images/packages/160pax.jpg')),
-            ('170 pax - Package I', static('images/packages/170pax.jpg')),
-            ('180 pax - Package J', static('images/packages/180pax.jpg')),
-            ('200 pax - Package K', static('images/packages/200pax.jpg'))
+            ('100 pax - Package A', static('main/images/packages/birthday_a.jpg')),
+            ('200 pax - Package B', static('main/images/packages/birthday_b.jpg')),
+            ('300 pax - Package C', static('main/images/packages/birthday_c.jpg'))
         ],
         'kiddie': [
-            ('50 pax - Package A', static('images/packages/50pax.jpg')),
-            ('70 pax - Package B', static('images/packages/70pax.jpg')),
-            ('80 pax - Package C', static('images/packages/80pax.jpg')),
-            ('100 pax - Package D', static('images/packages/100pax.jpg')),
-            ('120 pax - Package E', static('images/packages/120pax.jpg')),
-            ('130 pax - Package F', static('images/packages/130pax.jpg')),
-            ('150 pax - Package G', static('images/packages/150pax.jpg')),
-            ('160 pax - Package H', static('images/packages/160pax.jpg')),
-            ('170 pax - Package I', static('images/packages/170pax.jpg')),
-            ('180 pax - Package J', static('images/packages/180pax.jpg')),
-            ('200 pax - Package K', static('images/packages/200pax.jpg'))
+            ('50 pax - Package A', static('main/images/packages/kiddie_a.jpg')),
+            ('100 pax - Package B', static('main/images/packages/kiddie_b.jpg')),
+            ('150 pax - Package C', static('main/images/packages/kiddie_c.jpg'))
         ],
         'wedding': [
-            ('50 pax - Package A', static('images/packages/50pax.jpg')),
-            ('70 pax - Package B', static('images/packages/70pax.jpg')),
-            ('80 pax - Package C', static('images/packages/80pax.jpg')),
-            ('100 pax - Package D', static('images/packages/100pax.jpg')),
-            ('120 pax - Package E', static('images/packages/120pax.jpg')),
-            ('130 pax - Package F', static('images/packages/130pax.jpg')),
-            ('150 pax - Package G', static('images/packages/150pax.jpg')),
-            ('160 pax - Package H', static('images/packages/160pax.jpg')),
-            ('170 pax - Package I', static('images/packages/170pax.jpg')),
-            ('180 pax - Package J', static('images/packages/180pax.jpg')),
-            ('200 pax - Package K', static('images/packages/200pax.jpg'))
+            ('200 pax - Package A', static('main/images/packages/wedding_a.jpg')),
+            ('300 pax - Package B', static('main/images/packages/wedding_b.jpg')),
+            ('400 pax - Package C', static('main/images/packages/wedding_c.jpg'))
         ],
         'christening': [
-            ('50 pax - Package A', static('images/packages/50pax.jpg')),
-            ('70 pax - Package B', static('images/packages/70pax.jpg')),
-            ('80 pax - Package C', static('images/packages/80pax.jpg')),
-            ('100 pax - Package D', static('images/packages/100pax.jpg')),
-            ('120 pax - Package E', static('images/packages/120pax.jpg')),
-            ('130 pax - Package F', static('images/packages/130pax.jpg')),
-            ('150 pax - Package G', static('images/packages/150pax.jpg')),
-            ('160 pax - Package H', static('images/packages/160pax.jpg')),
-            ('170 pax - Package I', static('images/packages/170pax.jpg')),
-            ('180 pax - Package J', static('images/packages/180pax.jpg')),
-            ('200 pax - Package K', static('images/packages/200pax.jpg'))
+            ('100 pax - Package A', static('main/images/packages/christening_a.jpg')),
+            ('150 pax - Package B', static('main/images/packages/christening_b.jpg')),
+            ('200 pax - Package C', static('main/images/packages/christening_c.jpg'))
         ]
     }
     return packages.get(event_type.lower(), [])
