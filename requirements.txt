@@ -28,3 +28,4 @@ sqlparse==0.5.3
 tzdata==2025.2
 urllib3==2.4.0
 django-cors-headers==4.7.0
+django-cloudinary-storage==0.3.0
