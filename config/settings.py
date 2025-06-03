@@ -34,6 +34,8 @@ ALLOWED_HOSTS = [
     'soireeweb.onrender.com']
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 STATICFILES_DIRS = [BASE_DIR / 'main' / 'static', 
     BASE_DIR / "static",
 ]
