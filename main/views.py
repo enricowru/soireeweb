@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from .models import Review
 from django.views.decorators.http import require_http_methods
 import json
+from django.contrib.auth.models import User
 
 @csrf_exempt
 def home(request):
