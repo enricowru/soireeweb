@@ -314,7 +314,9 @@ def approve_review(request, review_id):
 @csrf_exempt
 @require_http_methods(["POST"])
 def signup(request):
-    try:
+    try:   
+        return JsonResponse({'message': 'TEST', 'error': 'conflict'}, status=500)
+
         data = json.loads(request.body)
         firstname = data.get('firstname')
         lastname = data.get('lastname')
