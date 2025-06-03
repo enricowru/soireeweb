@@ -53,8 +53,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'corsheaders',
     'django.contrib.staticfiles',
-    'main',
-    'fuzzywuzzy'
+    'fuzzywuzzy',
+    'cloudinary_storage',
+    'cloudinary',
+    'main'
 ]
 
 MIDDLEWARE = [
@@ -78,6 +80,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -182,6 +185,23 @@ CORS_ALLOW_METHODS = [
     'POST',
     'PUT',
 ]
+
+# Cache Configuration
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
+
+#CSRF IF NEEDED
+#CSRF_TRUSTED_ORIGINS = [
+# SECURE_SSL_REDIRECT = True # Redirects all HTTP requests to HTTPS
+    #"http://localhost:19006",  # Expo frontend
+# SESSION_COOKIE_SECURE = True # Use secure cookies for sessions
+    #"https://soireeweb.onrender.com",   # Web frontend
+# CSRF_COOKIE_SECURE = True # Use secure cookies for CSRF
+#]
 
 # If needed
 CORS_ALLOW_CREDENTIALS = True
