@@ -219,7 +219,7 @@ def get_category_description(category):
 
 def get_event_package_images(event_type):
     """Dynamically get all package images for the event type from the static directory."""
-    static_dir = os.path.join(settings.BASE_DIR, 'main', 'static', 'main', 'images', 'packages')
+    static_dir = os.path.join(settings.BASE_DIR, 'main', 'static', 'images', 'packages')
     prefix = event_type.lower()
     images = []
     for fname in os.listdir(static_dir):
