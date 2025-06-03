@@ -148,6 +148,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:19006",
     "http://127.0.0.1:3000",
     "https://soireeweb.onrender.com",
+    "https://nikescateringservices.com", # Domain
+    "https://www.nikescateringservices.com" # Domain
 ]
 
 CORS_ALLOW_HEADERS = [
