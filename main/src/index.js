@@ -8,6 +8,7 @@ const app = express();
 // MIDDLEWARES
 const allowedOrigins = [
   "https://nikescateringservices.com",     // your custom domain
+  "https://www.nikescateringservices.com",     // your custom domain
   "https://soireeweb.onrender.com",        // your original Render frontend
   "http://localhost:3000"                  // optional: local testing
 ];

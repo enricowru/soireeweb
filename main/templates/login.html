@@ -1,155 +1,160 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
-    <link rel="stylesheet" href="{% static 'css/login.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="icon" type="image/x-icon" href="{% static 'images/logo-round.png' %}">
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="icon" type="image/x-icon" href="{% static 'images/logo-round.png' %}">
 </head>
+
 <body>
-    {% include "navbar.html" %}
+  {% include "navbar.html" %}
 
-    <div class="form-center">
-      
-      <!-- Login Form -->
-      <div class="login-container" id="login-form">
-        <h2>LOGIN</h2>
-        <form action="http://soireeweb.onrender.com/login/" method="POST" autocomplete="off">
-          <label for="username">Username:</label>
-          <input type="text" id="username" name="username" required>
-          <br>
-          <label for="password">Password:</label>
-          <div class="password-wrapper">
-            <input type="password" id="password" name="password" required>
-            <i class="fa-solid fa-eye-slash toggle-password" toggle="#password"></i>
-          </div>
-          <div class="forgot-remember">
-            <label><input type="checkbox" name="remember_me"> Remember me</label>
-            <a href="#">Forgot password?</a>
-          </div>
-          <button type="submit">Login</button>
-        </form>
-        <p>Don't have an account? <a href="#" id="show-register">Register here</a></p>
-      </div>
+  <div class="form-center">
 
-      <!-- Register Form -->
-      <div class="register-container" id="register-form" style="display:none;">
-        <h2>REGISTER</h2>
-        <form id="registerForm" autocomplete="off">
-          <div class="register-flex">
-            <div class="register-col">
-              <label for="reg-firstname">First Name:</label>
-              <input type="text" id="reg-firstname" name="firstname" required>
-            </div>
-            <div class="register-col">
-              <label for="reg-lastname">Last Name:</label>
-              <input type="text" id="reg-lastname" name="lastname" required>
-            </div>
-          </div>
-          <div class="register-flex">
-            <div class="register-col">
-              <label for="reg-username">Username:</label>
-              <input type="text" id="reg-username" name="username" required>
-            </div>
-            <div class="register-col">
-              <label for="reg-mobile">Mobile Number (PH):</label>
-              <input type="tel" id="reg-mobile" name="mobile" maxlength="11" placeholder="09XXXXXXXXX" required pattern="^09\d{9}$" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
-            </div>
-          </div>
-          <label for="reg-email">Email:</label>
-          <input type="email" id="reg-email" name="email" required>
-
-          <div class="register-flex">
-            <div class="register-col">
-              <label for="reg-password1">Password:</label>
-              <div class="password-wrapper">
-                <input type="password" id="reg-password1" name="password" required>
-                <i class="fa-solid fa-eye-slash toggle-password" toggle="#reg-password1"></i>
-              </div>
-            </div>
-            <div class="register-col">
-              <label for="reg-password2">Confirm Password:</label>
-              <div class="password-wrapper">
-                <input type="password" id="reg-password2" name="password2" required>
-                <i class="fa-solid fa-eye-slash toggle-password" toggle="#reg-password2"></i>
-              </div>
-            </div>
-          </div>
-
-          <button type="submit">Register</button>
-        </form>
-        <p>Already have an account? <a href="#" id="show-login">Login here</a></p>
-      </div>
+    <!-- Login Form -->
+    <div class="login-container" id="login-form">
+      <h2>LOGIN</h2>
+      <form action="http://soireeweb.onrender.com/login/" method="POST" autocomplete="off">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" name="password" required>
+          <i class="fa-solid fa-eye-slash toggle-password" toggle="#password"></i>
+        </div>
+        <div class="forgot-remember">
+          <label><input type="checkbox" name="remember_me"> Remember me</label>
+          <a href="#">Forgot password?</a>
+        </div>
+        <button type="submit">Login</button>
+      </form>
+      <p>Don't have an account? <a href="#" id="show-register">Register here</a></p>
     </div>
 
-    <script>
-      // Toggle between login and register forms
-      document.getElementById('show-register').onclick = function(e) {
-        e.preventDefault();
-        document.getElementById('login-form').style.display = 'none';
-        document.getElementById('register-form').style.display = 'block';
-      };
-      document.getElementById('show-login').onclick = function(e) {
-        e.preventDefault();
-        document.getElementById('register-form').style.display = 'none';
-        document.getElementById('login-form').style.display = 'block';
-      };
+    <!-- Register Form -->
+    <div class="register-container" id="register-form" style="display:none;">
+      <h2>REGISTER</h2>
+      <form id="registerForm" autocomplete="off">
+        <div class="register-flex">
+          <div class="register-col">
+            <label for="reg-firstname">First Name:</label>
+            <input type="text" id="reg-firstname" name="firstname" required>
+          </div>
+          <div class="register-col">
+            <label for="reg-lastname">Last Name:</label>
+            <input type="text" id="reg-lastname" name="lastname" required>
+          </div>
+        </div>
+        <div class="register-flex">
+          <div class="register-col">
+            <label for="reg-username">Username:</label>
+            <input type="text" id="reg-username" name="username" required>
+          </div>
+          <div class="register-col">
+            <label for="reg-mobile">Mobile Number (PH):</label>
+            <input type="tel" id="reg-mobile" name="mobile" maxlength="11" placeholder="09XXXXXXXXX" required
+              pattern="^09\d{9}$" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+          </div>
+        </div>
+        <label for="reg-email">Email:</label>
+        <input type="email" id="reg-email" name="email" required>
 
-      // Show/hide password functionality
-      document.querySelectorAll('.toggle-password').forEach(function(eye) {
-        eye.addEventListener('click', function() {
-          const input = document.querySelector(this.getAttribute('toggle'));
-          if (input.type === "password") {
-            input.type = "text";
-            this.classList.remove('fa-eye-slash');
-            this.classList.add('fa-eye');
-          } else {
-            input.type = "password";
-            this.classList.remove('fa-eye');
-            this.classList.add('fa-eye-slash');
-          }
+        <div class="register-flex">
+          <div class="register-col">
+            <label for="reg-password1">Password:</label>
+            <div class="password-wrapper">
+              <input type="password" id="reg-password1" name="password" required>
+              <i class="fa-solid fa-eye-slash toggle-password" toggle="#reg-password1"></i>
+            </div>
+          </div>
+          <div class="register-col">
+            <label for="reg-password2">Confirm Password:</label>
+            <div class="password-wrapper">
+              <input type="password" id="reg-password2" name="password2" required>
+              <i class="fa-solid fa-eye-slash toggle-password" toggle="#reg-password2"></i>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit">Register</button>
+      </form>
+      <p>Already have an account? <a href="#" id="show-login">Login here</a></p>
+    </div>
+  </div>
+
+  <script>
+    // Toggle between login and register forms
+    document.getElementById('show-register').onclick = function (e) {
+      e.preventDefault();
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('register-form').style.display = 'block';
+    };
+    document.getElementById('show-login').onclick = function (e) {
+      e.preventDefault();
+      document.getElementById('register-form').style.display = 'none';
+      document.getElementById('login-form').style.display = 'block';
+    };
+
+    // Show/hide password functionality
+    document.querySelectorAll('.toggle-password').forEach(function (eye) {
+      eye.addEventListener('click', function () {
+        const input = document.querySelector(this.getAttribute('toggle'));
+        if (input.type === "password") {
+          input.type = "text";
+          this.classList.remove('fa-eye-slash');
+          this.classList.add('fa-eye');
+        } else {
+          input.type = "password";
+          this.classList.remove('fa-eye');
+          this.classList.add('fa-eye-slash');
+        }
+      });
+    });
+
+    // Handle register form submission via fetch
+    document.getElementById('registerForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const firstname = document.getElementById('reg-firstname').value;
+      const lastname = document.getElementById('reg-lastname').value;
+      const username = document.getElementById('reg-username').value;
+      const mobile = document.getElementById('reg-mobile').value;
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password1').value;
+      const password2 = document.getElementById('reg-password2').value;
+
+      if (password !== password2) {
+        alert("Passwords do not match!");
+        return;
+      }
+
+      try {
+        const res = await fetch('https://nike-api.onrender.com/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ firstname, lastname, username, mobile, email, password })
         });
-      });
 
-      // Handle register form submission via fetch
-      document.getElementById('registerForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
 
-        const firstname = document.getElementById('reg-firstname').value;
-        const lastname = document.getElementById('reg-lastname').value;
-        const username = document.getElementById('reg-username').value;
-        const mobile = document.getElementById('reg-mobile').value;
-        const email = document.getElementById('reg-email').value;
-        const password = document.getElementById('reg-password1').value;
-        const password2 = document.getElementById('reg-password2').value;
+        const result = await res.json();
 
-        if (password !== password2) {
-          alert("Passwords do not match!");
-          return;
+        if (res.status === 201) {
+          alert("✅ Registration successful!");
+          document.getElementById('registerForm').reset();
+          document.getElementById('show-login').click();
+        } else {
+          alert("❌ " + result.message + ": " + result.error);
         }
-
-        try {
-          const res = await fetch('https://www.soireeweb.onrender.com/signup/', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ firstname, lastname, username, mobile, email, password })
-          });
-
-          const result = await res.json();
-
-          if (res.status === 201) {
-            alert("✅ Registration successful!");
-            document.getElementById('registerForm').reset();
-            document.getElementById('show-login').click();
-          } else {
-            alert("❌ " + result.message + ": " + result.error);
-          }
-        } catch (err) {
-          console.error("Network error:", err);
-          alert("❌ Registration failed due to server/network error.");
-        }
-      });
-    </script>
+      } catch (err) {
+        console.error("Network error:", err);
+        alert("❌ Registration failed due to server/network error.");
+      }
+    });
+  </script>
 </body>
+
 </html>
