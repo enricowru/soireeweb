@@ -53,6 +53,15 @@ const LogInCollection = mongoose.model("LogInCollection", LogInSchema);
 app.post("/signup", async (req, res) => {
   const { firstname, lastname, username, mobile, email, password } = req.body;
 
+  if (username.length < 6 || username.length > 12) {
+    return res.status(400).json({ message: "Username must be between 6 and 12 characters." });
+  }
+
+  // Validate password length
+  if (password.length < 8 || password.length > 16) {
+    return res.status(400).json({ message: "Password must be between 8 and 16 characters." });
+  }
+
   try {
     const existingUser = await LogInCollection.findOne({ username });
     if (existingUser) {
