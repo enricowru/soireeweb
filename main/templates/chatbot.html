@@ -47,10 +47,12 @@
             <div class="right">
                 <button id="saveChatBtn">Save Chat</button>
                 <div class="vertical-divider"></div>
-                <img src="{% static 'images/sampleprofile.jpg' %}" alt="Profile Picture" width="60" title="Profile">
+                <a href="{% url 'editprofile' %}">
+                    <img src="{% static 'images/sampleprofile.jpg' %}" alt="Profile Picture" width="60" title="Profile">
+                </a>
             </div>
         </div>
-
+ 
         <div class="chat-box">
             {% for msg in chat_history %}
             <div class="{{ msg.sender }} chat-message">
