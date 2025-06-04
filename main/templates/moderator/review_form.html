@@ -1,0 +1,61 @@
+{% extends 'custom_admin/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>{{ action }} Review</h2>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="reviewer_name" class="form-label">Reviewer Name</label>
+                    <input type="text" class="form-control" id="reviewer_name" name="reviewer_name" value="{{ review.reviewer_name|default:'' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="rating" class="form-label">Rating</label>
+                    <select class="form-select" id="rating" name="rating" required>
+                        <option value="">Select rating</option>
+                        {% for i in "12345" %}
+                            <option value="{{ i }}" {% if review and review.rating|stringformat:'i' == i %}selected{% endif %}>{{ i }} Star{{ i|add:"-1"|yesno:",s," }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="review_text" class="form-label">Review Text</label>
+                    <textarea class="form-control" id="review_text" name="review_text" rows="4" required>{{ review.review_text|default:'' }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="user_photo" class="form-label">User Photo (optional)</label>
+                    <input type="file" class="form-control" id="user_photo" name="user_photo" accept="image/*">
+                    {% if review and review.user_photo %}
+                        <div class="mt-2">
+                            <img src="{{ review.user_photo.url }}" alt="User Photo" class="rounded-circle" style="width:60px;height:60px;object-fit:cover;">
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> {{ action }} Review
+                    </button>
+                    <a href="{% url 'review_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

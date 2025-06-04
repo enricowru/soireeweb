@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #fff;
+            color: #222;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: #222;
+            padding: 1rem;
+            margin-bottom: 0;
+            border-radius: 0;
+            position: relative;
+            z-index: 1;
+        }
+        .back-btn {
+            color: #fff;
+            font-size: 1.3rem;
+            margin-right: 1.2rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            border: none;
+            background: none;
+            outline: none;
+        }
+        .back-btn:hover {
+            color: #AD974F;
+        }
+        .container-fluid {
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .row {
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .sidebar {
+            min-height: 100vh;
+            background: #222;
+            color: #fff;
+            position: relative;
+            z-index: 1;
+            padding-top: 0;
+        }
+        .sidebar h3 {
+            margin-top: 1.5rem;
+        }
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .sidebar a:hover {
+            color: #AD974F;
+        }
+        .content {
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .navbar-brand {
+            color: #fff !important;
+            font-size: 1.5rem;
+        }
+        .nav-link {
+            color: #fff !important;
+        }
+        .nav-link:hover {
+            color: #AD974F !important;
+        }
+        .logout-btn {
+            color: #fff !important;
+            border: 1px solid #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover {
+            background-color: #fff;
+            color: #222 !important;
+        }
+        .alert {
+            position: relative;
+            z-index: 1;
+        }
+        .card {
+            background: #f8f9fa;
+            border: 1px solid #eee;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+            color: #222;
+        }
+        .card-header {
+            background: #f8f9fa;
+            color: #222;
+            border-bottom: 1px solid #eee;
+        }
+        .table {
+            color: #222;
+        }
+        .table th {
+            color: #222;
+            border-bottom: 1px solid #eee;
+        }
+        .table td {
+            border-bottom: 1px solid #eee;
+        }
+        .btn-primary {
+            background-color: #AD974F;
+            border-color: #AD974F;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background-color: #8c7a3e;
+            border-color: #8c7a3e;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                {% if request.resolver_match.url_name != 'admin_dashboard' %}
+                <a class="back-btn" href="{% url 'admin_dashboard' %}" title="Back to Dashboard">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                {% endif %}
+                <a class="navbar-brand" href="{% url 'admin_dashboard' %}">
+                    <i class="fas fa-user-shield"></i> Admin Dashboard
+                </a>
+            </div>
+            <div class="d-flex align-items-center">
+                <a href="{% url 'logout' %}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar p-3">
+                <h3 class="mb-4">Admin Panel</h3>
+                <ul class="nav flex-column">
+                    <li class="nav-item mb-2">
+                        <a href="{% url 'admin_dashboard' %}">
+                            <i class="fas fa-home"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="{% url 'create_event' %}">
+                            <i class="fas fa-plus"></i> Create Event
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="{% url 'view_all_moderators' %}">
+                            <i class="fas fa-user-tie"></i> View Moderators
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="{% url 'user_list' %}">
+                            <i class="fas fa-users"></i> Manage Users
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="{% url 'review_list' %}">
+                            <i class="fas fa-star"></i> Manage Reviews
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-10 content">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

@@ -1,0 +1,82 @@
+{% extends 'custom_admin/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Review Management</h2>
+        </div>
+        <div class="col text-end">
+            <a href="{% url 'review_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add New Review
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="card-body">
+            {% if reviews %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Reviewer</th>
+                                <th>Rating</th>
+                                <th>Review</th>
+                                <th>Date</th>
+                                <th>Photo</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for review in reviews %}
+                                <tr>
+                                    <td>{{ review.reviewer_name }}</td>
+                                    <td>
+                                        <span class="text-warning">
+                                            {% for i in "12345"|slice:":review.rating" %}★{% endfor %}
+                                            {% for i in "12345"|slice:"review.rating:" %}<span class="text-secondary">★</span>{% endfor %}
+                                        </span>
+                                    </td>
+                                    <td>{{ review.review_text|truncatechars:80 }}</td>
+                                    <td>{{ review.date }}</td>
+                                    <td>
+                                        {% if review.user_photo %}
+                                            <img src="{{ review.user_photo }}" alt="User Photo" class="rounded-circle" style="width:40px;height:40px;object-fit:cover;">
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'review_edit' review.id %}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <form action="{% url 'review_delete' review.id %}" method="post" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this review?');">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <p class="text-muted mb-0">No reviews found.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

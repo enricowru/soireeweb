@@ -1,0 +1,78 @@
+{% extends 'custom_admin/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>{{ action }} User</h2>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" value="{{ user.username|default:'' }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="password" class="form-label">Password {% if action == 'Edit' %}(leave blank to keep current){% endif %}</label>
+                        <input type="password" class="form-control" id="password" name="password" {% if action == 'Create' %}required{% endif %}>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="firstname" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstname" name="firstname" value="{{ user.firstname|default:'' }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="lastname" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastname" name="lastname" value="{{ user.lastname|default:'' }}" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ user.email|default:'' }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="mobile" class="form-label">Mobile Number (PH)</label>
+                        <input type="tel" class="form-control" id="mobile" name="mobile" value="{{ user.mobile|default:'' }}" pattern="^09\d{9}$" placeholder="09XXXXXXXXX" required>
+                        <div class="form-text">Format: 09XXXXXXXXX</div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> {{ action }} User
+                    </button>
+                    <a href="{% url 'user_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mobile number validation
+    const mobileInput = document.getElementById('mobile');
+    mobileInput.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value.length > 11) {
+            this.value = this.value.slice(0, 11);
+        }
+    });
+});
+</script>
+{% endblock %} 

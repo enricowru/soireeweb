@@ -14,6 +14,14 @@ def home(request):
 
 @csrf_exempt
 def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        if username == "admin" and password == "1234":
+            return redirect('/moderator/reviews/')
+        else:
+            return render(request, 'login.html', {'error': 'Invalid username or password.'})
     return render(request, 'login.html')
 
 

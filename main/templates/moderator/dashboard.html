@@ -1,0 +1,72 @@
+{% extends 'custom_admin/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex align-items-center gap-2 mb-4 justify-content-end">
+        <a href="{% url 'view_all_moderators' %}" class="btn btn-success">
+            <i class="fas fa-user-tie"></i> View Moderators
+        </a>
+        <a href="{% url 'view_all_users' %}" class="btn btn-warning text-white">
+            <i class="fas fa-users"></i> View Users
+        </a>
+        <a href="{% url 'create_moderator' %}" class="btn btn-success">
+            <i class="fas fa-user-plus"></i> Create Moderator
+        </a>
+        <a href="{% url 'create_event' %}" class="btn btn-primary" style="background-color: #AD974F; border-color: #AD974F;">
+            <i class="fas fa-plus"></i> Create Event
+        </a>
+    </div>
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Event Dashboard</h2>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Events</h5>
+                    <h2 class="card-text">{{ events.count }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <h4>Upcoming Events</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Date</th>
+                            <th>Access Code</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                        <tr>
+                            <td>{{ event.title }}</td>
+                            <td>{{ event.date }}</td>
+                            <td>{{ event.access_code }}</td>
+                            <td>
+                                <a href="{% url 'event_detail' event.id %}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> View Details
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center">No events found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
