@@ -120,6 +120,7 @@ section {
     align-items: center;
     gap: 10px;
     transition: background 0.2s;
+    text-decoration: none;
 }
 
 .chat-ai-btn:hover {

@@ -1,364 +1,376 @@
-     {% load static %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nike's Catering Services</title>
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
-    <link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="icon" type="image/x-icon" href="{% static 'images/logo-round.png' %}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nike's Catering Services</title>
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+  <link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="icon" type="image/x-icon" href="{% static 'images/logo-round.png' %}">
 
 
 </head>
+
 <body>
 
-    <!-- NAV BAR -->
-    {% include "navbar.html" %}
-   
-<!-- CONTENT -->
+  <!-- NAV BAR -->
+  {% include "navbar.html" %}
 
-    <!-- MAIN -->
-    <header id="main">
-        <h1>Nike's Catering Services</h1>
-        <p>Lorem ipsum dolor sit amet. Ut tenetur assumenda et dolorem voluptatem et omnis quia et sint dolorem id sequi culpa qui officia quasi! Vel consequatur quasi qui tenetur nostrum ut quasi sint et corporis libero est iste reiciendis. Id accusamus quam aut temporibus quibusdam qui quia quia rem minus sint et alias nostrum est facere magni et minima quia. </p>
-        <a href="#about-us" class="learnmore">LEARN MORE</a>
-    </header>
+  <!-- CONTENT -->
 
-    <!-- CHATBOT BUTTON -->
-    <button id="chat-ai-btn" class="chat-ai-btn">
-        <i class="fa-solid fa-comments"></i><a href="chatbot">Virtual Assistant</a> 
-    </button>
+  <!-- MAIN -->
+  <header id="main">
+    <h1>Nike's Catering Services</h1>
+    <p>Nikes Catering Services brings your events to life with exceptional food, elegant styling, and professional
+      coordination. Whether it's an intimate gathering or a grand celebration, we specialize in crafting memorable
+      experiences tailored to your vision. With a commitment to quality and creativity, we handle every detail—so you
+      can enjoy the moment. </p>
+    <a href="#about-us" class="learnmore">LEARN MORE</a>
+  </header>
 
-
-    <!-- OUR SERVICES -->
-    <section id="services">
-        <h1 class="services-title">OUR SERVICES</h1>
-        <p>Vel consequatur quasi qui tenetur nostrum ut quasi sint et corporis libero est iste reiciendis. Id accusamus quam aut temporibus quibusdam qui quia quia rem minus sint et alias nostrum est facere magni et minima quia. </p>
-
-        <div class="services-grid">
-            <div class="service-box anniversary"
-            style="background-image: url('{% static 'images/kiddie party/disneyprincesses.png' %}');">KIDDIE PARTY</div>
-            <div class="service-box birthday"
-            style="background-image: url('{% static 'images/birthday/purplegold.png' %}');">BIRTHDAY</div>
-            <div class="service-box wedding"
-            style="background-image: url('{% static 'images/wedding/whitegreen.png' %}');">WEDDING</div>
-            <div class="service-box christening"
-            style="background-image: url('{% static 'images/christening/neutral.png' %}');">CHRISTENING</div>
-            <div class="service-box corporate"
-            style="background-image: url('{% static 'images/corporate/orangeyellow.png' %}');">OTHERS</div>
-        </div>
-    </section>
-
-    <!-- MENU -->
-    <section id="menu">
-        <div class="menu-content">
-            <div class="menu-left">
-                <h2>Nike's Featured Menus</h2>
-                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.</p>
-                <div class="menu-nav">
-                    <button class="prev">❮</button>
-                    <div class="dots">
-                        <span class="dot active"></span>
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                    </div>
-                    <button class="next">❯</button>
-                </div>
-            </div>
-
-            <div class="menu-right">
-                <div class="carousel-track">
-                    <div class="menus">
-                      <div class="menu-bg" style="background-image: url('{% static 'images/menus/bst-sellers.png' %}');"></div>
-                      <span>BEST SELLERS</span>
-                    </div>
-                    <div class="menus">
-                      <div class="menu-bg" style="background-image: url('{% static 'images/menus/dessertbuffet.png' %}');"></div>
-                      <span>DESSERT BUFFET</span>
-                    </div>
-                    <div class="menus">
-                      <div class="menu-bg" style="background-image: url('{% static 'images/menus/beef.png' %}');"></div>
-                      <span>BEEF</span>
-                    </div>
-                    <div class="menus">
-                      <div class="menu-bg" style="background-image: url('{% static 'images/menus/chicken.png' %}');"></div>
-                      <span>CHICKEN</span>
-                    </div>
-                    <div class="menus">
-                      <div class="menu-bg" style="background-image: url('{% static 'images/menus/seafoods.png' %}');"></div>
-                      <span>SEAFOODS</span>
-                    </div>
-                    <div class="menus">
-                      <div class="menu-bg" style="background-image: url('{% static 'images/menus/vegetables.png' %}');"></div>
-                      <span>VEGETABLES</span>
-                    </div>
-                    <div class="menus">
-                      <div class="menu-bg" style="background-image: url('{% static 'images/menus/pasta.png' %}');"></div>
-                      <span>PASTA</span>
-                    </div>
-                    <div class="menus">
-                      <div class="menu-bg" style="background-image: url('{% static 'images/menus/drinks.png' %}');"></div>
-                      <span>DRINKS</span>
-                    </div>
-                   
-                </div>
-            </div>
-        </div>
-        <a href="#" class="book-tasting">
-            <img src="{% static 'images/taste.png' %}" alt="Book Tasting">
-            <h3>BOOK A FOOD TASTING</h3>
-        </a>
-    </section>
+  <!-- CHATBOT BUTTON -->
+  <button id="chat-ai-btn" class="chat-ai-btn">
+    <i class="fa-solid fa-comments"></i><a href="chatbot">Virtual Assistant</a>
+  </button>
 
 
-    <!-- PACKAGES -->
-<section id="packages">
-    <div class="packages-header">
-        <hr class="line left">
-        <h1>EVENT PACKAGES</h1>
-        <hr class="line right">
+  <!-- OUR SERVICES -->
+  <section id="services">
+    <h1 class="services-title">OUR SERVICES</h1>
+    <p>We offer full-service catering, event styling, and coordination tailored to your unique needs. From themed
+      celebrations to formal occasions, our team ensures every detail is thoughtfully planned and flawlessly executed.
+    </p>
+    <div class="services-grid">
+      <div class="service-box kiddieparty"
+        style="background-image: url('{% static 'images/upgraded balloon set-up/R6A.jpg' %}');">KIDDIE PARTY</div>
+      <div class="service-box birthday" style="background-image: url('{% static 'images/birthday/greengold.jpg' %}');">
+        BIRTHDAY</div>
+      <div class="service-box wedding"
+        style="background-image: url('{% static 'images/signature set-up/R4A.jpg'  %}');">
+        WEDDING</div>
+      <div class="service-box christening"
+        style="background-image: url('{% static 'images/christening/bears.jpg' %}');">CHRISTENING</div>
+      <div class="service-box corporate"
+        style="background-image: url('{% static 'images/corporate/yellowblack.jpg' %}');">OTHERS</div>
     </div>
-    <p class="packages-subtitle">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.</p>
+  </section>
+
+  <!-- MENU -->
+  <section id="menu">
+    <div class="menu-content">
+      <div class="menu-left">
+        <h2>Nike's Featured Menus</h2>
+        <p>Our menu features a diverse selection of delicious, handcrafted dishes made with fresh ingredients to suit
+          any event or celebration.</p>
+        <div class="menu-nav">
+          <button class="prev">❮</button>
+          <div class="dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <button class="next">❯</button>
+        </div>
+      </div>
+
+      <div class="menu-right">
+        <div class="carousel-track">
+          <div class="menus">
+            <div class="menu-bg" style="background-image: url('{% static 'images/menus/bst-sellers.png' %}');"></div>
+            <span>BEST SELLERS</span>
+          </div>
+          <div class="menus">
+            <div class="menu-bg" style="background-image: url('{% static 'images/menus/dessertbuffet.png' %}');"></div>
+            <span>DESSERT BUFFET</span>
+          </div>
+          <div class="menus">
+            <div class="menu-bg" style="background-image: url('{% static 'images/menus/beef.png' %}');"></div>
+            <span>BEEF</span>
+          </div>
+          <div class="menus">
+            <div class="menu-bg" style="background-image: url('{% static 'images/menus/chicken.png' %}');"></div>
+            <span>CHICKEN</span>
+          </div>
+          <div class="menus">
+            <div class="menu-bg" style="background-image: url('{% static 'images/menus/seafoods.png' %}');"></div>
+            <span>SEAFOODS</span>
+          </div>
+          <div class="menus">
+            <div class="menu-bg" style="background-image: url('{% static 'images/menus/vegetables.png' %}');"></div>
+            <span>VEGETABLES</span>
+          </div>
+          <div class="menus">
+            <div class="menu-bg" style="background-image: url('{% static 'images/menus/pasta.jpg' %}');"></div>
+            <span>PASTA</span>
+          </div>
+          <div class="menus">
+            <div class="menu-bg" style="background-image: url('{% static 'images/menus/drinks.png' %}');"></div>
+            <span>DRINKS</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <a href="#" class="book-tasting">
+      <img src="{% static 'images/taste.png' %}" alt="Book Tasting">
+      <h3>BOOK A FOOD TASTING</h3>
+    </a>
+  </section>
+
+
+  <!-- PACKAGES -->
+  <section id="packages">
+    <div class="packages-header">
+      <hr class="line left">
+      <h1>EVENT PACKAGES</h1>
+      <hr class="line right">
+    </div>
+    <p class="packages-subtitle">Our event packages are designed to fit every occasion, combining catering, styling, and
+      coordination into convenient, customizable bundles.</p>
 
     <div class="packages-grid">
-        <!-- Package 1 -->
-        <div class="package">
-            <div class="package-title">KIDDIE PARTY PACKAGES</div>
-            <div class="package-body">
-                <div class="package-row">
-                    <div class="package-slider">
-                        <button class="pkg-prev">❮</button>
-                        <img class="pkg-image" src="{% static 'images/packages/christening1.jpg' %}" alt="Kiddie Party">
-                        <button class="pkg-next">❯</button>
-                    </div>
-                    <div class="package-info">
-                      <p><strong>Includes:</strong></p>
-                      <ul>
-                        <li>Themed Backdrop</li>
-                        <li>Basic Balloon Decorations</li>
-                        <li>Entrance Arch</li>
-                        <li>Complete Table Set-Up with Centerpieces</li>
-                        <li>Buffet Table Set-Up</li>
-                        <li>Uniformed Waiters &amp; Servers</li>
-                        <li>Use of Photobooth for 2 hours</li>
-                        <li>Use of Basic Lights &amp; Sounds</li>
-                        <li>Clown or Party Host and Magician</li>
-                        <li>Magic &amp; Puppet Show</li>
-                        <li>Styro Name</li>
-                        <li>Welcome Board</li>
-                      </ul>
-                      <p><strong>Add-ons:</strong></p>
-                      <ul>
-                        <li>Upgraded Balloon Set-up</li>
-                        <li>Kiddie Meals</li>
-                        <li>Fondant &amp; Soft Icing Cake</li>
-                        <li>Food Carts</li>
-                        <li>Photo &amp; Video Coverage</li>
-                        <li>Face Painting &amp; Bubble Show</li>
-                        <li>Digital Invitations</li>
-                      </ul>
-                    </div>
-                </div>
+      <!-- Package 1 -->
+      <div class="package">
+        <div class="package-title">KIDDIE PARTY PACKAGES</div>
+        <div class="package-body">
+          <div class="package-row">
+            <div class="package-slider">
+              <button class="pkg-prev">❮</button>
+              <img class="pkg-image" src="{% static 'images/packages/christening1.jpg' %}" alt="Kiddie Party">
+              <button class="pkg-next">❯</button>
             </div>
+            <div class="package-info">
+              <p><strong>Includes:</strong></p>
+              <ul>
+                <li>Themed Backdrop</li>
+                <li>Basic Balloon Decorations</li>
+                <li>Entrance Arch</li>
+                <li>Complete Table Set-Up with Centerpieces</li>
+                <li>Buffet Table Set-Up</li>
+                <li>Uniformed Waiters &amp; Servers</li>
+                <li>Use of Photobooth for 2 hours</li>
+                <li>Use of Basic Lights &amp; Sounds</li>
+                <li>Clown or Party Host and Magician</li>
+                <li>Magic &amp; Puppet Show</li>
+                <li>Styro Name</li>
+                <li>Welcome Board</li>
+              </ul>
+              <p><strong>Add-ons:</strong></p>
+              <ul>
+                <li>Upgraded Balloon Set-up</li>
+                <li>Kiddie Meals</li>
+                <li>Fondant &amp; Soft Icing Cake</li>
+                <li>Food Carts</li>
+                <li>Photo &amp; Video Coverage</li>
+                <li>Face Painting &amp; Bubble Show</li>
+                <li>Digital Invitations</li>
+              </ul>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <!-- Package 2 -->
-        <div class="package">
-            <div class="package-title">BIRTHDAY PACKAGES</div>
-            <div class="package-body">
-                <div class="package-row">
-                    <div class="package-slider">
-                        <button class="pkg-prev">❮</button>
-                        <img class="pkg-image" src="{% static 'images/packages/packageb1.jpg' %}" alt="Birthday">
-                        <button class="pkg-next">❯</button>
-                    </div>
-                    <div class="package-info">
-                      <p><strong>Includes:</strong></p>
-                      <ul>
-                        <li>Backdrop Styling and Design</li>
-                        <li>Elegant Couch</li>
-                        <li>Entrance Arch</li>
-                        <li>Complete Table Set-Up with Centerpieces</li>
-                        <li>Buffet Table Set-Up</li>
-                        <li>Uniformed Waiters &amp; Servers</li>
-                        <li>Use of Photobooth for 2 hours</li>
-                        <li>Use of Basic Lights &amp; Sounds</li>
-                        <li>Events Host</li>
-                        <li>Styro Name</li>
-                        <li>Welcome Board</li>
-                      </ul>
-                      <p><strong>Add-ons:</strong></p>
-                      <ul>
-                        <li>Photo &amp; Video Coverage</li>
-                        <li>Events Coordinators</li>
-                        <li>Hair &amp; Make-Up Artist</li>
-                        <li>Use of LED Wall or Projector &amp; Screen</li>
-                        <li>Fondant &amp; Soft Icing Cakes</li>
-                        <li>Coffee, Juice &amp; Bread | Kakanin Station | Sushi Bar</li>
-                        <li>Grazing Table | Mobile Bar</li>
-                        <li>Digital Invitations</li>
-                      </ul>
-                    </div>
-                </div>
+      <!-- Package 2 -->
+      <div class="package">
+        <div class="package-title">BIRTHDAY PACKAGES</div>
+        <div class="package-body">
+          <div class="package-row">
+            <div class="package-slider">
+              <button class="pkg-prev">❮</button>
+              <img class="pkg-image" src="{% static 'images/packages/packageb1.jpg' %}" alt="Birthday">
+              <button class="pkg-next">❯</button>
             </div>
+            <div class="package-info">
+              <p><strong>Includes:</strong></p>
+              <ul>
+                <li>Backdrop Styling and Design</li>
+                <li>Elegant Couch</li>
+                <li>Entrance Arch</li>
+                <li>Complete Table Set-Up with Centerpieces</li>
+                <li>Buffet Table Set-Up</li>
+                <li>Uniformed Waiters &amp; Servers</li>
+                <li>Use of Photobooth for 2 hours</li>
+                <li>Use of Basic Lights &amp; Sounds</li>
+                <li>Events Host</li>
+                <li>Styro Name</li>
+                <li>Welcome Board</li>
+              </ul>
+              <p><strong>Add-ons:</strong></p>
+              <ul>
+                <li>Photo &amp; Video Coverage</li>
+                <li>Events Coordinators</li>
+                <li>Hair &amp; Make-Up Artist</li>
+                <li>Use of LED Wall or Projector &amp; Screen</li>
+                <li>Fondant &amp; Soft Icing Cakes</li>
+                <li>Coffee, Juice &amp; Bread | Kakanin Station | Sushi Bar</li>
+                <li>Grazing Table | Mobile Bar</li>
+                <li>Digital Invitations</li>
+              </ul>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <!-- Package 3 -->
-        <div class="package">
-            <div class="package-title">WEDDING PACKAGES</div>
-            <div class="package-body">
-                <div class="package-row">
-                    <div class="package-slider">
-                        <button class="pkg-prev">❮</button>
-                        <img class="pkg-image" src="{% static 'images/packages/packagec1.jpg' %}" alt="Wedding">
-                        <button class="pkg-next">❯</button>
-                    </div>
-                    <div class="package-info">
-                      <p><strong>Includes:</strong></p>
-                      <ul>
-                        <li>Backdrop Styling and Design</li>
-                        <li>Elegant Couch</li>
-                        <li>Entrance Arch</li>
-                        <li>Complete Table Set-Up with Centerpieces</li>
-                        <li>Buffet Table Set-Up</li>
-                        <li>VIP Table Set-Up</li>
-                        <li>Uniformed Waiters &amp; Servers</li>
-                        <li>Use of Photobooth for 2 hours</li>
-                        <li>Use of Basic Lights &amp; Sounds</li>
-                        <li>Events Host</li>
-                        <li>Styro Name</li>
-                        <li>Welcome Board</li>
-                      </ul>
-                      <p><strong>Add Ons:</strong></p>
-                        <ul>
-                          <li>Photo &amp; Video Coverage</li>
-                          <li>Wedding Coordinators</li>
-                          <li>Hair &amp; Make-Up Artist</li>
-                          <li>Wedding Florist</li>
-                          <li>Bridal Car</li>
-                          <li>LED Wall or Projector &amp; Screen</li>
-                          <li>Digital Invitations</li>
-                        </ul>
-                        <ul>
-                          <li>Coffee, Juice &amp; Bread</li>
-                          <li>Kakanin Station</li>
-                          <li>Sushi Bar</li>
-                          <li>Fondant &amp; Soft Icing Cakes</li>
-                          <li>Grazing Table</li>
-                          <li>Mobile Bar</li>
-                          <li>Wine &amp; Dove</li>
-                        </ul>
-                    </div>
-                </div>
+      <!-- Package 3 -->
+      <div class="package">
+        <div class="package-title">WEDDING PACKAGES</div>
+        <div class="package-body">
+          <div class="package-row">
+            <div class="package-slider">
+              <button class="pkg-prev">❮</button>
+              <img class="pkg-image" src="{% static 'images/packages/packagec1.jpg' %}" alt="Wedding">
+              <button class="pkg-next">❯</button>
             </div>
+            <div class="package-info">
+              <p><strong>Includes:</strong></p>
+              <ul>
+                <li>Backdrop Styling and Design</li>
+                <li>Elegant Couch</li>
+                <li>Entrance Arch</li>
+                <li>Complete Table Set-Up with Centerpieces</li>
+                <li>Buffet Table Set-Up</li>
+                <li>VIP Table Set-Up</li>
+                <li>Uniformed Waiters &amp; Servers</li>
+                <li>Use of Photobooth for 2 hours</li>
+                <li>Use of Basic Lights &amp; Sounds</li>
+                <li>Events Host</li>
+                <li>Styro Name</li>
+                <li>Welcome Board</li>
+              </ul>
+              <p><strong>Add Ons:</strong></p>
+              <ul>
+                <li>Photo &amp; Video Coverage</li>
+                <li>Wedding Coordinators</li>
+                <li>Hair &amp; Make-Up Artist</li>
+                <li>Wedding Florist</li>
+                <li>Bridal Car</li>
+                <li>LED Wall or Projector &amp; Screen</li>
+                <li>Digital Invitations</li>
+              </ul>
+              <ul>
+                <li>Coffee, Juice &amp; Bread</li>
+                <li>Kakanin Station</li>
+                <li>Sushi Bar</li>
+                <li>Fondant &amp; Soft Icing Cakes</li>
+                <li>Grazing Table</li>
+                <li>Mobile Bar</li>
+                <li>Wine &amp; Dove</li>
+              </ul>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <!-- Package 4 -->
-        <div class="package">
-            <div class="package-title">CHRISTENING PACKAGES</div>
-            <div class="package-body">
-                <div class="package-row">
-                    <div class="package-slider">
-                        <button class="pkg-prev">❮</button>
-                        <img class="pkg-image" src="{% static 'images/packages/packaged1.jpg' %}" alt="Christening">
-                        <button class="pkg-next">❯</button>
-                    </div>
-                    <div class="package-info">
-                      <p><strong>Includes:</strong></p>
-                      <ul>
-                        <li>Themed Backdrop</li>
-                        <li>Basic Balloon Decorations</li>
-                        <li>Entrance Arch</li>
-                        <li>Complete Table Set-Up with Centerpieces</li>
-                        <li>Buffet Table Set-Up</li>
-                        <li>Uniformed Waiters &amp; Servers</li>
-                        <li>Use of Photobooth for 2 hours</li>
-                        <li>Styro Name</li>
-                        <li>Welcome Board</li>
-                      </ul>
-                      <p><strong>Add ons:</strong></p>
-                      <ul>
-                        <li>Use of Basic Lights &amp; Sounds</li>
-                        <li>Events Host</li>
-                        <li>Photo &amp; Video Coverage</li>
-                        <li>Upgraded Balloon Set-up</li>
-                        <li>Fondant &amp; Soft Icing Cake</li>
-                        <li>Kiddie Meals</li>
-                        <li>Food Carts</li>
-                        <li>Digital Invitations</li>
-                      </ul>
-                    </div>
-                </div>
+      <!-- Package 4 -->
+      <div class="package">
+        <div class="package-title">CHRISTENING PACKAGES</div>
+        <div class="package-body">
+          <div class="package-row">
+            <div class="package-slider">
+              <button class="pkg-prev">❮</button>
+              <img class="pkg-image" src="{% static 'images/packages/packaged1.jpg' %}" alt="Christening">
+              <button class="pkg-next">❯</button>
             </div>
-        </div>
-        
-        <!-- Package 5 -->
-        <div class="package">
-            <div class="package-title">CUSTOM EVENT PACKAGES</div>
-            <div class="package-body">
-                <div class="package-row">
-                    <div class="package-slider">
-                        <button class="pkg-prev">❮</button>
-                        <img class="pkg-image" src="{% static 'images/packages/packaged1.jpg' %}" alt="Custom Event">
-                        <button class="pkg-next">❯</button>
-                    </div>
-                    <div class="package-info">
-                      <p><strong>Includes:</strong></p>
-                      <ul>
-                        <li>Basic/Backdrop Styling and Design</li>
-                        <li>Complete Table and Chairs Set-Up</li>
-                        <li>Complete Catering Equipment &amp; Utensils</li>
-                        <li>Buffet Table Set-Up</li>
-                        <li>Uniformed Waiters &amp; Servers</li>
-                      </ul>
-                      <p><strong>Add ons:</strong></p>
-                      <ul>
-                        <li>Styro Name</li>
-                        <li>Welcome Board</li>
-                        <li>Use of Basic Lights &amp; Sounds</li>
-                        <li>Use of Photobooth</li>
-                        <li>Events Host</li>
-                        <li>Clown or Party Host &amp; Magician</li>
-                        <li>Photo &amp; Video Coverage</li>
-                        <li>Events Coordinators</li>
-                        <li>Dessert Buffet</li>
-                        <li>Coffee, Juice &amp; Bread | Kakanin Station | Sushi Bar</li>
-                        <li>Grazing Table | Mobile Bar</li>
-                        <li>Food Carts</li>
-                        <li>Fondant &amp; Soft Icing Cakes</li>
-                      </ul>
-                    </div>
-                </div>
+            <div class="package-info">
+              <p><strong>Includes:</strong></p>
+              <ul>
+                <li>Themed Backdrop</li>
+                <li>Basic Balloon Decorations</li>
+                <li>Entrance Arch</li>
+                <li>Complete Table Set-Up with Centerpieces</li>
+                <li>Buffet Table Set-Up</li>
+                <li>Uniformed Waiters &amp; Servers</li>
+                <li>Use of Photobooth for 2 hours</li>
+                <li>Styro Name</li>
+                <li>Welcome Board</li>
+              </ul>
+              <p><strong>Add ons:</strong></p>
+              <ul>
+                <li>Use of Basic Lights &amp; Sounds</li>
+                <li>Events Host</li>
+                <li>Photo &amp; Video Coverage</li>
+                <li>Upgraded Balloon Set-up</li>
+                <li>Fondant &amp; Soft Icing Cake</li>
+                <li>Kiddie Meals</li>
+                <li>Food Carts</li>
+                <li>Digital Invitations</li>
+              </ul>
             </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Package 5 -->
+      <div class="package">
+        <div class="package-title">CUSTOM EVENT PACKAGES</div>
+        <div class="package-body">
+          <div class="package-row">
+            <div class="package-slider">
+              <button class="pkg-prev">❮</button>
+              <img class="pkg-image" src="{% static 'images/packages/packaged1.jpg' %}" alt="Custom Event">
+              <button class="pkg-next">❯</button>
+            </div>
+            <div class="package-info">
+              <p><strong>Includes:</strong></p>
+              <ul>
+                <li>Basic/Backdrop Styling and Design</li>
+                <li>Complete Table and Chairs Set-Up</li>
+                <li>Complete Catering Equipment &amp; Utensils</li>
+                <li>Buffet Table Set-Up</li>
+                <li>Uniformed Waiters &amp; Servers</li>
+              </ul>
+              <p><strong>Add ons:</strong></p>
+              <ul>
+                <li>Styro Name</li>
+                <li>Welcome Board</li>
+                <li>Use of Basic Lights &amp; Sounds</li>
+                <li>Use of Photobooth</li>
+                <li>Events Host</li>
+                <li>Clown or Party Host &amp; Magician</li>
+                <li>Photo &amp; Video Coverage</li>
+                <li>Events Coordinators</li>
+                <li>Dessert Buffet</li>
+                <li>Coffee, Juice &amp; Bread | Kakanin Station | Sushi Bar</li>
+                <li>Grazing Table | Mobile Bar</li>
+                <li>Food Carts</li>
+                <li>Fondant &amp; Soft Icing Cakes</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-</section>
+  </section>
 
-<!-- DESIGN -->
-<section id="design">
+  <!-- DESIGN -->
+  <section id="design">
     <h1>EXPLORE OUR VARIOUS THEMES AND DESIGN</h1>
-    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa.</p>
-
+    <p>We bring your vision to life with creative themes and personalized event designs that reflect your style. From
+      elegant to playful, every detail is crafted to create a cohesive and memorable atmosphere.</p>
     <div class="themes-grid">
-        <div class="theme" style="background-image: url('{% static 'images/birthday/floral.jpg' %}');">THEMED BACKDROP</div>
-        <div class="theme" style="background-image: url('{% static 'images/christening/bears.jpg' %}');">MINIMALIST SETUP</div>
-        <div class="theme" style="background-image: url('{% static 'images/kiddie party/cars.jpg' %}');">SIGNATURE SETUP</div>
+      <a class="theme" href="{% url 'moredesign' %}?category=themed_backdrop"
+        style="background-image: url('{% static 'images/upgraded balloon set-up/R1A.jpg' %}');">THEMED BACKDROP</a>
+      <a class="theme" href="{% url 'moredesign' %}?category=minimalist_setup"
+        style="background-image: url('{% static 'images/minimalist set-up/R1A.jpg' %}');">MINIMALIST SETUP</a>
+      <a class="theme" href="{% url 'moredesign' %}?category=signature_setup"
+        style="background-image: url('{% static 'images/signature set-up/R1A.jpg' %}');">SIGNATURE SETUP</a>
     </div>
     <a href="{% url 'moredesign' %}" class="more-design">
-            <h3>MORE DESIGN</h3>
+      <h3>MORE DESIGN</h3>
     </a>
-</section>
+  </section>
 
-<!-- CALENDAR -->
-<section  id="calendar">
+  <!-- CALENDAR -->
+  <section id="calendar">
     <div class="calendar-title">CALENDAR</div>
     <div class="calendar-content">
       <div class="calendar-left">
@@ -366,304 +378,306 @@
       </div>
       <div class="calendar-right">
         <h1>BOOK WITH US!</h1>
-        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
-        <a href="#" class="book-calendar">
+        <p>Ready to plan your next event? Book with us today and let our team turn your ideas into an unforgettable
+          celebration.</p> <a href="#" class="book-calendar">
           <img src="{% static 'images/calendar.png' %}" alt="Book Here">
           <h3>BOOK HERE</h3>
         </a>
       </div>
     </div>
-</section>
+  </section>
 
-<!-- REVIEWS -->
-<section id="reviews">
-  <div class="reviews-content">
-    <!-- LEFT SIDE -->
-    <div class="reviews-left">
-      <h2 class="ritalic">Hear from our</h2>
-      <h2 class="rbold">clients</h2>
-      <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</p>
-      <div class="reviews-nav">
-        <button class="rprev">❮</button>
-        <div class="rdots">
-          <span class="rdot active"></span>
-          <span class="rdot"></span>
-          <span class="rdot"></span>
-        </div>
-        <button class="rnext">❯</button>
-      </div>
-    </div>
-
-    <!-- RIGHT SIDE -->
-    <div class="reviews-right">
-      <div class="review-slider">
-        <div class="review-track">
-          <!-- Review 1 -->
-          <div class="review">
-            <div class="review-header">
-              <img src="{% static 'images/quotation.png' %}" alt="Quote Icon" class="quote-icon">
-              <div class="star-rating" data-rating="5"></div>
-            </div>
-            <p class="review-text">
-              From start to finish, Nike’s Catering Services exceeded our expectations!
-              The food was absolutely delicious — fresh, flavorful, and beautifully presented.
-            </p>
-            <div class="review-user">
-              <img src="{% static 'images/user.png' %}" alt="User Photo" class="user-photo">
-              <div class="review-details">
-                <h3>Sophia Parker</h3>
-                <p>April 23, 2025</p>
-              </div>
-            </div>
+  <!-- REVIEWS -->
+  <section id="reviews">
+    <div class="reviews-content">
+      <!-- LEFT SIDE -->
+      <div class="reviews-left">
+        <h2 class="ritalic">Hear from our</h2>
+        <h2 class="rbold">clients</h2>
+        <p>Real stories from satisfied clients who trusted us to make their events unforgettable.</p>
+        <div class="reviews-nav">
+          <button class="rprev">❮</button>
+          <div class="rdots">
+            <span class="rdot active"></span>
+            <span class="rdot"></span>
+            <span class="rdot"></span>
           </div>
-
-          <!-- Review 2 -->
-          <div class="review">
-            <div class="review-header">
-              <img src="{% static 'images/quotation.png' %}" alt="Quote Icon" class="quote-icon">
-              <div class="star-rating" data-rating="4"></div>
-            </div>
-            <p class="review-text">
-              We loved the event styling! Nike’s Catering nailed the theme perfectly and everyone was impressed.
-            </p>
-            <div class="review-user">
-              <img src="{% static 'images/user.png' %}" alt="User Photo" class="user-photo">
-              <div class="review-details">
-                <h3>Jason Tan</h3>
-                <p>May 2, 2025</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Review 3 -->
-          <div class="review">
-            <div class="review-header">
-              <img src="{% static 'images/quotation.png' %}" alt="Quote Icon" class="quote-icon">
-              <div class="star-rating" data-rating="5"></div>
-            </div>
-            <p class="review-text">
-              Professional service, courteous staff, and mouthwatering dishes. Highly recommend!
-            </p>
-            <div class="review-user">
-              <img src="{% static 'images/user.png' %}" alt="User Photo" class="user-photo">
-              <div class="review-details">
-                <h3>Angela Cruz</h3>
-                <p>May 5, 2025</p>
-              </div>
-            </div>
-          </div>
+          <button class="rnext">❯</button>
         </div>
       </div>
+
+      <!-- RIGHT SIDE -->
+      <div class="reviews-right">
+        <div class="review-slider">
+          <div class="review-track">
+            <!-- Review 1 -->
+            <div class="review">
+              <div class="review-header">
+                <img src="{% static 'images/quotation.png' %}" alt="Quote Icon" class="quote-icon">
+                <div class="star-rating" data-rating="5"></div>
+              </div>
+              <p class="review-text">
+                From start to finish, Nike’s Catering Services exceeded our expectations!
+                The food was absolutely delicious — fresh, flavorful, and beautifully presented.
+              </p>
+              <div class="review-user">
+                <img src="{% static 'images/user.png' %}" alt="User Photo" class="user-photo">
+                <div class="review-details">
+                  <h3>Sophia Parker</h3>
+                  <p>April 23, 2025</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Review 2 -->
+            <div class="review">
+              <div class="review-header">
+                <img src="{% static 'images/quotation.png' %}" alt="Quote Icon" class="quote-icon">
+                <div class="star-rating" data-rating="4"></div>
+              </div>
+              <p class="review-text">
+                We loved the event styling! Nike’s Catering nailed the theme perfectly and everyone was impressed.
+              </p>
+              <div class="review-user">
+                <img src="{% static 'images/user.png' %}" alt="User Photo" class="user-photo">
+                <div class="review-details">
+                  <h3>Jason Tan</h3>
+                  <p>May 2, 2025</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Review 3 -->
+            <div class="review">
+              <div class="review-header">
+                <img src="{% static 'images/quotation.png' %}" alt="Quote Icon" class="quote-icon">
+                <div class="star-rating" data-rating="5"></div>
+              </div>
+              <p class="review-text">
+                Professional service, courteous staff, and mouthwatering dishes. Highly recommend!
+              </p>
+              <div class="review-user">
+                <img src="{% static 'images/user.png' %}" alt="User Photo" class="user-photo">
+                <div class="review-details">
+                  <h3>Angela Cruz</h3>
+                  <p>May 5, 2025</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ABOUT US -->
+  <section id="about-us">
+    <div class="about-header">
+      <h1>ABOUT US</h1>
+      <h2><em>Nike’s Catering Services</em></h2>
     </div>
 
-  </div>
-</section>
-
-<!-- ABOUT US -->
-<section id="about-us">
-  <div class="about-header">
-    <h1>ABOUT US</h1>
-    <h2><em>Nike’s Catering Services</em></h2>
-  </div>
-
-  <div class="about-content">
-    <div class="about-logo">
-      <img src="{% static 'images/CLogo-text.jpg' %}" alt="Company Logo">
+    <div class="about-content">
+      <div class="about-logo">
+        <img src="{% static 'images/CLogo-text.jpg' %}" alt="Company Logo">
+      </div>
+      <div class="about-text">
+        <p>
+          Nike's Catering Services began in 2014 as a party needs supplier, and has since expanded to provide
+          all-inclusive packages for various occasions.
+        </p>
+        <p>
+          As a commitment to bringing a tasteful yet affordable experience, Nike's Catering Services has become one of
+          the top choice for catering and event suppliers in Bulacan and nearby cities.
+        </p>
+      </div>
     </div>
-    <div class="about-text">
-      <p>
-        Nike's Catering Services began in 2014 as a party needs supplier, and has since expanded to provide all-inclusive packages for various occasions.
-      </p>
-      <p>
-        As a commitment to bringing a tasteful yet affordable experience, Nike's Catering Services has become one of the top choice for catering and event suppliers in Bulacan and nearby cities.
-      </p>
-    </div>
-  </div>
-</section>
+  </section>
 
 
 
-<!-- CONTACT US -->
- <section id="contact-us">
+  <!-- CONTACT US -->
+  <section id="contact-us">
     <div class="contact-left">
-        <div class="company">
-            <img src="{% static 'images/CLogo-iNotext.png' %}" alt="Company Logo" class="clogo">
-            <div class="left-text">
-              <h1>Nike's</h1>
-              <h2>Catering Services</h2>    
-              <p>Celebrate with Nikes!</p>
-            </div>
+      <div class="company">
+        <img src="{% static 'images/CLogo-iNotext.png' %}" alt="Company Logo" class="clogo">
+        <div class="left-text">
+          <h1>Nike's</h1>
+          <h2>Catering Services</h2>
+          <p>Celebrate with Nikes!</p>
         </div>
+      </div>
 
 
     </div>
 
     <div class="contact-right">
-        <h1>CONTACT US</h1>
+      <h1>CONTACT US</h1>
 
-        <h2><i class="fa-solid fa-envelope"></i>
-            <a href="mailto:nikescateringofficial@gmail.com">nikescateringofficial@gmail.com</a>
-        </h2>
+      <h2><i class="fa-solid fa-envelope"></i>
+        <a href="mailto:nikescateringofficial@gmail.com">nikescateringofficial@gmail.com</a>
+      </h2>
 
-        <h2><i class="fa-brands fa-facebook"></i>
-            <a href="https://www.facebook.com/nikescateringservicesofficial">Nike's Catering Services</a>
-        </h2>
-        
-        <h2><i class="fa-solid fa-mobile-screen-button"></i>
-            <a href="tel:+639662003092">+63 966 200 3092</a>
-            <a href="tel:+639283452913">+63 928 345 2913</a>
-        </h2>
-        
-        
+      <h2><i class="fa-brands fa-facebook"></i>
+        <a href="https://www.facebook.com/nikescateringservicesofficial">Nike's Catering Services</a>
+      </h2>
+
+      <h2><i class="fa-solid fa-mobile-screen-button"></i>
+        <a href="tel:+639662003092">+63 966 200 3092</a>
+        <a href="tel:+639283452913">+63 928 345 2913</a>
+      </h2>
+
+
     </div>
- </section>
+  </section>
 
-<!-- FUNCTIONS -->
+  <!-- FUNCTIONS -->
 
-<!-- AI CHATBOT PRESENCE -->
- <script>
-  const chatBtn = document.getElementById('chat-ai-btn');
-  if (window.location.pathname.includes('login') || window.location.pathname.includes('register')) {
+  <!-- AI CHATBOT PRESENCE -->
+  <script>
+    const chatBtn = document.getElementById('chat-ai-btn');
+    if (window.location.pathname.includes('login') || window.location.pathname.includes('register')) {
       if (chatBtn) chatBtn.style.display = 'none';
-  }
-</script>
-
-<!-- SLIDER ON MENU -->
- <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const track = document.querySelector('.carousel-track');
-            const slides = Array.from(track.children);
-            const next = document.querySelector('.next');
-            const prev = document.querySelector('.prev');
-            const dots = document.querySelectorAll('.dot');
-            const cardWidth = slides[0].offsetWidth + 20;
-            let index = 0;
-
-            function updateCarousel() {
-                track.style.transform = `translateX(-${index * cardWidth}px)`;
-                dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
-            }
-
-            next.addEventListener('click', () => {
-                index = (index + 1) % slides.length;
-                updateCarousel();
-            });
-
-            prev.addEventListener('click', () => {
-                index = (index - 1 + slides.length) % slides.length;
-                updateCarousel();
-            });
-
-            dots.forEach((dot, i) => {
-                dot.addEventListener('click', () => {
-                    index = i;
-                    updateCarousel();
-                });
-            });
-
-            updateCarousel();
-        });
-    </script>
-
-<!-- FOR PACKAGES -->
- <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const packageImages = [
-    [
-      "{% static 'images/packages/kiddie party/50pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/70pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/80pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/100pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/120pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/130pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/150pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/160pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/170pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/180pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/200pax.jpg' %}",
-    ],
-    [
-      "{% static 'images/packages/birthday/50pax.jpg' %}",
-      "{% static 'images/packages/birthday/70pax.jpg' %}",
-      "{% static 'images/packages/birthday/80pax.jpg' %}",
-      "{% static 'images/packages/birthday/100pax.jpg' %}",
-      "{% static 'images/packages/birthday/120pax.jpg' %}",
-      "{% static 'images/packages/birthday/130pax.jpg' %}",
-      "{% static 'images/packages/birthday/150pax.jpg' %}",
-      "{% static 'images/packages/birthday/160pax.jpg' %}",
-      "{% static 'images/packages/birthday/170pax.jpg' %}",
-      "{% static 'images/packages/birthday/180pax.jpg' %}",
-      "{% static 'images/packages/birthday/200pax.jpg' %}",
-    ],
-    [
-      "{% static 'images/packages/wedding/50pax.jpg' %}",
-      "{% static 'images/packages/wedding/60pax.jpg' %}",
-      "{% static 'images/packages/wedding/70pax.jpg' %}",
-      "{% static 'images/packages/wedding/80pax.jpg' %}",
-      "{% static 'images/packages/wedding/100pax.jpg' %}",
-      "{% static 'images/packages/wedding/120pax.jpg' %}",
-      "{% static 'images/packages/wedding/130pax.jpg' %}",
-      "{% static 'images/packages/wedding/150pax.jpg' %}",
-      "{% static 'images/packages/wedding/160pax.jpg' %}",
-      "{% static 'images/packages/wedding/170pax.jpg' %}",
-      "{% static 'images/packages/wedding/180pax.jpg' %}",
-      "{% static 'images/packages/wedding/200pax.jpg' %}",
-      "{% static 'images/packages/wedding/250pax.jpg' %}",
-    ],
-    [
-      "{% static 'images/packages/christening/50pax.jpg' %}",
-      "{% static 'images/packages/christening/70pax.jpg' %}",
-      "{% static 'images/packages/christening/80pax.jpg' %}",
-      "{% static 'images/packages/christening/100pax.jpg' %}",
-      "{% static 'images/packages/christening/120pax.jpg' %}",
-      "{% static 'images/packages/christening/150pax.jpg' %}",
-      "{% static 'images/packages/christening/200pax.jpg' %}",
-    ],
-    [
-      "{% static 'images/packages/others/below100.jpg' %}",
-      "{% static 'images/packages/others/above100.jpg' %}",
-    ]
-  ];
-
-  document.querySelectorAll('.package').forEach(function(pkg, pkgIdx) {
-    const title = pkg.querySelector('.package-title');
-    const body = pkg.querySelector('.package-body');
-    const slider = pkg.querySelector('.package-slider');
-    const img = pkg.querySelector('.pkg-image');
-    const prev = pkg.querySelector('.pkg-prev');
-    const next = pkg.querySelector('.pkg-next');
-    let imgIdx = 0;
-
-    // Accordion toggle
-    title.addEventListener('click', function() {
-      document.querySelectorAll('.package-body').forEach(b => {
-        if (b !== body) b.classList.remove('open');
-      });
-      body.classList.toggle('open');
-    });
-
-    // Only run slider logic if slider exists
-    if (slider && img && prev && next) {
-      function updateImg() {
-        img.src = packageImages[pkgIdx][imgIdx];
-      }
-      prev.addEventListener('click', function(e) {
-        e.stopPropagation();
-        imgIdx = (imgIdx - 1 + packageImages[pkgIdx].length) % packageImages[pkgIdx].length;
-        updateImg();
-      });
-      next.addEventListener('click', function(e) {
-        e.stopPropagation();
-        imgIdx = (imgIdx + 1) % packageImages[pkgIdx].length;
-        updateImg();
-      });
-      updateImg();
     }
-  });
-});
-</script>
+  </script>
 
-<!-- For images in packages -->
+  <!-- SLIDER ON MENU -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const track = document.querySelector('.carousel-track');
+      const slides = Array.from(track.children);
+      const next = document.querySelector('.next');
+      const prev = document.querySelector('.prev');
+      const dots = document.querySelectorAll('.dot');
+      const cardWidth = slides[0].offsetWidth + 20;
+      let index = 0;
+
+      function updateCarousel() {
+        track.style.transform = `translateX(-${index * cardWidth}px)`;
+        dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+      }
+
+      next.addEventListener('click', () => {
+        index = (index + 1) % slides.length;
+        updateCarousel();
+      });
+
+      prev.addEventListener('click', () => {
+        index = (index - 1 + slides.length) % slides.length;
+        updateCarousel();
+      });
+
+      dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => {
+          index = i;
+          updateCarousel();
+        });
+      });
+
+      updateCarousel();
+    });
+  </script>
+
+  <!-- FOR PACKAGES -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const packageImages = [
+        [
+          "{% static 'images/packages/kiddie party/50pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/70pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/80pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/100pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/120pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/130pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/150pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/160pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/170pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/180pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/200pax.jpg' %}",
+        ],
+        [
+          "{% static 'images/packages/birthday/50pax.jpg' %}",
+          "{% static 'images/packages/birthday/70pax.jpg' %}",
+          "{% static 'images/packages/birthday/80pax.jpg' %}",
+          "{% static 'images/packages/birthday/100pax.jpg' %}",
+          "{% static 'images/packages/birthday/120pax.jpg' %}",
+          "{% static 'images/packages/birthday/130pax.jpg' %}",
+          "{% static 'images/packages/birthday/150pax.jpg' %}",
+          "{% static 'images/packages/birthday/160pax.jpg' %}",
+          "{% static 'images/packages/birthday/170pax.jpg' %}",
+          "{% static 'images/packages/birthday/180pax.jpg' %}",
+          "{% static 'images/packages/birthday/200pax.jpg' %}",
+        ],
+        [
+          "{% static 'images/packages/wedding/50pax.jpg' %}",
+          "{% static 'images/packages/wedding/60pax.jpg' %}",
+          "{% static 'images/packages/wedding/70pax.jpg' %}",
+          "{% static 'images/packages/wedding/80pax.jpg' %}",
+          "{% static 'images/packages/wedding/100pax.jpg' %}",
+          "{% static 'images/packages/wedding/120pax.jpg' %}",
+          "{% static 'images/packages/wedding/130pax.jpg' %}",
+          "{% static 'images/packages/wedding/150pax.jpg' %}",
+          "{% static 'images/packages/wedding/160pax.jpg' %}",
+          "{% static 'images/packages/wedding/170pax.jpg' %}",
+          "{% static 'images/packages/wedding/180pax.jpg' %}",
+          "{% static 'images/packages/wedding/200pax.jpg' %}",
+          "{% static 'images/packages/wedding/250pax.jpg' %}",
+        ],
+        [
+          "{% static 'images/packages/christening/50pax.jpg' %}",
+          "{% static 'images/packages/christening/70pax.jpg' %}",
+          "{% static 'images/packages/christening/80pax.jpg' %}",
+          "{% static 'images/packages/christening/100pax.jpg' %}",
+          "{% static 'images/packages/christening/120pax.jpg' %}",
+          "{% static 'images/packages/christening/150pax.jpg' %}",
+          "{% static 'images/packages/christening/200pax.jpg' %}",
+        ],
+        [
+          "{% static 'images/packages/others/below100.jpg' %}",
+          "{% static 'images/packages/others/above100.jpg' %}",
+        ]
+      ];
+
+      document.querySelectorAll('.package').forEach(function (pkg, pkgIdx) {
+        const title = pkg.querySelector('.package-title');
+        const body = pkg.querySelector('.package-body');
+        const slider = pkg.querySelector('.package-slider');
+        const img = pkg.querySelector('.pkg-image');
+        const prev = pkg.querySelector('.pkg-prev');
+        const next = pkg.querySelector('.pkg-next');
+        let imgIdx = 0;
+
+        // Accordion toggle
+        title.addEventListener('click', function () {
+          document.querySelectorAll('.package-body').forEach(b => {
+            if (b !== body) b.classList.remove('open');
+          });
+          body.classList.toggle('open');
+        });
+
+        // Only run slider logic if slider exists
+        if (slider && img && prev && next) {
+          function updateImg() {
+            img.src = packageImages[pkgIdx][imgIdx];
+          }
+          prev.addEventListener('click', function (e) {
+            e.stopPropagation();
+            imgIdx = (imgIdx - 1 + packageImages[pkgIdx].length) % packageImages[pkgIdx].length;
+            updateImg();
+          });
+          next.addEventListener('click', function (e) {
+            e.stopPropagation();
+            imgIdx = (imgIdx + 1) % packageImages[pkgIdx].length;
+            updateImg();
+          });
+          updateImg();
+        }
+      });
+    });
+  </script>
+
+  <!-- For images in packages -->
   <div id="image-modal" class="image-modal">
     <button class="modal-prev">❮</button>
     <img class="modal-content" id="modal-img" src="" alt="Full Size">
@@ -671,210 +685,211 @@ document.addEventListener('DOMContentLoaded', function() {
     <span class="close-modal">&times;</span>
   </div>
 
-<script>
-// filepath: main/templates/main.html
-document.addEventListener('DOMContentLoaded', function() {
-  // Use the same packageImages array as your slider
-  const packageImages = [
-    [
-      "{% static 'images/packages/kiddie party/50pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/70pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/80pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/100pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/120pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/130pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/150pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/160pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/170pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/180pax.jpg' %}",
-      "{% static 'images/packages/kiddie party/200pax.jpg' %}",
-    ],
-    [
-      "{% static 'images/packages/birthday/50pax.jpg' %}",
-      "{% static 'images/packages/birthday/70pax.jpg' %}",
-      "{% static 'images/packages/birthday/80pax.jpg' %}",
-      "{% static 'images/packages/birthday/100pax.jpg' %}",
-      "{% static 'images/packages/birthday/120pax.jpg' %}",
-      "{% static 'images/packages/birthday/130pax.jpg' %}",
-      "{% static 'images/packages/birthday/150pax.jpg' %}",
-      "{% static 'images/packages/birthday/160pax.jpg' %}",
-      "{% static 'images/packages/birthday/170pax.jpg' %}",
-      "{% static 'images/packages/birthday/180pax.jpg' %}",
-      "{% static 'images/packages/birthday/200pax.jpg' %}",
-    ],
-    [
-      "{% static 'images/packages/wedding/50pax.jpg' %}",
-      "{% static 'images/packages/wedding/60pax.jpg' %}",
-      "{% static 'images/packages/wedding/70pax.jpg' %}",
-      "{% static 'images/packages/wedding/80pax.jpg' %}",
-      "{% static 'images/packages/wedding/100pax.jpg' %}",
-      "{% static 'images/packages/wedding/120pax.jpg' %}",
-      "{% static 'images/packages/wedding/130pax.jpg' %}",
-      "{% static 'images/packages/wedding/150pax.jpg' %}",
-      "{% static 'images/packages/wedding/160pax.jpg' %}",
-      "{% static 'images/packages/wedding/170pax.jpg' %}",
-      "{% static 'images/packages/wedding/180pax.jpg' %}",
-      "{% static 'images/packages/wedding/200pax.jpg' %}",
-      "{% static 'images/packages/wedding/250pax.jpg' %}",
-    ],
-    [
-      "{% static 'images/packages/christening/50pax.jpg' %}",
-      "{% static 'images/packages/christening/70pax.jpg' %}",
-      "{% static 'images/packages/christening/80pax.jpg' %}",
-      "{% static 'images/packages/christening/100pax.jpg' %}",
-      "{% static 'images/packages/christening/120pax.jpg' %}",
-      "{% static 'images/packages/christening/150pax.jpg' %}",
-      "{% static 'images/packages/christening/200pax.jpg' %}",
-    ],
-    [
-      "{% static 'images/packages/others/below100.jpg' %}",
-      "{% static 'images/packages/others/above100.jpg' %}",
-    ]
-  ];
+  <script>
+    // filepath: main/templates/main.html
+    document.addEventListener('DOMContentLoaded', function () {
+      // Use the same packageImages array as your slider
+      const packageImages = [
+        [
+          "{% static 'images/packages/kiddie party/50pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/70pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/80pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/100pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/120pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/130pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/150pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/160pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/170pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/180pax.jpg' %}",
+          "{% static 'images/packages/kiddie party/200pax.jpg' %}",
+        ],
+        [
+          "{% static 'images/packages/birthday/50pax.jpg' %}",
+          "{% static 'images/packages/birthday/70pax.jpg' %}",
+          "{% static 'images/packages/birthday/80pax.jpg' %}",
+          "{% static 'images/packages/birthday/100pax.jpg' %}",
+          "{% static 'images/packages/birthday/120pax.jpg' %}",
+          "{% static 'images/packages/birthday/130pax.jpg' %}",
+          "{% static 'images/packages/birthday/150pax.jpg' %}",
+          "{% static 'images/packages/birthday/160pax.jpg' %}",
+          "{% static 'images/packages/birthday/170pax.jpg' %}",
+          "{% static 'images/packages/birthday/180pax.jpg' %}",
+          "{% static 'images/packages/birthday/200pax.jpg' %}",
+        ],
+        [
+          "{% static 'images/packages/wedding/50pax.jpg' %}",
+          "{% static 'images/packages/wedding/60pax.jpg' %}",
+          "{% static 'images/packages/wedding/70pax.jpg' %}",
+          "{% static 'images/packages/wedding/80pax.jpg' %}",
+          "{% static 'images/packages/wedding/100pax.jpg' %}",
+          "{% static 'images/packages/wedding/120pax.jpg' %}",
+          "{% static 'images/packages/wedding/130pax.jpg' %}",
+          "{% static 'images/packages/wedding/150pax.jpg' %}",
+          "{% static 'images/packages/wedding/160pax.jpg' %}",
+          "{% static 'images/packages/wedding/170pax.jpg' %}",
+          "{% static 'images/packages/wedding/180pax.jpg' %}",
+          "{% static 'images/packages/wedding/200pax.jpg' %}",
+          "{% static 'images/packages/wedding/250pax.jpg' %}",
+        ],
+        [
+          "{% static 'images/packages/christening/50pax.jpg' %}",
+          "{% static 'images/packages/christening/70pax.jpg' %}",
+          "{% static 'images/packages/christening/80pax.jpg' %}",
+          "{% static 'images/packages/christening/100pax.jpg' %}",
+          "{% static 'images/packages/christening/120pax.jpg' %}",
+          "{% static 'images/packages/christening/150pax.jpg' %}",
+          "{% static 'images/packages/christening/200pax.jpg' %}",
+        ],
+        [
+          "{% static 'images/packages/others/below100.jpg' %}",
+          "{% static 'images/packages/others/above100.jpg' %}",
+        ]
+      ];
 
-  const modal = document.getElementById('image-modal');
-  const modalImg = document.getElementById('modal-img');
-  const closeBtn = document.querySelector('.close-modal');
-  const prevBtn = document.querySelector('.modal-prev');
-  const nextBtn = document.querySelector('.modal-next');
+      const modal = document.getElementById('image-modal');
+      const modalImg = document.getElementById('modal-img');
+      const closeBtn = document.querySelector('.close-modal');
+      const prevBtn = document.querySelector('.modal-prev');
+      const nextBtn = document.querySelector('.modal-next');
 
-  // Track which package and image is open
-  let currentPackage = 0;
-  let currentImgIdx = 0;
+      // Track which package and image is open
+      let currentPackage = 0;
+      let currentImgIdx = 0;
 
-  // Find all .pkg-image and set up click
-  document.querySelectorAll('.package').forEach(function(pkg, pkgIdx) {
-    const imgs = pkg.querySelectorAll('.pkg-image');
-    imgs.forEach(function(img) {
-      img.addEventListener('click', function(e) {
-        // Find the current image index in the packageImages array
-        currentPackage = pkgIdx;
-        // Find the current image index by matching src
-        currentImgIdx = 0;
-        const src = img.src;
-        packageImages[pkgIdx].forEach((url, idx) => {
-          // Django static URLs may be absolute or relative, so use includes
-          if (src.includes(url.replace("{% static '", "").replace("' %}", ""))) {
-            currentImgIdx = idx;
-          }
+      // Find all .pkg-image and set up click
+      document.querySelectorAll('.package').forEach(function (pkg, pkgIdx) {
+        const imgs = pkg.querySelectorAll('.pkg-image');
+        imgs.forEach(function (img) {
+          img.addEventListener('click', function (e) {
+            // Find the current image index in the packageImages array
+            currentPackage = pkgIdx;
+            // Find the current image index by matching src
+            currentImgIdx = 0;
+            const src = img.src;
+            packageImages[pkgIdx].forEach((url, idx) => {
+              // Django static URLs may be absolute or relative, so use includes
+              if (src.includes(url.replace("{% static '", "").replace("' %}", ""))) {
+                currentImgIdx = idx;
+              }
+            });
+            showModalImage();
+            modal.classList.add('open');
+          });
         });
+      });
+
+      function showModalImage() {
+        modalImg.src = packageImages[currentPackage][currentImgIdx];
+      }
+
+      prevBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        currentImgIdx = (currentImgIdx - 1 + packageImages[currentPackage].length) % packageImages[currentPackage].length;
         showModalImage();
-        modal.classList.add('open');
+      });
+
+      nextBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        currentImgIdx = (currentImgIdx + 1) % packageImages[currentPackage].length;
+        showModalImage();
+      });
+
+      closeBtn.addEventListener('click', function () {
+        modal.classList.remove('open');
+        modalImg.src = '';
+      });
+
+      // Close modal on background click
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+          modal.classList.remove('open');
+          modalImg.src = '';
+        }
+      });
+
+      // Optional: Close modal on ESC key
+      document.addEventListener('keydown', function (e) {
+        if (e.key === "Escape") {
+          modal.classList.remove('open');
+          modalImg.src = '';
+        }
       });
     });
-  });
-
-  function showModalImage() {
-    modalImg.src = packageImages[currentPackage][currentImgIdx];
-  }
-
-  prevBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    currentImgIdx = (currentImgIdx - 1 + packageImages[currentPackage].length) % packageImages[currentPackage].length;
-    showModalImage();
-  });
-
-  nextBtn.addEventListener('click', function(e) {
-    e.stopPropagation();
-    currentImgIdx = (currentImgIdx + 1) % packageImages[currentPackage].length;
-    showModalImage();
-  });
-
-  closeBtn.addEventListener('click', function() {
-    modal.classList.remove('open');
-    modalImg.src = '';
-  });
-
-  // Close modal on background click
-  modal.addEventListener('click', function(e) {
-    if (e.target === modal) {
-      modal.classList.remove('open');
-      modalImg.src = '';
-    }
-  });
-
-  // Optional: Close modal on ESC key
-  document.addEventListener('keydown', function(e) {
-    if (e.key === "Escape") {
-      modal.classList.remove('open');
-      modalImg.src = '';
-    }
-  });
-});
-</script>
+  </script>
 
 
 
-<!-- STARS ON REVIEWS -->
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.star-rating').forEach(container => {
-      const rating = parseInt(container.getAttribute('data-rating'));
-      container.innerHTML = '';
-      for (let i = 1; i <= 5; i++) {
-        const star = document.createElement('span');
-        star.textContent = i <= rating ? '★' : '☆';
-        container.appendChild(star);
+  <!-- STARS ON REVIEWS -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.star-rating').forEach(container => {
+        const rating = parseInt(container.getAttribute('data-rating'));
+        container.innerHTML = '';
+        for (let i = 1; i <= 5; i++) {
+          const star = document.createElement('span');
+          star.textContent = i <= rating ? '★' : '☆';
+          container.appendChild(star);
+        }
+      });
+    });
+  </script>
+
+
+  <!-- SLIDER FOR REVIEWS -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const track = document.querySelector('.review-track');
+      const reviews = document.querySelectorAll('.review');
+      const dots = document.querySelectorAll('.rdot');
+      const prev = document.querySelector('.rprev');
+      const next = document.querySelector('.rnext');
+      let index = 0;
+
+      function updateSlider() {
+        // Use getBoundingClientRect for accurate width
+        const width = reviews[0].getBoundingClientRect().width;
+        track.style.transform = `translateX(-${index * width}px)`;
+        dots.forEach((dot, i) => {
+          dot.classList.toggle('active', i === index);
+        });
       }
-    });
-  });
-</script>
 
+      next.addEventListener('click', () => {
+        index = (index + 1) % reviews.length;
+        updateSlider();
+      });
 
-<!-- SLIDER FOR REVIEWS -->
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const track = document.querySelector('.review-track');
-  const reviews = document.querySelectorAll('.review');
-  const dots = document.querySelectorAll('.rdot');
-  const prev = document.querySelector('.rprev');
-  const next = document.querySelector('.rnext');
-  let index = 0;
+      prev.addEventListener('click', () => {
+        index = (index - 1 + reviews.length) % reviews.length;
+        updateSlider();
+      });
 
-  function updateSlider() {
-    // Use getBoundingClientRect for accurate width
-    const width = reviews[0].getBoundingClientRect().width;
-    track.style.transform = `translateX(-${index * width}px)`;
-    dots.forEach((dot, i) => {
-      dot.classList.toggle('active', i === index);
-    });
-  }
+      dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => {
+          index = i;
+          updateSlider();
+        });
+      });
 
-  next.addEventListener('click', () => {
-    index = (index + 1) % reviews.length;
-    updateSlider();
-  });
+      // Initialize stars
+      document.querySelectorAll('.star-rating').forEach(container => {
+        const rating = parseInt(container.getAttribute('data-rating'));
+        container.innerHTML = '';
+        for (let i = 1; i <= 5; i++) {
+          const star = document.createElement('span');
+          star.textContent = i <= rating ? '★' : '☆';
+          container.appendChild(star);
+        }
+      });
 
-  prev.addEventListener('click', () => {
-    index = (index - 1 + reviews.length) % reviews.length;
-    updateSlider();
-  });
+      // Recalculate on window resize
+      window.addEventListener('resize', updateSlider);
 
-  dots.forEach((dot, i) => {
-    dot.addEventListener('click', () => {
-      index = i;
       updateSlider();
     });
-  });
-
-  // Initialize stars
-  document.querySelectorAll('.star-rating').forEach(container => {
-    const rating = parseInt(container.getAttribute('data-rating'));
-    container.innerHTML = '';
-    for (let i = 1; i <= 5; i++) {
-      const star = document.createElement('span');
-      star.textContent = i <= rating ? '★' : '☆';
-      container.appendChild(star);
-    }
-  });
-
-  // Recalculate on window resize
-  window.addEventListener('resize', updateSlider);
-
-  updateSlider();
-});
-</script>
+  </script>
 
 
 </body>
+
 </html>
