@@ -2,16 +2,17 @@ from . import chatbot_urls
 from django.urls import path, include
 from . import views
 from . import chatbot_views
+from .views import signup
 
 urlpatterns = [
     path('chatbot/', include(chatbot_urls.urlpatterns)),
-    path('', views.home, name='home'),
+    path('', include('main.urls')),
     path('login/', views.login_view, name='login'),
     path('editprofile/', views.editprofile, name='editprofile'),
     path('moredesign/', views.moredesign, name='moredesign'),
     path('home/', views.home, name='home'),
     path('home/chatbot/', views.home, name='home'),
-    path('signup/', views.signup, name='signup')
+    path('signup/', views.signup, name='signup'),
 
     # API endpoint for mobile review submission
     path('api/reviews/', views.submit_review, name='submit_review'),
