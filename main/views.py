@@ -25,14 +25,17 @@ def login_view(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-        # Your user authentication logic
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            login(request, user)  # logs in user
-            return redirect('/home/')  # ✅ redirect to /home/
+            login(request, user)
+            return redirect('/home/')
         else:
             return render(request, 'login.html', {'error': 'Invalid username or password'})
+
+    # Handle GET requests (when visiting /login)
+    return render(request, 'login.html')
+
 
 def editprofile(request):
     return render(request, 'editprofile.html')
