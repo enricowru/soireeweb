@@ -3,10 +3,12 @@ from django.urls import path, include
 from . import views
 from . import chatbot_views
 from .views import signup
+from django.shortcuts import redirect
+
 
 urlpatterns = [
     path('chatbot/', include(chatbot_urls.urlpatterns)),
-    path('', include('main.urls')),
+    path('', views.redirect_home),
     path('login/', views.login_view, name='login'),
     path('editprofile/', views.editprofile, name='editprofile'),
     path('moredesign/', views.moredesign, name='moredesign'),

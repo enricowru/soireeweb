@@ -8,6 +8,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 import json
 
+def redirect_home(request):
+    return redirect('/home/')
+
 
 @csrf_exempt
 def home(request):
