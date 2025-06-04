@@ -6,7 +6,23 @@ const bodyParser = require("body-parser");
 const app = express();
 
 // MIDDLEWARES
-app.use(cors());
+const allowedOrigins = [
+  "https://nikescateringservices.com",
+  "https://soireeweb.onrender.com",
+  "http://localhost:3000" // if testing locally
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
