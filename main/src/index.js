@@ -7,9 +7,9 @@ const app = express();
 
 // MIDDLEWARES
 const allowedOrigins = [
-  "https://nikescateringservices.com",
-  "https://soireeweb.onrender.com",
-  "http://localhost:3000" // if testing locally
+  "https://nikescateringservices.com",     // your custom domain
+  "https://soireeweb.onrender.com",        // your original Render frontend
+  "http://localhost:3000"                  // optional: local testing
 ];
 
 app.use(cors({
@@ -17,11 +17,12 @@ app.use(cors({
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      callback(new Error("Not allowed by CORS: " + origin));
     }
   },
   credentials: true
 }));
+
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
