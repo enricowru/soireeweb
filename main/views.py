@@ -312,20 +312,22 @@ def approve_review(request, review_id):
     return redirect('review_moderation')
 
 
+from django.contrib.auth.models import User
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def signup(request):
-    try:   
+    try:
         data = json.loads(request.body)
         firstname = data.get('firstname')
         lastname = data.get('lastname')
         username = data.get('username')
         email = data.get('email')
         password = data.get('password')
-        mobile = data.get('mobile')  # Optional: save it in a custom model if needed
+        mobile = data.get('mobile')  # You'll need a model to save this
 
         if User.objects.filter(username=username).exists():
-            return JsonResponse({'message': 'Username already taken', 'error': 'conflict'}, status=409)
+            return JsonResponse({'message': 'Username already exists'}, status=400)
 
         user = User.objects.create_user(
             username=username,
@@ -335,16 +337,15 @@ def signup(request):
             last_name=lastname
         )
 
-        # Optional: user.profile.mobile = mobile
-        # user.profile.save()
+        # 💡 If you want to save `mobile`, extend the User model (via a Profile model)
 
-        response = JsonResponse({'message': 'User created successfully'}, status=201)
+        response = JsonResponse({'message': 'User registered successfully'}, status=201)
     except Exception as e:
-        response = JsonResponse({'message': 'Registration failed', 'error': str(e)}, status=400)
+        response = JsonResponse({'message': 'Server error', 'error': str(e)}, status=500)
 
-    # ✅ Fix CORS issue
     response["Access-Control-Allow-Origin"] = "https://nikescateringservices.com"
     response["Access-Control-Allow-Credentials"] = "true"
     return response
+
 
 
