@@ -22,6 +22,8 @@ from .utils import (
     validate_and_suggest
 )
 from fuzzywuzzy  import process
+from django.contrib.staticfiles.storage import staticfiles_storage
+import cloudinary.utils
 
 
 def get_all_categories():
@@ -219,13 +221,32 @@ def get_category_description(category):
 
 def get_event_package_images(event_type):
     """Dynamically get all package images for the event type from the static directory."""
-    static_dir = os.path.join(settings.BASE_DIR, 'main', 'static', 'images', 'packages')
+    # Assuming package images are uploaded to Cloudinary with public IDs matching their filenames (without extension)
+    package_public_ids = {
+        'kiddie': ['kiddie_170pax_irkxsg', 'kiddie_80pax_twgrmz', 'kiddie_160pax_b5ezdz', 'kiddie_150pax_m7cdrz', 'kiddie_70pax_hdawxz', 'kiddie_50pax_dpgjez', 'kiddie_100pax_z1jsn0', 'kiddie_130pax_yeyoka', 'kiddie_120pax_soflwe', 'kiddie_180pax_knwwyp', 'kiddie_200pax_kmpgn4'],
+        'birthday': ['birthday_120pax_r25otc', 'birthday_130pax_hz5unq', 'birthday_150pax_gtqtim', 'birthday_100pax_zheug3', 'birthday_170pax_jtbtam', 'birthday_160pax_b3ecp4', 'birthday_80pax_vvu9g2', 'birthday_70pax_vew5ay', 'birthday_50pax_yjwdwl', 'birthday_200pax_gcjprl', 'birthday_180_pax_hircrw'], # Add actual birthday package public IDs here
+        'wedding': ['wedding_250pax_haxcqu', 'wedding_70pax_swgj6f', 'wedding_120pax_cnd4mj', 'wedding_150pax_ftvdmh', 'wedding_200pax_dsdfrl', 'wedding_60pax_wjrahh', 'wedding_80pax_y7az0i', 'wedding_180pax_aotyby', 'wedding_50pax_akotgi', 'wedding_160pax_twyve5', 'wedding_170pax_wb3mcl', 'wedding_130pax_eamuys', 'wedding_100pax_mtujpw'], # Add actual wedding package public IDs here
+        'christening': ['christening_70pax_cyznmy', 'christening_150pax_idheaa', 'christening_80pax_slf4sl', 'christening_200pax_t3vuye','christening_50pax_nxh9ke', 'christening_100pax_insvxv', 'christening_120pax_ua9yie'], # Add actual christening package public IDs here
+    }
     prefix = event_type.lower()
+    public_ids = package_public_ids.get(prefix, [])
+    
     images = []
-    for fname in os.listdir(static_dir):
-        if fname.lower().startswith(prefix):
-            images.append((fname.replace('.jpg', '').replace('_', ' ').title(), f'/static/main/images/packages/{fname}'))
-    images.sort()  # Optional: sort by name
+    for public_id in public_ids:
+         # Generate Cloudinary URL
+         image_url = cloudinary.utils.cloudinary_url(public_id, secure=True)[0]
+         # Extract package name from public ID (remove 6-character suffix if present)
+         parts = public_id.split('_')
+         if len(parts) > 1 and len(parts[-1]) == 6 and parts[-1].isalnum():
+             # Assume the last part is a 6-character suffix and remove it if it's alphanumeric
+             descriptive_id = '_'.join(parts[:-1])
+         else:
+             descriptive_id = public_id
+
+         package_name = descriptive_id.replace('_', ' ').title()
+         images.append((package_name, image_url))
+         
+    images.sort() # Optional: sort by name
     return images
 
 # Package rules for all event types
@@ -236,14 +257,22 @@ PACKAGE_RULES = {
 }
 
 def get_food_menu_images():
-    """Return all food menu images for display."""
-    static_dir = os.path.join(settings.BASE_DIR, 'main', 'static', 'main', 'images', 'foodMenu')
-    images = []
-    for fname in os.listdir(static_dir):
-        if fname.lower().endswith('.jpg'):
-            images.append(f'/static/main/images/foodMenu/{fname}')
-    images.sort()
-    return images
+    """Return all food menu images for display from Cloudinary.
+    Assuming food menu images are uploaded to Cloudinary with specific public IDs.
+    """
+    # Replace with your actual Cloudinary public IDs for food menu images
+    food_menu_public_ids = [
+        'FoodMenu1_llri2i',
+        'FoodMenu2_cmzxrt',
+    ]
+
+    image_urls = []
+    for public_id in food_menu_public_ids:
+        # Generate Cloudinary URL
+        image_url = cloudinary.utils.cloudinary_url(public_id, secure=True)[0]
+        image_urls.append(image_url)
+
+    return image_urls
 
 def chatbot_view(request):
     # Always start fresh if session is new or uninitialized
