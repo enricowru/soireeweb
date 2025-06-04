@@ -8,7 +8,7 @@ from django.shortcuts import redirect
 
 urlpatterns = [
     path('chatbot/', include(chatbot_urls.urlpatterns)),
-    path('', views.redirect_home),
+    path('', views.home),  # instead of views.redirect_home
     path('login/', views.login_view, name='login'),
     path('editprofile/', views.editprofile, name='editprofile'),
     path('moredesign/', views.moredesign, name='moredesign'),
