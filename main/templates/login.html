@@ -52,12 +52,12 @@
         <div class="register-flex">
           <div class="register-col">
             <label for="reg-username">Username:</label>
-            <input type="text" id="reg-username" name="username" required>
+            <input type="text" id="reg-username" name="username" required minlength="6" maxlength="12">
           </div>
           <div class="register-col">
             <label for="reg-mobile">Mobile Number (PH):</label>
             <input type="tel" id="reg-mobile" name="mobile" maxlength="11" placeholder="09XXXXXXXXX" required
-              pattern="^09\d{9}$" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+              pattern="^09\\d{9}$" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
           </div>
         </div>
         <label for="reg-email">Email:</label>
@@ -67,14 +67,14 @@
           <div class="register-col">
             <label for="reg-password1">Password:</label>
             <div class="password-wrapper">
-              <input type="password" id="reg-password1" name="password" required>
+              <input type="password" id="reg-password1" name="password" required minlength="8" maxlength="16">
               <i class="fa-solid fa-eye-slash toggle-password" toggle="#reg-password1"></i>
             </div>
           </div>
           <div class="register-col">
             <label for="reg-password2">Confirm Password:</label>
             <div class="password-wrapper">
-              <input type="password" id="reg-password2" name="password2" required>
+              <input type="password" id="reg-password2" name="password2" required minlength="8" maxlength="16">
               <i class="fa-solid fa-eye-slash toggle-password" toggle="#reg-password2"></i>
             </div>
           </div>
@@ -87,7 +87,7 @@
   </div>
 
   <script>
-    // Toggle between login and register forms
+    // Toggle between login and register
     document.getElementById('show-register').onclick = function (e) {
       e.preventDefault();
       document.getElementById('login-form').style.display = 'none';
@@ -99,36 +99,40 @@
       document.getElementById('login-form').style.display = 'block';
     };
 
-    // Show/hide password functionality
+    // Toggle password show/hide
     document.querySelectorAll('.toggle-password').forEach(function (eye) {
       eye.addEventListener('click', function () {
         const input = document.querySelector(this.getAttribute('toggle'));
-        if (input.type === "password") {
-          input.type = "text";
-          this.classList.remove('fa-eye-slash');
-          this.classList.add('fa-eye');
-        } else {
-          input.type = "password";
-          this.classList.remove('fa-eye');
-          this.classList.add('fa-eye-slash');
-        }
+        input.type = input.type === "password" ? "text" : "password";
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
       });
     });
 
-    // Handle register form submission via fetch
+    // Validate and submit register form
     document.getElementById('registerForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
-      const firstname = document.getElementById('reg-firstname').value;
-      const lastname = document.getElementById('reg-lastname').value;
-      const username = document.getElementById('reg-username').value;
-      const mobile = document.getElementById('reg-mobile').value;
-      const email = document.getElementById('reg-email').value;
+      const firstname = document.getElementById('reg-firstname').value.trim();
+      const lastname = document.getElementById('reg-lastname').value.trim();
+      const username = document.getElementById('reg-username').value.trim();
+      const mobile = document.getElementById('reg-mobile').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
       const password = document.getElementById('reg-password1').value;
       const password2 = document.getElementById('reg-password2').value;
 
+      if (username.length < 6 || username.length > 12) {
+        alert("❌ Username must be 6 to 12 characters long.");
+        return;
+      }
+
+      if (password.length < 8 || password.length > 16) {
+        alert("❌ Password must be 8 to 16 characters long.");
+        return;
+      }
+
       if (password !== password2) {
-        alert("Passwords do not match!");
+        alert("❌ Passwords do not match!");
         return;
       }
 
@@ -138,8 +142,6 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ firstname, lastname, username, mobile, email, password })
         });
-
-
 
         const result = await res.json();
 
@@ -157,5 +159,4 @@
     });
   </script>
 </body>
-
 </html>
