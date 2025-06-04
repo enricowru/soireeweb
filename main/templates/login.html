@@ -17,7 +17,7 @@
     <!-- Login Form -->
     <div class="login-container" id="login-form">
       <h2>LOGIN</h2>
-      <form action="http://soireeweb.onrender.com/login/" method="POST" autocomplete="off">
+      <form action="/login/" method="POST" autocomplete="off">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
         <br>
@@ -137,7 +137,7 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ firstname, lastname, username, mobile, email, password })
-});
+        });
 
 
 

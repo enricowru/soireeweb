@@ -194,14 +194,10 @@ CACHES = {
 }
 
 
-#CSRF IF NEEDED
-#CSRF_TRUSTED_ORIGINS = [
-# SECURE_SSL_REDIRECT = True # Redirects all HTTP requests to HTTPS
-    #"http://localhost:19006",  # Expo frontend
-# SESSION_COOKIE_SECURE = True # Use secure cookies for sessions
-    #"https://soireeweb.onrender.com",   # Web frontend
-# CSRF_COOKIE_SECURE = True # Use secure cookies for CSRF
-#]
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
 
 # If needed
 CORS_ALLOW_CREDENTIALS = True

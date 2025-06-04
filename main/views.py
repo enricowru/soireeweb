@@ -4,8 +4,10 @@ from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
 from .models import Review
 from django.views.decorators.http import require_http_methods
-import json
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+import json
+
 
 @csrf_exempt
 def home(request):
@@ -14,8 +16,18 @@ def home(request):
 
 @csrf_exempt
 def login_view(request):
-    return render(request, 'login.html')
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
+        # Your user authentication logic
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)  # logs in user
+            return redirect('/home/')  # ✅ redirect to /home/
+        else:
+            return render(request, 'login.html', {'error': 'Invalid username or password'})
 
 def editprofile(request):
     return render(request, 'editprofile.html')
