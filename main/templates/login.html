@@ -147,7 +147,7 @@
           document.getElementById('registerForm').reset();
           document.getElementById('show-login').click();
         } else {
-          alert("❌ " + result.message + ": " + result.error);
+          alert("❌ " + (result.message || "Registration failed."));
         }
       } catch (err) {
         console.error("Network error:", err);
