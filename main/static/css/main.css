@@ -185,7 +185,33 @@ section {
     text-align: center;
     position: relative;
     overflow: hidden;
+    transition: transform 0.3s ease;
 }
+
+.service-box:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+.service-box::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0);
+  transition: background-color 0.3s ease;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+.service-box:hover::after {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.service-box > * {
+  position: relative;
+  z-index: 2;
+}
+
 
 /* SERVICE PLACEMENT */
 .anniversary {
@@ -215,6 +241,68 @@ section {
     grid-column: 3;
     grid-row: 2;
 }
+
+/* CONFIRMATION MODAL */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  font-family: 'jostbook', sans-serif;
+}
+
+.modal-box {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #222;
+}
+
+.modal-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.modal-btn {
+  padding: 0.7rem 1.4rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.confirm-btn {
+  background-color: #AD974F;
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #eee;
+  color: #333;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 
 
 /* MENU SECTION */

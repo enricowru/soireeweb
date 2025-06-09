@@ -46,17 +46,26 @@
       celebrations to formal occasions, our team ensures every detail is thoughtfully planned and flawlessly executed.
     </p>
     <div class="services-grid">
-      <div class="service-box kiddieparty"
-        style="background-image: url('{% static 'images/upgraded balloon set-up/R6A.jpg' %}');">KIDDIE PARTY</div>
-      <div class="service-box birthday" style="background-image: url('{% static 'images/birthday/greengold.jpg' %}');">
-        BIRTHDAY</div>
-      <div class="service-box wedding"
-        style="background-image: url('{% static 'images/signature set-up/R4A.jpg'  %}');">
-        WEDDING</div>
-      <div class="service-box christening"
-        style="background-image: url('{% static 'images/christening/bears.jpg' %}');">CHRISTENING</div>
-      <div class="service-box corporate"
-        style="background-image: url('{% static 'images/corporate/yellowblack.jpg' %}');">OTHERS</div>
+      <div class="service-box kiddieparty" data-event="Kiddie Party"
+        style="background-image: url('{% static 'images/upgraded balloon set-up/R6A.jpg' %}');">
+        KIDDIE PARTY
+      </div>
+      <div class="service-box birthday" data-event="Birthday"
+        style="background-image: url('{% static 'images/birthday/greengold.jpg' %}');">
+        BIRTHDAY
+      </div>
+      <div class="service-box wedding" data-event="Wedding"
+        style="background-image: url('{% static 'images/signature set-up/R4A.jpg' %}');">
+        WEDDING
+      </div>
+      <div class="service-box christening" data-event="Christening"
+        style="background-image: url('{% static 'images/christening/bears.jpg' %}');">
+        CHRISTENING
+      </div>
+      <div class="service-box corporate" data-event="Custom Event"
+        style="background-image: url('{% static 'images/corporate/yellowblack.jpg' %}');">
+        OTHERS
+      </div>
     </div>
   </section>
 
@@ -140,7 +149,7 @@
 
     <div class="packages-grid">
       <!-- Package 1 -->
-      <div class="package">
+      <div class="package" id="kiddie-package">
         <div class="package-title">KIDDIE PARTY PACKAGES</div>
         <div class="package-body">
           <div class="package-row">
@@ -185,7 +194,7 @@
       </div>
 
       <!-- Package 2 -->
-      <div class="package">
+      <div class="package" id="birthday-package">
         <div class="package-title">BIRTHDAY PACKAGES</div>
         <div class="package-body">
           <div class="package-row">
@@ -230,7 +239,7 @@
       </div>
 
       <!-- Package 3 -->
-      <div class="package">
+      <div class="package" id="wedding-package">
         <div class="package-title">WEDDING PACKAGES</div>
         <div class="package-body">
           <div class="package-row">
@@ -276,7 +285,7 @@
       </div>
 
       <!-- Package 4 -->
-      <div class="package">
+      <div class="package" id="christening-package">
         <div class="package-title">CHRISTENING PACKAGES</div>
         <div class="package-body">
           <div class="package-row">
@@ -318,7 +327,7 @@
       </div>
 
       <!-- Package 5 -->
-      <div class="package">
+      <div class="package" id="custom-package">
         <div class="package-title">CUSTOM EVENT PACKAGES</div>
         <div class="package-body">
           <div class="package-row">
@@ -949,6 +958,74 @@
       question.addEventListener('click', () => {
         item.classList.toggle('open');
       });
+    });
+  });
+</script>
+
+
+<!-- BOOK CONFIRMATION MODAL  OF SERICES-->
+<div id="bookingModal" class="modal-overlay">
+  <div class="modal-box">
+    <h2 class="modal-title">Confirm Booking</h2>
+    <p id="modal-message">Want to book a <span id="selected-event"></span>?</p>
+    <div class="modal-actions">
+      <button class="modal-btn confirm-btn">Yes, show packages</button>
+      <button class="modal-btn cancel-btn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL POPUP -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const serviceBoxes = document.querySelectorAll('.service-box');
+    const modal = document.getElementById('bookingModal');
+    const messageSpan = document.getElementById('selected-event');
+    const confirmBtn = document.querySelector('.confirm-btn');
+    const cancelBtn = document.querySelector('.cancel-btn');
+
+    const packageIds = {
+      'Kiddie Party': 'kiddie-package',
+      'Birthday': 'birthday-package',
+      'Wedding': 'wedding-package',
+      'Christening': 'christening-package',
+      'Custom Event': 'custom-package',
+    };
+
+    let selectedEvent = null;
+
+    serviceBoxes.forEach(box => {
+      box.addEventListener('click', () => {
+        selectedEvent = box.getAttribute('data-event');
+        messageSpan.textContent = selectedEvent;
+        modal.style.display = 'flex';
+      });
+    });
+
+    confirmBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+      const targetId = packageIds[selectedEvent];
+      const target = document.getElementById(targetId);
+      if (target) {
+        document.querySelectorAll('.package-body').forEach(b => b.classList.remove('open'));
+        const body = target.querySelector('.package-body');
+        if (body) body.classList.add('open');
+        const yOffset = -110; // Adjust this value as needed (e.g. navbar height)
+        const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+
+      }
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    // Optional: Close on click outside the modal box
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
     });
   });
 </script>
