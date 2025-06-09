@@ -33,9 +33,10 @@
   </header>
 
   <!-- CHATBOT BUTTON -->
-  <button id="chat-ai-btn" class="chat-ai-btn">
-    <i class="fa-solid fa-comments"></i><a href="chatbot">Virtual Assistant</a>
-  </button>
+  <a href="chatbot" id="chat-ai-btn" class="chat-ai-btn">
+    <i class="fa-solid fa-comments"></i>
+    <span>Layout with Patrice</span>
+  </a>
 
 
   <!-- OUR SERVICES -->
@@ -45,17 +46,26 @@
       celebrations to formal occasions, our team ensures every detail is thoughtfully planned and flawlessly executed.
     </p>
     <div class="services-grid">
-      <div class="service-box kiddieparty"
-        style="background-image: url('{% static 'images/upgraded balloon set-up/R6A.jpg' %}');">KIDDIE PARTY</div>
-      <div class="service-box birthday" style="background-image: url('{% static 'images/birthday/greengold.jpg' %}');">
-        BIRTHDAY</div>
-      <div class="service-box wedding"
-        style="background-image: url('{% static 'images/signature set-up/R4A.jpg'  %}');">
-        WEDDING</div>
-      <div class="service-box christening"
-        style="background-image: url('{% static 'images/christening/bears.jpg' %}');">CHRISTENING</div>
-      <div class="service-box corporate"
-        style="background-image: url('{% static 'images/corporate/yellowblack.jpg' %}');">OTHERS</div>
+      <div class="service-box kiddieparty" data-event="Kiddie Party"
+        style="background-image: url('{% static 'images/upgraded balloon set-up/R6A.jpg' %}');">
+        KIDDIE PARTY
+      </div>
+      <div class="service-box birthday" data-event="Birthday"
+        style="background-image: url('{% static 'images/birthday/greengold.jpg' %}');">
+        BIRTHDAY
+      </div>
+      <div class="service-box wedding" data-event="Wedding"
+        style="background-image: url('{% static 'images/signature set-up/R4A.jpg' %}');">
+        WEDDING
+      </div>
+      <div class="service-box christening" data-event="Christening"
+        style="background-image: url('{% static 'images/christening/bears.jpg' %}');">
+        CHRISTENING
+      </div>
+      <div class="service-box corporate" data-event="Custom Event"
+        style="background-image: url('{% static 'images/corporate/yellowblack.jpg' %}');">
+        OTHERS
+      </div>
     </div>
   </section>
 
@@ -120,7 +130,7 @@
         </div>
       </div>
     </div>
-    <a href="#" class="book-tasting">
+    <a href="#calendar" class="book-tasting">
       <img src="{% static 'images/taste.png' %}" alt="Book Tasting">
       <h3>BOOK A FOOD TASTING</h3>
     </a>
@@ -139,7 +149,7 @@
 
     <div class="packages-grid">
       <!-- Package 1 -->
-      <div class="package">
+      <div class="package" id="kiddie-package">
         <div class="package-title">KIDDIE PARTY PACKAGES</div>
         <div class="package-body">
           <div class="package-row">
@@ -148,39 +158,43 @@
               <img class="pkg-image" src="{% static 'images/packages/christening1.jpg' %}" alt="Kiddie Party">
               <button class="pkg-next">❯</button>
             </div>
-            <div class="package-info">
-              <p><strong>Includes:</strong></p>
-              <ul>
-                <li>Themed Backdrop</li>
-                <li>Basic Balloon Decorations</li>
-                <li>Entrance Arch</li>
-                <li>Complete Table Set-Up with Centerpieces</li>
-                <li>Buffet Table Set-Up</li>
-                <li>Uniformed Waiters &amp; Servers</li>
-                <li>Use of Photobooth for 2 hours</li>
-                <li>Use of Basic Lights &amp; Sounds</li>
-                <li>Clown or Party Host and Magician</li>
-                <li>Magic &amp; Puppet Show</li>
-                <li>Styro Name</li>
-                <li>Welcome Board</li>
-              </ul>
-              <p><strong>Add-ons:</strong></p>
-              <ul>
-                <li>Upgraded Balloon Set-up</li>
-                <li>Kiddie Meals</li>
-                <li>Fondant &amp; Soft Icing Cake</li>
-                <li>Food Carts</li>
-                <li>Photo &amp; Video Coverage</li>
-                <li>Face Painting &amp; Bubble Show</li>
-                <li>Digital Invitations</li>
-              </ul>
+            <div class="package-selection">
+              <h3>Want this as your package?</h3>
+
+              <div class="form-group">
+                <label for="event-type">Event Type:</label>
+                <input type="text" id="event-type" value="Kiddie Party" readonly />
+              </div>
+
+              <div class="form-group">
+                <label for="guest-count">Good for:</label>
+                <select id="guest-count">
+                  <option value="50">50 pax</option>
+                  <option value="70">70 pax</option>
+                  <option value="80">80 pax</option>
+                  <option value="100">100 pax</option>
+                  <option value="120">120 pax</option>
+                  <option value="130">130 pax</option>
+                  <option value="150">150 pax</option>
+                  <option value="160">160 pax</option>
+                  <option value="170">170 pax</option>
+                  <option value="180">180 pax</option>
+                  <option value="200">200 pax</option>
+                </select>
+              </div>
+
+              <div class="package-buttons">
+                <button type="button">PACKAGE A</button>
+                <button type="button">PACKAGE B</button>
+                <button type="button">PACKAGE C</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Package 2 -->
-      <div class="package">
+      <div class="package" id="birthday-package">
         <div class="package-title">BIRTHDAY PACKAGES</div>
         <div class="package-body">
           <div class="package-row">
@@ -189,39 +203,43 @@
               <img class="pkg-image" src="{% static 'images/packages/packageb1.jpg' %}" alt="Birthday">
               <button class="pkg-next">❯</button>
             </div>
-            <div class="package-info">
-              <p><strong>Includes:</strong></p>
-              <ul>
-                <li>Backdrop Styling and Design</li>
-                <li>Elegant Couch</li>
-                <li>Entrance Arch</li>
-                <li>Complete Table Set-Up with Centerpieces</li>
-                <li>Buffet Table Set-Up</li>
-                <li>Uniformed Waiters &amp; Servers</li>
-                <li>Use of Photobooth for 2 hours</li>
-                <li>Use of Basic Lights &amp; Sounds</li>
-                <li>Events Host</li>
-                <li>Styro Name</li>
-                <li>Welcome Board</li>
-              </ul>
-              <p><strong>Add-ons:</strong></p>
-              <ul>
-                <li>Photo &amp; Video Coverage</li>
-                <li>Events Coordinators</li>
-                <li>Hair &amp; Make-Up Artist</li>
-                <li>Use of LED Wall or Projector &amp; Screen</li>
-                <li>Fondant &amp; Soft Icing Cakes</li>
-                <li>Coffee, Juice &amp; Bread | Kakanin Station | Sushi Bar</li>
-                <li>Grazing Table | Mobile Bar</li>
-                <li>Digital Invitations</li>
-              </ul>
+            <div class="package-selection">
+              <h3>Want this as your package?</h3>
+
+              <div class="form-group">
+                <label for="event-type">Event Type:</label>
+                <input type="text" id="event-type" value="Birthday" readonly />
+              </div>
+
+              <div class="form-group">
+                <label for="guest-count">Good for:</label>
+                <select id="guest-count">
+                  <option value="50">50 pax</option>
+                  <option value="70">70 pax</option>
+                  <option value="80">80 pax</option>
+                  <option value="100">100 pax</option>
+                  <option value="120">120 pax</option>
+                  <option value="130">130 pax</option>
+                  <option value="150">150 pax</option>
+                  <option value="160">160 pax</option>
+                  <option value="170">170 pax</option>
+                  <option value="180">180 pax</option>
+                  <option value="200">200 pax</option>
+                </select>
+              </div>
+
+              <div class="package-buttons">
+                <button type="button">PACKAGE A</button>
+                <button type="button">PACKAGE B</button>
+                <button type="button">PACKAGE C</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Package 3 -->
-      <div class="package">
+      <div class="package" id="wedding-package">
         <div class="package-title">WEDDING PACKAGES</div>
         <div class="package-body">
           <div class="package-row">
@@ -230,48 +248,44 @@
               <img class="pkg-image" src="{% static 'images/packages/packagec1.jpg' %}" alt="Wedding">
               <button class="pkg-next">❯</button>
             </div>
-            <div class="package-info">
-              <p><strong>Includes:</strong></p>
-              <ul>
-                <li>Backdrop Styling and Design</li>
-                <li>Elegant Couch</li>
-                <li>Entrance Arch</li>
-                <li>Complete Table Set-Up with Centerpieces</li>
-                <li>Buffet Table Set-Up</li>
-                <li>VIP Table Set-Up</li>
-                <li>Uniformed Waiters &amp; Servers</li>
-                <li>Use of Photobooth for 2 hours</li>
-                <li>Use of Basic Lights &amp; Sounds</li>
-                <li>Events Host</li>
-                <li>Styro Name</li>
-                <li>Welcome Board</li>
-              </ul>
-              <p><strong>Add Ons:</strong></p>
-              <ul>
-                <li>Photo &amp; Video Coverage</li>
-                <li>Wedding Coordinators</li>
-                <li>Hair &amp; Make-Up Artist</li>
-                <li>Wedding Florist</li>
-                <li>Bridal Car</li>
-                <li>LED Wall or Projector &amp; Screen</li>
-                <li>Digital Invitations</li>
-              </ul>
-              <ul>
-                <li>Coffee, Juice &amp; Bread</li>
-                <li>Kakanin Station</li>
-                <li>Sushi Bar</li>
-                <li>Fondant &amp; Soft Icing Cakes</li>
-                <li>Grazing Table</li>
-                <li>Mobile Bar</li>
-                <li>Wine &amp; Dove</li>
-              </ul>
+            <div class="package-selection">
+              <h3>Want this as your package?</h3>
+
+              <div class="form-group">
+                <label for="event-type">Event Type:</label>
+                <input type="text" id="event-type" value="Wedding" readonly />
+              </div>
+
+              <div class="form-group">
+                <label for="guest-count">Good for:</label>
+                <select id="guest-count">
+                  <option value="50">50 pax</option>
+                  <option value="70">70 pax</option>
+                  <option value="80">80 pax</option>
+                  <option value="100">100 pax</option>
+                  <option value="120">120 pax</option>
+                  <option value="130">130 pax</option>
+                  <option value="150">150 pax</option>
+                  <option value="160">160 pax</option>
+                  <option value="170">170 pax</option>
+                  <option value="180">180 pax</option>
+                  <option value="200">200 pax</option>
+                  <option value="250">250 pax</option>
+                </select>
+              </div>
+
+              <div class="package-buttons">
+                <button type="button">PACKAGE A</button>
+                <button type="button">PACKAGE B</button>
+                <button type="button">PACKAGE C</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Package 4 -->
-      <div class="package">
+      <div class="package" id="christening-package">
         <div class="package-title">CHRISTENING PACKAGES</div>
         <div class="package-body">
           <div class="package-row">
@@ -280,37 +294,40 @@
               <img class="pkg-image" src="{% static 'images/packages/packaged1.jpg' %}" alt="Christening">
               <button class="pkg-next">❯</button>
             </div>
-            <div class="package-info">
-              <p><strong>Includes:</strong></p>
-              <ul>
-                <li>Themed Backdrop</li>
-                <li>Basic Balloon Decorations</li>
-                <li>Entrance Arch</li>
-                <li>Complete Table Set-Up with Centerpieces</li>
-                <li>Buffet Table Set-Up</li>
-                <li>Uniformed Waiters &amp; Servers</li>
-                <li>Use of Photobooth for 2 hours</li>
-                <li>Styro Name</li>
-                <li>Welcome Board</li>
-              </ul>
-              <p><strong>Add ons:</strong></p>
-              <ul>
-                <li>Use of Basic Lights &amp; Sounds</li>
-                <li>Events Host</li>
-                <li>Photo &amp; Video Coverage</li>
-                <li>Upgraded Balloon Set-up</li>
-                <li>Fondant &amp; Soft Icing Cake</li>
-                <li>Kiddie Meals</li>
-                <li>Food Carts</li>
-                <li>Digital Invitations</li>
-              </ul>
+            <div class="package-selection">
+              <h3>Want this as your package?</h3>
+
+              <div class="form-group">
+                <label for="event-type">Event Type:</label>
+                <input type="text" id="event-type" value="Christening" readonly />
+              </div>
+
+              <div class="form-group">
+                <label for="guest-count">Good for:</label>
+                <select id="guest-count">
+                  <option value="50">50 pax</option>
+                  <option value="70">70 pax</option>
+                  <option value="80">80 pax</option>
+                  <option value="100">100 pax</option>
+                  <option value="120">120 pax</option>
+                  <option value="130">130 pax</option>
+                  <option value="150">150 pax</option>
+                  <option value="200">200 pax</option>
+                </select>
+              </div>
+
+              <div class="package-buttons">
+                <button type="button">PACKAGE A</button>
+                <button type="button">PACKAGE B</button>
+                <button type="button">PACKAGE C</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Package 5 -->
-      <div class="package">
+      <div class="package" id="custom-package">
         <div class="package-title">CUSTOM EVENT PACKAGES</div>
         <div class="package-body">
           <div class="package-row">
@@ -319,31 +336,27 @@
               <img class="pkg-image" src="{% static 'images/packages/packaged1.jpg' %}" alt="Custom Event">
               <button class="pkg-next">❯</button>
             </div>
-            <div class="package-info">
-              <p><strong>Includes:</strong></p>
-              <ul>
-                <li>Basic/Backdrop Styling and Design</li>
-                <li>Complete Table and Chairs Set-Up</li>
-                <li>Complete Catering Equipment &amp; Utensils</li>
-                <li>Buffet Table Set-Up</li>
-                <li>Uniformed Waiters &amp; Servers</li>
-              </ul>
-              <p><strong>Add ons:</strong></p>
-              <ul>
-                <li>Styro Name</li>
-                <li>Welcome Board</li>
-                <li>Use of Basic Lights &amp; Sounds</li>
-                <li>Use of Photobooth</li>
-                <li>Events Host</li>
-                <li>Clown or Party Host &amp; Magician</li>
-                <li>Photo &amp; Video Coverage</li>
-                <li>Events Coordinators</li>
-                <li>Dessert Buffet</li>
-                <li>Coffee, Juice &amp; Bread | Kakanin Station | Sushi Bar</li>
-                <li>Grazing Table | Mobile Bar</li>
-                <li>Food Carts</li>
-                <li>Fondant &amp; Soft Icing Cakes</li>
-              </ul>
+            <div class="package-selection">
+              <h3>Want this as your package?</h3>
+
+              <div class="form-group">
+                <label for="event-type">Event Type:</label>
+                <input type="text" id="event-type" value="Custom Event" readonly />
+              </div>
+
+              <div class="form-group">
+                <label for="guest-count">Good for (rates per head):</label>
+                <select id="guest-count">
+                  <option value="below 100">below 100 pax</option>
+                  <option value="100 and above">100 pax & above</option>
+                </select>
+              </div>
+
+              <div class="package-buttons">
+                <button type="button">PACKAGE A</button>
+                <button type="button">PACKAGE B</button>
+                <button type="button">PACKAGE C</button>
+              </div>
             </div>
           </div>
         </div>
@@ -365,7 +378,7 @@
         style="background-image: url('{% static 'images/signature set-up/R1A.jpg' %}');">SIGNATURE SETUP</a>
     </div>
     <a href="{% url 'moredesign' %}" class="more-design">
-      <h3>MORE DESIGN</h3>
+      MORE DESIGN
     </a>
   </section>
 
@@ -379,10 +392,22 @@
       <div class="calendar-right">
         <h1>BOOK WITH US!</h1>
         <p>Ready to plan your next event? Book with us today and let our team turn your ideas into an unforgettable
-          celebration.</p> <a href="#" class="book-calendar">
+          celebration.</p> <a href="#calendar" class="book-calendar">
           <img src="{% static 'images/calendar.png' %}" alt="Book Here">
           <h3>BOOK HERE</h3>
         </a>
+        <div class="legend">
+        <h4>Legends:</h4>
+        <ul>
+          <li><span class="circle red"></span> 0 Slots left</li>
+          <li><span class="circle violet"></span> 1 Slot left</li>
+          <li><span class="circle orange"></span> 2 Slots left</li>
+          <li><span class="circle yellow"></span> 3 Slots left</li>
+          <li><span class="circle green"></span> 4 Slots left</li>
+          <li><img src="{% static 'images/taste-legend.png' %}" alt="Food Tasting Icon" class="taste-icon" />Food Tasting</li>
+        </ul>
+      </div>
+
       </div>
     </div>
   </section>
@@ -495,6 +520,40 @@
     </div>
   </section>
 
+  <!-- FAQs -->
+  <section id="faqs">
+    <h1 class="faq-title">FREQUENTLY ASKED QUESTIONS</h1>
+
+    <div class="faq-container">
+      <div class="faq-item">
+        <div class="faq-question">How do I book a package?</div>
+        <div class="faq-answer">
+          You can book through our website, message us on Facebook, or contact us directly using the numbers provided in the Contact Us section.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Do you offer custom event packages?</div>
+        <div class="faq-answer">
+          Yes! We customize packages based on your preferences. Let us know your budget, theme, and number of guests, and we'll take care of the rest.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">What are your mode of payments?</div>
+        <div class="faq-answer">
+          We cater cash and GCash payments.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Can I request a food tasting before booking?</div>
+        <div class="faq-answer">
+          Absolutely. We offer scheduled food tasting sessions on every weekend of the month. You can book one directly through the "Book a Food Tasting" section.
+        </div>
+      </div>
+    </div>
+  </section>
 
 
   <!-- CONTACT US -->
@@ -888,6 +947,89 @@
       updateSlider();
     });
   </script>
+
+  <!-- FOR DROPDOWN FAQS -->
+   <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const faqItems = document.querySelectorAll('.faq-item');
+
+    faqItems.forEach(item => {
+      const question = item.querySelector('.faq-question');
+      question.addEventListener('click', () => {
+        item.classList.toggle('open');
+      });
+    });
+  });
+</script>
+
+
+<!-- BOOK CONFIRMATION MODAL  OF SERICES-->
+<div id="bookingModal" class="modal-overlay">
+  <div class="modal-box">
+    <h2 class="modal-title">Confirm Booking</h2>
+    <p id="modal-message">Want to book a <span id="selected-event"></span>?</p>
+    <div class="modal-actions">
+      <button class="modal-btn confirm-btn">Yes, show packages</button>
+      <button class="modal-btn cancel-btn">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL POPUP -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const serviceBoxes = document.querySelectorAll('.service-box');
+    const modal = document.getElementById('bookingModal');
+    const messageSpan = document.getElementById('selected-event');
+    const confirmBtn = document.querySelector('.confirm-btn');
+    const cancelBtn = document.querySelector('.cancel-btn');
+
+    const packageIds = {
+      'Kiddie Party': 'kiddie-package',
+      'Birthday': 'birthday-package',
+      'Wedding': 'wedding-package',
+      'Christening': 'christening-package',
+      'Custom Event': 'custom-package',
+    };
+
+    let selectedEvent = null;
+
+    serviceBoxes.forEach(box => {
+      box.addEventListener('click', () => {
+        selectedEvent = box.getAttribute('data-event');
+        messageSpan.textContent = selectedEvent;
+        modal.style.display = 'flex';
+      });
+    });
+
+    confirmBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+      const targetId = packageIds[selectedEvent];
+      const target = document.getElementById(targetId);
+      if (target) {
+        document.querySelectorAll('.package-body').forEach(b => b.classList.remove('open'));
+        const body = target.querySelector('.package-body');
+        if (body) body.classList.add('open');
+        const yOffset = -110; // Adjust this value as needed (e.g. navbar height)
+        const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+
+      }
+    });
+
+    cancelBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+    // Optional: Close on click outside the modal box
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  });
+</script>
+
 
 
 </body>
