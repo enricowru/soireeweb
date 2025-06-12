@@ -148,50 +148,82 @@
       coordination into convenient, customizable bundles.</p>
 
     <div class="packages-grid">
-      <!-- Package 1 -->
-      <div class="package" id="kiddie-package">
-        <div class="package-title">KIDDIE PARTY PACKAGES</div>
-        <div class="package-body">
-          <div class="package-row">
-            <div class="package-slider">
-              <button class="pkg-prev">❮</button>
-              <img class="pkg-image" src="{% static 'images/packages/christening1.jpg' %}" alt="Kiddie Party">
-              <button class="pkg-next">❯</button>
-            </div>
-            <div class="package-selection">
-              <h3>Want this as your package?</h3>
+     <!-- Package 1 -->
+<div class="package" id="kiddie-package">
+  <div class="package-title">KIDDIE PARTY PACKAGES</div>
+  <div class="package-body">
+    <div class="package-row">
+      <div class="package-slider">
+        <button class="pkg-prev">❮</button>
+        <img class="pkg-image" src="{% static 'images/packages/christening1.jpg' %}" alt="Kiddie Party">
+        <button class="pkg-next">❯</button>
+      </div>
+      <div class="package-selection">
+        <h3>Want this as your package?</h3>
 
-              <div class="form-group">
-                <label for="event-type">Event Type:</label>
-                <input type="text" id="event-type" value="Kiddie Party" readonly />
-              </div>
+        <div class="form-group">
+          <label for="event-type">Event Type:</label>
+          <input type="text" id="event-type" value="Kiddie Party" readonly />
+        </div>
 
-              <div class="form-group">
-                <label for="guest-count">Good for:</label>
-                <select id="guest-count">
-                  <option value="50">50 pax</option>
-                  <option value="70">70 pax</option>
-                  <option value="80">80 pax</option>
-                  <option value="100">100 pax</option>
-                  <option value="120">120 pax</option>
-                  <option value="130">130 pax</option>
-                  <option value="150">150 pax</option>
-                  <option value="160">160 pax</option>
-                  <option value="170">170 pax</option>
-                  <option value="180">180 pax</option>
-                  <option value="200">200 pax</option>
-                </select>
-              </div>
+        <div class="form-group">
+          <label for="guest-count">Good for:</label>
+          <select id="guest-count">
+            <option value="50">50 pax</option>
+            <option value="70">70 pax</option>
+            <option value="80">80 pax</option>
+            <option value="100">100 pax</option>
+            <option value="120">120 pax</option>
+            <option value="130">130 pax</option>
+            <option value="150">150 pax</option>
+            <option value="160">160 pax</option>
+            <option value="170">170 pax</option>
+            <option value="180">180 pax</option>
+            <option value="200">200 pax</option>
+          </select>
+        </div>
 
-              <div class="package-buttons">
-                <button type="button">PACKAGE A</button>
-                <button type="button">PACKAGE B</button>
-                <button type="button">PACKAGE C</button>
-              </div>
-            </div>
-          </div>
+        <div class="package-buttons">
+          <!-- PACKAGE A Form -->
+          <form action="{% url 'chatbot' %}" method="POST" onsubmit="return setPackageDetails(this, 'A')">
+            {% csrf_token %}
+            <input type="hidden" name="event_type" value="kiddie party">
+            <input type="hidden" name="number_of_pax">
+            <input type="hidden" name="package_letter" value="A">
+            <button type="submit">PACKAGE A</button>
+          </form>
+
+          <!-- PACKAGE B Form -->
+          <form action="{% url 'chatbot' %}" method="POST" onsubmit="return setPackageDetails(this, 'B')">
+            {% csrf_token %}
+            <input type="hidden" name="event_type" value="kiddie party">
+            <input type="hidden" name="number_of_pax">
+            <input type="hidden" name="package_letter" value="B">
+            <button type="submit">PACKAGE B</button>
+          </form>
+
+          <!-- PACKAGE C Form -->
+          <form action="{% url 'chatbot' %}" method="POST" onsubmit="return setPackageDetails(this, 'C')">
+            {% csrf_token %}
+            <input type="hidden" name="event_type" value="kiddie party">
+            <input type="hidden" name="number_of_pax">
+            <input type="hidden" name="package_letter" value="C">
+            <button type="submit">PACKAGE C</button>
+          </form>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setPackageDetails(form, pkg) {
+    const pax = document.getElementById("guest-count").value;
+    form.querySelector("input[name='number_of_pax']").value = pax;
+    return true; // submit form
+  }
+</script>
+
 
       <!-- Package 2 -->
       <div class="package" id="birthday-package">
