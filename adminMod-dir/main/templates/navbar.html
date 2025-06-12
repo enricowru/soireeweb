@@ -1,0 +1,24 @@
+{% load static %}
+
+<nav class="navbar">
+    <ul class="nav-links">
+        <li><a href="{% url 'main' %}#services">Services</a></li>
+        <li><a href="{% url 'main' %}#menu">Packages</a></li>
+        <li><a href="{% url 'main' %}#reviews">Reviews</a></li>
+    </ul>
+    <div class="logo">
+        <a href="{% url 'main' %}">
+            <img src="{% static 'images/logo-round.png' %}" alt="Nike Catering Logo">
+        </a>
+    </div>
+    <ul class="nav-links">
+        <li><a href="{% url 'main' %}#about-us">About Us</a></li>
+        <li><a href="{% url 'main' %}#contact-us">Contact Us</a></li>
+        {% if user.is_authenticated %}
+        <li><a href="{% url 'chat_list' %}"><i class="fas fa-comments"></i> Messages</a></li>
+        <li><a href="{% url 'logout' %}">Logout</a></li>
+        {% else %}
+        <li><a href="{% url 'login' %}">Login</a></li>
+        {% endif %}
+    </ul>
+</nav>

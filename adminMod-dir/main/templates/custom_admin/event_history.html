@@ -1,0 +1,56 @@
+{% extends 'custom_admin/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Event History</h2>
+        </div>
+        <div class="col text-end">
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="fas fa-history"></i> Deleted Events</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Created At</th>
+                            <th>Deleted At</th>
+                            <th>Deleted By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in history %}
+                        <tr>
+                            <td>{{ event.title }}</td>
+                            <td>{{ event.date }}</td>
+                            <td>{{ event.description }}</td>
+                            <td>{{ event.created_at }}</td>
+                            <td>{{ event.deleted_at }}</td>
+                            <td>{{ event.deleted_by.username }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                <i class="fas fa-info-circle"></i> No deleted events found
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

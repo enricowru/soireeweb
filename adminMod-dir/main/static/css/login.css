@@ -1,0 +1,262 @@
+@font-face {
+    font-family: 'jostblack';
+    src: url('../fonts/jost.black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'jostbold';
+    src: url('../fonts/jost.bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'jostbook';
+    src: url('../fonts/jost.book.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'jostbookitalic';
+    src: url('../fonts/jost.book-italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'jostlight';
+    src: url('../fonts/jost.light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'inriaserifbold';
+    src: url('../fonts/inria-serif.bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'bostonangel';
+    src: url('../fonts/Boston\ Angel\ Regular.ttf') format('truetype');
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background: url('../images/mainbg.png') no-repeat center center fixed;
+    background-size: cover;
+    position: relative;
+}
+
+html {
+  overflow-y: scroll;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 0;
+}
+
+.form-center {
+    min-height: unset;
+    height: calc(100vh - 70px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+}
+
+.login-container,
+.register-container {
+    position: relative;
+    z-index: 1;
+    max-width: 500px;
+    width: 100%;
+    background: rgba(28, 28, 28, 0.95);
+    padding: 20px 14px 18px 14px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    color: #fff;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.register-container {
+    display: none;
+}
+
+.login-container {
+    display: block;
+}
+
+.login-container h2,
+.register-container h2 {
+    font-size: 2.5rem;
+    margin-bottom: 25px;
+    color: #AD974F;
+    font-weight: 800;
+    margin-top: 0;
+}
+
+.login-container label,
+.register-container label {
+    display: block;
+    text-align: left;
+    margin: 18px 0 6px 0;
+    font-size: 1rem;
+    color: #fff;
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"],
+.login-container input[type="email"],
+.login-container input[type="tel"],
+.register-container input[type="text"],
+.register-container input[type="password"],
+.register-container input[type="email"],
+.register-container input[type="tel"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #AD974F;
+    border-radius: 8px;
+    background: #222;
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    outline: none;
+    transition: border 0.2s;
+}
+
+.login-container input[type="text"]:focus,
+.login-container input[type="password"]:focus,
+.login-container input[type="email"]:focus,
+.login-container input[type="tel"]:focus,
+.register-container input[type="text"]:focus,
+.register-container input[type="password"]:focus,
+.register-container input[type="email"]:focus,
+.register-container input[type="tel"]:focus {
+    border: 1.5px solid #AD974F;
+}
+
+.login-container input,
+.register-container input {
+    box-sizing: border-box;
+}
+
+.login-container button[type="submit"],
+.register-container button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background: #AD974F;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 18px;
+    transition: background 0.2s;
+}
+
+.login-container button[type="submit"]:hover,
+.register-container button[type="submit"]:hover {
+    background: #8c7a3e;
+}
+
+.login-container p,
+.register-container p {
+    margin-top: 18px;
+    color: #fff;
+}
+
+.login-container a,
+.register-container a {
+    color: #AD974F;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+.login-container a:hover,
+.register-container a:hover {
+    color: #fff;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper i {
+    margin: -4px;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #AD974F;
+    font-size: 1.1em;
+    height: 1em;
+    display: flex;
+    align-items: center;
+}
+
+.form-row {
+display: flex;
+gap: 10px;
+}
+
+.form-row > div {
+flex: 1;
+}
+
+.forgot-remember {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 10px;
+}
+
+.forgot-remember label {
+margin: 0;
+font-size: 0.98em;
+color: #fff;
+cursor: pointer;
+}
+
+.forgot-remember a {
+color: #AD974F;
+font-size: 0.98em;
+text-decoration: underline;
+}
+
+.forgot-remember a:hover {
+color: #fff;
+}
+
+/* REGISTER */
+.register-flex {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+}
+
+.register-col {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.register-col input[type="text"],
+.register-col input[type="password"],
+.register-col input[type="email"],
+.register-col input[type="tel"] {
+    width: 100%;
+}

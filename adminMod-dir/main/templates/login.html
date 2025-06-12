@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/logo-round.png' %}">
+</head>
+<body>
+    {% include "navbar.html" %}
+
+    <div class="form-center">
+      {% if message and message != 'Invalid username or password.' %}
+        <div style="color: red; text-align: center; margin-bottom: 10px;">{{ message }}</div>
+      {% endif %}
+      <!-- Login Form -->
+      <div class="login-container" id="login-form" style="{% if show_register %}display:none;{% endif %}">
+        <h2>LOGIN</h2>
+        <form method="post" autocomplete="off">
+          {% csrf_token %}
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username" required>
+          <br>
+          <label for="password">Password:</label>
+          <div class="password-wrapper">
+            <input type="password" id="password" name="password" required>
+            <i class="fa-solid fa-eye-slash toggle-password" toggle="#password"></i>
+          </div>
+          <div class="forgot-remember">
+            <label><input type="checkbox" name="remember_me"> Remember me</label>
+            <a href="{% url 'password_reset' %}">Forgot password?</a>
+          </div>
+          {% if message and not show_register %}
+            <div style="color: red; text-align: center; margin-bottom: 10px;">{{ message }}</div>
+          {% endif %}
+          <button type="submit">Login</button>
+        </form>
+        <p>Don't have an account? <a href="#" id="show-register">Register here</a></p>
+      </div>
+
+      <!-- Register Form -->
+      <div class="register-container" id="register-form" style="{% if not show_register %}display:none;{% endif %}">
+        <h2>REGISTER</h2>
+        <form method="post" autocomplete="off">
+          {% csrf_token %}
+          <div class="register-flex">
+            <div class="register-col">
+              <label for="reg-firstname">First Name:</label>
+              <input type="text" id="reg-firstname" name="firstname" required>
+            </div>
+            <div class="register-col">
+              <label for="reg-lastname">Last Name:</label>
+              <input type="text" id="reg-lastname" name="lastname" required>
+            </div>
+          </div>
+          <div class="register-flex">
+            <div class="register-col">
+              <label for="reg-username">Username:</label>
+              <input type="text" id="reg-username" name="username" required>
+            </div>
+            <div class="register-col">
+              <label for="reg-mobile">Mobile Number (PH):</label>
+              <input
+                  type="tel"
+                  id="reg-mobile"
+                  name="mobile"
+                  maxlength="11"
+                  placeholder="09XXXXXXXXX"
+                  required
+                  inputmode="numeric"
+                  pattern="^09\d{9}$"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, ''); validateMobile(this);"
+              />
+            </div>
+          </div>
+          <label for="reg-email">Email:</label>
+          <input
+              type="email"
+              id="reg-email"
+              name="email"
+              required
+              oninput="validateEmail(this);"
+          />
+          <div class="register-flex">
+            <div class="register-col">
+              <label for="reg-password1">Password:</label>
+              <div class="password-wrapper">
+                <input type="password" id="reg-password1" name="password1" required>
+                <i class="fa-solid fa-eye-slash toggle-password" toggle="#password"></i>
+              </div>
+            </div>
+            <div class="register-col">
+              <label for="reg-password2">Confirm Password:</label>
+              <div class="password-wrapper">
+                <input type="password" id="reg-password2" name="password2" required>
+                <i class="fa-solid fa-eye-slash toggle-password" toggle="#password"></i>
+              </div>
+            </div>
+          </div>
+          {% if message and show_register %}
+            <div style="color: red; text-align: center; margin-bottom: 10px;">{{ message }}</div>
+          {% endif %}
+          <button type="submit">Register</button>
+        </form>
+        <p>Already have an account? <a href="#" id="show-login">Login here</a></p>
+      </div>
+    </div>
+
+    <script>
+      // Toggle between login and register forms
+      document.getElementById('show-register').onclick = function(e) {
+        e.preventDefault();
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('register-form').style.display = 'block';
+      };
+      document.getElementById('show-login').onclick = function(e) {
+        e.preventDefault();
+        document.getElementById('register-form').style.display = 'none';
+        document.getElementById('login-form').style.display = 'block';
+      };
+
+      // Show/hide password functionality
+      document.querySelectorAll('.toggle-password').forEach(function(eye) {
+        eye.addEventListener('click', function() {
+            const input = document.querySelector(this.getAttribute('toggle'));
+            if (input.type === "password") {
+            input.type = "text";
+            this.classList.remove('fa-eye-slash');
+            this.classList.add('fa-eye');
+            } else {
+            input.type = "password";
+            this.classList.remove('fa-eye');
+            this.classList.add('fa-eye-slash');
+            }
+        });
+        });
+    </script>
+</body>
+</html>
