@@ -4,8 +4,15 @@ from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
 from .models import Review
 from django.views.decorators.http import require_http_methods
-import json
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+import json
+
+
+@csrf_exempt
+def redirect_home(request):
+    return render(request, 'main.html')
+
 
 @csrf_exempt
 def home(request):
@@ -14,14 +21,6 @@ def home(request):
 
 @csrf_exempt
 def login_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-
-        if username == "admin" and password == "1234":
-            return redirect('/moderator/reviews/')
-        else:
-            return render(request, 'login.html', {'error': 'Invalid username or password.'})
     return render(request, 'login.html')
 
 
@@ -33,7 +32,7 @@ def moredesign(request):
     sets = {
         'themed_backdrop': [
             {
-                'title': 'Kuromi and My Melody',
+                'title': 'Sanrio: Hello Kitty and Friends',
                 'images': [
                     'images/upgraded balloon set-up/R1C.jpg',
                     'images/upgraded balloon set-up/R1A.jpg',
@@ -170,7 +169,7 @@ def moredesign(request):
                 ]
             },
             {
-                'title': 'Modern Minimal',
+ 'title': 'Mint Serenity',
                 'images': [
                     'images/minimalist set-up/R3C.jpg',
                     'images/minimalist set-up/R3A.jpg',
@@ -179,7 +178,7 @@ def moredesign(request):
                 ]
             },
             {
-                'title': 'Modern Minimal',
+                'title': 'Amethyst Grace',
                 'images': [
                     'images/minimalist set-up/R4C.jpg',
                     'images/minimalist set-up/R4A.jpg',
@@ -188,7 +187,7 @@ def moredesign(request):
                 ]
             },
             {
-                'title': 'Modern Minimal',
+                'title': 'Sage Whispers',
                 'images': [
                     'images/minimalist set-up/R5C.jpg',
                     'images/minimalist set-up/R5A.jpg',
@@ -197,7 +196,7 @@ def moredesign(request):
                 ]
             },
             {
-                'title': 'Modern Minimal',
+                'title': 'Golden Crimson',
                 'images': [
                     'images/minimalist set-up/R6C.jpg',
                     'images/minimalist set-up/R6A.jpg',
@@ -206,7 +205,7 @@ def moredesign(request):
                 ]
             },
             {
-                'title': 'Modern Minimal',
+                'title': 'Maroon Muse',
                 'images': [
                     'images/minimalist set-up/R7C.jpg',
                     'images/minimalist set-up/R7A.jpg',
@@ -215,7 +214,7 @@ def moredesign(request):
                 ]
             },
             {
-                'title': 'Modern Minimal',
+                'title': 'Ever After Eden',
                 'images': [
                     'images/minimalist set-up/R8C.jpg',
                     'images/minimalist set-up/R8A.jpg',
@@ -224,7 +223,7 @@ def moredesign(request):
                 ]
             },
             {
-                'title': 'Modern Minimal',
+                'title': 'Whispering Vows',
                 'images': [
                     'images/minimalist set-up/R9C.jpg',
                     'images/minimalist set-up/R9A.jpg',
@@ -235,7 +234,7 @@ def moredesign(request):
         ],
         'signature_setup': [
             {
-                'title': 'Luxury Signature',
+                'title': 'Sunlit Bliss',
                 'images': [
                     'images/signature set-up/R1C.jpg',
                     'images/signature set-up/R1A.jpg',
@@ -246,7 +245,7 @@ def moredesign(request):
                 ]
             },
             {
-                'title': 'Luxury Signature',
+                'title': 'Forest Glow',
                 'images': [
                     'images/signature set-up/R2C.jpg',
                     'images/signature set-up/R2A.jpg',
@@ -257,7 +256,7 @@ def moredesign(request):
                 ]
             },
             {
-                'title': 'Luxury Signature',
+                'title': 'Blue Royale',
                 'images': [
                     'images/signature set-up/R3C.jpg',
                     'images/signature set-up/R3A.jpg',
@@ -268,7 +267,7 @@ def moredesign(request):
                 ]
             },
             {
-                'title': 'Luxury Signature',
+                'title': 'Golden Dusk',
                 'images': [
                     'images/signature set-up/R4C.jpg',
                     'images/signature set-up/R4A.jpg',
@@ -279,7 +278,7 @@ def moredesign(request):
                 ]
             },
         ],
-    }
+    }    
     return render(request, 'moredesign.html', {'sets': sets})
 
 

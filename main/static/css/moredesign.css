@@ -92,11 +92,7 @@ html {
 }
 
 .design-set {
-    margin-bottom: 32px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    padding: 10px 8px;
+    margin-bottom: 100px;
 }
 /* Default grid fallback */
 .design-grid {
