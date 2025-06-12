@@ -183,6 +183,30 @@ def get_food_menu_images():
     return image_urls
 
 def chatbot_view(request):
+     if request.method == 'POST' and 'event_type' in request.POST and 'number_of_pax' in request.POST and 'package_letter' in request.POST:
+        event_type = request.POST['event_type'].strip()
+        pax = request.POST['number_of_pax'].strip()
+        package = request.POST['package_letter'].strip().upper()
+
+        planner_data = {
+            'event_type': event_type,
+            'number_of_pax': int(pax),
+            'package_letter': package,
+            'package_choice': f"{pax} pax - Package {package}"
+        }
+
+        summary = {
+            'sender': 'bot',
+            'text': f"📝 Summary of Order:\n• Event Type: {event_type.title()}\n• Number of Pax: {pax}\n• Selected Package: {package}"
+        }
+
+        request.session['chat_history'] = [summary]
+        request.session['planner_data'] = planner_data
+        request.session['planner_state'] = 'venue_location'  # Skip directly to venue step
+        request.session['initialized'] = True
+        request.session.modified = True
+
+        return redirect('chatbot')
     # Initialize session if needed
     if not request.session.get('initialized', False):
         request.session['chat_history'] = [
