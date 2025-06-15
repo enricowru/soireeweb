@@ -101,6 +101,19 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+# kindly review, magkakaconflict kasi sila dito, also finalize na kung aling database talaga gagamitin
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'djongo',
+#         'NAME': 'adminside',  # Your database name
+#         'USER': 'jinnel',     # Your Atlas username
+#         'PASSWORD': 'jinnel123',  # Your newly set Atlas password
+#         'CLIENT': {
+#             'host': 'mongodb+srv://jinnel:jinnel123@cluster0.yahkvow.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+#         }
+#     }
+# }
+
 
 
 # Password validation
@@ -148,6 +161,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AUTH_USER_MODEL = 'main.User'
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:19006",  # Expo frontend
