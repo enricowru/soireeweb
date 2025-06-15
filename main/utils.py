@@ -10,6 +10,12 @@ import os
 import requests
 import cloudinary
 
+
+# ✅ Moderator Permission Check
+def is_moderator(user):
+    return user.groups.filter(name='Moderators').exists()
+
+
 def get_fuzzy_match(query, choices, threshold=80):
     """
     Get the best fuzzy match for a query from a list of choices.

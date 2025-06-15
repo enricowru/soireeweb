@@ -2,6 +2,7 @@ from . import chatbot_urls
 from django.urls import path, include
 from . import views
 from . import chatbot_views
+from django.contrib.auth import views as auth_views
 from .views import signup
 from django.shortcuts import redirect
 
@@ -10,6 +11,8 @@ urlpatterns = [
     path('chatbot/', include(chatbot_urls.urlpatterns)),
     path('', views.home),  # instead of views.redirect_home
     path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+   
     path('editprofile/', views.editprofile, name='editprofile'),
     path('moredesign/', views.moredesign, name='moredesign'),
     path('home/', views.home, name='home'),
@@ -26,10 +29,14 @@ urlpatterns = [
     #Moderator URLs
     path('moderator/', views.moderator_access, name='moderator'),
     path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin/profile/edit/', views.admin_edit, name='admin_edit'),
+    path('admin/event/history/', views.event_history, name='event_history'),
     path('admin/event/<int:event_id>/', views.event_detail, name='event_detail'),
     path('admin/event/create/', views.create_event, name='create_event'),
+     path('admin/event/<int:event_id>/edit/', views.event_edit, name='event_edit'),
     path('admin/event/<int:event_id>/grant-access/', views.grant_moderator_access, name='grant_moderator_access'),
     path('admin/event/<int:event_id>/delete/', views.delete_event, name='delete_event'),
+    path('admin/moderator/<int:moderator_id>/edit/', views.moderator_edit, name='moderator_edit'),
     path('admin/moderator/create/', views.create_moderator, name='create_moderator'),
     path('admin/moderators/', views.view_all_moderators, name='view_all_moderators'),
     path('admin/users/', views.view_all_users, name='view_all_users'),
@@ -53,5 +60,16 @@ urlpatterns = [
     path('admin/users/create/', views.user_create, name='user_create'),
     path('admin/users/<int:user_id>/edit/', views.user_edit, name='user_edit'),
     path('admin/users/<int:user_id>/delete/', views.user_delete, name='user_delete'),
+    
+    # Password Reset URLs
+    path('password_reset/', auth_views.PasswordResetView.as_view(template_name='registration/password_reset_form.html'), name='password_reset'),
+    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done.html'), name='password_reset_done'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html'), name='password_reset_confirm'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
+
+    path('chat/', views.chat_list, name='chat_list'),
+    path('chat/<int:chat_id>/', views.chat_detail, name='chat_detail'),
+    path('chat/create/', views.create_chat, name='create_chat'),
+    path('chat/send-message/', views.send_message, name='send_message'),
 ]
 
