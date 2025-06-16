@@ -7,6 +7,7 @@ services:
       python manage.py migrate
       python manage.py collectstatic --noinput
     startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+    staticPublishPath: staticfiles
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: config.settings

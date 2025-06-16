@@ -1,0 +1,433 @@
+/* Fonts */
+@font-face {
+    font-family: 'inriabold';
+    src: url('../fonts/inria-serif.bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'jostblack';
+    src: url('../fonts/jost.black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'jostbold';
+    src: url('../fonts/jost.bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'jostbookitalic';
+    src: url('../fonts/jost.book-italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'jostbook';
+    src: url('../fonts/jost.book.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'jostlight';
+    src: url('../fonts/jost.light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'jostmedium';
+    src: url('../fonts/jost.medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'jostsemi';
+    src: url('../fonts/jost.semi.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+
+
+body {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+
+/* Sidebar */
+.sidebar {
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #333;
+    overflow-y: auto;
+    color: white;
+    padding-top: 60px;
+    z-index: 1000;
+}
+
+.sidebar h1 {
+    position: absolute;
+    top: -5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    color: white;
+    font-size: 48px;
+}
+
+.sidebar h3 {
+    align-items: center;
+    padding: 10px 20px;
+    color: white;
+    font-size: 16px;
+    margin-top: 30%;
+    font-weight: normal;
+}
+
+.middle {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.middle button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.middle button i {
+    color: white;
+    font-size: 20px;
+    align-self: center;
+}
+
+.middle hr {
+    margin: 1px;
+    margin-top: -20;
+}
+
+.middle p {
+    font-style: italic;
+    padding-top: 20px;
+    padding-bottom: -25px;
+    padding-left: 20px;
+    font-size: 13px;align-self: center;
+}
+
+.sidebar .convos {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow-y: auto;
+    max-height: 560px;
+    padding-right: 4px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.sidebar .convos::-webkit-scrollbar {
+    display: none;
+}
+
+.sidebar .convo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.sidebar .convo:hover {
+    background-color: white;
+}
+
+.sidebar .convo:hover a,
+.sidebar .convo:hover i {
+    color: #333;
+}
+
+.sidebar .convo a {
+    flex-grow: 1;
+    color: white;
+    text-decoration: none;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.sidebar .convo button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+
+/* Main Content */
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+}
+
+.main-content.shifted {
+    margin-left: 250px;
+}
+
+
+/* Top bar */
+.top {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;background-color: #f0f0f0;
+    border-radius: 12px;
+}
+.top .left {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    gap: 15px;
+    font-family: 'jostmedium';
+}
+
+.top .right {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    gap: 15px;
+}
+
+.top .right button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    text-decoration: underline;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'jostmedium';
+}
+
+.vertical-divider {
+    height: 50px;
+    width: 1.5px;
+    background-color: #ccc;
+    margin: 0 15px;
+}
+
+.top .right img {
+    border-radius: 50%; 
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid #d4af37;
+    margin-right: 15px;
+}
+
+
+/* Chatbox style */
+.chat-box {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-top: 15px;
+
+    max-height: 525px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scroll-behavior: smooth;
+}
+
+.chat-message {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 70%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 15px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    border-left: 4px solid transparent;
+    box-sizing: border-box;
+    width: auto;
+}
+
+.chat-message a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.message-body {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.chat-image {
+    width: 200px;
+    height: auto;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    display: block;
+    margin: auto;
+}
+
+.image-gallery {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    object-fit: cover;
+    justify-content: flex-start;
+}
+
+.image-gallery a {
+    display: inline-block;
+}
+
+.gallery-img {
+    width: 200px;
+    height: 200px;
+    border-radius: 8px;
+    cursor: pointer;
+    object-fit: cover;
+    transition: transform 0.2s;
+}
+
+.gallery-img:hover,
+.chat-image:hover {
+    transform: scale(1.05);
+}
+
+  
+
+/* Bot message bubble */
+.bot.chat-message {
+    background-color: #333;
+    color: #ffffff;
+    border-left: 4px solid #d4af37;
+    align-self: flex-start;
+    font-family: 'jostlight';
+}
+
+/* User message bubble */
+.user.chat-message {
+    background-color: #d4af37;
+    color: #1a1a1a;
+    border-right: 4px solid #333;
+    align-self: flex-end;
+    text-align: right;
+    font-family: 'jostlight';
+}
+
+
+ /* Send message */
+ .chat-form {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.chat-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    resize: none;
+    min-height: 40px;
+    max-height: 80px;
+    overflow-y: auto;
+    font-family: 'jostlight';
+    font-size: 14px;
+    line-height: 1.4;
+    box-sizing: border-box;
+}
+
+.chat-form button {
+    height: 60px;
+    align-self: stretch;
+    padding: 10px 16px;
+    background-color: #d4af37;
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.chat-form button:hover {
+    background-color: #333;
+    color: #ffffff;
+}
+
+.char-count {
+    font-family: 'jostlight';
+    font-size: 15px;
+}
+
+.ai-generated-theme {
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.ai-generated-theme:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateY(-2px);
+}
+
+.ai-generated-theme strong {
+    display: block;
+    margin-bottom: 10px;
+    color: #fff;
+    font-size: 1.1em;
+}
+
+.ai-generated-theme img {
+    width: 200px;
+    border-radius: 8px;
+    margin: 8px 0;
+    display: block;
+    transition: transform 0.3s ease;
+    border: 2px solid rgba(255,255,255,0.2);
+}
+
+.ai-generated-theme img:hover {
+    transform: scale(1.05);
+    border-color: rgba(255,255,255,0.4);
+}
