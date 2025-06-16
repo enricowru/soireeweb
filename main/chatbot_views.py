@@ -6,7 +6,7 @@ from .models import ChatSession
 import json
 import os
 from django.conf import settings
-from .chatbot_utils import (
+from .utils import (
     get_fuzzy_match, 
     generate_ai_theme_image, 
     wildcard_match,

@@ -137,7 +137,7 @@ def validate_and_suggest(user_input, valid_choices, context="item"):
     
     # Try fuzzy match
     match, score = get_fuzzy_match(user_input, valid_choices)
-    if match and score >= 80:
+    if match and score >= 70:
         return True, match, []
     
     # Get suggestions
@@ -215,6 +215,122 @@ def get_theme_images(theme):
     image_urls = [cloudinary.utils.cloudinary_url(public_id, secure=True)[0] for public_id in theme_public_ids]
 
     return image_urls
+
+def get_food_categories():
+    """Helper function to get food categories"""
+    return [
+        'vegetables',
+        'dessert',
+        'pasta',
+        'drinks',
+        'beef',
+        'pork',
+        'chicken',
+        'seafood'
+    ]
+
+def get_food_menu(category):
+    """Helper function to get food items by category (updated to match actual menu)"""
+    menu = {
+        'vegetables': [
+            'Buttered Mixed Vegetables',
+            'Chopsuey in White Sauce',
+            'Chopsuey in Oyster Sauce',
+            'Lumpiang Sariwa',
+            'Oriental Mixed Vegetables',
+            'Stir Fry Vegetables',
+        ],
+        'dessert': [
+            'Buko Salad',
+            'Buko Pandan',
+            'Chocolate Fountain',
+            'Coffee Jelly',
+            'Dessert Buffet',
+            'Fruit Salad',
+            'Garden Salad',
+            'Ice Cream',
+            'Leche Flan',
+            'Mango Tapioca',
+            'Tropical Fruits',
+        ],
+        'pasta': [
+            'Baked Macaroni',
+            'Fettuccine Alfredo',
+            'Lasagna Rolls',
+            'Linguine in White or Red Sauce',
+            'Pancit Bihon or Canton',
+            'Penne in White or Red Sauce',
+            'Rigatoni in White or Red Sauce',
+            'Spaghetti',
+        ],
+        'drinks': [
+            'Blue Lemonade',
+            'Cucumber Lemonade',
+            'Four Seasons',
+            'Lemon Tea',
+            'Orange Juice',
+            'Pineapple Juice',
+            'Red Tea',
+        ],
+        'beef': [
+            'Beef Broccoli',
+            'Beef Caldereta',
+            'Beef Kare-Kare',
+            'Beef Teriyaki',
+            'Beef with Gravy Sauce',
+            'Garlic Beef',
+            'Lengua Pastel',
+            'Pot-Roast Beef',
+        ],
+        'pork': [
+            'Grilled Liempo',
+            'Hawaiian Sparibs',
+            'Kare-Kare Bagnet',
+            'Lechon Kawali',
+            'Lengua Pastel',
+            'Lumpiang Shanghai',
+            'Pork BBQ',
+            'Pork Caldereta',
+            'Pork Hamonado',
+            'Pork Menudo',
+            'Pork Morcon',
+            'Pork Teriyaki',
+            'Roast Pork Hawaiian',
+            'Roast Pork with Raisin Sauce',
+        ],
+        'chicken': [
+            'Breaded Fried Chicken',
+            'Buttered Chicken',
+            'Chicken BBQ',
+            'Chicken Cordon Bleu',
+            'Chicken Lollipop',
+            'Chicken Pastel',
+            'Chicken Teriyaki',
+            'Honey Glazed Chicken',
+            'Hongkong Chicken',
+            'Orange Chicken with Lemon Sauce',
+            'Royal Chicken',
+        ],
+        'seafood': [
+            'Calamares',
+            'Fish Fillet with Chili Sauce',
+            'Fish Fillet with Tartar Sauce',
+            'Fish Tofu',
+            'Mixed Seafoods with Vegetables',
+            'Squid with Lemon Sauce',
+            'Tempura',
+        ],
+    }
+    return menu.get(category.lower(), [])
+
+def get_all_dishes_for_selection():
+    """Returns all main dishes grouped by category for selection. (Excludes Pasta, Drinks, Dessert, Rice)"""
+    all_dishes_grouped = {}
+    for category in ['beef', 'pork', 'chicken', 'seafood', 'vegetables']:
+        dishes = get_food_menu(category) # Now correctly calls local get_food_menu
+        if dishes:
+            all_dishes_grouped[category.title()] = dishes # Capitalize category names
+    return all_dishes_grouped
 
 CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME', 'dzjrdqkiw')
 CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY', '891881498673297')
