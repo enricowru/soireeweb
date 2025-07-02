@@ -17,7 +17,8 @@
     <!-- Login Form -->
     <div class="login-container" id="login-form">
       <h2>LOGIN</h2>
-      <form action="https://nikescateringservices.com/login/" method="POST" autocomplete="off">
+      <form action="{% url 'login' %}" method="POST" autocomplete="off">
+          {% csrf_token %}
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
         <br>
@@ -109,6 +110,8 @@
     });
 
     // Validate and submit register form
+     const BASE_URL = "{{ LOCAL_HOST }}";
+
     document.getElementById('registerForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
@@ -136,9 +139,7 @@
       }
 
       try {
-
-        const res = await fetch('https://www.nikescateringservices.com/signup/', {
-
+        const res = await fetch(`${BASE_URL}/signup/`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ firstname, lastname, username, mobile, email, password })

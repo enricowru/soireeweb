@@ -1,2 +1,3 @@
 #Ignore venv
 ./venv
+.env
