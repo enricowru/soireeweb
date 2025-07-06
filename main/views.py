@@ -1,55 +1,10 @@
-# from django.shortcuts import render, redirect, get_object_or_404
-# from django.views.decorators.csrf import csrf_exempt
-# from django.contrib.auth.decorators import user_passes_test
-# from django.http import JsonResponse
-# from .models import Review
-# from django.views.decorators.http import require_http_methods
-# from django.contrib.auth.models import User
-# from django.contrib.auth import authenticate, login
-# from .utils import  is_moderator
-# from django.contrib import messages
-# from .models import Event, EventTracker, ModeratorAccess, Moderator, User, EventHistory, Chat, Message, Review
-# import random
-# from django.urls import reverse
-# import string
-# import difflib
-# from .forms import EventForm, ModeratorEditForm, AdminEditForm
-# from django.contrib.auth import get_user_model, authenticate, login
-# from django.http import JsonResponse
-# from django.contrib.auth.decorators import login_required
-# from django.db.models import Q
-# import json
-
-from views.admin import *
-from views.api import *
 from views.auth import *
 from views.design import *
 from views.moderator import *
 from views.reviews import *
 from views.user import *
-from views.user import *
+from views.chat import *
 
-# # In-memory user store: {username: {password, firstname, lastname, email, mobile}}
-# USERS = {
-#     'admin': {
-#         'password': 'admin123',
-#         'firstname': 'Admin',
-#         'lastname': 'User',
-#         'email': 'admin@example.com',
-#         'mobile': '',
-#         'is_admin': True,
-#     },
-#     'moderator': {
-#         'password': 'moderator123',
-#         'firstname': 'Mod',
-#         'lastname': 'Erator',
-#         'email': 'moderator@example.com',
-#         'mobile': '',
-#         'is_moderator': True,
-#     }
-# }
-# MODERATOR_CODE = 'mod1234'
-# EVENTS = []  # Each event: {'name': ..., 'event_type': ..., 'checkin': ...}
 
 # def home(request):
 #     if not request.session.get('logged_in', False):

@@ -1,7 +1,8 @@
 from django import forms
-from .models import Event, Moderator
+from .models import Event, MobilePost, Comment
 from django.contrib.auth import get_user_model
 
+        
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
@@ -68,3 +69,18 @@ class AdminEditForm(forms.Form):
             self.user_instance.mobile = self.cleaned_data.get('mobile')
             self.user_instance.save()
         return self.user_instance 
+    
+
+class MobilePostForm(forms.ModelForm):
+    class Meta:
+        model = MobilePost
+        fields = ['title', 'content']
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Write a comment...'}),
+        }

@@ -3,6 +3,8 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.contrib.auth.models import User
+
 # from djongo import models as djongo_models  # Uncomment if using Djongo
 
 # ✅ Custom User Model
@@ -212,3 +214,52 @@ class ActivityLog(models.Model):
 
     def __str__(self):
         return f'{self.action} by {self.user.username if self.user else "System"} at {self.timestamp.strftime("%Y-%m-%d %H:%M")}'
+    from django.db import models
+
+
+
+class MobilePost(models.Model):
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mobile_posts')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'mobile_post'
+        ordering = ['-created_at']
+        verbose_name = 'Mobile Post'
+        verbose_name_plural = 'Mobile Posts'
+
+    def __str__(self):
+        return self.title
+
+
+class MobilePostImage(models.Model):
+    post = models.ForeignKey(MobilePost, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='mobile_posts/')
+
+    class Meta:
+        db_table = 'mobile_post_image'
+        verbose_name = 'Mobile Post Image'
+        verbose_name_plural = 'Mobile Post Images'
+
+    def __str__(self):
+        return f"Image for {self.post.title}"
+
+class Comment(models.Model):
+    post = models.ForeignKey(MobilePost, related_name='comments', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'mobile_post_comments'
+
+
+class Like(models.Model):
+    post = models.ForeignKey(MobilePost, related_name='likes', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'mobile_post_likes'
+        unique_together = ('post', 'user')  # prevent double likes

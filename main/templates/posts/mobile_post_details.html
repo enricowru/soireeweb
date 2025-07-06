@@ -1,0 +1,73 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+{% load format_utils %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card border rounded shadow-sm px-3 py-4">
+        <div class="card-body">
+            <!-- Header with title and edit -->
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <h3 class="fw-bold mb-0">{{ post.title }}</h3>
+                <a href="{% url 'mobile_post_edit' post.id %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-pen"></i> Edit
+                </a>
+            </div>
+
+            <!-- Metadata -->
+            <p class="text-muted mb-3">Posted on {{ post.created_at }}</p>
+
+            <!-- Post content -->
+            <p class="fs-5 mb-4">{{ post.content }}</p>
+
+            <!-- Post images -->
+            {% if post.images.all %}
+                <div class="d-flex flex-wrap gap-3 mb-4">
+                    {% for image in post.images.all %}
+                        <div class="border rounded" style="width: 200px;">
+                            <img src="{{ image.image.url }}" alt="Post image"
+                                 class="img-fluid rounded"
+                                 style="object-fit: cover; height: 150px; width: 100%;">
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Analytics: Likes and Comments -->
+            <div class="mb-4">
+                <span class="badge bg-light border text-dark me-2 px-3 py-2 fs-6">
+                    <i class="fas fa-heart text-danger me-1"></i> {{ like_count|floatformat:-1|format_k }}
+                </span>
+                <span class="badge bg-light border text-dark px-3 py-2 fs-6">
+                    <i class="fas fa-comment text-primary me-1"></i> {{ comment_count|floatformat:-1|format_k }}
+                </span>
+            </div>
+
+            <!-- Comments -->
+            <hr>
+            <h5 class="fw-semibold mb-3"><i class="fas fa-comments me-2"></i>Comments</h5>
+            {% if comments %}
+                <div class="d-flex flex-column gap-3">
+                    {% for comment in comments %}
+                        <div class="card border rounded">
+                            <div class="card-body py-3">
+                                <div class="fw-medium">{{ comment.user.get_full_name|default:comment.user.username }}</div>
+                                <p class="mb-1">{{ comment.content }}</p>
+                                <small class="text-muted">{{ comment.created_at }}</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">No comments yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="card-footer bg-white d-flex justify-content-end border-top-0 pt-4">
+            <a href="{% url 'mobile_post_list' %}" class="btn btn-outline-dark">
+                <i class="fas fa-arrow-left me-1"></i> Back to Posts
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

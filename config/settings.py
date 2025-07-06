@@ -173,7 +173,7 @@ DEEPAI_API_KEY = 'c6ea7310-add9-441d-9a53-019f2f12da1f'  # Replace with your act
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -226,6 +226,13 @@ CACHES = {
     }
 }
 
+LOGIN_URL = '/login/'
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True

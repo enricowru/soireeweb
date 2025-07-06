@@ -1,50 +1,41 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from django.http import JsonResponse
 from django.contrib.auth import get_user_model
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
-import json
+from django.contrib.auth.decorators import login_required
+from ..models import Moderator
 
 User = get_user_model()
 
-# In-memory user store
-USERS = {
-    'admin': {
-        'password': 'admin123',
-        'firstname': 'Admin',
-        'lastname': 'User',
-        'email': 'admin@example.com',
-        'mobile': '',
-        'is_admin': True,
-    },
-    'moderator': {
-        'password': 'moderator123',
-        'firstname': 'Mod',
-        'lastname': 'Erator',
-        'email': 'moderator@example.com',
-        'mobile': '',
-        'is_moderator': True,
-    }
-}
 
+@login_required
 def home(request):
-    if not request.session.get('logged_in', False):
-        return redirect('login')
-    
+    if request.user.username == 'admin':
+        return redirect('/admin/dashboard')
+
+    users = User.objects.all()
     user_list = []
-    for username, user in USERS.items():
-        role = 'Admin' if user.get('is_admin') else 'Moderator' if user.get('is_moderator') else 'User'
+
+    for user in users:
+        if user.username == 'admin':
+            role = 'Admin'
+        elif Moderator.objects.filter(user=user).exists():
+            role = 'Moderator'
+        else:
+            role = 'User'
+
         user_list.append({
-            'username': username,
-            'firstname': user.get('firstname', ''),
-            'lastname': user.get('lastname', ''),
-            'role': role
+            'username': user.username,
+            'firstname': user.first_name,
+            'lastname': user.last_name,
+            'role': role,
         })
-    return render(request, 'main.html', {'logged_in': True, 'user_list': user_list})
 
-
+    return render(request, 'main.html', {
+        'logged_in': True,
+        'user_list': user_list
+    })
+    
 def login_view(request):
     message = ''
     show_register = False
@@ -97,8 +88,7 @@ def logout_view(request):
 
 def is_admin(request):
     username = request.session.get('username')
-    user = USERS.get(username)
-    return user and user.get('is_admin')
+    return username == 'admin'
 
 def admin_required(view_func):
     def wrapper(request, *args, **kwargs):
@@ -108,33 +98,3 @@ def admin_required(view_func):
         return view_func(request, *args, **kwargs)
     return wrapper
 
-# @csrf_exempt
-# @require_http_methods(["POST"])
-# def signup(request):
-#     try:
-#         data = json.loads(request.body)
-#         firstname = data.get('firstname')
-#         lastname = data.get('lastname')
-#         username = data.get('username')
-#         email = data.get('email')
-#         password = data.get('password')
-#         mobile = data.get('mobile')  # Optional - only stored if you extend the User model
-
-#         if User.objects.filter(username=username).exists():
-#             return JsonResponse({'message': 'Username already exists'}, status=400)
-
-#         user = User.objects.create_user(
-#             username=username,
-#             email=email,
-#             password=password,
-#             first_name=firstname,
-#             last_name=lastname
-#         )
-
-#         response = JsonResponse({'message': 'User registered successfully'}, status=201)
-#     except Exception as e:
-#         response = JsonResponse({'message': 'Server error', 'error': str(e)}, status=500)
-
-#     response["Access-Control-Allow-Origin"] = "https://nikescateringservices.com"
-#     response["Access-Control-Allow-Credentials"] = "true"
-#     return response

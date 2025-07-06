@@ -1,0 +1,158 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="fw-semibold mb-4">
+        {% if edit %}Edit{% else %}Create{% endif %} Mobile Post
+    </h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="mb-3">
+            <label for="id_title" class="form-label">Title</label>
+            <input type="text" name="title" id="id_title" class="form-control"
+                   value="{{ form.title.value|default_if_none:'' }}">
+            {% if form.title.errors %}
+                <div class="text-danger small">{{ form.title.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label for="id_content" class="form-label">Content</label>
+            <textarea name="content" id="id_content" class="form-control"
+                      rows="5">{{ form.content.value|default_if_none:'' }}</textarea>
+            {% if form.content.errors %}
+                <div class="text-danger small">{{ form.content.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label d-block">Images</label>
+            <input type="file" name="images" id="id_images" class="d-none" accept="image/*" multiple>
+            <button type="button" class="btn btn-outline-primary mb-3" onclick="document.getElementById('id_images').click()">
+                ➕ Add Image
+            </button>
+
+            {% if form.errors.images %}
+                <div class="text-danger small">{{ form.errors.images.0 }}</div>
+            {% endif %}
+
+            <div id="image-preview" class="d-flex flex-wrap gap-3"></div>
+        </div>
+
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-dark">Save Post</button>
+        </div>
+
+        {% if edit and post.images.all %}
+            <div id="existing-images-data" data-images='[
+                {% for img in post.images.all %}
+                    {"id": "{{ img.id }}", "url": "{{ img.image.url }}"}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ]'></div>
+        {% endif %}
+    </form>
+</div>
+
+<script>
+    const fileInput = document.getElementById('id_images');
+    const previewContainer = document.getElementById('image-preview');
+    let selectedFiles = [];
+
+    // Load existing images if editing
+    const existingImagesData = document.getElementById('existing-images-data');
+    if (existingImagesData) {
+        try {
+            const existingImages = JSON.parse(existingImagesData.dataset.images || '[]');
+            existingImages.forEach(img => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'position-relative';
+                wrapper.style.width = '200px';
+
+                const image = document.createElement('img');
+                image.src = img.url;
+                image.className = 'rounded border';
+                image.style.width = '100%';
+                image.style.objectFit = 'cover';
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'btn btn-sm btn-danger position-absolute top-0 end-0';
+                removeBtn.innerText = '✕';
+                removeBtn.onclick = () => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'remove_images[]';
+                    input.value = img.id;
+                    document.querySelector('form').appendChild(input);
+                    wrapper.remove();
+                };
+
+                wrapper.appendChild(image);
+                wrapper.appendChild(removeBtn);
+                previewContainer.appendChild(wrapper);
+            });
+        } catch (e) {
+            console.error('Failed to parse existing images:', e);
+        }
+    }
+
+    // Handle new image uploads
+    fileInput.addEventListener('change', (e) => {
+        const newFiles = Array.from(e.target.files).filter(file => file.type.startsWith('image/'));
+        selectedFiles = [...selectedFiles, ...newFiles];
+        renderNewPreviews();
+    });
+
+    function renderNewPreviews() {
+        // Remove only previous new previews
+        document.querySelectorAll('.new-upload-preview').forEach(el => el.remove());
+
+        selectedFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'position-relative new-upload-preview';
+                wrapper.style.width = '200px';
+
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'rounded border';
+                img.style.width = '100%';
+                img.style.objectFit = 'cover';
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.innerText = '✕';
+                removeBtn.className = 'btn btn-sm btn-danger position-absolute top-0 end-0';
+                removeBtn.onclick = () => {
+                    selectedFiles.splice(index, 1);
+                    renderNewPreviews();
+                };
+
+                wrapper.appendChild(img);
+                wrapper.appendChild(removeBtn);
+                previewContainer.appendChild(wrapper);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Final step: inject new images back into file input
+    document.querySelector('form').addEventListener('submit', function () {
+        const dataTransfer = new DataTransfer();
+        selectedFiles.forEach(file => dataTransfer.items.add(file));
+        fileInput.files = dataTransfer.files;
+    });
+</script>
+{% endblock %}
