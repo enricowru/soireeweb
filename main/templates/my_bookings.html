@@ -1,0 +1,180 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Bookings · Nike’s Catering</title>
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+  <link rel="stylesheet" href="{% static 'css/my_bookings.css' %}">
+</head>
+<body>
+{% include 'navbar.html' %}
+
+<div class="chat-wrap">
+
+  <!-- ────────── SIDEBAR ────────── -->
+  <aside class="sidebar">
+    <div class="d-flex align-items-center justify-content-between border-bottom px-3 py-2">
+      <span class="fw-semibold">Bookings</span>
+      <a href="{% url 'bookhere' %}"
+         class="btn btn-sm d-flex align-items-center gap-1"
+         style="background:var(--gold);color:#fff;border:none;border-radius:6px;">
+        <i class="fa fa-plus small"></i><span class="d-none d-md-inline">Add</span>
+      </a>
+    </div>
+
+    <!-- Active / draft -->
+    <ul class="list-unstyled sidebar-list m-0">
+      {% for bk in active_bookings %}
+        <li class="booking-item{% if forloop.first %} active{% endif %}"
+            data-id="{{ bk.chat.id }}"
+            data-label="{{ bk.event_type }} • {{ bk.event_date|date:'M j Y' }}">
+          <div class="fw-semibold text-truncate">
+              {{ bk.event_date|date:"M j Y" }} · {{ bk.event_type }}
+          </div>
+          <small class="text-muted">{{ bk.get_status_display }}</small>
+        </li>
+      {% empty %}
+        <li class="text-muted small p-4">No active bookings yet.</li>
+      {% endfor %}
+    </ul>
+
+    <!-- General chat -->
+    <div class="border-top">
+      <li class="booking-item general-chat"
+          data-id="general"
+          data-label="General chat">
+        <i class="fa fa-comments me-2 text-muted"></i>Talk to Nike’s Catering
+      </li>
+    </div>
+
+    <!-- Past -->
+    {% if past_bookings %}
+    <details class="border-top">
+      <summary class="px-3 py-2 small text-muted">Past bookings</summary>
+      <ul class="list-unstyled sidebar-list m-0">
+        {% for bk in past_bookings %}
+        <li class="booking-item"
+            data-id="{{ bk.chat.id }}"
+            data-label="{{ bk.event_type }} • {{ bk.event_date|date:'M j Y' }}">
+          <div class="text-truncate">
+              {{ bk.event_date|date:"M j Y" }} · {{ bk.event_type }}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </details>
+    {% endif %}
+  </aside>
+
+  <!-- ────────── CHAT PANE ────────── -->
+  <section class="chat-pane">
+    <header id="chat-header">
+        {% if first_chat %}
+            <strong id="chat-client">
+                {{ other_participant.get_full_name|default:"Nike’s Catering" }}
+            </strong>&nbsp;·&nbsp;
+            <span id="chat-meta">{{ first_chat_label }}</span>
+                {% else %}
+            <span class="small text-muted">Select a booking to start chatting</span>
+        {% endif %}
+    </header>
+
+    <div id="chat-messages">
+      {% for m in first_messages %}
+        <div class="msg {% if m.sender_id == user.id %}sender{% else %}receiver{% endif %}">
+          {{ m.content|safe }}
+        </div>
+      {% empty %}
+        <div class="small text-muted text-center mt-5">No messages…</div>
+      {% endfor %}
+    </div>
+
+    <form id="composer" class="composer">
+      <textarea id="composer-input" placeholder="Type message…"></textarea>
+      <button class="btn" type="submit"><i class="fa fa-paper-plane"></i></button>
+    </form>
+  </section>
+
+</div><!-- /.chat-wrap -->
+
+<!-- ────────── JS ────────── -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script>
+const box  = document.getElementById('chat-messages');
+const clientId = {{ user.id }};   // handy for runtime checks
+
+/* util to create a bubble */
+function makeBubble(html, mine){
+  const div = document.createElement('div');
+  div.className = 'msg ' + (mine ? 'sender' : 'receiver');
+  div.innerHTML = html;
+  return div;
+}
+function scrollBottom(){ box.scrollTop = box.scrollHeight; }
+
+/* full re‑render */
+function renderThread(arr){
+  box.innerHTML = '';
+  if(!arr.length){
+    box.innerHTML = '<div class="small text-muted text-center mt-5">No messages…</div>';
+    return;
+  }
+  arr.forEach(m => box.appendChild(makeBubble(m.html, m.mine)));
+  scrollBottom();
+}
+
+/* GET /chat/<id>/messages-json/ */
+async function fetchThread(id){
+  if(!id){ throw new Error('missing chat id'); }
+  const r = await fetch(`/chat/${id}/messages-json/`, {
+    headers: {'X-Requested-With':'XMLHttpRequest'}
+  });
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+/* — sidebar click — */
+document.querySelectorAll('.booking-item').forEach(li=>{
+  li.addEventListener('click', async()=>{
+    document.querySelectorAll('.booking-item').forEach(x=>x.classList.remove('active'));
+    li.classList.add('active');
+
+    // header label
+    document.getElementById('chat-client').textContent =
+      li.querySelector('.fw-semibold')?.textContent ?? 'Nike’s Catering';
+    document.getElementById('chat-meta').textContent = li.dataset.label || '';
+
+    // load thread
+    box.innerHTML =
+      '<div class="small text-muted text-center mt-5">Loading…</div>';
+    try{
+      const data = await fetchThread(li.dataset.id);
+      renderThread(data);
+    }catch(err){
+      console.error(err);
+      box.innerHTML =
+        '<div class="small text-danger text-center mt-5">Error loading</div>';
+    }
+  });
+});
+
+/* — local echo for now — */
+document.getElementById('composer').addEventListener('submit',e=>{
+  e.preventDefault();
+  const ta  = document.getElementById('composer-input');
+  const txt = ta.value.trim();
+  if(!txt) return;
+  ta.value = '';
+  box.appendChild(makeBubble(txt, true));
+  scrollBottom();
+  // TODO: send over WebSocket
+});
+</script>
+</body>
+</html>

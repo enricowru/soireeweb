@@ -36,7 +36,7 @@ urlpatterns = [
     # path('reviews/<int:review_id>/edit/', views.review_edit, name='review_edit'),
     path('reviews/', views.review_list, name='review_list'),
     path('reviews/<int:review_id>/delete/', views.review_delete, name='review_delete'),
-    
+     path("bookings/stream/", views.booking_notifications, name="booking_stream"),
     # User Management URLs
     # path('users/list/', views.user_list, name='user_list'),
     # path('users/create/', views.user_create, name='user_create'),

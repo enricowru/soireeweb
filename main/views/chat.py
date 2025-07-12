@@ -3,10 +3,9 @@ from django.shortcuts import redirect, get_object_or_404
 from ..models import User
 from ..models import Chat
 from ..models import Message
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import render, redirect
 from django.db.models import Q
-
 @login_required
 def create_chat(request):
     if request.method == 'POST':
@@ -120,3 +119,14 @@ def chat_detail(request, chat_id):
         'active_chat': chat,
         'available_users': available_users
     })
+
+@login_required
+def chat_messages_json(request, chat_id):
+    chat = get_object_or_404(Chat, id=chat_id, participants=request.user)
+    qs   = chat.messages.select_related("sender").order_by("timestamp")
+    data = [{
+        "html" : m.content,                
+        "mine" : m.sender_id == request.user.id,
+        "ts"   : m.timestamp.isoformat()
+    } for m in qs]
+    return JsonResponse(data, safe=False)

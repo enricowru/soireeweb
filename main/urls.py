@@ -6,16 +6,16 @@ from .api import *
 
 
 urlpatterns = [
-    path('chatbot/', include(chatbot_urls.urlpatterns)),
-    path('', views.home, name='main'),  
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    path('', views.home, name='main'),  
    
     path('editprofile/', views.editprofile, name='editprofile'),
     path('moredesign/', views.moredesign, name='moredesign'),
     path('home/', views.home, name='home'),
-    path('home/chatbot/', views.home, name='home'),
+    # path('home/chatbot/', views.home, name='home'),
     path('signup/', signup, name='signup'),
+    path('chatbot/', include(chatbot_urls.urlpatterns)),
 
     # API endpoint for mobile review submission
     path('api/reviews/', submit_review, name='submit_review'),
@@ -37,5 +37,12 @@ urlpatterns = [
     path('chat/<int:chat_id>/', views.chat_detail, name='chat_detail'),
     path('chat/create/', views.create_chat, name='create_chat'),
     path('chat/send-message/', views.send_message, name='send_message'),
+    path("chat/<int:chat_id>/messages-json/", views.chat_messages_json, name="chat_messages_json"),
+    
+    path('bookhere/', views.bookhere, name='bookhere'),
+    path('bookhere_submit', views.bookhere_submit, name="bookhere_submit"),
+    path('my_bookings', views.my_bookings, name='my_bookings'),
+    
+    path('chatbot', include('main.chatbot_urls'))
 ]
 

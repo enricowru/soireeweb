@@ -4,6 +4,7 @@ from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.contrib.auth.models import User
+from datetime import datetime
 
 # from djongo import models as djongo_models  # Uncomment if using Djongo
 
@@ -262,4 +263,61 @@ class Like(models.Model):
 
     class Meta:
         db_table = 'mobile_post_likes'
-        unique_together = ('post', 'user')  # prevent double likes
+        unique_together = ('post', 'user')  
+        
+        
+class BookingRequest(models.Model):
+    """
+    A draft booking submitted by a client. Used to notify admins and
+    kick off chat/confirmation workflows.
+    """
+    # -- Meta --
+    created_at   = models.DateTimeField(default=timezone.now, editable=False)
+    updated_at   = models.DateTimeField(auto_now=True)
+    status_choices = [
+        ("draft",     "Draft / Pending"),
+        ("confirmed", "Confirmed"),
+        ("rejected",  "Rejected"),
+    ]
+    status       = models.CharField(max_length=10, choices=status_choices, default="draft")
+
+    # -- Who made the booking --
+    client       = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    # -- Main fields --
+    event_date   = models.DateField()
+    event_type   = models.CharField(max_length=60)
+    pax          = models.PositiveIntegerField()
+    location     = models.CharField(max_length=255)
+    color_hex    = models.CharField(max_length=7)  # e.g., "#ff0000"
+    package      = models.CharField(max_length=40)
+
+    # -- Menu (stored as plain strings) --
+    dishes       = models.TextField(help_text="Comma-separated list of dishes")
+    pasta        = models.CharField(max_length=60)
+    drink        = models.CharField(max_length=60)
+
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE, null=True, blank=True, related_name="request_booking")
+
+    # -- Raw backup (optional) --
+    raw_payload  = models.JSONField(blank=True, null=True)
+
+    def dish_list(self):
+        """Returns dishes as a Python list."""
+        return [d.strip() for d in self.dishes.split(",") if d.strip()]
+
+    def short_label(self):
+        d = self.event_date
+        if isinstance(d, str):  # fallback if string sneaks in
+            try:
+                d = datetime.fromisoformat(d).date()
+            except ValueError:
+                return f"{self.event_type} ({self.pax}pax)"
+        return f"{d.strftime('%b %d, %Y')} • {self.event_type} ({self.pax}pax)"
+
+    def __str__(self):
+        return f"[{self.pk}] {self.short_label()}  {self.client.get_full_name()}"
+
+    class Meta:
+        db_table = 'booking_request'
+        ordering = ("-created_at",)

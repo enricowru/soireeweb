@@ -4,10 +4,12 @@ from django.urls import reverse
 from ..forms import EventForm, ModeratorEditForm, AdminEditForm
 from ..models import Event, EventTracker, ModeratorAccess, Moderator, EventHistory
 from .auth import admin_required
-import json
 import random
 import string
 from django.contrib.auth import get_user_model
+import json, asyncio
+from django.http import StreamingHttpResponse
+from main.sse import booking_events  
 
 User = get_user_model()
 
@@ -281,3 +283,27 @@ def event_delete(request, event_id):
         messages.success(request, 'Event deleted successfully!')
         return redirect('admin_dashboard')
     return render(request, 'main/event_confirm_delete.html', {'event': event})  
+
+async def booking_notifications(request):
+    """
+    URL:  /admin/bookings/stream/
+    Keeps an open HTTP connection and pushes each booking event
+    as a Server‑Sent‑Event line:  data: {json}\n\n
+    """
+    queue = booking_events.register()
+
+    async def event_gen():
+        try:
+            while True:
+                data = await queue.get()
+                yield f"data: {json.dumps(data)}\n\n".encode()
+        finally:
+            booking_events.connections.discard(queue)
+
+    resp = StreamingHttpResponse(
+        event_gen(),
+        content_type="text/event-stream",
+    )
+    resp["Cache-Control"]       = "no-cache"
+    resp["X-Accel-Buffering"]   = "no"          # nginx
+    return resp
