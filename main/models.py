@@ -321,3 +321,68 @@ class BookingRequest(models.Model):
     class Meta:
         db_table = 'booking_request'
         ordering = ("-created_at",)
+        
+
+class EventStatusLog(models.Model):
+    class Label(models.TextChoices):
+        BACKDROP = 'BACKDROP', 'Backdrop'
+        PAYMENT = 'PAYMENT', 'Payment'
+        LOGISTICS = 'LOGISTICS', 'Logistics'
+        CATERING = 'CATERING', 'Catering'
+
+    class Status(models.TextChoices):
+        PENDING = 'PENDING', 'Pending'
+        DONE = 'DONE', 'Done'
+        PARTIALLY_PAID = 'PARTIALLY_PAID', 'Partially Paid'
+        CANCELLED = 'CANCELLED', 'Cancelled'
+
+    booking = models.ForeignKey(
+        'BookingRequest',
+        on_delete=models.CASCADE,
+        related_name='event_logs'
+    )
+
+    label = models.CharField(
+        max_length=30,
+        choices=Label.choices
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'event_status_log'
+        unique_together = ('booking', 'label')  # Prevent duplicate log steps per booking
+
+    def __str__(self):
+        return f"{self.label} - {self.status} for booking {self.booking_id}"
+
+class EventStatusAttachment(models.Model):
+    """
+    Holds multiple file attachments for a specific EventStatusLog entry.
+    """
+
+    booking = models.ForeignKey(
+        'BookingRequest',
+        on_delete=models.CASCADE,
+        related_name='event_status_attachments'
+    )
+
+    status_log = models.ForeignKey(  
+        'EventStatusLog',
+        on_delete=models.CASCADE,
+        related_name='attachments' 
+    )
+
+    file = models.FileField(upload_to='event_attachments/')
+    uploaded_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        db_table = 'event_status_attachment'
+        unique_together = ('booking', 'status_log', 'file') 
+
+    def __str__(self):
+        return f"Attachment for {self.status_log}"

@@ -7,11 +7,10 @@ from ..models import BookingRequest, Chat, Message, User
 from django.utils import timezone
 from django.utils.html import format_html_join
 import datetime as _dt
-from django.db.models import Prefetch
 
 def booking_summary(booking) -> str:
     """
-    Pretty HTML block sent as the very first system/admin message.
+    Initial message to be sent after requesting a booking.
     """
     rows = [
         ("Date",      booking.event_date.strftime("%b %d %Y")),
@@ -34,15 +33,11 @@ def booking_summary(booking) -> str:
         "<p>Please enter your name, contact information, and the names of the expected attendees. Thank you.</p>"
         )
 
-def _fire_and_forget(payload: dict):
-    """
-    Push to the SSE hub without needing an existing event loop.
-    Spawns a short‑lived background thread.
-    """
+def _fire_and_forget(chat_id: int, payload: dict):
     def _runner():
-        asyncio.run(booking_events.push(payload))
+        asyncio.run(booking_events.push(chat_id, payload))
     threading.Thread(target=_runner, daemon=True).start()
-    
+
 @login_required
 def editprofile(request):
     return render(request, 'editprofile.html')
@@ -79,7 +74,7 @@ def bookhere_submit(request):
 
     booking = BookingRequest.objects.create(
         client      = request.user,
-        chat        = chat,                 #  ←  NOW STORED
+        chat        = chat,             
         event_date  = event_date,
         event_type  = data["event_type"],
         pax         = int(data["pax"]),
@@ -103,7 +98,7 @@ def bookhere_submit(request):
     )
 
     # ---------- 4) push SSE (fire‑and‑forget) ----------
-    _fire_and_forget({
+    _fire_and_forget(chat.id, {
         "type"   : "booking",
         "chatId" : chat.id,
         "html"   : msg_html,
@@ -112,18 +107,6 @@ def bookhere_submit(request):
     })
 
     return redirect("my_bookings")
-
-def _chat_label(chat: Chat) -> str:
-    """
-    What should appear on the right‑hand header after “·”.
-    • If the chat is tied to a BookingRequest →  “Birthday Party • Jul 12 2025”
-    • Otherwise fall back to “General chat”
-    """
-    br = getattr(chat, "bookingrequest", None)
-    if br:
-        return f"{br.event_type} • {br.event_date:%b %d %Y}"
-    return "General chat"
-
 
 @login_required
 def my_bookings(request):
@@ -140,28 +123,36 @@ def my_bookings(request):
 
     chats = (
         Chat.objects
-            .filter(participants=user)
-            .select_related()               
+            .filter(participants=user)                 
             .prefetch_related(
-                "participants",                  
-                "messages__sender",               
-                Prefetch("request_booking")              
+                "participants",
+                "messages__sender",
+                "request_booking"
             )
             .order_by("-updated_at")
     )
 
     first_chat = chats.first()
+    first_booking = BookingRequest.objects.filter(chat=first_chat).first()
+    booking = BookingRequest.objects.filter(chat=first_chat).first()
 
-    other = first_chat.participants.exclude(id=user.id).first() if first_chat else None
-    first_messages = (first_chat.messages.select_related("sender")[:25]
-                      if first_chat else [])
+    booking_date = booking.event_date if booking else None
+    event_type   = booking.event_type if booking else ""
+
+    first_messages = (
+        first_chat.messages.select_related("sender")[:25] if first_chat else []
+    )
+
+    booking_meta = f"{event_type} • {booking_date.strftime('%b %d, %Y')} " if booking and booking_date else ""
 
     context = {
-        "active_bookings":   active,
-        "past_bookings":     past,
-        "first_chat":        first_chat,
-        "first_messages":    first_messages,
-        "other_participant": other,
-        "first_chat_label":  _chat_label(first_chat) if first_chat else "",
+        "active_bookings": active,
+        "past_bookings": past,
+        "first_chat": first_chat,
+        "first_messages": first_messages,
+        "first_booking": first_booking, 
+        "booking_meta": booking_meta, 
     }
+
+  
     return render(request, "my_bookings.html", context)

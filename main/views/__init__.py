@@ -6,3 +6,4 @@ from .reviews import *
 from .user import *
 from .posts import *
 from .chat import *
+from .events import *

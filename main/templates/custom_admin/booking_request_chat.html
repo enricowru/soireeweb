@@ -1,0 +1,382 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+.chat-wrap {
+  display: flex;
+  height: calc(100vh - 10vh);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Sidebar */
+.chat-sidebar {
+  width: 260px;
+  background: #1e1e1e;
+  color: white;
+  overflow-y: auto;
+  flex-shrink: 0;
+  transition: transform 0.3s ease-in-out;
+  z-index: 1050; /* Raised z-index to go above header buttons */
+  position: relative;
+}
+
+.chat-sidebar.hidden {
+  transform: translateX(-100%);
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Chat */
+.chat-pane {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background: #f9f9f9;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+/* Chat header */
+#chat-header {
+  padding: 12px 20px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+  font-weight: 500;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+#chat-messages {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.msg {
+  width:  fit-content;
+  max-width: 70%;
+  margin: 8px 0;
+  padding: 10px 16px;
+  border-radius: 16px;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.sender {
+  background: #AD974F;
+  color: white;
+  margin-left: auto;
+  text-align: right;
+}
+
+.receiver {
+  background: #e2e2e2;
+  color: #333;
+  margin-right: auto;
+  text-align: left;
+}
+
+/* Composer */
+.composer {
+  display: flex;
+  gap: 10px;
+  padding: 12px 20px;
+  background: white;
+  border-top: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+#composer-input {
+  flex-grow: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  resize: none;
+  height: 44px;
+}
+
+.composer .btn {
+  background: #AD974F;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0 18px;
+}
+
+.composer .btn:hover {
+  background: #8c7a3e;
+}
+
+/* Sidebar toggle button */
+.toggle-sidebar-btn {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: #333;
+  display: none;
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1100; /* above sidebar */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .toggle-sidebar-btn {
+    display: inline-block;
+  }
+
+  .chat-sidebar {
+    transform: translateX(-100%);
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+  }
+
+  .chat-sidebar.show {
+    transform: translateX(0);
+  }
+
+  .chat-pane {
+    flex-grow: 1;
+    width: 100%;
+  }
+
+ .booking-item {
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: #2a2a2a; /* Slightly lighter than sidebar for card feel */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  color: white;
+}
+
+.booking-item:hover {
+  background: #383838;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.booking-item.active {
+  border-left: 4px solid #AD974F;
+  background: #3B3B3AFF;
+  box-shadow: 0 4px 16px rgba(173, 151, 79, 0.4);
+}
+}
+</style>
+
+<div class="chat-wrap">
+    <!-- Sidebar -->
+ <aside class="chat-sidebar d-flex flex-column" id="chatSidebar">
+  <div class="d-flex justify-content-between align-items-center text-white px-3 py-2 border-bottom">
+    <span class="fw-semibold">Client Chats</span>
+    <button class="btn btn-sm p-0 text-white border-0 bg-transparent d-md-none d-block" id="closeSidebarBtn" title="Close Sidebar">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <ul class="list-unstyled sidebar-list m-0 overflow-auto">
+    {% for booking in bookings %}
+      <li class="booking-item{% if forloop.first %} active{% endif %}"
+          data-id="{{ booking.chat.id }}"
+          data-meta="{{ booking.client.get_full_name }} – {{ booking.event_type }} • {{ booking.event_date|date:'M j, Y' }}"
+          style="padding: 0.75rem 1rem; margin: 0.5rem; border-radius: 0.5rem; background: #2E2E2EFF; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); cursor: pointer; transition: box-shadow 0.2s ease;">
+        <div class="fw-semibold text-truncate">{{ booking.client.get_full_name }}</div>
+        <small>{{ booking.event_type }} • {{ booking.event_date|date:"M j, Y" }}</small>
+      </li>
+    {% empty %}
+      <li class="text-small p-4">No active chats.</li>
+    {% endfor %}
+  </ul>
+</aside>
+
+  <!-- Chat -->
+  <section class="chat-pane">
+    <header id="chat-header" class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+      <div class="d-flex align-items-center gap-2">
+        <button class="toggle-sidebar-btn btn btn-sm btn-light" id="openSidebarBtn" title="Open Sidebar">
+          <i class="fas fa-bars"></i>
+        </button>
+        <span id="chat-meta" class="fw-bold">{{ first_chat_meta }}</span>
+      </div>
+      <button id="viewStatusBtn" class="btn btn-sm btn-outline-dark d-none" data-id="" title="View Request Status">
+        <i class="fas fa-clipboard-list me-1"></i> View Status
+      </button>
+  </header>
+
+    <div id="chat-messages">
+      {% for m in first_messages %}
+        <div class="msg {% if m.sender.is_staff %}sender{% else %}receiver{% endif %}">
+          {{ m.content|safe }}
+        </div>
+      {% empty %}
+        <div class="small text-muted text-center mt-5">No messages…</div>
+      {% endfor %}
+    </div>
+
+    <div id="composer-wrap" class="{% if not first_chat.id %}d-none{% endif %}">
+      <form id="composer" class="composer" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="chat_id" id="chat-id" value="{{ first_chat.id }}">
+        <textarea id="composer-input" name="message" placeholder="Type message…"></textarea>
+        <button class="btn" type="submit"><i class="fa fa-paper-plane"></i></button>
+      </form>
+    </div>
+  </section>
+</div>
+
+<script>
+const clientId = {{ request.user.id }};
+const chatBox = document.getElementById('chat-messages');
+const composerForm = document.getElementById('composer');
+const chatInput = document.getElementById('composer-input');
+const chatIdField = document.getElementById('chat-id');
+const sidebar = document.getElementById('chatSidebar');
+const openBtn = document.getElementById('openSidebarBtn');
+const closeBtn = document.getElementById('closeSidebarBtn');
+let sse;
+
+function connectSSE(chatId) {
+
+    if (sse) sse.close();
+      if (!chatId || chatId === "general") return;
+
+      sse = new EventSource(`/event-booking-stream/${chatId}`);
+
+      sse.onopen = () => console.log("SSE connection opened");
+      sse.onerror = (e) => console.error("SSE error", e);
+      sse.onmessage = (e) => {
+          try {
+              const data = JSON.parse(e.data);
+              const mine = data.sender.id === clientId;
+              const bubble = makeBubble(data.message, mine);
+              chatBox.appendChild(bubble);
+              scrollBottom();
+          } catch (err) {
+              console.error("Invalid SSE data", err);
+          }
+      };
+  }
+
+function scrollBottom() {
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+scrollBottom();
+
+function makeBubble(html, mine) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + (mine ? 'sender' : 'receiver');
+  div.innerHTML = html;
+  return div;
+}
+
+async function submitMessage(e) {
+    e.preventDefault();
+    const txt = chatInput.value.trim();
+    if (!txt) return;
+
+    const csrfInput = document.querySelector('[name="csrfmiddlewaretoken"]').value.trim();
+    if (!csrfInput || !chatIdField.value) {
+        console.error("Missing CSRF token or chatId");
+        return;
+    }
+
+    // Optional: show immediately
+    const bubble = makeBubble(txt, true);
+    chatBox.appendChild(bubble);
+    scrollBottom();
+    chatInput.value = "";
+
+    try {
+        await fetch(`/event-booking-send/${chatIdField.value}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfInput
+            },
+            body: JSON.stringify({ message: txt })
+        });
+    } catch (err) {
+        console.error("Send failed", err);
+    }
+}
+
+
+// Handle chat switching
+document.querySelectorAll('.booking-item').forEach(li => {
+  li.addEventListener('click', async () => {
+    document.querySelectorAll('.booking-item').forEach(x => x.classList.remove('active'));
+    li.classList.add('active');
+    document.getElementById('composer-wrap')?.classList.remove('d-none');
+
+    const chatId = li.dataset.id;
+    const chatMeta = li.dataset.meta;
+    document.getElementById('chat-meta').textContent = chatMeta;
+    chatIdField.value = chatId;
+
+    const viewBtn = document.getElementById('viewStatusBtn');
+    viewBtn.classList.remove('d-none');
+    viewBtn.dataset.id = chatId;
+    connectSSE(chatId);
+    chatBox.innerHTML = `<div class="text-muted text-center mt-5 small">Loading…</div>`;
+
+    try {
+      const r = await fetch(`/chat/${chatId}/messages-json/`, {
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+      });
+      const data = await r.json();
+      chatBox.innerHTML = "";
+      if (!data.length) {
+        chatBox.innerHTML = `<div class="text-muted text-center mt-5 small">No messages…</div>`;
+      } else {
+        data.forEach(m => {
+          const msgEl = makeBubble(m.html, m.mine);
+          chatBox.appendChild(msgEl);
+        });
+      }
+      scrollBottom();
+
+      // Collapse sidebar on small screens
+      if (window.innerWidth <= 768) {
+        sidebar.classList.remove('show');
+      }
+    } catch (err) {
+      console.error(err);
+      chatBox.innerHTML = `<div class="text-danger text-center mt-5 small">Error loading messages</div>`;
+    }
+  });
+});
+
+// Composer
+composerForm.addEventListener('submit', submitMessage);
+
+// Sidebar toggle logic
+openBtn?.addEventListener('click', () => {
+  sidebar.classList.add('show');
+});
+closeBtn?.addEventListener('click', () => {
+  sidebar.classList.remove('show');
+});
+
+document.getElementById('viewStatusBtn').addEventListener('click', function () {
+  const id = this.dataset.id;
+  if (id) {
+    window.location.href = `/admin/request-bookings/status/${id}`;
+  }
+});
+
+</script>
+
+{% endblock %}

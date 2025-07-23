@@ -1,11 +1,86 @@
 from .auth import login_required
 from django.shortcuts import redirect, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from ..models import User
 from ..models import Chat
 from ..models import Message
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.db.models import Q
+from django.http import StreamingHttpResponse, HttpResponseNotAllowed
+from main.sse import booking_events  
+from asgiref.sync import async_to_sync
+import json
+import asyncio
+
+async def event_booking_stream(request, id):
+    if request.method != "GET":
+        return HttpResponseNotAllowed(['GET'])
+
+    q = booking_events.register(id)
+
+    async def event_stream():
+        try:
+            while True:
+                try:
+                    data = await asyncio.wait_for(q.get(), timeout=10)
+                    yield f"data: {json.dumps(data)}\n\n"
+                except asyncio.TimeoutError:
+                    yield ":\n\n"  # heartbeat
+        except asyncio.CancelledError:
+            pass
+        finally:
+            booking_events.unregister(id, q)
+
+    response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
+    response['Cache-Control'] = 'no-cache'
+    return response
+
+@csrf_exempt
+def send_booking_message(request, id):
+
+    if request.method != "POST":
+        print("Wrong method:", request.method)
+        return HttpResponseBadRequest("Only POST allowed.")
+
+    try:
+
+        body = json.loads(request.body)
+
+        message_content = body.get("message")
+        if not message_content:
+            return HttpResponseBadRequest("Missing message")
+
+
+        chat = get_object_or_404(Chat, id=id)
+
+        message_obj = Message.objects.create(
+            chat=chat,
+            sender=request.user,
+            content=message_content,
+            is_read=False,
+        )
+
+
+        data = {
+            "id": message_obj.id,
+            "chat_id": chat.id,
+            "message": message_obj.content,
+            "sender": {
+                "id": request.user.id,
+                "username": request.user.username,
+            },
+            "timestamp": message_obj.timestamp.isoformat(),
+        }
+
+        async_to_sync(booking_events.push)(chat.id, data)
+
+        return JsonResponse({"status": "sent", "data": data})
+
+    except Exception as e:
+        print("Error occurred:", e)
+        return HttpResponseBadRequest(str(e))
+
 @login_required
 def create_chat(request):
     if request.method == 'POST':

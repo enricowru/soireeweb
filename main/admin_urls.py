@@ -34,9 +34,14 @@ urlpatterns = [
     # Review Management URLs
     # path('reviews/create/', views.review_create, name='review_create'),
     # path('reviews/<int:review_id>/edit/', views.review_edit, name='review_edit'),
+    path('load-chats/', views.admin_booking_list, name="load-chats"),
     path('reviews/', views.review_list, name='review_list'),
     path('reviews/<int:review_id>/delete/', views.review_delete, name='review_delete'),
-     path("bookings/stream/", views.booking_notifications, name="booking_stream"),
+    path("bookings/stream/", views.booking_notifications, name="booking_stream"),
+    path("request-bookings/", views.booking_requests, name = "request_bookings"),
+    path("request-bookings/status/<int:id>", views.booking_requests_status, name = "booking_request_status"),
+    
+    path("request-bookings/status/<int:id>/mark-as-done", views.mark_step_done, name ="mark_step_done"),
     # User Management URLs
     # path('users/list/', views.user_list, name='user_list'),
     # path('users/create/', views.user_create, name='user_create'),

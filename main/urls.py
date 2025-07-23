@@ -43,6 +43,11 @@ urlpatterns = [
     path('bookhere_submit', views.bookhere_submit, name="bookhere_submit"),
     path('my_bookings', views.my_bookings, name='my_bookings'),
     
-    path('chatbot', include('main.chatbot_urls'))
+    path('chatbot', include('main.chatbot_urls')),
+    path('event-status/<int:id>/', views.event_status, name="event-status"),
+
+    path('event-booking-stream/<int:id>', views.event_booking_stream, name="event-booking-stream"),
+    path('event-booking-send/<int:id>', views.send_booking_message, name="event-booking-send")
 ]
+
 

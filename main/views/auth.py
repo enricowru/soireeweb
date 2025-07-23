@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from ..models import Moderator
 
-User = get_user_model()
+Users = get_user_model()
 
 
 @login_required
@@ -13,7 +13,7 @@ def home(request):
     if request.user.username == 'admin':
         return redirect('/admin/dashboard')
 
-    users = User.objects.all()
+    users = Users.objects.all()
     user_list = []
 
     for user in users:

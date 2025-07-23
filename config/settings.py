@@ -51,6 +51,7 @@ STATICFILES_DIRS = [BASE_DIR / 'main' / 'static',
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -61,7 +62,8 @@ INSTALLED_APPS = [
     'fuzzywuzzy',
     'cloudinary_storage',
     'cloudinary',
-    'main'
+    'main',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -120,18 +122,7 @@ DATABASES = {
         'PORT': config('PG_PORT'),
     }
 }
-# kindly review, magkakaconflict kasi sila dito, also finalize na kung aling database talaga gagamitin
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'djongo',
-#         'NAME': 'adminside',  # Your database name
-#         'USER': 'jinnel',     # Your Atlas username
-#         'PASSWORD': 'jinnel123',  # Your newly set Atlas password
-#         'CLIENT': {
-#             'host': 'mongodb+srv://jinnel:jinnel123@cluster0.yahkvow.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
-#         }
-#     }
-# }
+
 
 
 
@@ -169,6 +160,7 @@ USE_TZ = True
 # DeepAI API Configuration
 DEEPAI_API_KEY = 'c6ea7310-add9-441d-9a53-019f2f12da1f'  # Replace with your actual DeepAI API key
 
+ASGI_APPLICATION = "config.asgi.application"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/

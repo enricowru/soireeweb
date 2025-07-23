@@ -758,3 +758,18 @@ body {
 .foodmenu-submit:hover {
     background: #388e3c;
 } 
+
+#status-link {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid white;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+#status-link:hover {
+  background-color: white;
+  color: #111; 
+}

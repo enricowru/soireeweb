@@ -32,8 +32,9 @@
     <ul class="list-unstyled sidebar-list m-0">
       {% for bk in active_bookings %}
         <li class="booking-item{% if forloop.first %} active{% endif %}"
-            data-id="{{ bk.chat.id }}"
-            data-label="{{ bk.event_type }} • {{ bk.event_date|date:'M j Y' }}">
+          data-id="{{ bk.chat.id }}"
+          data-booking="{{ bk.id }}"
+          data-meta="{{ bk.event_type }} • {{ bk.event_date|date:'M j Y' }}">
           <div class="fw-semibold text-truncate">
               {{ bk.event_date|date:"M j Y" }} · {{ bk.event_type }}
           </div>
@@ -47,10 +48,8 @@
     <!-- General chat -->
     <div class="border-top">
       <li class="booking-item general-chat"
-          data-id="general"
-          data-label="General chat">
-        <i class="fa fa-comments me-2 text-muted"></i>Talk to Nike’s Catering
-      </li>
+        data-id="general"
+        data-meta="General chat"></li>
     </div>
 
     <!-- Past -->
@@ -61,7 +60,7 @@
         {% for bk in past_bookings %}
         <li class="booking-item"
             data-id="{{ bk.chat.id }}"
-            data-label="{{ bk.event_type }} • {{ bk.event_date|date:'M j Y' }}">
+            data-meta="{{ bk.event_type }} • {{ bk.event_date|date:'M j Y' }}">
           <div class="text-truncate">
               {{ bk.event_date|date:"M j Y" }} · {{ bk.event_type }}
           </div>
@@ -74,30 +73,36 @@
 
   <!-- ────────── CHAT PANE ────────── -->
   <section class="chat-pane">
-    <header id="chat-header">
-        {% if first_chat %}
-            <strong id="chat-client">
-                {{ other_participant.get_full_name|default:"Nike’s Catering" }}
-            </strong>&nbsp;·&nbsp;
-            <span id="chat-meta">{{ first_chat_label }}</span>
-                {% else %}
-            <span class="small text-muted">Select a booking to start chatting</span>
-        {% endif %}
-    </header>
+  <header id="chat-header" class="d-flex align-items-center gap-2">
+    {% if first_chat and first_booking %}
+      <span id="chat-meta" class="flex-grow-1">{{ booking_meta }}</span>
 
-    <div id="chat-messages">
-      {% for m in first_messages %}
-        <div class="msg {% if m.sender_id == user.id %}sender{% else %}receiver{% endif %}">
-          {{ m.content|safe }}
-        </div>
-      {% empty %}
-        <div class="small text-muted text-center mt-5">No messages…</div>
-      {% endfor %}
-    </div>
+      <!-- status btn -->
+     <a id="status-link" class="btn btn-back"
+      href="{% url 'event-status' first_booking.id %}">
+      Status <i class="fa fa-arrow-right small"></i>
+    </a>
+    
+
+    {% else %}
+      <span class="small text-muted">Select a booking to start chatting</span>
+    {% endif %}
+  </header>
+      <div id="chat-messages">
+        {% for m in first_messages %}
+          <div class="msg {% if m.sender_id == user.id %}sender{% else %}receiver{% endif %}">
+            {{ m.content|safe }}
+          </div>
+        {% empty %}
+          <div class="small text-muted text-center mt-5">No messages…</div>
+        {% endfor %}
+      </div>
 
     <form id="composer" class="composer">
+      {%csrf_token%}
+      {% comment %} <input type="hidden" id="csrf" value="{%csrf_token%}"> {% endcomment %}
       <textarea id="composer-input" placeholder="Type message…"></textarea>
-      <button class="btn" type="submit"><i class="fa fa-paper-plane"></i></button>
+      <button class="btn" type="submit"  id="send-message"><i class="fa fa-paper-plane"></i></button>
     </form>
   </section>
 
@@ -106,75 +111,113 @@
 <!-- ────────── JS ────────── -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script>
-const box  = document.getElementById('chat-messages');
-const clientId = {{ user.id }};   // handy for runtime checks
+  const box = document.querySelector("#chat-messages"); 
+  const form = document.querySelector("#composer");     
+  const input = document.querySelector("#composer-input"); 
+  const clientId = {{ request.user.id }};
+  let sse;
+  let currentChatId = '{{ first_chat.id|default:"" }}';
 
-/* util to create a bubble */
-function makeBubble(html, mine){
-  const div = document.createElement('div');
-  div.className = 'msg ' + (mine ? 'sender' : 'receiver');
-  div.innerHTML = html;
-  return div;
-}
-function scrollBottom(){ box.scrollTop = box.scrollHeight; }
-
-/* full re‑render */
-function renderThread(arr){
-  box.innerHTML = '';
-  if(!arr.length){
-    box.innerHTML = '<div class="small text-muted text-center mt-5">No messages…</div>';
-    return;
+  function makeBubble(text, mine = false) {
+      const bubble = document.createElement("div");
+      bubble.className = mine ? "msg sender" : "msg receiver";
+      bubble.innerHTML = text;
+      return bubble;
   }
-  arr.forEach(m => box.appendChild(makeBubble(m.html, m.mine)));
-  scrollBottom();
-}
 
-/* GET /chat/<id>/messages-json/ */
-async function fetchThread(id){
-  if(!id){ throw new Error('missing chat id'); }
-  const r = await fetch(`/chat/${id}/messages-json/`, {
-    headers: {'X-Requested-With':'XMLHttpRequest'}
+  function scrollBottom() {
+      box.scrollTop = box.scrollHeight;
+  }
+
+  function connectSSE(chatId) {
+
+    if (sse) sse.close();
+      if (!chatId || chatId === "general") return;
+
+      sse = new EventSource(`/event-booking-stream/${chatId}`);
+
+      sse.onopen = () => console.log("SSE connection opened");
+      sse.onerror = (e) => console.error("SSE error", e);
+      sse.onmessage = (e) => {
+          try {
+              const data = JSON.parse(e.data);
+              const mine = data.sender.id === clientId;
+              const bubble = makeBubble(data.message, mine);
+              box.appendChild(bubble);
+              scrollBottom();
+          } catch (err) {
+              console.error("Invalid SSE data", err);
+          }
+      };
+  }
+
+  document.querySelector("#send-message").addEventListener("submit", submitMessage) 
+  form.addEventListener("submit", submitMessage);
+
+  async function submitMessage(e) {
+      e.preventDefault();
+      const txt = document.querySelector("#composer-input").value.trim();
+      //const txt = input.value.trim();
+      if (!txt) return;
+
+      const csrfInput = document.querySelector('[name="csrfmiddlewaretoken"]').value.trim();
+      if (!csrfInput || !currentChatId) {
+          console.error("Missing CSRF token or currentChatId");
+          return;
+      }
+
+      // Optimistic UI
+      //const bubble = makeBubble(txt, true);
+      //box.appendChild(bubble);
+      //scrollBottom();
+      input.value = "";
+
+      // Send to backend API
+      try {
+          await fetch(`/event-booking-send/${currentChatId}`, { 
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': csrfInput
+              },
+              body: JSON.stringify({ message: txt })
+          });
+      } catch (err) {
+          console.error("Send failed", err);
+      }
+  }
+
+  // Chat list click handler
+  document.querySelectorAll(".booking-item").forEach(li => {  // ✅ fixed selector
+      li.addEventListener('click', async () => {
+          const chatId = li.dataset.id;
+          currentChatId = chatId;
+
+          // Highlight selected chat
+          document.querySelectorAll(".booking-item").forEach(li => li.classList.remove("active"));
+          li.classList.add("active");
+
+          // Fetch messages
+          const res = await fetch(`/chat/${chatId}/messages-json/`);
+          const json = await res.json();
+          box.innerHTML = "";
+          json.forEach((msg) => {
+              const mine = msg.mine;
+              const bubble = makeBubble(msg.html, mine);
+              box.appendChild(bubble);
+          });
+          scrollBottom();
+
+          // Reconnect SSE
+          connectSSE(chatId);
+      });
   });
-  if(!r.ok) throw new Error(await r.text());
-  return r.json();
-}
 
-/* — sidebar click — */
-document.querySelectorAll('.booking-item').forEach(li=>{
-  li.addEventListener('click', async()=>{
-    document.querySelectorAll('.booking-item').forEach(x=>x.classList.remove('active'));
-    li.classList.add('active');
-
-    // header label
-    document.getElementById('chat-client').textContent =
-      li.querySelector('.fw-semibold')?.textContent ?? 'Nike’s Catering';
-    document.getElementById('chat-meta').textContent = li.dataset.label || '';
-
-    // load thread
-    box.innerHTML =
-      '<div class="small text-muted text-center mt-5">Loading…</div>';
-    try{
-      const data = await fetchThread(li.dataset.id);
-      renderThread(data);
-    }catch(err){
-      console.error(err);
-      box.innerHTML =
-        '<div class="small text-danger text-center mt-5">Error loading</div>';
-    }
-  });
-});
-
-/* — local echo for now — */
-document.getElementById('composer').addEventListener('submit',e=>{
-  e.preventDefault();
-  const ta  = document.getElementById('composer-input');
-  const txt = ta.value.trim();
-  if(!txt) return;
-  ta.value = '';
-  box.appendChild(makeBubble(txt, true));
-  scrollBottom();
-  // TODO: send over WebSocket
-});
+  // Initial SSE connection
+  {% if first_chat %}
+    connectSSE('{{ first_chat.id }}');
+  {% endif %}
 </script>
+
 </body>
 </html>

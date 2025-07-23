@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Event Status · Nike’s Catering</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+  <link rel="stylesheet" href="{% static 'css/event_status.css' %}">
+</head>
+<body>
+
+<!-- Navbar -->
+{% include 'navbar.html' %}
+
+<!-- Header -->
+<div class="header-bar">
+  <h5 class="mb-0">{{ booking.event_date|date:"M j, Y" }} · {{ booking.event_type }}</h5>
+  <a href="{% url 'my_bookings' %}" class="btn btn-back">
+    <i class="fa fa-arrow-left me-1"></i>Back to Chat
+  </a>
+</div>
+
+<div class="container-fluid">
+
+  <!-- Sidebar Timeline -->
+  <aside>
+    <ul class="step-list" id="stepList">
+      {% for step in status_steps %}
+        <li class="{% if forloop.first %}active{% endif %}{% if step.is_done %} done{% endif %}">
+          <span class="dot">
+            {% if step.is_done %}<i class="fa fa-check"></i>{% endif %}
+          </span>
+          {{ step.get_label_display }}
+        </li>
+      {% endfor %}
+    </ul>
+  </aside>
+
+  <!-- Step Content Preview -->
+  <main>
+    <div class="content-box" id="contentBox">
+      <!-- Content dynamically loaded by JS -->
+    </div>
+  </main>
+
+</div>
+
+<script>
+  const stepContent = {{ step_content_json|safe }};
+  const steps = document.querySelectorAll('.step-list li');
+  const main = document.querySelector('#contentBox');
+
+  function render(idx) {
+    const data = stepContent[idx] || {title: '', html: '', is_done: false, label: ''};
+
+    let htmlContent = `
+      <div class="content-box">
+        <h6 class="mb-3">${data.title || data.label}</h6>
+        ${data.html || ''}`;
+
+    if (!data.is_done) {
+      if (data.label?.toLowerCase().includes('payment')) {
+        htmlContent += `<div class="alert alert-warning mt-2">Partial payment received. Please complete payment to proceed.</div>`;
+      } else {
+        htmlContent += `<div class="alert alert-secondary mt-2">This step has not yet started.</div>`;
+      }
+    }
+
+    htmlContent += `</div>`;
+    main.innerHTML = htmlContent;
+  }
+
+  steps.forEach((li, idx) => {
+    li.addEventListener('click', () => {
+      steps.forEach(x => x.classList.remove('active'));
+      li.classList.add('active');
+      render(idx);
+    });
+  });
+
+  render(0); // Initial render
+</script>
+
+</body>
+</html>
