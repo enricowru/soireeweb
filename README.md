@@ -92,7 +92,9 @@ PG_PORT=5432
 Run this command to create the initial admin:
 
 ```bash
-python manage.py admin_seeder
+python manage.py makemigrations
+python manage.py migrate
+python manage.py seed_admin
 ```
 
 ---
