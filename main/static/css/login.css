@@ -234,6 +234,14 @@ color: #AD974F;
 font-size: 0.98em;
 text-decoration: underline;
 }
+.error-message {
+  color: #ECD8D8FF;
+  background-color: #F14646D5;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
 
 .forgot-remember a:hover {
 color: #fff;

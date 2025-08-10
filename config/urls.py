@@ -14,23 +14,28 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path
-from main import views
-from main import chatbot_views
-
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('home/', views.home, name='home'),
-    path('', views.home, name='home'),
-    path('login/', views.login_view, name='login'),
-    path('signup/', views.signup, name='signup'),
-    path('moredesign/', views.moredesign, name='moredesign'),
-    path('editprofile/', views.editprofile, name='editprofile'),
-    path('moderator/reviews/', views.review_moderation, name='review_moderation'),
-    path('moderator/reviews/approve/<int:review_id>/', views.approve_review, name='approve_review'),
+    path('', include('main.urls')),  # ✅ This includes ALL routes from main/urls.py
+    path('chat/', include('main.chatbot_urls'))
+    # path('admin/', admin.site.urls),
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+<<<<<<< HEAD
+# urlpatterns = [
+#     path('admin/', admin.site.urls),
+#     path('home/', views.home, name='home'),
+#     path('', views.home, name='home'),
+#     path('login/', views.login_view, name='login'),
+#     path('signup/', views.signup, name='signup'),
+#     path('moredesign/', views.moredesign, name='moredesign'),
+#     path('editprofile/', views.editprofile, name='editprofile'),
+#     path('moderator/reviews/', views.review_moderation, name='review_moderation'),
+#     path('moderator/reviews/approve/<int:review_id>/', views.approve_review, name='approve_review'),
+=======
     #Chatbot URL
     path('chatbot/', chatbot_views.chatbot_view, name='chatbot'),
     path('chatbot/save/', chatbot_views.save_chat_session, name='save_chat_session'),
@@ -38,5 +43,14 @@ urlpatterns = [
     path('chatbot/load/<int:session_id>/', chatbot_views.load_chat_session, name='load_chat_session'),
     # path('chatbot/delete/<int:session_id>/', chatbot_views.delete_chat_session, name='delete_chat_session'),
     path('chatbot/new/', chatbot_views.new_chat_session, name='new_chat_session'),
+>>>>>>> 280e203d222f3036f1d1dde268e3be44f7b7a3fd
 
-]
+#     #Chatbot URL
+#     path('chatbot/', chatbot_views.chatbot_view, name='chatbot'),
+#     path('chatbot/save/', chatbot_views.save_chat_session, name='save_chat_session'),
+#     path('chatbot/list/', chatbot_views.list_chat_sessions, name='list_chat_sessions'),
+#     path('chatbot/load/<int:session_id>/', chatbot_views.load_chat_session, name='load_chat_session'),
+#     path('chatbot/delete/<int:session_id>/', chatbot_views.delete_chat_session, name='delete_chat_session'),
+#     path('chatbot/new/', chatbot_views.new_chat_session, name='new_chat_session'),
+
+# ]

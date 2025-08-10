@@ -1,0 +1,163 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>{{ event.title }}</h2>
+    <p class="text-muted">Date: {{ event.date }}</p>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Moderator Access Code</h5>
+                    <p class="card-text"><strong>{{ event.access_code }}</strong></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Customer Check-in Code</h5>
+                    <p class="card-text"><strong>{{ event.checkin_code|default:"N/A" }}</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guest List Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Guest List</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for guest in event.participants %}
+                        <tr>
+                            <td>{{ guest.name }}</td>
+                            <td>
+                                {% if guest.checked_in %}
+                                <span class="badge bg-success">Checked In</span>
+                                {% else %}
+                                <span class="badge bg-warning">Not Checked In</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2" class="text-center">No guests added yet</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex mb-4">
+        <a href="{% url 'event_edit' event.id %}" class="btn btn-primary me-2">Edit Event</a>
+        <form method="POST" action="{% url 'delete_event' event.id %}" onsubmit="return confirm('Are you sure you want to delete this event? This action cannot be undone.');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete Event</button>
+        </form>
+    </div>
+
+    <!-- Event Tracker -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Event Tracker</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Check-in</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tracker in trackers %}
+                        <tr>
+                            <td><strong>{{ tracker.username }}</strong> ({{ tracker.interaction_type }})</td>
+                            <td>{{ tracker.timestamp|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2" class="text-center">No interactions yet</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Moderator Management -->
+    <div class="card">
+        <div class="card-header">
+            <h4>Moderator Management</h4>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <form method="POST" action="{% url 'grant_moderator_access' event.id %}">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" 
+                                   name="moderator_firstname" 
+                                   class="form-control" 
+                                   placeholder="Enter moderator's first name"
+                                   required>
+                            <button type="submit" class="btn btn-primary">Grant Access</button>
+                        </div>
+                        <small class="form-text text-muted">Enter the first name of the moderator to grant access to this event</small>
+                    </form>
+                </div>
+            </div>
+
+            <h5>Current Moderators</h5>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Access Granted</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for access in moderators %}
+                        <tr>
+                            <td>{{ access.moderator_username }}</td>
+                            <td>{{ access.granted_at|date:"Y-m-d H:i" }}</td>
+                            <td>
+                                <form method="post" action="{% url 'delete_moderator_access' event.id access.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to remove this moderator\'s access?');">
+                                        <i class="fas fa-trash"></i> Delete Access
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center">No moderators assigned</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %} 

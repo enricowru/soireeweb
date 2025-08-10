@@ -1,0 +1,223 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Bookings · Nike’s Catering</title>
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+  <link rel="stylesheet" href="{% static 'css/my_bookings.css' %}">
+</head>
+<body>
+{% include 'navbar.html' %}
+
+<div class="chat-wrap">
+
+  <!-- ────────── SIDEBAR ────────── -->
+  <aside class="sidebar">
+    <div class="d-flex align-items-center justify-content-between border-bottom px-3 py-2">
+      <span class="fw-semibold">Bookings</span>
+      <a href="{% url 'bookhere' %}"
+         class="btn btn-sm d-flex align-items-center gap-1"
+         style="background:var(--gold);color:#fff;border:none;border-radius:6px;">
+        <i class="fa fa-plus small"></i><span class="d-none d-md-inline">Add</span>
+      </a>
+    </div>
+
+    <!-- Active / draft -->
+    <ul class="list-unstyled sidebar-list m-0">
+      {% for bk in active_bookings %}
+        <li class="booking-item{% if forloop.first %} active{% endif %}"
+          data-id="{{ bk.chat.id }}"
+          data-booking="{{ bk.id }}"
+          data-meta="{{ bk.event_type }} • {{ bk.event_date|date:'M j Y' }}">
+          <div class="fw-semibold text-truncate">
+              {{ bk.event_date|date:"M j Y" }} · {{ bk.event_type }}
+          </div>
+          <small class="text-muted">{{ bk.get_status_display }}</small>
+        </li>
+      {% empty %}
+        <li class="text-muted small p-4">No active bookings yet.</li>
+      {% endfor %}
+    </ul>
+
+    <!-- General chat -->
+    <div class="border-top">
+      <li class="booking-item general-chat"
+        data-id="general"
+        data-meta="General chat"></li>
+    </div>
+
+    <!-- Past -->
+    {% if past_bookings %}
+    <details class="border-top">
+      <summary class="px-3 py-2 small text-muted">Past bookings</summary>
+      <ul class="list-unstyled sidebar-list m-0">
+        {% for bk in past_bookings %}
+        <li class="booking-item"
+            data-id="{{ bk.chat.id }}"
+            data-meta="{{ bk.event_type }} • {{ bk.event_date|date:'M j Y' }}">
+          <div class="text-truncate">
+              {{ bk.event_date|date:"M j Y" }} · {{ bk.event_type }}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </details>
+    {% endif %}
+  </aside>
+
+  <!-- ────────── CHAT PANE ────────── -->
+  <section class="chat-pane">
+  <header id="chat-header" class="d-flex align-items-center gap-2">
+    {% if first_chat and first_booking %}
+      <span id="chat-meta" class="flex-grow-1">{{ booking_meta }}</span>
+
+      <!-- status btn -->
+     <a id="status-link" class="btn btn-back"
+      href="{% url 'event-status' first_booking.id %}">
+      Status <i class="fa fa-arrow-right small"></i>
+    </a>
+    
+
+    {% else %}
+      <span class="small text-muted">Select a booking to start chatting</span>
+    {% endif %}
+  </header>
+      <div id="chat-messages">
+        {% for m in first_messages %}
+          <div class="msg {% if m.sender_id == user.id %}sender{% else %}receiver{% endif %}">
+            {{ m.content|safe }}
+          </div>
+        {% empty %}
+          <div class="small text-muted text-center mt-5">No messages…</div>
+        {% endfor %}
+      </div>
+
+    <form id="composer" class="composer">
+      {%csrf_token%}
+      {% comment %} <input type="hidden" id="csrf" value="{%csrf_token%}"> {% endcomment %}
+      <textarea id="composer-input" placeholder="Type message…"></textarea>
+      <button class="btn" type="submit"  id="send-message"><i class="fa fa-paper-plane"></i></button>
+    </form>
+  </section>
+
+</div><!-- /.chat-wrap -->
+
+<!-- ────────── JS ────────── -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script>
+  const box = document.querySelector("#chat-messages"); 
+  const form = document.querySelector("#composer");     
+  const input = document.querySelector("#composer-input"); 
+  const clientId = {{ request.user.id }};
+  let sse;
+  let currentChatId = '{{ first_chat.id|default:"" }}';
+
+  function makeBubble(text, mine = false) {
+      const bubble = document.createElement("div");
+      bubble.className = mine ? "msg sender" : "msg receiver";
+      bubble.innerHTML = text;
+      return bubble;
+  }
+
+  function scrollBottom() {
+      box.scrollTop = box.scrollHeight;
+  }
+
+  function connectSSE(chatId) {
+
+    if (sse) sse.close();
+      if (!chatId || chatId === "general") return;
+
+      sse = new EventSource(`/event-booking-stream/${chatId}`);
+
+      sse.onopen = () => console.log("SSE connection opened");
+      sse.onerror = (e) => console.error("SSE error", e);
+      sse.onmessage = (e) => {
+          try {
+              const data = JSON.parse(e.data);
+              const mine = data.sender.id === clientId;
+              const bubble = makeBubble(data.message, mine);
+              box.appendChild(bubble);
+              scrollBottom();
+          } catch (err) {
+              console.error("Invalid SSE data", err);
+          }
+      };
+  }
+
+  document.querySelector("#send-message").addEventListener("submit", submitMessage) 
+  form.addEventListener("submit", submitMessage);
+
+  async function submitMessage(e) {
+      e.preventDefault();
+      const txt = document.querySelector("#composer-input").value.trim();
+      //const txt = input.value.trim();
+      if (!txt) return;
+
+      const csrfInput = document.querySelector('[name="csrfmiddlewaretoken"]').value.trim();
+      if (!csrfInput || !currentChatId) {
+          console.error("Missing CSRF token or currentChatId");
+          return;
+      }
+
+      // Optimistic UI
+      //const bubble = makeBubble(txt, true);
+      //box.appendChild(bubble);
+      //scrollBottom();
+      input.value = "";
+
+      // Send to backend API
+      try {
+          await fetch(`/event-booking-send/${currentChatId}`, { 
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': csrfInput
+              },
+              body: JSON.stringify({ message: txt })
+          });
+      } catch (err) {
+          console.error("Send failed", err);
+      }
+  }
+
+  // Chat list click handler
+  document.querySelectorAll(".booking-item").forEach(li => {  // ✅ fixed selector
+      li.addEventListener('click', async () => {
+          const chatId = li.dataset.id;
+          currentChatId = chatId;
+
+          // Highlight selected chat
+          document.querySelectorAll(".booking-item").forEach(li => li.classList.remove("active"));
+          li.classList.add("active");
+
+          // Fetch messages
+          const res = await fetch(`/chat/${chatId}/messages-json/`);
+          const json = await res.json();
+          box.innerHTML = "";
+          json.forEach((msg) => {
+              const mine = msg.mine;
+              const bubble = makeBubble(msg.html, mine);
+              box.appendChild(bubble);
+          });
+          scrollBottom();
+
+          // Reconnect SSE
+          connectSSE(chatId);
+      });
+  });
+
+  // Initial SSE connection
+  {% if first_chat %}
+    connectSSE('{{ first_chat.id }}');
+  {% endif %}
+</script>
+
+</body>
+</html>

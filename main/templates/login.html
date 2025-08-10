@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="{% static 'css/login.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="icon" type="image/x-icon" href="{% static 'images/logo-round.png' %}">
+  <title>Login</title>
 </head>
 
 <body>
@@ -14,10 +15,19 @@
 
   <div class="form-center">
 
-    <!-- Login Form -->
-    <div class="login-container" id="login-form">
-      <h2>LOGIN</h2>
-      <form action="https://nikescateringservices.com/login/" method="POST" autocomplete="off">
+   <!-- Login Form -->
+<div class="login-container" id="login-form">
+  <h2>LOGIN</h2>
+
+    <!-- Error Message -->
+    {% if message %}
+      <div class="error-message">
+        {{ message }}
+      </div>
+    {% endif %}
+
+    <form action="{% url 'login' %}" method="POST" autocomplete="off">
+        {% csrf_token %}
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
         <br>
@@ -31,9 +41,10 @@
           <a href="#">Forgot password?</a>
         </div>
         <button type="submit">Login</button>
-      </form>
-      <p>Don't have an account? <a href="#" id="show-register">Register here</a></p>
-    </div>
+    </form>
+    <p>Don't have an account? <a href="#" id="show-register">Register here</a></p>
+  </div>
+
 
     <!-- Register Form -->
     <div class="register-container" id="register-form" style="display:none;">
@@ -109,6 +120,8 @@
     });
 
     // Validate and submit register form
+     const BASE_URL = "{{ LOCAL_HOST }}";
+
     document.getElementById('registerForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
@@ -136,15 +149,7 @@
       }
 
       try {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-        const res = await fetch('https://api-mk8z.onrender.com/signup', {
-=======
-        const res = await fetch('https://www.nikescateringservices.com/signup/', {
->>>>>>> Stashed changes
-=======
-        const res = await fetch('https://www.nikescateringservices.com/signup/', {
->>>>>>> Stashed changes
+        const res = await fetch(`${BASE_URL}/signup/`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ firstname, lastname, username, mobile, email, password })

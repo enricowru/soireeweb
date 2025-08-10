@@ -11,8 +11,13 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+from decouple import config
 from pathlib import Path
+
+# Host settings
+PROD_HOST = config('PROD_HOST', default='https://example.com')
+LOCAL_HOST = config('LOCAL_HOST', default='http://localhost:8000')
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -47,6 +52,7 @@ STATICFILES_DIRS = [BASE_DIR / 'main' / 'static',
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -57,7 +63,8 @@ INSTALLED_APPS = [
     'fuzzywuzzy',
     'cloudinary_storage',
     'cloudinary',
-    'main'
+    'main',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -86,6 +93,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'main.context_processor.global_settings',
+                
             ],
         },
     },
@@ -97,12 +106,26 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+# PostgreSQL settings
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('PG_DB'),
+        'USER': config('PG_USER'),
+        'PASSWORD': config('PG_PASS'),
+        'HOST': config('PG_HOST'),
+        'PORT': config('PG_PORT'),
     }
 }
+
+
 
 
 # Password validation
@@ -139,17 +162,19 @@ USE_TZ = True
 # DeepAI API Configuration
 DEEPAI_API_KEY = 'c6ea7310-add9-441d-9a53-019f2f12da1f'  # Replace with your actual DeepAI API key
 
+ASGI_APPLICATION = "config.asgi.application"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AUTH_USER_MODEL = 'main.User'
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:19006",  # Expo frontend
@@ -195,6 +220,13 @@ CACHES = {
     }
 }
 
+LOGIN_URL = '/login/'
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True

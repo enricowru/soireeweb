@@ -1,0 +1,9 @@
+PROD_HOST=https://nikescateringservices.com
+LOCAL_HOST=http://127.0.0.1:8000
+
+#Postgres
+PG_DB=soireeweb
+PG_USER=postgres
+PG_PASS=
+PG_HOST=localhost
+PG_PORT=5432
