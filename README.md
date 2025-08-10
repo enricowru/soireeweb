@@ -10,7 +10,7 @@ python -m venv venv
 
 **On Windows:**
 ```bash
-.env\Scriptsctivate
+.venv\Scripts\Activate
 ```
 
 **On macOS/Linux:**
@@ -115,6 +115,6 @@ python manage.py runserver
 - On another machine:
 ```bash
 python -m venv venv
-.env\Scriptsctivate  # or source venv/bin/activate
+.venv\Scripts\activate  # or source venv/bin/activate
 pip install -r requirements.txt
 ```
