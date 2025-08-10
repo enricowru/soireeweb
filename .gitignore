@@ -1,5 +1,5 @@
 #Ignore venv
-venv/
+/venv/
 
 .env
 media/
