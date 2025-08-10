@@ -38,7 +38,9 @@ ALLOWED_HOSTS = [
     'nikescateringservices.com', 
     'localhost', 
     '127.0.0.1',
-    'soireeweb.onrender.com']
+    'soireeweb.onrender.com',
+    "soiree-experimental.onrender.com",
+]
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
