@@ -97,6 +97,7 @@
   </div>
 
   <script>
+     const BASE_URL = "{{ BASE_URL }}";
     // Toggle between login and register
     document.getElementById('show-register').onclick = function (e) {
       e.preventDefault();
@@ -119,9 +120,7 @@
       });
     });
 
-    // Validate and submit register form
-     const BASE_URL = "{{ BASE_URL }}";
-
+     // Validate and submit register form
     document.getElementById('registerForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
