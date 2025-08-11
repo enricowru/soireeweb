@@ -255,7 +255,8 @@ function connectSSE(chatId) {
     if (!chatId || chatId === "general") return;
 
     // Replace SSE with SockJS
-    sock = new WebSocket(`ws://${window.location.host}/ws/chat/${chatId}/`);
+    const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+    sock = new WebSocket(`${wsProtocol}://${window.location.host}/ws/chat/${chatId}/`);
 
     sock.onopen = () => console.log("WebSocket (SockJS) connection opened");
     sock.onclose = () => console.log("WebSocket (SockJS) connection closed");

@@ -113,7 +113,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script>
   const box = document.querySelector("#chat-messages"); 
-  console.log(box);
   const form = document.querySelector("#composer");     
   const input = document.querySelector("#composer-input"); 
   const clientId = {{ request.user.id }};
@@ -135,7 +134,9 @@
       if (sock) sock.close();
       if (!chatId || chatId === "general") return;
 
-      sock = new WebSocket(`ws://${window.location.host}/ws/chat/${chatId}/`);
+      const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+      sock = new WebSocket(`${wsProtocol}://${window.location.host}/ws/chat/${chatId}/`);
+
 
       sock.onopen = () => console.log("SockJS connection opened");
       sock.onclose = () => console.warn("SockJS connection closed");
