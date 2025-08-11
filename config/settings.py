@@ -61,7 +61,6 @@ STATICFILES_DIRS = [BASE_DIR / 'main' / 'static',
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
