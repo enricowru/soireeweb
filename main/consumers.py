@@ -7,7 +7,7 @@ User = get_user_model()
 
 class EventBookingConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.booking_id = self.scope['url_route']['kwargs']['id']
+        self.booking_id = self.scope['url_route']['kwargs']['chat_id']
         self.group_name = f"booking_{self.booking_id}"
 
         # Join group
