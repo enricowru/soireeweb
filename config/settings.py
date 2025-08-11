@@ -185,9 +185,12 @@ AUTH_USER_MODEL = 'main.User'
 
 CSRF_TRUSTED_ORIGINS = [
     BASE_URL,
-    f"https://www.{PROD_HOST.replace('https://', '')}",
     "http://localhost:19006",
     "http://127.0.0.1:3000",
+    "https://soireeweb.onrender.com",
+    "https://nikescateringservices.com", # Domain
+    "https://www.nikescateringservices.com",
+    "https://soiree-experimental.onrender.com"# Domain
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -195,7 +198,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "https://soireeweb.onrender.com",
     "https://nikescateringservices.com", # Domain
-    "https://www.nikescateringservices.com" # Domain
+    "https://www.nikescateringservices.com",
+    "https://soiree-experimental.onrender.com"# Domain
 ]
 
 CORS_ALLOW_HEADERS = [
