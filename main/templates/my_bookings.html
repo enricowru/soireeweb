@@ -110,12 +110,14 @@
 
 <!-- ────────── JS ────────── -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script>
   const box = document.querySelector("#chat-messages"); 
+  console.log(box);
   const form = document.querySelector("#composer");     
   const input = document.querySelector("#composer-input"); 
   const clientId = {{ request.user.id }};
-  let sse;
+  let sock;
   let currentChatId = '{{ first_chat.id|default:"" }}';
 
   function makeBubble(text, mine = false) {
@@ -129,32 +131,39 @@
       box.scrollTop = box.scrollHeight;
   }
 
-  function connectSSE(chatId) {
-
-    if (sse) sse.close();
+  function connectSockJS(chatId) {
+      if (sock) sock.close();
       if (!chatId || chatId === "general") return;
 
-      sse = new EventSource(`/event-booking-stream/${chatId}`);
+      sock = new WebSocket(`ws://${window.location.host}/ws/chat/${chatId}/`);
 
-      sse.onopen = () => console.log("SSE connection opened");
-      sse.onerror = (e) => console.error("SSE error", e);
-      sse.onmessage = (e) => {
-          try {
-              const data = JSON.parse(e.data);
-              const mine = data.sender.id === clientId;
-              const bubble = makeBubble(data.message, mine);
-              box.appendChild(bubble);
-              scrollBottom();
-          } catch (err) {
-              console.error("Invalid SSE data", err);
-          }
-      };
+      sock.onopen = () => console.log("SockJS connection opened");
+      sock.onclose = () => console.warn("SockJS connection closed");
+      sock.onmessage = (e) => {
+        try {
+            const data = JSON.parse(e.data);
+            console.log(data.sender);
+          
+            // Check if data has sender and content before accessing them
+            if (!data.sender || !data.message) {
+                console.warn("Received message without sender or content:", data);
+                return;  // ignore or handle differently
+            }
+
+            const mine = data.sender.id === clientId;
+            const bubble = makeBubble(data.message, mine);
+            box.appendChild(bubble);
+            scrollBottom();
+
+        } catch (err) {
+            console.error("Invalid SockJS data", err);
+        }
+    };
   }
 
-  document.querySelector("#send-message").addEventListener("submit", submitMessage) 
   form.addEventListener("submit", submitMessage);
 
-  async function submitMessage(e) {
+async function submitMessage(e) {
       e.preventDefault();
       const txt = document.querySelector("#composer-input").value.trim();
       //const txt = input.value.trim();
@@ -188,7 +197,7 @@
   }
 
   // Chat list click handler
-  document.querySelectorAll(".booking-item").forEach(li => {  // ✅ fixed selector
+  document.querySelectorAll(".booking-item").forEach(li => {
       li.addEventListener('click', async () => {
           const chatId = li.dataset.id;
           currentChatId = chatId;
@@ -208,14 +217,14 @@
           });
           scrollBottom();
 
-          // Reconnect SSE
-          connectSSE(chatId);
+          // Reconnect SockJS
+          connectSockJS(chatId);
       });
   });
 
-  // Initial SSE connection
+  // Initial SockJS connection
   {% if first_chat %}
-    connectSSE('{{ first_chat.id }}');
+    connectSockJS('{{ first_chat.id }}');
   {% endif %}
 </script>
 

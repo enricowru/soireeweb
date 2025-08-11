@@ -236,7 +236,7 @@
     </div>
   </section>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script>
 const clientId = {{ request.user.id }};
 const chatBox = document.getElementById('chat-messages');
@@ -246,29 +246,41 @@ const chatIdField = document.getElementById('chat-id');
 const sidebar = document.getElementById('chatSidebar');
 const openBtn = document.getElementById('openSidebarBtn');
 const closeBtn = document.getElementById('closeSidebarBtn');
-let sse;
+let sock;
 
 function connectSSE(chatId) {
+    if (sock) {
+        sock.close();
+    }
+    if (!chatId || chatId === "general") return;
 
-    if (sse) sse.close();
-      if (!chatId || chatId === "general") return;
+    // Replace SSE with SockJS
+    sock = new WebSocket(`ws://${window.location.host}/ws/chat/${chatId}/`);
 
-      sse = new EventSource(`/event-booking-stream/${chatId}`);
+    sock.onopen = () => console.log("WebSocket (SockJS) connection opened");
+    sock.onclose = () => console.log("WebSocket (SockJS) connection closed");
+    sock.onerror = (e) => console.error("WebSocket error", e);
 
-      sse.onopen = () => console.log("SSE connection opened");
-      sse.onerror = (e) => console.error("SSE error", e);
-      sse.onmessage = (e) => {
-          try {
-              const data = JSON.parse(e.data);
-              const mine = data.sender.id === clientId;
-              const bubble = makeBubble(data.message, mine);
-              chatBox.appendChild(bubble);
-              scrollBottom();
-          } catch (err) {
-              console.error("Invalid SSE data", err);
+    sock.onmessage = (e) => {
+      try {
+          const data = JSON.parse(e.data);
+
+          // Check if data has sender and content before accessing them
+          if (!data.sender || !data.message) {
+              console.warn("Received message without sender or content:", data);
+              return;  // ignore or handle differently
           }
-      };
-  }
+
+          const mine = data.sender.id === clientId;
+          const bubble = makeBubble(data.message, mine);
+          chatBox.appendChild(bubble);
+          scrollBottom();
+
+      } catch (err) {
+          console.error("Invalid SockJS data", err);
+      }
+  };
+}
 
 function scrollBottom() {
   chatBox.scrollTop = chatBox.scrollHeight;
@@ -293,7 +305,6 @@ async function submitMessage(e) {
         return;
     }
 
-    // Optional: show immediately
     const bubble = makeBubble(txt, true);
     chatBox.appendChild(bubble);
     scrollBottom();
@@ -313,8 +324,6 @@ async function submitMessage(e) {
     }
 }
 
-
-// Handle chat switching
 document.querySelectorAll('.booking-item').forEach(li => {
   li.addEventListener('click', async () => {
     document.querySelectorAll('.booking-item').forEach(x => x.classList.remove('active'));
@@ -347,8 +356,6 @@ document.querySelectorAll('.booking-item').forEach(li => {
         });
       }
       scrollBottom();
-
-      // Collapse sidebar on small screens
       if (window.innerWidth <= 768) {
         sidebar.classList.remove('show');
       }
@@ -359,10 +366,8 @@ document.querySelectorAll('.booking-item').forEach(li => {
   });
 });
 
-// Composer
 composerForm.addEventListener('submit', submitMessage);
 
-// Sidebar toggle logic
 openBtn?.addEventListener('click', () => {
   sidebar.classList.add('show');
 });
@@ -376,7 +381,6 @@ document.getElementById('viewStatusBtn').addEventListener('click', function () {
     window.location.href = `/admin/request-bookings/status/${id}`;
   }
 });
-
 </script>
 
 {% endblock %}

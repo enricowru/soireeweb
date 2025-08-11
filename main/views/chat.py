@@ -12,29 +12,7 @@ from main.sse import booking_events
 from asgiref.sync import async_to_sync
 import json
 import asyncio
-
-async def event_booking_stream(request, id):
-    if request.method != "GET":
-        return HttpResponseNotAllowed(['GET'])
-
-    q = booking_events.register(id)
-
-    async def event_stream():
-        try:
-            while True:
-                try:
-                    data = await asyncio.wait_for(q.get(), timeout=10)
-                    yield f"data: {json.dumps(data)}\n\n"
-                except asyncio.TimeoutError:
-                    yield ":\n\n"  # heartbeat
-        except asyncio.CancelledError:
-            pass
-        finally:
-            booking_events.unregister(id, q)
-
-    response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
-    response['Cache-Control'] = 'no-cache'
-    return response
+from channels.layers import get_channel_layer
 
 @csrf_exempt
 def send_booking_message(request, id):
@@ -73,7 +51,14 @@ def send_booking_message(request, id):
             "timestamp": message_obj.timestamp.isoformat(),
         }
 
-        async_to_sync(booking_events.push)(chat.id, data)
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"booking_{id}",
+            {
+                "type": "booking_message",
+                "data": data
+            }
+        )
 
         return JsonResponse({"status": "sent", "data": data})
 
