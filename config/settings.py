@@ -14,10 +14,17 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from decouple import config
 from pathlib import Path
 
-# Host settings
-PROD_HOST = config('PROD_HOST', default='https://example.com')
-LOCAL_HOST = config('LOCAL_HOST', default='http://localhost:8000')
+# Hosts
+PROD_HOST = config('PROD_HOST', default='https://nikescateringservices.com').rstrip('/')
+LOCAL_HOST = config('LOCAL_HOST', default='http://localhost:8000').rstrip('/')
 
+
+# Environment (dev/prod)
+ENVIRONMENT = config('DJANGO_ENV', default='dev')  # 'prod' or 'dev'
+DEBUG = ENVIRONMENT != 'prod'
+
+# Base URL to be used in templates and static/media settings
+BASE_URL = PROD_HOST if ENVIRONMENT == 'prod' else LOCAL_HOST
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -34,9 +41,9 @@ SECRET_KEY = 'django-insecure-l(y@)op3+!yl^6fy^i&atbc1&54bi!v&9eidoy+ddq2d#k@_l7
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'www.nikescateringservices.com', 
-    'nikescateringservices.com', 
-    'localhost', 
+    PROD_HOST.replace('https://', '').replace('http://', ''),
+    f"www.{PROD_HOST.replace('https://', '').replace('http://', '')}",
+    'localhost',
     '127.0.0.1',
     'soireeweb.onrender.com',
     "soiree-experimental.onrender.com",
@@ -128,8 +135,6 @@ DATABASES = {
 }
 
 
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -179,11 +184,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'main.User'
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:19006",  # Expo frontend
-    "http://127.0.0.1:3000",   # Web frontend
-    "https://soireeweb.onrender.com",  # For local testing
-    "https://nikescateringservices.com", # Domain
-    "https://www.nikescateringservices.com" # Domain
+    BASE_URL,
+    f"https://www.{PROD_HOST.replace('https://', '')}",
+    "http://localhost:19006",
+    "http://127.0.0.1:3000",
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -236,4 +240,7 @@ CSRF_COOKIE_SECURE = True
 
 
 # If needed
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = CSRF_TRUSTED_ORIGINS
 CORS_ALLOW_CREDENTIALS = True
