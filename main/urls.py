@@ -46,7 +46,12 @@ urlpatterns = [
     path('chatbot', include('main.chatbot_urls')),
     path('event-status/<int:id>/', views.event_status, name="event-status"),
 
-    path('event-booking-send/<int:id>', views.send_booking_message, name="event-booking-send")
+    path('event-booking-send/<int:id>', views.send_booking_message, name="event-booking-send"),
+    
+    # API Exposing bookin
+    
+    path('api/event-status/<int:id>', views.api_booking_status, name="api-event-status"),
+    path('api/my-bookings', views.api_booking_list, name="api-my"),
 ]
 
 

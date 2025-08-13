@@ -111,15 +111,14 @@
     }
 
   </style>
-<div class="page-header border-bottom px-4 py-3 d-flex justify-content-between align-items-center">
-  <h4 class="fw-semibold mb-0">
-    {{ client.username|default:"[NO NAME]" }} · 
-    {{ booking.event_type|default:"[NO NAME]" }}
-  </h4>
-  <a href="{% url 'request_bookings' %}" class="btn btn-outline-secondary">
-    <i class="fa fa-arrow-left me-1"></i>Back to Chat
-  </a>
-</div>
+  <div class="page-header border-bottom px-4 py-3 d-flex justify-content-between align-items-center">
+    <h4 class="fw-semibold mb-0">
+      {{ client.username|default:"[NO NAME]" }} · {{ booking.event_date|default:"[NO DATE]" }} · {{ booking.event_type|default:"[NO NAME]" }}
+    </h4>
+    <a href="{% url 'request_bookings' %}" class="btn btn-outline-secondary">
+      <i class="fa fa-arrow-left me-1"></i>Back to Chat
+    </a>
+  </div>
 
   <div class="status-wrap">
     <!-- Sidebar Timeline -->
@@ -144,94 +143,181 @@
     </section>
   </div>
 
-<script>
-const steps = document.querySelectorAll('.step-list li');
-const contentBox = document.getElementById('step-content');
-const stepContent = {{ step_content_json|safe }};
+  <script>
 
-// Function to render each step
-function renderStep(idx) {
-  const step = stepContent[idx];
+    const currentChat = {{ booking.id }};
+    const eventData = {{ event_json|safe }};
+    const steps = document.querySelectorAll('.step-list li');
+    const contentBox = document.getElementById('step-content');
+    const stepContent = {{ step_content_json|safe }};
+    const bookingDate = new Date("{{ booking.event_date|date:'M d, Y' }}");
+    const dateString = bookingDate.toISOString().slice(0,16);
 
-  if (!step) return;
-
-  // -- CREATED step: show booking details + event date --
-  if (step.label === 'CREATED') {
-    let html = '';
-
-    // Event date from Event object (with AM/PM)
-    if (step.event_date) {
-      html += `<p><strong>Event Date:</strong> ${step.event_date}</p>`;
+    function isValidImage(file) {
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+      return file && allowedTypes.includes(file.type);
     }
 
-    // Booking details from BookingRequest
-    if (step.booking_details) {
-      const b = step.booking_details;
-      const event = {{event_json |safe }}
-      html += `
-        <p><strong>Title:</strong> ${event.event_title}</p>
-        <p><strong>Event Type:</strong> ${b.event_type}</p>
-        <p><strong>Location:</strong> ${b.location}</p>
-        <p><strong>Pax:</strong> ${b.pax}</p>
-        <p><strong>Package:</strong> ${b.package}</p>
-        <p><strong>Dishes:</strong> ${b.dish_list.join(', ')}</p>
-        <p><strong>Pasta:</strong> ${b.pasta}</p>
-        <p><strong>Drink:</strong> ${b.drink}</p>
+  function renderStep(idx) {
+  // Step 0: CREATED / Event creation
+  if (idx === 0) {
+    if (eventData && eventData.event_title) {
+      const eventDate = new Date(eventData.date);
+      const formattedDate = eventDate.toLocaleString(eventDate, {
+        year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      });
+    
+      const createdStep = stepContent.find(s => s.label === 'CREATED');
+      contentBox.innerHTML = `
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-header">
+                  <h3>Event Details</h3>
+                </div>
+                <div class="card-body">
+                  <p><strong>Title:</strong> ${eventData.event_title}</p>
+                  <p><strong>Description:</strong> ${eventData.description}</p>
+                  <p><strong>Date and Time:</strong> ${formattedDate}</p>
+                  <p><strong>Location:</strong> ${createdStep.booking_details.location}</p>
+                  <p><strong>No. of Attendees:</strong> ${createdStep.booking_details.pax}</p>
+                  <p><strong>Package:</strong> ${createdStep.booking_details.package}</p>
+                  <p><strong>Dishes:</strong>
+                    <ul>
+                      ${
+                        createdStep.booking_details.dish_list
+                          .map(dish => `<li>${dish}</li>`)
+                          .join('')
+                      }
+                    </ul>
+                  </p>
+                  <p><strong>Drink:</strong> ${createdStep.booking_details.drink}</p>
+                  <p><strong>Pasta:</strong> ${createdStep.booking_details.pasta}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       `;
-    }
+    } else {
+      contentBox.innerHTML = `
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-header"><h3>Create New Event</h3></div>
+                <div class="card-body">
+                  <form id="eventCreationForm" method="POST">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                    <div class="mb-3">
+                      <label for="title" class="form-label">Event Title</label>
+                      <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="description" class="form-label">Description</label>
+                      <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                      <label for="date" class="form-label">Event Date and Time</label>
+                      <input type="datetime-local" class="form-control" id="date" name="date" required value="${dateString}">
+                    </div>
+                    <input type="hidden" name="chat" value="${currentChat}">
+                    <div class="text-end">
+                      <button type="button" id="submitEventBtn" class="btn btn-primary">Create Event</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
 
-    // Include any uploaded HTML/content
-    if (step.html) {
-      html += step.html;
-    }
+      document.getElementById('submitEventBtn').addEventListener('click', async () => {
+        const form = document.getElementById('eventCreationForm');
+        const formData = new FormData(form);
+        if (!form.title.value.trim() || !form.description.value.trim() || !form.date.value) {
+          alert('Please fill all required fields.');
+          return;
+        }
 
-    contentBox.innerHTML = html;
+        const response = await fetch('/admin/event/create/', {
+          method: 'POST',
+          body: formData,
+          headers: {'X-CSRFToken': formData.get('csrfmiddlewaretoken')}
+        });
+
+        if (response.ok) window.location.reload();
+        else alert('Failed to create event.');
+      });
+    }
     return;
   }
 
-  // -- Other steps --
+  // Other steps (including PAYMENT)
+  const step = stepContent[idx];
+  const isPaymentStep = step.label === 'PAYMENT';
+
   const parser = new DOMParser();
   const htmlDoc = parser.parseFromString(step.html || '', 'text/html');
-
-  // Add proof-thumb class to images
   htmlDoc.querySelectorAll('img').forEach(img => img.classList.add('proof-thumb'));
 
-  let contentHTML = `
-    <h6 class="mb-3">${step.title}</h6>
-    ${htmlDoc.body.innerHTML}
-  `;
+  let contentHTML = `<h6 class="mb-3">${step.title}</h6>`;
+  contentHTML += htmlDoc.body.innerHTML || '';
 
-  // If step is uploadable and not done, show upload form
+  // Only show form if step is uploadable & active & not done
   if (!steps[idx].classList.contains('done') && step.uploadable && steps[idx].classList.contains('active')) {
+    contentHTML += `<form class="upload-form" enctype="multipart/form-data">`;
+
+    if (isPaymentStep) {
+      const paymentLog = eventData.event_logs?.find(log => log.label === 'PAYMENT');
+      const totalDueRaw = paymentLog ? parseFloat(paymentLog.total_due) : null;
+      const payments = eventData.payment_transactions || [];
+      const totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.amount_paid) || 0), 0);
+      const remainingBalance = totalDueRaw !== null ? totalDueRaw - totalPaid : null;
+
+      if (totalDueRaw == null) {
+        contentHTML += `
+          <div class="mb-2"><label>Total Amount Due</label>
+            <input type="number" class="form-control form-control-sm" name="total_due" min="0" step="0.01" required>
+          </div>
+          <div class="mb-2"><label>Amount Paying Now</label>
+            <input type="number" class="form-control form-control-sm" name="amount_paid" min="0" step="0.01" required>
+          </div>`;
+      } else {
+        contentHTML += `
+          <div class="mb-2"><label>Remaining Balance</label>
+            <input type="text" class="form-control form-control-sm" value="${remainingBalance.toFixed(2)}" readonly>
+          </div>
+          <div class="mb-2"><label>Amount Paying Now</label>
+            <input type="number" class="form-control form-control-sm" name="amount_paid" min="0" max="${remainingBalance.toFixed(2)}" step="0.01" required>
+          </div>`;
+      }
+    }
+
     contentHTML += `
-      <form class="upload-form" enctype="multipart/form-data">
-        <input type="file" class="form-control form-control-sm mb-2" name="proof" accept="image/*" multiple>
-        <button type="button" class="btn btn-sm btn-success mark-done-btn">Attach & Mark Done</button>
-      </form>
-    `;
+      <div class="mb-2"><input type="file" class="form-control form-control-sm" name="proof" multiple accept="image/*"></div>
+      <button type="button" class="btn btn-sm btn-success mark-done-btn">${isPaymentStep ? 'Submit Payment' : 'Attach & Mark Done'}</button>
+    </form>`;
   }
 
   contentBox.innerHTML = contentHTML;
 
-  // Attach mark-as-done handler
+  // Attach handler
   const doneBtn = contentBox.querySelector('.mark-done-btn');
   if (doneBtn) {
     doneBtn.addEventListener('click', async () => {
       const form = doneBtn.closest('form');
+      if (!form) return alert('Form not found.');
+
       const fileInput = form.querySelector('input[type="file"]');
-      const files = fileInput?.files;
+      const files = fileInput?.files || [];
 
-      if (!files || files.length === 0) {
-        alert('Please select at least one image file.');
-        return;
-      }
-
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+      if (files.length === 0) alert('Select at least one image.');
       for (let file of files) {
-        if (!allowedTypes.includes(file.type)) {
-          alert('Only image files are allowed (JPEG, PNG, GIF).');
-          return;
-        }
+        if (!isValidImage(file)) return alert('Only JPEG, PNG, GIF allowed.');
       }
 
       const formData = new FormData(form);
@@ -239,33 +325,25 @@ function renderStep(idx) {
 
       const response = await fetch(`/admin/request-bookings/status/{{ booking.id }}/mark-as-done`, {
         method: 'POST',
-        body: formData,
+        body: formData
       });
 
-      if (response.ok) {
-        steps[idx].classList.add('done');
-        const dot = steps[idx].querySelector('.dot');
-        if (dot) dot.innerHTML = '<i class="fa fa-check"></i>';
-        window.location.reload();
-      } else {
-        alert('Submission failed. Try again.');
-      }
+      if (response.ok) window.location.reload();
+      else alert('Submission failed.');
     });
   }
 }
 
-// Attach click handlers to sidebar steps
-steps.forEach((li, idx) => {
-  li.addEventListener('click', () => {
-    steps.forEach(x => x.classList.remove('active'));
-    li.classList.add('active');
-    renderStep(idx);
-  });
-});
+    steps.forEach((li, idx) => {
+      li.addEventListener('click', () => {
+        steps.forEach(x => x.classList.remove('active'));
+        li.classList.add('active');
+        renderStep(idx);
+      });
+    });
 
-// Initial render
-renderStep(0);
-</script>
+    renderStep(0);
+  </script>
 
 
   {% endblock %}

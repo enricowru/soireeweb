@@ -1,5 +1,6 @@
 from fuzzywuzzy import process
 from django.conf import settings
+from decouple import config
 from django.core.cache import cache
 from PIL import Image
 from io import BytesIO
@@ -338,18 +339,26 @@ def get_all_dishes_for_selection():
             all_dishes_grouped[category.title()] = dishes # Capitalize category names
     return all_dishes_grouped
 
-CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME', 'dzjrdqkiw')
-CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY', '891881498673297')
-CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET', 'Z7QaNRs-E_qgvkCByZxev7fwyiU')
+# TODO: TRANSFER THIS ON ENV
+# CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME', 'dzjrdqkiw')
+# CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY', '891881498673297')
+# CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET', 'Z7QaNRs-E_qgvkCByZxev7fwyiU')
 
 # Optional: Configure as default storage for Django's collectstatic
 # DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaStorage'
 # STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticStorage'
 
 # Configure Cloudinary directly (alternative to CLOUDINARY_URL environment variable)
-cloudinary.config(
-    cloud_name = CLOUDINARY_CLOUD_NAME,
-    api_key = CLOUDINARY_API_KEY,
-    api_secret = CLOUDINARY_API_SECRET,
-    secure = True # Use HTTPS
-)
+# cloudinary.config(
+#     cloud_name = CLOUDINARY_CLOUD_NAME,
+#     api_key = CLOUDINARY_API_KEY,
+#     api_secret = CLOUDINARY_API_SECRET,
+#     secure = True # Use HTTPS
+# )
+
+# cloudinary.config( 
+#     cloud_name = config('CLOUDINARY_CLOUD_NAME'), 
+#     api_key = config('CLOUDINARY_API_KEY'), 
+#     api_secret = config('CLOUDINARY_API_KEY'), # Click 'View API Keys' above to copy your API secret
+#     secure=True
+# )

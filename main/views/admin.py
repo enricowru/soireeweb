@@ -20,6 +20,8 @@ import os
 import uuid
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.timezone import now
+from django.conf import settings
+import cloudinary.uploader
 
 User = get_user_model()
 
@@ -399,7 +401,9 @@ def booking_requests_status(request, id):
     # Group attachments by status label
     attachments = {}
     for a in EventStatusAttachment.objects.filter(booking=booking):
-        attachments.setdefault(a.status_log.label, []).append(a.file.url)
+        url = a.display_url  # <-- use display_url property
+        if url:  # only append if URL exists
+            attachments.setdefault(a.status_log.label, []).append(url)
 
     step_objs = []
     step_json = []
@@ -488,79 +492,93 @@ def booking_requests_status(request, id):
         'event_json': json.dumps(event_data, cls=DjangoJSONEncoder),
         'event': event,
     })
-    
+  
 @csrf_exempt
 @admin_required
 @require_POST
 def mark_step_done(request, id):
     try:
         label = request.POST['label']
-
         booking = get_object_or_404(BookingRequest, id=id)
 
-        # Get or create the status log
+        # --- Get or create EventStatusLog ---
         log, created = EventStatusLog.objects.get_or_create(
             booking=booking,
             label=label,
             defaults={'status': EventStatusLog.Status.DONE}
         )
 
-        # Only handle payment logic if label is PAYMENT
+        # --- PAYMENT Step ---
         if label == EventStatusLog.Label.PAYMENT:
-            # Get total_due from POST or existing log if set
             total_due = request.POST.get('total_due')
             if total_due is not None:
-                total_due = float(total_due)
-                log.total_due = total_due
+                log.total_due = float(total_due)
 
-            # New payment amount being submitted
             amount_paid_str = request.POST.get('amount_paid')
             if amount_paid_str is None:
                 return HttpResponseBadRequest("Missing amount_paid")
-
             amount_paid = float(amount_paid_str)
 
-            # Save the log early to persist total_due if updated
-            log.save()
-
-            # Create payment transaction here (assuming you have a model for this)
-            payment_transaction = PaymentTransaction.objects.create(
+            # Only increment PaymentTransaction
+            PaymentTransaction.objects.create(
                 status_log=log,
                 amount_paid=amount_paid,
                 payment_date=now(),
             )
 
-            # Calculate total amount paid so far including new payment
-            total_paid = sum(
-                pt.amount_paid for pt in log.payment_transactions.all()
-            )
-
-            # Decide status based on total paid vs total due
-            if total_due is not None and total_paid >= total_due:
+            # Update status based on total_paid
+            total_paid = sum(pt.amount_paid for pt in log.payment_transactions.all())
+            if log.total_due is not None and total_paid >= log.total_due:
                 log.status = EventStatusLog.Status.DONE
             else:
                 log.status = EventStatusLog.Status.PARTIALLY_PAID
 
-            log.save()
+        # --- Non-PAYMENT Steps ---
         else:
-            # For other labels, get status directly from POST or default to DONE
-            status = request.POST.get('status', EventStatusLog.Status.DONE)
-            log.status = status
-            log.save()
+            log.status = request.POST.get('status', EventStatusLog.Status.DONE)
 
-        # Handle attachments
-        files = request.FILES.getlist('proof')
-        for f in files:
+        log.save()
+
+        # --- Handle file uploads for ALL steps ---
+        for f in request.FILES.getlist('proof'):
+            if not f or not f.name:
+                continue  # skip empty files
+
             ext = os.path.splitext(f.name)[-1]
             unique_filename = f"booking_{booking.id}_{label.lower()}_{uuid.uuid4().hex}{ext}"
-            named_file = ContentFile(f.read(), name=unique_filename)
 
-            EventStatusAttachment.objects.create(
-                booking=booking,
-                status_log=log,
-                file=named_file,
-                uploaded_at=now()
-            )
+            if settings.ENVIRONMENT == "prod":
+                # Cloudinary upload
+                public_id = f"event_attachments/{unique_filename}"
+                upload_result = cloudinary.uploader.upload(f, public_id=public_id)
+                url_to_save = upload_result["secure_url"]
+
+                # Prevent duplicates
+                if not EventStatusAttachment.objects.filter(
+                    booking=booking,
+                    status_log=log,
+                    cloudinary_url=url_to_save
+                ).exists():
+                    EventStatusAttachment.objects.create(
+                        booking=booking,
+                        status_log=log,
+                        cloudinary_url=url_to_save,
+                        uploaded_at=now()
+                    )
+            else:
+                # Dev: store locally
+                file_to_save = ContentFile(f.read(), name=unique_filename)
+                if not EventStatusAttachment.objects.filter(
+                    booking=booking,
+                    status_log=log,
+                    file=unique_filename
+                ).exists():
+                    EventStatusAttachment.objects.create(
+                        booking=booking,
+                        status_log=log,
+                        file=file_to_save,
+                        uploaded_at=now()
+                    )
 
         return JsonResponse({'success': True, 'status': log.status})
 

@@ -5,7 +5,8 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.contrib.auth.models import User
 from datetime import datetime
-
+from django.conf import settings
+from cloudinary.utils import cloudinary_url
 # from djongo import models as djongo_models  # Uncomment if using Djongo
 
 # ✅ Custom User Model
@@ -204,13 +205,25 @@ class EventStatusAttachment(models.Model):
     file = models.FileField(upload_to='event_attachments/')
     uploaded_at = models.DateTimeField(default=timezone.now)
 
+    cloudinary_url = models.URLField(blank=True, null=True)  # prod only
+
+    @property
+    def display_url(self):
+        """
+        Always return a valid URL for template/admin.
+        """
+        if settings.ENVIRONMENT == "prod" and self.cloudinary_url:
+            return self.cloudinary_url
+        if self.image:
+            return self.file.url
+        return ""
     class Meta:
         db_table = 'event_status_attachment'
-        unique_together = ('booking', 'status_log', 'file') 
+        unique_together = ('booking', 'status_log', 'file', 'cloudinary_url') 
 
     def __str__(self):
         return f"Attachment for {self.status_log}"
-    
+
 # ✅ Event
 class Event(models.Model):
     title = models.CharField(max_length=200)
@@ -380,10 +393,10 @@ class MobilePost(models.Model):
     def __str__(self):
         return self.title
 
-
 class MobilePostImage(models.Model):
     post = models.ForeignKey(MobilePost, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='mobile_posts/')
+    image = models.ImageField(upload_to='mobile_posts/', blank=True, null=True)  # local/dev only
+    cloudinary_url = models.URLField(blank=True, null=True)  # prod only
 
     class Meta:
         db_table = 'mobile_post_image'
@@ -392,6 +405,18 @@ class MobilePostImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.post.title}"
+
+    @property
+    def display_url(self):
+        """
+        Always return a valid URL for template/admin.
+        """
+        if settings.ENVIRONMENT == "prod" and self.cloudinary_url:
+            return self.cloudinary_url
+        if self.image:
+            return self.image.url
+        return ""
+
 
 class Comment(models.Model):
     post = models.ForeignKey(MobilePost, related_name='comments', on_delete=models.CASCADE)

@@ -86,7 +86,6 @@ def event_status(request, id):
         'step_content_json': json.dumps(step_json),
     })
 
-@login_required
 def api_booking_list(request):
     """Return a list of the logged-in client's bookings."""
     bookings = BookingRequest.objects.filter(client=request.user).order_by('-id')
