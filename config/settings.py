@@ -47,6 +47,8 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'soireeweb.onrender.com',
     "soiree-experimental.onrender.com",
+    'www.nikescateringservices.com',
+    'nikescateringservices.com',
 ]
 
 STATIC_URL = '/static/'
