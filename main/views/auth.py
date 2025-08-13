@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from ..models import Moderator
+# from ..models import Moderator
 
 Users = get_user_model()
 
@@ -19,8 +19,6 @@ def home(request):
     for user in users:
         if user.username == 'admin':
             role = 'Admin'
-        elif Moderator.objects.filter(user=user).exists():
-            role = 'Moderator'
         else:
             role = 'User'
 
@@ -58,16 +56,16 @@ def login_view(request):
 
                 # Admin redirect
                 if user.is_superuser:
-                    request.session['is_moderator'] = False
+                    # request.session['is_moderator'] = False
                     return redirect('admin_dashboard')
 
-                # Moderator redirect
-                if hasattr(user, 'moderator_profile'):
-                    request.session['is_moderator'] = True
-                    return redirect('moderator')
+                # # Moderator redirect
+                # if hasattr(user, 'moderator_profile'):
+                #     request.session['is_moderator'] = True
+                #     return redirect('moderator')
 
                 # Default user
-                request.session['is_moderator'] = False
+                # request.session['is_moderator'] = False
                 return redirect('main')
             else:
                 message = 'Invalid username or password.'

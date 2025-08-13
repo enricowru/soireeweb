@@ -1,13 +1,17 @@
 from django import forms
 from .models import Event, MobilePost, Comment
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
-        
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
         fields = ['title', 'description', 'date'] # Add other fields you want to be editable
-
+    def clean_date(self):
+            date = self.cleaned_data.get('date')
+            if date and date < timezone.now():
+                raise forms.ValidationError("Event date cannot be in the past.")
+            return date
 User = get_user_model()
 
 class ModeratorEditForm(forms.Form):

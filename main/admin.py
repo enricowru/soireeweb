@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from django.contrib import admin
-from .models import User, Moderator, Event, EventHistory, EventTracker, ModeratorAccess, Chat, Message
+from .models import User, Event, EventHistory, Chat, Message
 
 @admin.register(Chat)
 class ChatAdmin(admin.ModelAdmin):
@@ -25,8 +25,8 @@ class MessageAdmin(admin.ModelAdmin):
 
 # Register other models
 admin.site.register(User)
-admin.site.register(Moderator)
+# admin.site.register(Moderator)
 admin.site.register(Event)
 admin.site.register(EventHistory)
-admin.site.register(EventTracker)
-admin.site.register(ModeratorAccess)
+# admin.site.register(EventTracker)
+# admin.site.register(ModeratorAccess)

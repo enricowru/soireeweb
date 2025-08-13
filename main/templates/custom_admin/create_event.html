@@ -26,7 +26,16 @@
                             <input type="datetime-local" class="form-control" id="date" name="date" required>
                         </div>
 
-                        <!-- Guest List Management -->
+                        {% comment %} <div class="mb-3">
+                            <label for="pax" class="form-label">No. of Attendees</label>
+                            <input type="number" class="form-control" id="pax" name="pax" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="pkg" class="form-label">Package</label>
+                            <input type="pkg" class="form-control" id="pkg" name="pkg" required>
+                        </div> {% endcomment %}
+
+                        {% comment %} <!-- Guest List Management -->
                         <div class="mb-3">
                             <label class="form-label">Guest List</label>
                             <div id="guestList">
@@ -41,7 +50,7 @@
                                 <i class="fas fa-plus"></i> Add Guest
                             </button>
                             <input type="hidden" name="guest_list" id="guestListInput">
-                        </div>
+                        </div> {% endcomment %}
                         
                         <div class="text-end">
                             <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
@@ -56,7 +65,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const guestList = document.getElementById('guestList');
+   /* const guestList = document.getElementById('guestList');
     const addGuestBtn = document.getElementById('addGuest');
     const guestListInput = document.getElementById('guestListInput');
 
@@ -97,6 +106,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     guestList.addEventListener('input', updateGuestList);
+*/
+
 });
 </script>
 {% endblock %} 

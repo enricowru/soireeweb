@@ -21,9 +21,9 @@ urlpatterns = [
     path('api/reviews/', submit_review, name='submit_review'),
 
     # Moderator dashboard
-    path('moderator/reviews/', views.review_moderation, name='review_moderation'),
-    path('moderator/reviews/approve/<int:review_id>/', views.approve_review, name='approve_review'),
-    path('moderator/', views.moderator_access, name='moderator'),
+    # path('moderator/reviews/', views.review_moderation, name='review_moderation'),
+    # path('moderator/reviews/approve/<int:review_id>/', views.approve_review, name='approve_review'),
+    # path('moderator/', views.moderator_access, name='moderator'),
     
     path('admin/', include('main.admin_urls')),
     
@@ -46,6 +46,12 @@ urlpatterns = [
     path('chatbot', include('main.chatbot_urls')),
     path('event-status/<int:id>/', views.event_status, name="event-status"),
 
+    path('event-booking-send/<int:id>', views.send_booking_message, name="event-booking-send"),
+    
+    # API Exposing bookin
+    
+    path('api/event-status/<int:id>', views.api_booking_status, name="api-event-status"),
+    path('api/my-bookings', views.api_booking_list, name="api-my"),
     path('event-booking-send/<int:id>', views.send_booking_message, name="event-booking-send"),
 
     # Mobile posts API

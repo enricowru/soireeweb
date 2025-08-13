@@ -5,7 +5,8 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.contrib.auth.models import User
 from datetime import datetime
-
+from django.conf import settings
+from cloudinary.utils import cloudinary_url
 # from djongo import models as djongo_models  # Uncomment if using Djongo
 
 # ✅ Custom User Model
@@ -30,86 +31,22 @@ class Role(models.Model):
     def __str__(self):
         return self.name
 
-# ✅ Moderator
-class Moderator(models.Model):
-    user = models.OneToOneField('main.User', on_delete=models.CASCADE, related_name='moderator_profile')
-    bio = models.TextField(blank=True, null=True)
-    expertise_areas = models.JSONField(default=list, blank=True)
-    is_active = models.BooleanField(default=True)
-    rating = models.FloatField(default=0.0)
-    total_events_moderated = models.IntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
-    last_active = models.DateTimeField(auto_now=True)
+# # ✅ Moderator
+# class Moderator(models.Model):
+#     user = models.OneToOneField('main.User', on_delete=models.CASCADE, related_name='moderator_profile')
+#     bio = models.TextField(blank=True, null=True)
+#     expertise_areas = models.JSONField(default=list, blank=True)
+#     is_active = models.BooleanField(default=True)
+#     rating = models.FloatField(default=0.0)
+#     total_events_moderated = models.IntegerField(default=0)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     last_active = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        db_table = 'moderators'
+#     class Meta:
+#         db_table = 'moderators'
 
-    def __str__(self):
-        return f"{self.user.get_full_name()} ({self.user.username})"
-
-
-# ✅ Event
-class Event(models.Model):
-    title = models.CharField(max_length=200)
-    description = models.TextField()
-    date = models.DateTimeField()
-    access_code = models.CharField(max_length=6, unique=True, null=True, blank=True)
-    checkin_code = models.CharField(max_length=8, unique=True, null=True, blank=True)
-    moderators = models.JSONField(default=list, blank=True)
-    participants = models.JSONField(default=list, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = 'events'
-
-    def __str__(self):
-        return self.title
-
-    def clean(self):
-        if self.date and self.date < timezone.now():
-            raise ValidationError({'date': "Event date cannot be in the past."})
-
-
-# ✅ EventHistory
-class EventHistory(models.Model):
-    title = models.CharField(max_length=200)
-    description = models.TextField()
-    date = models.DateTimeField()
-    access_code = models.CharField(max_length=6, null=True, blank=True)
-    checkin_code = models.CharField(max_length=8, null=True, blank=True)
-    created_at = models.DateTimeField()
-    deleted_at = models.DateTimeField(auto_now_add=True)
-    deleted_by = models.ForeignKey('main.User', on_delete=models.SET_NULL, null=True)
-
-    def __str__(self):
-        return f"Deleted: {self.title}"
-
-
-# ✅ EventTracker
-class EventTracker(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    username = models.CharField(max_length=150)
-    interaction_type = models.CharField(max_length=50)
-    content = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = 'event_trackers'
-
-    def __str__(self):
-        return f"{self.username} - {self.interaction_type} at {self.timestamp}"
-
-
-# ✅ ModeratorAccess
-class ModeratorAccess(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    moderator_username = models.CharField(max_length=150)
-    granted_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.moderator_username} - {self.event.title}"
-
+#     def __str__(self):
+#         return f"{self.user.get_full_name()} ({self.user.username})"
 
 # ✅ Chat
 class Chat(models.Model):
@@ -145,127 +82,7 @@ class Message(models.Model):
     def __str__(self):
         return f"{self.sender.username}: {self.content[:50]}"
 
-
-# ✅ Review
-class Review(models.Model):
-    RATING_CHOICES = [
-        (1, '1 Star'),
-        (2, '2 Stars'),
-        (3, '3 Stars'),
-        (4, '4 Stars'),
-        (5, '5 Stars'),
-    ]
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='reviews')
-    rating = models.IntegerField(choices=RATING_CHOICES)
-    comment = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    is_approved = models.BooleanField(default=False)
-
-    class Meta:
-        ordering = ['-created_at']
-
-    def __str__(self):
-        return f"Review by {self.user.username} for {self.event.title}"
-
-
-class Theme(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
-    image = models.ImageField(upload_to='themes/')
-    keywords = models.CharField(max_length=255, help_text="Comma-separated keywords that trigger this theme")
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        ordering = ['name']
-
-class ChatSession(models.Model):
-    title = models.CharField(max_length=100)
-    chat_history = models.JSONField(default=list)
-    planner_state = models.CharField(max_length=50, default='start')
-    planner_data = models.JSONField(default=dict)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-
-    def __str__(self):
-        return self.title
-
-    class Meta:
-        ordering = ['-updated_at']
-        
-
-
-# ✅ ActivityLog
-class ActivityLog(models.Model):
-    timestamp = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    event = models.ForeignKey(Event, on_delete=models.SET_NULL, null=True, blank=True)
-    moderator = models.ForeignKey(Moderator, on_delete=models.SET_NULL, null=True, blank=True)
-    action = models.CharField(max_length=255)
-    details = models.JSONField(default=dict, blank=True)
-
-    class Meta:
-        db_table = 'activity_logs'
-        ordering = ['-timestamp']
-
-    def __str__(self):
-        return f'{self.action} by {self.user.username if self.user else "System"} at {self.timestamp.strftime("%Y-%m-%d %H:%M")}'
-    from django.db import models
-
-
-
-class MobilePost(models.Model):
-    title = models.CharField(max_length=255)
-    content = models.TextField()
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mobile_posts')
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = 'mobile_post'
-        ordering = ['-created_at']
-        verbose_name = 'Mobile Post'
-        verbose_name_plural = 'Mobile Posts'
-
-    def __str__(self):
-        return self.title
-
-
-class MobilePostImage(models.Model):
-    post = models.ForeignKey(MobilePost, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='mobile_posts/')
-
-    class Meta:
-        db_table = 'mobile_post_image'
-        verbose_name = 'Mobile Post Image'
-        verbose_name_plural = 'Mobile Post Images'
-
-    def __str__(self):
-        return f"Image for {self.post.title}"
-
-class Comment(models.Model):
-    post = models.ForeignKey(MobilePost, related_name='comments', on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = 'mobile_post_comments'
-
-
-class Like(models.Model):
-    post = models.ForeignKey(MobilePost, related_name='likes', on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    class Meta:
-        db_table = 'mobile_post_likes'
-        unique_together = ('post', 'user')  
-        
-        
+     
 class BookingRequest(models.Model):
     """
     A draft booking submitted by a client. Used to notify admins and
@@ -351,6 +168,13 @@ class EventStatusLog(models.Model):
         choices=Status.choices,
         default=Status.PENDING
     )
+    total_due = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Total amount due for payment (only set for PAYMENT label)"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -359,6 +183,7 @@ class EventStatusLog(models.Model):
 
     def __str__(self):
         return f"{self.label} - {self.status} for booking {self.booking_id}"
+
 
 class EventStatusAttachment(models.Model):
     """
@@ -380,9 +205,235 @@ class EventStatusAttachment(models.Model):
     file = models.FileField(upload_to='event_attachments/')
     uploaded_at = models.DateTimeField(default=timezone.now)
 
+    cloudinary_url = models.URLField(blank=True, null=True)  # prod only
+
+    @property
+    def display_url(self):
+        """
+        Always return a valid URL for template/admin.
+        """
+        if settings.ENVIRONMENT == "prod" and self.cloudinary_url:
+            return self.cloudinary_url
+        if self.image:
+            return self.file.url
+        return ""
     class Meta:
         db_table = 'event_status_attachment'
-        unique_together = ('booking', 'status_log', 'file') 
+        unique_together = ('booking', 'status_log', 'file', 'cloudinary_url') 
 
     def __str__(self):
         return f"Attachment for {self.status_log}"
+
+# ✅ Event
+class Event(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    date = models.DateTimeField()
+    # access_code = models.CharField(max_length=6, unique=True, null=True, blank=True)
+    # checkin_code = models.CharField(max_length=8, unique=True, null=True, blank=True)
+    # moderators = models.JSONField(default=list, blank=True)
+    booking = models.ForeignKey(
+        BookingRequest, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'events'
+
+    def __str__(self):
+        return self.title
+
+    def clean(self):
+        if self.date and self.date < timezone.now():
+            raise ValidationError({'date': "Event date cannot be in the past."})
+
+class PaymentTransaction(models.Model):
+    status_log = models.ForeignKey(EventStatusLog, on_delete=models.CASCADE, related_name='payment_transactions')
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_date = models.DateTimeField(default=timezone.now)
+    remarks = models.TextField(blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'payment_transaction'
+
+    def __str__(self):
+        return f"Payment {self.amount_paid} on {self.payment_date.strftime('%Y-%m-%d')} for Booking {self.booking_id}"
+
+# ✅ EventHistory
+class EventHistory(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    date = models.DateTimeField()
+    access_code = models.CharField(max_length=6, null=True, blank=True)
+    checkin_code = models.CharField(max_length=8, null=True, blank=True)
+    created_at = models.DateTimeField()
+    deleted_at = models.DateTimeField(auto_now_add=True)
+    deleted_by = models.ForeignKey('main.User', on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return f"Deleted: {self.title}"
+
+
+# # ✅ EventTracker
+# class EventTracker(models.Model):
+#     event = models.ForeignKey(Event, on_delete=models.CASCADE)
+#     username = models.CharField(max_length=150)
+#     interaction_type = models.CharField(max_length=50)
+#     content = models.TextField()
+#     timestamp = models.DateTimeField(auto_now_add=True)
+
+    # class Meta:
+    #     db_table = 'event_trackers'
+
+    # def __str__(self):
+    #     return f"{self.username} - {self.interaction_type} at {self.timestamp}"
+
+
+# # ✅ ModeratorAccess
+# class ModeratorAccess(models.Model):
+#     event = models.ForeignKey(Event, on_delete=models.CASCADE)
+#     moderator_username = models.CharField(max_length=150)
+#     granted_at = models.DateTimeField(auto_now_add=True)
+
+#     def __str__(self):
+#         return f"{self.moderator_username} - {self.event.title}"
+
+
+# ✅ Review
+class Review(models.Model):
+    RATING_CHOICES = [
+        (1, '1 Star'),
+        (2, '2 Stars'),
+        (3, '3 Stars'),
+        (4, '4 Stars'),
+        (5, '5 Stars'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='reviews')
+    rating = models.IntegerField(choices=RATING_CHOICES)
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_approved = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Review by {self.user.username} for {self.event.title}"
+
+
+class Theme(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    image = models.ImageField(upload_to='themes/')
+    keywords = models.CharField(max_length=255, help_text="Comma-separated keywords that trigger this theme")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+
+class ChatSession(models.Model):
+    title = models.CharField(max_length=100)
+    chat_history = models.JSONField(default=list)
+    planner_state = models.CharField(max_length=50, default='start')
+    planner_data = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        ordering = ['-updated_at']
+        
+
+
+# ✅ ActivityLog
+class ActivityLog(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null  =True, blank=True)
+    event = models.ForeignKey(Event, on_delete=models.SET_NULL, null=True, blank=True)
+    # moderator = models.ForeignKey(Moderator, on_delete=models.SET_NULL, null=True, blank=True)
+    action = models.CharField(max_length=255)
+    details = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        db_table = 'activity_logs'
+        ordering = ['-timestamp']
+
+    def __str__(self):
+        return f'{self.action} by {self.user.username if self.user else "System"} at {self.timestamp.strftime("%Y-%m-%d %H:%M")}'
+    from django.db import models
+
+
+
+class MobilePost(models.Model):
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mobile_posts')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'mobile_post'
+        ordering = ['-created_at']
+        verbose_name = 'Mobile Post'
+        verbose_name_plural = 'Mobile Posts'
+
+    def __str__(self):
+        return self.title
+
+class MobilePostImage(models.Model):
+    post = models.ForeignKey(MobilePost, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='mobile_posts/', blank=True, null=True)  # local/dev only
+    cloudinary_url = models.URLField(blank=True, null=True)  # prod only
+
+    class Meta:
+        db_table = 'mobile_post_image'
+        verbose_name = 'Mobile Post Image'
+        verbose_name_plural = 'Mobile Post Images'
+
+    def __str__(self):
+        return f"Image for {self.post.title}"
+
+    @property
+    def display_url(self):
+        """
+        Always return a valid URL for template/admin.
+        """
+        if settings.ENVIRONMENT == "prod" and self.cloudinary_url:
+            return self.cloudinary_url
+        if self.image:
+            return self.image.url
+        return ""
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(MobilePost, related_name='comments', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'mobile_post_comments'
+
+
+class Like(models.Model):
+    post = models.ForeignKey(MobilePost, related_name='likes', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'mobile_post_likes'
+        unique_together = ('post', 'user')  
+        
+   

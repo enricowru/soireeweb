@@ -12,3 +12,9 @@ PG_USER=postgres.qfcdyjeozlrluxwdrzch
 PG_PASS=
 PG_HOST=aws-0-ap-southeast-1.pooler.supabase.com
 PG_PORT=6543
+DJANGO_ENV=prod
+CLOUDINARY_URL=cloudinary://<API_KEY>:<API_SECRET>@<CLOUD_NAME>
+
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+CLOUDINARY_CLOUD_NAME=

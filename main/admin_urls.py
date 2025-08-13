@@ -10,15 +10,15 @@ urlpatterns = [
     path('event/create/', views.create_event, name='create_event'),
     path('event/<int:event_id>/', views.event_detail, name='event_detail'),
     path('event/<int:event_id>/edit/', views.event_edit, name='event_edit'),
-    path('event/<int:event_id>/grant-access/', views.grant_moderator_access, name='grant_moderator_access'),
+    # path('event/<int:event_id>/grant-access/', views.grant_moderator_access, name='grant_moderator_access'),
     path('event/<int:event_id>/delete/', views.delete_event, name='delete_event'),
-    path('event/<int:event_id>/moderator-access/<int:access_id>/delete/', views.delete_moderator_access, name='delete_moderator_access'),
+    # path('event/<int:event_id>/moderator-access/<int:access_id>/delete/', views.delete_moderator_access, name='delete_moderator_access'),
 
     # Moderator Management
-    path('moderators/', views.view_all_moderators, name='view_all_moderators'),
-    path('moderator/create/', views.create_moderator, name='create_moderator'),
-    path('moderator/<int:moderator_id>/edit/', views.moderator_edit, name='moderator_edit'),
-    path('moderator/<int:moderator_id>/delete/', views.delete_moderator, name='delete_moderator'),
+    # path('moderators/', views.view_all_moderators, name='view_all_moderators'),
+    # path('moderator/create/', views.create_moderator, name='create_moderator'),
+    # path('moderator/<int:moderator_id>/edit/', views.moderator_edit, name='moderator_edit'),
+    # path('moderator/<int:moderator_id>/delete/', views.delete_moderator, name='delete_moderator'),
     
     path('users/', views.view_all_users, name='view_all_users'),
     

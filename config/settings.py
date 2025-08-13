@@ -1,4 +1,8 @@
 import os
+from decouple import config
+from pathlib import Path
+import cloudinary
+
 
 """
 Django settings for config project.
@@ -11,12 +15,10 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-from decouple import config
-from pathlib import Path
 
 # Hosts
 PROD_HOST = config('PROD_HOST', default='https://nikescateringservices.com').rstrip('/')
-LOCAL_HOST = config('LOCAL_HOST', default='http://localhost:8000').rstrip('/')
+LOCAL_HOST = config('LOCAL_HOST', default='http://localhost:8001').rstrip('/')
 
 
 # Environment (dev/prod)
@@ -242,8 +244,26 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_URL = '/media/'
+
+
+
+if ENVIRONMENT == 'prod':
+    DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+    # MEDIA_URL = f"/"  # optional: Cloudinary will auto-handle
+  
+    cloudinary.config( 
+        cloud_name = config('CLOUDINARY_CLOUD_NAME'), 
+        api_key = config('CLOUDINARY_API_KEY'), 
+        api_secret = config('CLOUDINARY_API_SECRET'), # Click 'View API Keys' above to copy your API secret
+        secure=True
+    )
+    
+    # MEDIA_URL = f"https://res.cloudinary.com/{config('CLOUDINARY_CLOUD_NAME')}/"
+else:
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+    MEDIA_URL = "/media/"
+
 
 # SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True

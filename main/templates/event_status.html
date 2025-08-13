@@ -16,11 +16,18 @@
 
 <!-- Header -->
 <div class="header-bar">
-  <h5 class="mb-0">{{ booking.event_date|date:"M j, Y" }} · {{ booking.event_type }}</h5>
+  <h5 class="mb-0">
+    <span id="eventDateHeader">{{ booking.event_date|date:"M j, Y" }}</span> · {{ booking.event_type }}
+  </h5>
   <a href="{% url 'my_bookings' %}" class="btn btn-back">
     <i class="fa fa-arrow-left me-1"></i>Back to Chat
   </a>
 </div>
+
+<!-- Embed JSON for JS -->
+<script id="stepContentData" type="application/json">
+  {{ step_content_json|safe }}
+</script>
 
 <div class="container-fluid">
 
@@ -48,39 +55,60 @@
 </div>
 
 <script>
-  const stepContent = {{ step_content_json|safe }};
-  const steps = document.querySelectorAll('.step-list li');
-  const main = document.querySelector('#contentBox');
+const stepContent = JSON.parse(document.getElementById('stepContentData').textContent);
+const steps = document.querySelectorAll('.step-list li');
+const main = document.querySelector('#contentBox');
+const eventDateHeader = document.getElementById('eventDateHeader');
 
-  function render(idx) {
-    const data = stepContent[idx] || {title: '', html: '', is_done: false, label: ''};
+function render(idx) {
+  const data = stepContent[idx] || {title: '', html: '', is_done: false, label: '', status: null, event_date: null};
 
-    let htmlContent = `
-      <div class="content-box">
-        <h6 class="mb-3">${data.title || data.label}</h6>
-        ${data.html || ''}`;
-
-    if (!data.is_done) {
-      if (data.label?.toLowerCase().includes('payment')) {
-        htmlContent += `<div class="alert alert-warning mt-2">Partial payment received. Please complete payment to proceed.</div>`;
-      } else {
-        htmlContent += `<div class="alert alert-secondary mt-2">This step has not yet started.</div>`;
-      }
-    }
-
-    htmlContent += `</div>`;
-    main.innerHTML = htmlContent;
+  // Update header date if CREATED step
+  if (data.label?.toUpperCase() === 'CREATED' && data.event_date) {
+    eventDateHeader.textContent = `${data.event_date} · {{ booking.event_type }}`;
   }
 
-  steps.forEach((li, idx) => {
-    li.addEventListener('click', () => {
-      steps.forEach(x => x.classList.remove('active'));
-      li.classList.add('active');
-      render(idx);
-    });
-  });
+  let htmlContent = `<div class="content-box"><h6 class="mb-3">${data.title || data.label}</h6>`;
 
-  render(0); // Initial render
+  // -- CREATED step shows event details if done --
+  if (data.label?.toUpperCase() === 'CREATED' && data.is_done) {
+    htmlContent += `
+      <p><strong>Event Type:</strong> {{ booking.event_type }}</p>
+      <p><strong>Date:</strong> ${data.event_date}</p>
+      <p><strong>Location:</strong> {{ booking.location }}</p>
+      <p><strong>Pax:</strong> {{ booking.pax }}</p>
+      <p><strong>Package:</strong> {{ booking.package }}</p>
+      <p><strong>Dishes:</strong> {{ booking.dish_list|join:", " }}</p>
+      <p><strong>Pasta:</strong> {{ booking.pasta }}</p>
+      <p><strong>Drink:</strong> {{ booking.drink }}</p>
+    `;
+  } else if (!data.is_done) {
+    if (data.label?.toUpperCase() === 'PAYMENT') {
+      if (data.status === 'PARTIALLY_PAID') {
+        htmlContent += `<div class="alert alert-warning mt-2">Partial payment received. Please complete payment to proceed.</div>`;
+      } else {
+        htmlContent += `<div class="alert alert-secondary mt-2">No payment has been made yet.</div>`;
+      }
+    } else {
+      htmlContent += `<div class="alert alert-secondary mt-2">This step has not yet started.</div>`;
+    }
+  } else {
+    htmlContent += data.html || '';
+  }
+
+  htmlContent += `</div>`;
+  main.innerHTML = htmlContent;
+}
+
+steps.forEach((li, idx) => {
+  li.addEventListener('click', () => {
+    steps.forEach(x => x.classList.remove('active'));
+    li.classList.add('active');
+    render(idx);
+  });
+});
+
+render(0); // Initial render
 </script>
 
 </body>
