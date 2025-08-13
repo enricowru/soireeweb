@@ -20,7 +20,6 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', include('main.urls')),  # ✅ This includes ALL routes from main/urls.py
-    path('chat/', include('main.chatbot_urls'))
     # path('admin/', admin.site.urls),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
