@@ -210,8 +210,8 @@
       <h3 class="mb-4">Admin Panel</h3>
       <ul class="nav flex-column">
         <li class="nav-item mb-2"><a href="{% url 'admin_dashboard' %}"><i class="fas fa-home"></i> Dashboard</a></li>
-        <li class="nav-item mb-2"><a href="{% url 'create_event' %}"><i class="fas fa-plus"></i> Create Event</a></li>
-        <li class="nav-item mb-2"><a href="{% url 'view_all_moderators' %}"><i class="fas fa-user-tie"></i> View Moderators</a></li>
+        {% comment %} <li class="nav-item mb-2"><a href="{% url 'create_event' %}"><i class="fas fa-plus"></i> Create Event</a></li>
+        <li class="nav-item mb-2"><a href="{% url 'view_all_moderators' %}"><i class="fas fa-user-tie"></i> View Moderators</a></li> {% endcomment %}
         <li class="nav-item mb-2"><a href="{% url 'view_all_users' %}"><i class="fas fa-users"></i> View All Users</a></li>
         <li class="nav-item mb-2"><a href="{% url 'event_history' %}"><i class="fas fa-history"></i> View Event History</a></li>
         <li class="nav-item mb-2"><a href="{% url 'admin_edit' %}"><i class="fas fa-user-cog"></i> Edit Admin Profile</a></li>

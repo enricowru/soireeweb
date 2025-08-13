@@ -1,262 +1,271 @@
-{% extends 'custom_admin/base.html' %}
-{% load static %}
+  {% extends 'custom_admin/base.html' %}
+  {% load static %}
 
-{% block content %}
-<style>
-  .status-wrap {
-    display: flex;
-    height: calc(100vh - 60px);
-    overflow: hidden;
-  }
+  {% block content %}
+  <style>
+    .status-wrap {
+      display: flex;
+      height: calc(100vh - 60px);
+      overflow: hidden;
+    }
 
-  /* Sidebar */
-  .status-sidebar {
-    width: 260px;
-    background: #f8f9fa;
-    border-right: 1px solid #ddd;
-    overflow-y: auto;
-    flex-shrink: 0;
-    padding: 1rem 0;
-  }
+    /* Sidebar */
+    .status-sidebar {
+      width: 260px;
+      background: #f8f9fa;
+      border-right: 1px solid #ddd;
+      overflow-y: auto;
+      flex-shrink: 0;
+      padding: 1rem 0;
+    }
 
-  .step-list {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-  }
+    .step-list {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
 
-  .step-list li {
-    padding: 0.75rem 1.25rem;
-    border-left: 3px solid transparent;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    transition: background 0.2s, border-left-color 0.2s;
-  }
+    .step-list li {
+      padding: 0.75rem 1.25rem;
+      border-left: 3px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: background 0.2s, border-left-color 0.2s;
+    }
 
-  .step-list li.active {
-    background: #fff8e7;
-    border-left-color: #AD974F;
-  }
+    .step-list li.active {
+      background: #fff8e7;
+      border-left-color: #AD974F;
+    }
 
-  .step-list li.done .dot {
-    background-color: #198754;
-    color: white;
-  }
+    .step-list li.done .dot {
+      background-color: #198754;
+      color: white;
+    }
 
-  .dot {
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 50%;
-    background: #dee2e6;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 0.9rem;
-    flex-shrink: 0;
-    line-height: 1;
-  }
+    .dot {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      background: #dee2e6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      line-height: 1;
+    }
 
-  .dot i {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+    .dot i {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-  .step-list li.active:not(.done) .dot {
-    background-color: #AD974F;
-    color: white;
-  }
+    .step-list li.active:not(.done) .dot {
+      background-color: #AD974F;
+      color: white;
+    }
 
-  .step-content {
-    flex-grow: 1;
-    padding: 2rem;
-    overflow-y: auto;
-    background: #f9f9f9;
-    display: flex;
-    flex-direction: column;
-  }
+    .step-content {
+      flex-grow: 1;
+      padding: 2rem;
+      overflow-y: auto;
+      background: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+    }
 
-  .content-box {
-    background: white;
-    border-radius: 0.5rem;
-    padding: 2rem;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
-    width: 100%;
-    max-width: 100%;
-  }
+    .content-box {
+      background: white;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
+      width: 100%;
+      max-width: 100%;
+    }
 
-  .placeholder {
-    padding: 3rem;
-    background: #f1f1f1;
-    border-radius: 0.5rem;
-    text-align: center;
-    width: 100%;
-  }
+    .placeholder {
+      padding: 3rem;
+      background: #f1f1f1;
+      border-radius: 0.5rem;
+      text-align: center;
+      width: 100%;
+    }
 
-  .proof-thumb {
-    max-width: 100%;
-    border-radius: 0.25rem;
-    margin-top: 1rem;
-  }
+    .proof-thumb {
+      max-width: 100%;
+      border-radius: 0.25rem;
+      margin-top: 1rem;
+    }
 
-  .upload-form {
-    margin-top: 1.5rem;
-  }
+    .upload-form {
+      margin-top: 1.5rem;
+    }
 
-  .upload-form input[type="file"] {
-    display: block;
-    margin-bottom: 0.5rem;
-  }
+    .upload-form input[type="file"] {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
 
-</style>
+  </style>
 <div class="page-header border-bottom px-4 py-3 d-flex justify-content-between align-items-center">
   <h4 class="fw-semibold mb-0">
-    {{ client.username|default:"[NO NAME]" }} · {{ booking.event_date|default:"[NO DATE]" }} · {{ booking.event_type|default:"[NO NAME]" }}
+    {{ client.username|default:"[NO NAME]" }} · 
+    {{ booking.event_type|default:"[NO NAME]" }}
   </h4>
   <a href="{% url 'request_bookings' %}" class="btn btn-outline-secondary">
     <i class="fa fa-arrow-left me-1"></i>Back to Chat
   </a>
 </div>
 
-<div class="status-wrap">
-  <!-- Sidebar Timeline -->
-  <aside class="status-sidebar">
-    <ul class="step-list">
-      {% for step in status_steps %}
-        <li class="{% if step.is_done %}done{% endif %} {% if forloop.first %}active{% endif %}" data-step="{{ forloop.counter0 }}">
-          <span class="dot">{% if step.is_done %}<i class="fa fa-check"></i>{% endif %}</span>
-          <div>
-            <div class="fw-semibold">{{ step.get_label_display }}</div>
-            <small class="text-muted">{{ step.description }}</small>
-          </div>
-        </li>
-      {% endfor %}
-    </ul>
-  </aside>
+  <div class="status-wrap">
+    <!-- Sidebar Timeline -->
+    <aside class="status-sidebar">
+      <ul class="step-list">
+        {% for step in status_steps %}
+          <li class="{% if step.is_done %}done{% endif %} {% if forloop.first %}active{% endif %}" data-step="{{ forloop.counter0 }}">
+            <span class="dot">{% if step.is_done %}<i class="fa fa-check"></i>{% endif %}</span>
+            <div>
+              <div class="fw-semibold">{{ step.get_label_display }}</div>
+              <small class="text-muted">{{ step.description }}</small>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </aside>
 
-  <!-- Step Content -->
-  <section class="step-content">
-    <div class="content-box" id="step-content">
-    </div>
-  </section>
-</div>
+    <!-- Step Content -->
+    <section class="step-content">
+      <div class="content-box" id="step-content">
+      </div>
+    </section>
+  </div>
 
 <script>
-  const steps = document.querySelectorAll('.step-list li');
-  const contentBox = document.getElementById('step-content');
-  const stepContent = {{ step_content_json|safe }};
+const steps = document.querySelectorAll('.step-list li');
+const contentBox = document.getElementById('step-content');
+const stepContent = {{ step_content_json|safe }};
 
-  function isValidImage(file) {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
-    return file && allowedTypes.includes(file.type);
-  }
+// Function to render each step
+function renderStep(idx) {
+  const step = stepContent[idx];
 
-  function renderStep(idx) {
-    const step = stepContent[idx];
-    const isPaymentStep = step.label === 'PAYMENT';
+  if (!step) return;
 
-    const parser = new DOMParser();
-    const htmlDoc = parser.parseFromString(step.html, 'text/html');
-    const images = htmlDoc.querySelectorAll('img');
+  // -- CREATED step: show booking details + event date --
+  if (step.label === 'CREATED') {
+    let html = '';
 
-    images.forEach(img => {
-      img.classList.add('proof-thumb');
-    });
-
-    let contentHTML = `
-      <h6 class="mb-3">${step.title}</h6>
-      ${htmlDoc.body.innerHTML}
-    `;
-
-    if (!steps[idx].classList.contains('done') && step.uploadable && steps[idx].classList.contains('active')) {
-      if (isPaymentStep) {
-        contentHTML += `
-          <form class="upload-form" enctype="multipart/form-data">
-            <div class="mb-2">
-              <label class="form-label small mb-1">Payment Type</label>
-              <select class="form-select form-select-sm" name="payment_type" required>
-                <option value="">Select type</option>
-                <option value="partial">Partial Payment</option>
-                <option value="full">Full Payment</option>
-              </select>
-            </div>
-            <input type="file" class="form-control form-control-sm mb-2" name="proof" accept="image/*" multiple>
-            <button type="button" class="btn btn-sm btn-success mark-done-btn">Submit Payment</button>
-          </form>
-        `;
-      } else {
-        contentHTML += `
-          <form class="upload-form" enctype="multipart/form-data">
-            <input type="file" class="form-control form-control-sm mb-2" name="proof" accept="image/*" multiple>
-            <button type="button" class="btn btn-sm btn-success mark-done-btn">Attach & Mark Done</button>
-          </form>
-        `;
-      }
+    // Event date from Event object (with AM/PM)
+    if (step.event_date) {
+      html += `<p><strong>Event Date:</strong> ${step.event_date}</p>`;
     }
 
-    contentBox.innerHTML = contentHTML;
+    // Booking details from BookingRequest
+    if (step.booking_details) {
+      const b = step.booking_details;
+      const event = {{event_json |safe }}
+      html += `
+        <p><strong>Title:</strong> ${event.event_title}</p>
+        <p><strong>Event Type:</strong> ${b.event_type}</p>
+        <p><strong>Location:</strong> ${b.location}</p>
+        <p><strong>Pax:</strong> ${b.pax}</p>
+        <p><strong>Package:</strong> ${b.package}</p>
+        <p><strong>Dishes:</strong> ${b.dish_list.join(', ')}</p>
+        <p><strong>Pasta:</strong> ${b.pasta}</p>
+        <p><strong>Drink:</strong> ${b.drink}</p>
+      `;
+    }
 
-    const doneBtn = contentBox.querySelector('.mark-done-btn');
-    if (doneBtn) {
-      doneBtn.addEventListener('click', async () => {
-        const form = doneBtn.closest('form');
-        const fileInput = form.querySelector('input[type="file"]');
-        const files = fileInput?.files;
+    // Include any uploaded HTML/content
+    if (step.html) {
+      html += step.html;
+    }
 
-        if (!files || files.length === 0) {
-          alert('Please select at least one image file.');
+    contentBox.innerHTML = html;
+    return;
+  }
+
+  // -- Other steps --
+  const parser = new DOMParser();
+  const htmlDoc = parser.parseFromString(step.html || '', 'text/html');
+
+  // Add proof-thumb class to images
+  htmlDoc.querySelectorAll('img').forEach(img => img.classList.add('proof-thumb'));
+
+  let contentHTML = `
+    <h6 class="mb-3">${step.title}</h6>
+    ${htmlDoc.body.innerHTML}
+  `;
+
+  // If step is uploadable and not done, show upload form
+  if (!steps[idx].classList.contains('done') && step.uploadable && steps[idx].classList.contains('active')) {
+    contentHTML += `
+      <form class="upload-form" enctype="multipart/form-data">
+        <input type="file" class="form-control form-control-sm mb-2" name="proof" accept="image/*" multiple>
+        <button type="button" class="btn btn-sm btn-success mark-done-btn">Attach & Mark Done</button>
+      </form>
+    `;
+  }
+
+  contentBox.innerHTML = contentHTML;
+
+  // Attach mark-as-done handler
+  const doneBtn = contentBox.querySelector('.mark-done-btn');
+  if (doneBtn) {
+    doneBtn.addEventListener('click', async () => {
+      const form = doneBtn.closest('form');
+      const fileInput = form.querySelector('input[type="file"]');
+      const files = fileInput?.files;
+
+      if (!files || files.length === 0) {
+        alert('Please select at least one image file.');
+        return;
+      }
+
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+      for (let file of files) {
+        if (!allowedTypes.includes(file.type)) {
+          alert('Only image files are allowed (JPEG, PNG, GIF).');
           return;
         }
+      }
 
-        for (let file of files) {
-          if (!isValidImage(file)) {
-            alert('Only image files are allowed (JPEG, PNG, GIF).');
-            return;
-          }
-        }
+      const formData = new FormData(form);
+      formData.append('label', step.label);
 
-        const formData = new FormData(form); // ✅ only this
-
-        const stepLabel = step.label;
-        formData.append('label', stepLabel);
-
-        if (stepLabel === 'PAYMENT') {
-          const paymentType = form.querySelector('[name="payment_type"]').value;
-          if (!paymentType) {
-            alert('Please select a payment type.');
-            return;
-          }
-          const status = paymentType === 'partial' ? 'PARTIALLY_PAID' : 'DONE';
-          formData.append('status', status);
-        }
-
-        const response = await fetch(`/admin/request-bookings/status/{{ booking.id }}/mark-as-done`, {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (response.ok) {
-          steps[idx].classList.add('done');
-          const dot = steps[idx].querySelector('.dot');
-          if (dot) dot.innerHTML = '<i class="fa fa-check"></i>';
-          window.location.reload();
-        } else {
-          alert('Submission failed. Try again.');
-        }
+      const response = await fetch(`/admin/request-bookings/status/{{ booking.id }}/mark-as-done`, {
+        method: 'POST',
+        body: formData,
       });
-    }
-  }
 
-  steps.forEach((li, idx) => {
-    li.addEventListener('click', () => {
-      steps.forEach(x => x.classList.remove('active'));
-      li.classList.add('active');
-      renderStep(idx);
+      if (response.ok) {
+        steps[idx].classList.add('done');
+        const dot = steps[idx].querySelector('.dot');
+        if (dot) dot.innerHTML = '<i class="fa fa-check"></i>';
+        window.location.reload();
+      } else {
+        alert('Submission failed. Try again.');
+      }
     });
-  });
+  }
+}
 
-  renderStep(0);
+// Attach click handlers to sidebar steps
+steps.forEach((li, idx) => {
+  li.addEventListener('click', () => {
+    steps.forEach(x => x.classList.remove('active'));
+    li.classList.add('active');
+    renderStep(idx);
+  });
+});
+
+// Initial render
+renderStep(0);
 </script>
-{% endblock %}
+
+
+  {% endblock %}

@@ -21,9 +21,9 @@ urlpatterns = [
     path('api/reviews/', submit_review, name='submit_review'),
 
     # Moderator dashboard
-    path('moderator/reviews/', views.review_moderation, name='review_moderation'),
-    path('moderator/reviews/approve/<int:review_id>/', views.approve_review, name='approve_review'),
-    path('moderator/', views.moderator_access, name='moderator'),
+    # path('moderator/reviews/', views.review_moderation, name='review_moderation'),
+    # path('moderator/reviews/approve/<int:review_id>/', views.approve_review, name='approve_review'),
+    # path('moderator/', views.moderator_access, name='moderator'),
     
     path('admin/', include('main.admin_urls')),
     

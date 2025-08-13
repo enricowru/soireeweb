@@ -16,7 +16,7 @@ from pathlib import Path
 
 # Hosts
 PROD_HOST = config('PROD_HOST', default='https://nikescateringservices.com').rstrip('/')
-LOCAL_HOST = config('LOCAL_HOST', default='http://localhost:8000').rstrip('/')
+LOCAL_HOST = config('LOCAL_HOST', default='http://localhost:8001').rstrip('/')
 
 
 # Environment (dev/prod)
