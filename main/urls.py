@@ -15,7 +15,7 @@ urlpatterns = [
     path('home/', views.home, name='home'),
     # path('home/chatbot/', views.home, name='home'),
     path('signup/', signup, name='signup'),
-    path('chatbot/', include(chatbot_urls.urlpatterns)),
+    path('chatbot/', include('main.chatbot_urls')),
 
     # API endpoint for mobile review submission
     path('api/reviews/', submit_review, name='submit_review'),
