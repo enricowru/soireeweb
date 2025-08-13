@@ -52,6 +52,13 @@ urlpatterns = [
     
     path('api/event-status/<int:id>', views.api_booking_status, name="api-event-status"),
     path('api/my-bookings', views.api_booking_list, name="api-my"),
+    path('event-booking-send/<int:id>', views.send_booking_message, name="event-booking-send"),
+
+    # Mobile posts API
+    path('api/posts/', get_all_posts, name='api_posts_list'),
+    path('api/posts/<int:post_id>/', get_post_detail, name='api_post_detail'),
+    path('api/posts/<int:post_id>/like/', toggle_like, name='api_post_like'),
+    path('api/posts/<int:post_id>/comments/', submit_comment, name='api_post_comment')
 ]
 
 
