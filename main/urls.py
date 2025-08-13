@@ -46,7 +46,13 @@ urlpatterns = [
     path('chatbot', include('main.chatbot_urls')),
     path('event-status/<int:id>/', views.event_status, name="event-status"),
 
-    path('event-booking-send/<int:id>', views.send_booking_message, name="event-booking-send")
+    path('event-booking-send/<int:id>', views.send_booking_message, name="event-booking-send"),
+
+    # Mobile posts API
+    path('api/posts/', get_all_posts, name='api_posts_list'),
+    path('api/posts/<int:post_id>/', get_post_detail, name='api_post_detail'),
+    path('api/posts/<int:post_id>/like/', toggle_like, name='api_post_like'),
+    path('api/posts/<int:post_id>/comments/', submit_comment, name='api_post_comment')
 ]
 
 
