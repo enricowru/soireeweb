@@ -33,6 +33,7 @@ def get_all_posts(request):
         })
     return JsonResponse({'posts': data}, status=200)
 
+
 # -------------------------------
 # 🔓 Public: Get Post Details
 # -------------------------------

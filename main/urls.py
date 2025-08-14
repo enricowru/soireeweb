@@ -20,11 +20,9 @@ urlpatterns = [
     # API endpoint for mobile review submission
     path('api/reviews/', submit_review, name='submit_review'),
 
-    
-    # Minimal mobile reviews API (list + submit with images)
+    # Minimal mobile reviews API (list + submit with images) for mobile
     path('api/reviews/list/', list_mobile_reviews, name='mobile_reviews_list'),
     path('api/reviews/submit/', submit_mobile_review, name='mobile_reviews_submit'),
-
 
     # Moderator dashboard
     # path('moderator/reviews/', views.review_moderation, name='review_moderation'),

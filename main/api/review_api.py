@@ -40,6 +40,8 @@ def list_mobile_reviews(request):
     return JsonResponse({'average': round(avg, 1), 'count': cnt, 'reviews': data}, status=200)
 
 
+
+
 # ---- Minimal submit endpoint with optional images (multipart) ----
 @csrf_exempt
 @require_http_methods(["POST"])
