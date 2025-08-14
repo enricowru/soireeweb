@@ -436,4 +436,31 @@ class Like(models.Model):
         db_table = 'mobile_post_likes'
         unique_together = ('post', 'user')  
         
-   
+
+# ✅ Mobile Reviews (minimal, independent of main Review/Event)
+class MobileReview(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    name = models.CharField(max_length=150, blank=True, null=True)
+    rating = models.PositiveSmallIntegerField(default=5)
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'mobile_review'
+        ordering = ['-created_at']
+
+    def display_name(self):
+        if self.user:
+            return self.user.get_full_name() or self.user.username
+        return self.name or 'Guest'
+
+
+class MobileReviewImage(models.Model):
+    review = models.ForeignKey(MobileReview, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='mobile_reviews/')
+
+    class Meta:
+        db_table = 'mobile_review_image'
+
+    def __str__(self):
+        return f"Image for review {self.review_id}"
