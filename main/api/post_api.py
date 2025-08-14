@@ -11,17 +11,25 @@ import json
 # -------------------------------
 @csrf_exempt
 def get_all_posts(request):
+    """Return all mobile posts.
+
+    Assumes each post has at least one valid image (enforced via admin constraint), so no
+    defensive skipping logic is required here anymore.
+    """
+    user = getattr(request, 'user', AnonymousUser())
     posts = MobilePost.objects.all().order_by('-created_at')
     data = []
     for post in posts:
+        image_urls = [img.image.url for img in post.images.all()]
         data.append({
             'id': post.id,
             'title': post.title,
             'content': post.content,
             'created_at': post.created_at.isoformat(),
-            'images': [img.image.url for img in post.images.all()],
+            'images': image_urls,
             'like_count': post.likes.count(),
             'comment_count': post.comments.count(),
+            'is_liked': post.likes.filter(user=user).exists() if user.is_authenticated else False,
         })
     return JsonResponse({'posts': data}, status=200)
 
