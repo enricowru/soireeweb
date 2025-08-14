@@ -437,6 +437,9 @@ class Like(models.Model):
         unique_together = ('post', 'user')  
         
 
+
+
+
 # ✅ Mobile Reviews (minimal, independent of main Review/Event)
 class MobileReview(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
@@ -464,3 +467,4 @@ class MobileReviewImage(models.Model):
 
     def __str__(self):
         return f"Image for review {self.review_id}"
+

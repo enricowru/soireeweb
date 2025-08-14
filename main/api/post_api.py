@@ -4,6 +4,7 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth import get_user_model
 from ..models import MobilePost, Comment, Like
+from django.db import connection
 import json
 
 # -------------------------------
@@ -11,16 +12,42 @@ import json
 # -------------------------------
 @csrf_exempt
 def get_all_posts(request):
-    """Return all mobile posts.
+    """Return all mobile posts with resilient image handling.
 
-    Assumes each post has at least one valid image (enforced via admin constraint), so no
-    defensive skipping logic is required here anymore.
+    Production data currently includes some MobilePostImage rows whose FileField has no
+    underlying file. Accessing .url on such rows raises ValueError. We defensively skip
+    those so the endpoint always responds 200 with remaining valid images.
     """
     user = getattr(request, 'user', AnonymousUser())
     posts = MobilePost.objects.all().order_by('-created_at')
     data = []
     for post in posts:
-        image_urls = [img.image.url for img in post.images.all()]
+        # First try Cloudinary URLs directly from DB (column may not be in model definition)
+        cloud_urls = []
+        try:
+            with connection.cursor() as cur:
+                cur.execute("""
+                    SELECT cloudinary_url
+                    FROM mobile_post_image
+                    WHERE post_id = %s AND COALESCE(cloudinary_url,'') <> ''
+                    ORDER BY id ASC
+                """, [post.id])
+                cloud_urls = [r[0] for r in cur.fetchall() if r[0]]
+        except Exception:
+            cloud_urls = []
+
+        image_urls = cloud_urls
+        if not image_urls:
+            # Fallback to file-based images (legacy path)
+            for img in post.images.all():
+                f = getattr(img, 'image', None)
+                if not f:
+                    continue
+                try:
+                    if getattr(f, 'name', ''):
+                        image_urls.append(f.url)
+                except Exception:
+                    continue
         data.append({
             'id': post.id,
             'title': post.title,
@@ -46,12 +73,38 @@ def get_post_detail(request, post_id):
     comments = post.comments.select_related('user').order_by('-created_at')
     user = getattr(request, 'user', AnonymousUser())
 
+    # Detail view: prefer cloudinary_url list
+    try:
+        with connection.cursor() as cur:
+            cur.execute("""
+                SELECT cloudinary_url
+                FROM mobile_post_image
+                WHERE post_id = %s AND COALESCE(cloudinary_url,'') <> ''
+                ORDER BY id ASC
+            """, [post.id])
+            image_urls = [r[0] for r in cur.fetchall() if r[0]]
+    except Exception:
+        image_urls = []
+
+    if not image_urls:
+        # Fallback to file-based storage if no cloudinary urls
+        image_urls = []
+        for img in post.images.all():
+            f = getattr(img, 'image', None)
+            if not f:
+                continue
+            try:
+                if getattr(f, 'name', ''):
+                    image_urls.append(f.url)
+            except Exception:
+                continue
+
     response = {
         'id': post.id,
         'title': post.title,
         'content': post.content,
         'created_at': post.created_at.isoformat(),
-        'images': [img.image.url for img in post.images.all()],
+        'images': image_urls,
         'like_count': post.likes.count(),
         'comment_count': post.comments.count(),
         'is_liked': post.likes.filter(user=user).exists() if user.is_authenticated else False,
