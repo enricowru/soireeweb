@@ -120,7 +120,7 @@ def api_booking_status(request, id):
 
     attachments = {}
     for a in EventStatusAttachment.objects.filter(booking=booking):
-        attachments.setdefault(a.status_log.label, []).append(a.file.url)
+        attachments.setdefault(a.status_log.label, []).append(a.display_url)  # use display_url for prod/dev
 
     step_json = []
     for label, description in steps_def:
@@ -134,21 +134,11 @@ def api_booking_status(request, id):
             else:
                 is_done = log.status == EventStatusLog.Status.DONE
 
-        img_urls = attachments.get(label, [])
-        if img_urls:
-            html = f'<p>{description}</p>'
-            for url in img_urls:
-                html += f'<img src="{url}" alt="Proof image">'
-        elif is_done:
-            html = f'<p>{description}</p><p><em>No image uploaded.</em></p>'
-        else:
-            html = f'<div class="placeholder">Not yet completed.</div>'
-
         step_json.append({
             'label': label,
             'title': label.title().replace('_', ' '),
-            'html': html,
-            'uploadable': False,
+            'description': description,
+            'images': attachments.get(label, []),  # list of URLs
             'is_done': is_done,
             'status': log.status if log else None,
             'event_date': event_date.strftime('%b %d, %Y %I:%M %p') if event_date and label == 'CREATED' else None,
@@ -158,7 +148,7 @@ def api_booking_status(request, id):
     return JsonResponse({
         "id": booking.id,
         "event_type": booking.event_type,
-        "status": booking.status,
+        "status": booking.status, 
         "event_date": event_date.strftime('%b %d, %Y %I:%M %p') if event_date else None,
         "steps": step_json
     })

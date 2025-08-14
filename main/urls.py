@@ -57,7 +57,7 @@ urlpatterns = [
     # API Exposing bookin
     
     path('api/event-status/<int:id>', views.api_booking_status, name="api-event-status"),
-    path('api/my-bookings', views.api_booking_list, name="api-my"),
+    path('api/my-bookings', views.api_booking_list, name="api-my-booking"),
     path('event-booking-send/<int:id>', views.send_booking_message, name="event-booking-send"),
 
     # Mobile posts API
