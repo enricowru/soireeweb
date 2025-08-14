@@ -1,7 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.db.models import Avg, Count
-from ..models import Review, BookingRequest, Event
+from ..models import Review, MobileReview, MobileReviewImage
 import json
 from django.views.decorators.http import require_http_methods
 
@@ -48,27 +48,32 @@ def submit_mobile_review(request):
     # Accept application/json or form-data
     rating = int(request.POST.get('rating') or request.GET.get('rating') or 0)
     comment = request.POST.get('comment') or ''
-    event_id = None
+    user = request.user if getattr(request, 'user', None) and request.user.is_authenticated else None
+    client_id = None
     if request.content_type and 'application/json' in request.content_type:
         try:
             body = json.loads(request.body or '{}')
             rating = int(body.get('rating') or rating)
             comment = body.get('comment') or comment
-            event_id = body.get('event_id')
+            client_id = body.get('client_id')
         except Exception:
             pass
     else:
-        event_id = request.POST.get('event_id')
+        client_id = request.POST.get('client_id')
 
-    if rating <= 0 or rating > 5 or not comment or not event_id:
-        return JsonResponse({'error': 'rating (1-5), comment, and event_id are required'}, status=400)
+    if rating <= 0 or rating > 5 or not comment or not client_id:
+        return JsonResponse({'error': 'rating (1-5), comment, and client_id are required'}, status=400)
 
-    # Save review as unapproved
-    user = request.user if getattr(request, 'user', None) and request.user.is_authenticated else None
-    try:
-        event = Event.objects.get(id=event_id)
-    except Event.DoesNotExist:
-        return JsonResponse({'error': 'Event not found'}, status=404)
+    # Find latest BookingRequest with status CREATED for client
+    from ..models import BookingRequest, Event
+    booking = BookingRequest.objects.filter(client_id=client_id).order_by('-created_at').first()
+    if not booking or not booking.event_date:
+        return JsonResponse({'error': 'No active booking found for client'}, status=404)
+
+    # Find event for booking (if exists)
+    event = Event.objects.filter(date=booking.event_date).order_by('-date').first()
+    if not event:
+        return JsonResponse({'error': 'Event not found for booking'}, status=404)
 
     r = Review.objects.create(
         user=user,
