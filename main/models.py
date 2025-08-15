@@ -100,6 +100,8 @@ class BookingRequest(models.Model):
 
     # -- Who made the booking --
     client       = models.ForeignKey(User, on_delete=models.CASCADE)
+    celebrant_name = models.CharField(max_length=150, blank=True, null=True)
+
 
     # -- Main fields --
     event_date   = models.DateField()
