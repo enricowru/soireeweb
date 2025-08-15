@@ -107,8 +107,13 @@ class BookingRequest(models.Model):
     event_date   = models.DateField()
     event_type   = models.CharField(max_length=60)
     pax          = models.PositiveIntegerField()
-    location     = models.CharField(max_length=255)
-    color_hex    = models.CharField(max_length=7)  # e.g., "#ff0000"
+    venue        = models.CharField(max_length=255)
+    floorplan    = models.FileField(upload_to='booking_floorplans/')
+    uploaded_at  = models.DateTimeField(default=timezone.now)
+
+    cloudinary_url = models.URLField(blank=True, null=True)  # prod only
+
+    color_motif    = models.CharField(max_length=255)  
     package      = models.CharField(max_length=40)
 
     # -- Menu (stored as plain strings) --
@@ -120,7 +125,17 @@ class BookingRequest(models.Model):
 
     # -- Raw backup (optional) --
     raw_payload  = models.JSONField(blank=True, null=True)
-
+    @property
+    def display_url(self):
+        """
+        Always return a valid URL for template/admin.
+        """
+        if settings.ENVIRONMENT == "prod" and self.cloudinary_url:
+            return self.cloudinary_url
+        if self.image:
+            return self.floorplan.url
+        return ""
+    
     def dish_list(self):
         """Returns dishes as a Python list."""
         return [d.strip() for d in self.dishes.split(",") if d.strip()]
