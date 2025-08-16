@@ -3,14 +3,14 @@ from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-# from ..models import Moderator
+from ..models import Review
 
 Users = get_user_model()
-
 
 @login_required
 def home(request):
     if request.user.username == 'admin':
+        print("Redirecting admin to dashboard")
         return redirect('/admin/dashboard')
 
     users = Users.objects.all()
@@ -22,17 +22,32 @@ def home(request):
         else:
             role = 'User'
 
-        user_list.append({
+        entry = {
             'username': user.username,
             'firstname': user.first_name,
             'lastname': user.last_name,
             'role': role,
-        })
+        }
+        user_list.append(entry)
+
+        # Debug log each user
+        print(f"Loaded user: {entry}")
+
+    top_reviews = (
+        Review.objects.filter(is_approved=True)
+        .order_by('-rating', '-created_at')[:3]
+    )
+
+    print(f"Top reviews count: {top_reviews.count()}")
+    for r in top_reviews:
+        print(f"Review by {r.user}: {r.rating} stars, created at {r.created_at}")
 
     return render(request, 'main.html', {
         'logged_in': True,
-        'user_list': user_list
+        'user_list': user_list,
+        'top_reviews': top_reviews
     })
+
     
 def login_view(request):
     message = ''

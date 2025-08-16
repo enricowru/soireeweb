@@ -412,6 +412,7 @@
     </div>
   </section>
 
+  {% if top_reviews %}
   <!-- REVIEWS -->
   <section id="reviews">
     <div class="reviews-content">
@@ -420,12 +421,13 @@
         <h2 class="ritalic">Hear from our</h2>
         <h2 class="rbold">clients</h2>
         <p>Real stories from satisfied clients who trusted us to make their events unforgettable.</p>
+
         <div class="reviews-nav">
           <button class="rprev">❮</button>
           <div class="rdots">
-            <span class="rdot active"></span>
-            <span class="rdot"></span>
-            <span class="rdot"></span>
+            {% for review in top_reviews %}
+              <span class="rdot {% if forloop.first %}active{% endif %}"></span>
+            {% endfor %}
           </div>
           <button class="rnext">❯</button>
         </div>
@@ -435,66 +437,31 @@
       <div class="reviews-right">
         <div class="review-slider">
           <div class="review-track">
-            <!-- Review 1 -->
+            {% for review in top_reviews %}
             <div class="review">
               <div class="review-header">
                 <img src="{% static 'images/quotation.png' %}" alt="Quote Icon" class="quote-icon">
-                <div class="star-rating" data-rating="5"></div>
+                <div class="star-rating" data-rating="{{ review.rating }}"></div>
               </div>
               <p class="review-text">
-                From start to finish, Nike’s Catering Services exceeded our expectations!
-                The food was absolutely delicious — fresh, flavorful, and beautifully presented.
+                {{ review.comment }}
               </p>
               <div class="review-user">
                 <img src="{% static 'images/user.png' %}" alt="User Photo" class="user-photo">
                 <div class="review-details">
-                  <h3>Sophia Parker</h3>
-                  <p>April 23, 2025</p>
+                  <h3>{{ review.user.first_name }} {{ review.user.last_name }}</h3>
+                  <p>{{ review.created_at|date:"F j, Y" }}</p>
                 </div>
               </div>
             </div>
-
-            <!-- Review 2 -->
-            <div class="review">
-              <div class="review-header">
-                <img src="{% static 'images/quotation.png' %}" alt="Quote Icon" class="quote-icon">
-                <div class="star-rating" data-rating="4"></div>
-              </div>
-              <p class="review-text">
-                We loved the event styling! Nike’s Catering nailed the theme perfectly and everyone was impressed.
-              </p>
-              <div class="review-user">
-                <img src="{% static 'images/user.png' %}" alt="User Photo" class="user-photo">
-                <div class="review-details">
-                  <h3>Jason Tan</h3>
-                  <p>May 2, 2025</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Review 3 -->
-            <div class="review">
-              <div class="review-header">
-                <img src="{% static 'images/quotation.png' %}" alt="Quote Icon" class="quote-icon">
-                <div class="star-rating" data-rating="5"></div>
-              </div>
-              <p class="review-text">
-                Professional service, courteous staff, and mouthwatering dishes. Highly recommend!
-              </p>
-              <div class="review-user">
-                <img src="{% static 'images/user.png' %}" alt="User Photo" class="user-photo">
-                <div class="review-details">
-                  <h3>Angela Cruz</h3>
-                  <p>May 5, 2025</p>
-                </div>
-              </div>
-            </div>
+            {% endfor %}
           </div>
         </div>
       </div>
-
     </div>
   </section>
+  {% endif %}
+
 
   <!-- ABOUT US -->
   <section id="about-us">
@@ -602,41 +569,44 @@
   </script>
 
   <!-- SLIDER ON MENU -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const track = document.querySelector('.carousel-track');
-      const slides = Array.from(track.children);
-      const next = document.querySelector('.next');
-      const prev = document.querySelector('.prev');
-      const dots = document.querySelectorAll('.dot');
-      const cardWidth = slides[0].offsetWidth + 20;
-      let index = 0;
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const track = document.querySelector('.review-track');
+    const reviews = document.querySelectorAll('.review');
+    const dots = document.querySelectorAll('.rdot');
+    const prev = document.querySelector('.rprev');
+    const next = document.querySelector('.rnext');
+    let index = 0;
 
-      function updateCarousel() {
-        track.style.transform = `translateX(-${index * cardWidth}px)`;
-        dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
-      }
+    function updateSlider() {
+      const reviewWidth = reviews[0].offsetWidth;
+      track.style.transform = `translateX(-${index * reviewWidth}px)`;
 
-      next.addEventListener('click', () => {
-        index = (index + 1) % slides.length;
-        updateCarousel();
-      });
+      // Update active dot
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+    }
 
-      prev.addEventListener('click', () => {
-        index = (index - 1 + slides.length) % slides.length;
-        updateCarousel();
-      });
-
-      dots.forEach((dot, i) => {
-        dot.addEventListener('click', () => {
-          index = i;
-          updateCarousel();
-        });
-      });
-
-      updateCarousel();
+    next.addEventListener('click', () => {
+      index = (index + 1) % reviews.length;
+      updateSlider();
     });
-  </script>
+
+    prev.addEventListener('click', () => {
+      index = (index - 1 + reviews.length) % reviews.length;
+      updateSlider();
+    });
+
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => {
+        index = i;
+        updateSlider();
+      });
+    });
+
+    // Init
+    updateSlider();
+  });
+</script>
 
   <!-- FOR PACKAGES -->
   <script>
@@ -904,14 +874,20 @@
       const next = document.querySelector('.rnext');
       let index = 0;
 
-      function updateSlider() {
-        // Use getBoundingClientRect for accurate width
-        const width = reviews[0].getBoundingClientRect().width;
-        track.style.transform = `translateX(-${index * width}px)`;
-        dots.forEach((dot, i) => {
-          dot.classList.toggle('active', i === index);
-        });
-      }
+     function updateSlider() {
+        const activeReview = document.querySelector('.review-card.active');
+
+        if (!activeReview) {
+            console.warn("No active review found, skipping updateSlider()");
+            return;
+        }
+
+        const rect = activeReview.getBoundingClientRect();
+
+        slider.style.width = rect.width + "px";
+        slider.style.left = rect.left + "px";
+    }
+
 
       next.addEventListener('click', () => {
         index = (index + 1) % reviews.length;

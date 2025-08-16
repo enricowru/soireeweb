@@ -333,7 +333,7 @@ class Review(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='reviews')
+   # event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='reviews') # TODO: Remove
     rating = models.IntegerField(choices=RATING_CHOICES)
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -341,6 +341,8 @@ class Review(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        db_table = "review"
+        
 
     def __str__(self):
         return f"Review by {self.user.username} for {self.event.title}"
