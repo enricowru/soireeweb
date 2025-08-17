@@ -215,7 +215,7 @@
             </div>
 
             <div style="display:flex; justify-content:center; margin-bottom:18px;">
-                <img src="https://i.ibb.co/6b7Qw8d/sample-package.jpg" alt="Package Sample"
+                <img id="package_img" src="https://i.ibb.co/6b7Qw8d/sample-package.jpg" alt="Package Sample"
                      style="width:240px; border-radius:12px; box-shadow:0 2px 8px #0002;">
             </div>
 
@@ -384,6 +384,20 @@ function clearAlert(modalId){
     }
 }
 
+ class BookDetails {
+    constructor(CustomerName, Schedule, TypeOfEvent, NumberOfPax, Location, ColorMotif, Package, ListOfFood) {
+        this.CustomerName = CustomerName; 
+        this.Schedule = Schedule;
+        this.TypeOfEvent = TypeOfEvent ;
+        this.NumberOfPax  = NumberOfPax;
+        this.Location = Location;
+        this.ColorMotif = ColorMotif;
+        this.Package = Package ;
+        this.ListOfFood = ListOfFood;
+    }
+  }
+
+
 document.addEventListener('DOMContentLoaded', ()=>{
     const nameModal = document.getElementById('name-modal');
     const dateModal = document.getElementById('date-modal');
@@ -396,7 +410,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const floorplanInput = document.getElementById('wizard-floorplan');
     const floorplanPreview = document.getElementById('floorplan-preview');
     const finalFloorPlan = document.getElementById('floorplan-payload');
+
     const answers=[null,null,null,null,null,null,null,null]; // [name,date,event,pax,location,color,package,food]
+    const bookDetails = new BookDetails();
+    const baseImg = "{% static 'main/images/' %}";
 
     function updateStepProgress(){
         document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('completed',!!answers[i]));
@@ -411,6 +428,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         if(!val) return showAlert('name','Please enter a name.');
         clearAlert('name');
         answers[0]=val;
+        bookDetails.CustomerName = val;
         nameModal.style.display='none';
         updateStepProgress();
     });
@@ -425,6 +443,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
         clearAlert('date');
         answers[1]=val; // correct index for date
+        bookDetails.Schedule = val;
         dateModal.style.display='none';
         updateStepProgress();
     });
@@ -435,6 +454,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             clearAlert('event');
             answers[2]=btn.textContent.trim();
             eventModal.style.display='none';
+            bookDetails.TypeOfEvent = btn.textContent.trim();
             updateStepProgress();
         });
     });
@@ -447,6 +467,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
         clearAlert('event');
         answers[2]=val;
+        bookDetails.TypeOfEvent = val;
         eventModal.style.display='none';
         updateStepProgress();
     });
@@ -461,6 +482,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
         clearAlert('pax');
         answers[3]=val;
+        bookDetails.NumberOfPax = val;
+        document.getElementById('package_img').src = `${baseImg}${bookDetails.TypeOfEvent}_${bookDetails.NumberOfPax}`;
         paxModal.style.display='none';
         updateStepProgress();
     });
@@ -473,6 +496,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
         clearAlert('pax');
         answers[3]=val;
+        bookDetails.NumberOfPax = val;
+        document.getElementById('package_img').src = `${baseImg}${bookDetails.TypeOfEvent}_${bookDetails.NumberOfPax}`;
         paxModal.style.display='none';
         updateStepProgress();
     });
@@ -490,6 +515,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             reader.readAsDataURL(file);
         }
          answers[4]={venue: venue, floorplan: file };
+         bookDetails.Location = {venue: venue, floorplan: file };
     });
 
     document.getElementById('location-form').addEventListener('submit',e=>{
@@ -499,6 +525,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         if(!venue) return showAlert('location','Please enter a venue name.');
         clearAlert('location');
         answers[4]={venue: venue, floorplan: file ? file : null};
+        bookDetails.Location ={venue: venue, floorplan: file ? file : null};
         locationModal.style.display='none';
         updateStepProgress();
     });
@@ -513,6 +540,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         }
         clearAlert('color');
         answers[5]=val;
+        bookDetails.ColorMotif =val
         colorModal.style.display='none';
         updateStepProgress();
     });
@@ -522,6 +550,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         btn.addEventListener('click',()=>{
             clearAlert('package');
             answers[6]=btn.textContent.trim();
+            bookDetails.Package=btn.textContent.trim();
             packagesModal.style.display='none';
             updateStepProgress();
         });
