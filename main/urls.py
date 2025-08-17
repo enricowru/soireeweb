@@ -18,6 +18,11 @@ urlpatterns = [
     path('chatbot/', include('main.chatbot_urls')),
     path('api/update-profile/', update_profile, name='api_update_profile'),
 
+    # ✅ Forgot Password Routes
+    path('forgot-password/request/', views.forgot_password_request, name='forgot_password_request'),
+    path('forgot-password/verify-otp/', views.forgot_password_verify_otp, name='forgot_password_verify_otp'),
+    path('forgot-password/reset/', views.forgot_password_reset, name='forgot_password_reset'),
+
 
     # API endpoint for mobile review submission
     path('api/reviews/', submit_review, name='submit_review'),
