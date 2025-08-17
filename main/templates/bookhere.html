@@ -501,10 +501,27 @@ document.addEventListener('DOMContentLoaded', ()=>{
         clearAlert('pax');
         answers[3]=val;
         bookDetails.NumberOfPax = val;
-        document.getElementById('package_img').src = `${baseImg}${bookDetails.TypeOfEvent.toLower()}_${bookDetails.NumberOfPax}`;
+       
+        // fetch("{% url 'cloudImg' %}", {
+        //     method: 'POST',
+        //     headers: {
+        //         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        //     },
+        //     body: `${bookDetails.TypeOfEvent.toLower()}_${bookDetails.NumberOfPax}`,
+        // }).then(response => {
+        //      document.getElementById('package_img').src = response;
+        //     console.log(response);
+        // })
+        // .catch(error => {
+        // });
+
+        document.getElementById('package_img').src = 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1749018729/wedding_170pax_wb3mcl.jpg';
+
+
         paxModal.style.display='none';
         updateStepProgress();
     });
+
     document.getElementById('custom-pax-form').addEventListener('submit',e=>{
         e.preventDefault();
         const val=document.querySelector('.custom-pax-input').value;
@@ -529,7 +546,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         // .catch(error => {
         // });
 
-         document.getElementById('package_img').src = 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1749018729/wedding_170pax_wb3mcl.jpg';
+        document.getElementById('package_img').src = 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1749018729/wedding_170pax_wb3mcl.jpg';
 
         paxModal.style.display='none';
         updateStepProgress();
