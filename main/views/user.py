@@ -234,12 +234,56 @@ def _push_ws_event(chat_id: int, payload: dict):
 
 def get_cloud_image_by_name(name) -> str:
     """Helper function to get images based on theme"""
-    # Use Cloudinary
-    # cloud_img_public_ids = {
-    #     # Disney & Princess Themes
-    #     'wedding_170pax': 'wedding_170pax_wb3mcl'
-    # }
+    #Use Cloudinary
+    cloud_img_public_ids = {
+        # Wedding
+        'wedding_100pax': 'wedding_100pax_mtujpw',
+        'wedding_120pax': 'wedding_120pax_cnd4mj',
+        'wedding_130pax': 'wedding_130pax_eamuys',
+        'wedding_150pax': 'wedding_150pax_ftvdmh',
+        'wedding_160pax': 'wedding_160pax_twyve5',
+        'wedding_170pax': 'wedding_170pax_wb3mcl',
+        'wedding_180pax': 'wedding_180pax_aotyby',
+        'wedding_200pax': 'wedding_200pax_dsdfrl',
+        'wedding_250pax': 'wedding_250pax_haxcqu',
 
-    # currentId = cloud_img_public_ids.get(name.lower().strip(), [])
+        #Birthday
+        'birthday_50pax': 'birthday_50pax_yjwdwl',
+        'birthday_70pax': 'birthday_70pax_vew5ay',
+        'birthday_80pax': 'birthday_80pax_vvu9g2',
+        'birthday_100pax':'birthday_100pax_zheug3',
+        'birthday_120pax':'birthday_120pax_r25otc',
+        'birthday_130pax':'birthday_130pax_hz5unq',
+        'birthday_150pax':'birthday_150pax_gtqtim',
+        'birthday_170pax':'birthday_170pax_jtbtam',  
+        'birthday_160pax':'birthday_160pax_b3ecp4',  
+        'birthday_180pax': 'birthday_180_pax_hircrw',
+        'birthday_200pax': 'birthday_200pax_gcjprl',
+
+        #Kiddie Party
+        'kiddieparty_50pax': 'kiddie_50pax_dpgjez',
+        'kiddieparty_70pax': 'kiddie_70pax_hdawxz',
+        'kiddieparty_80pax': 'kiddie_80pax_twgrmz',
+        'kiddieparty_100pax': 'kiddie_100pax_z1jsn0',
+        'kiddieparty_120pax': 'kiddie_120pax_soflwe',
+        'kiddieparty_130pax': 'kiddie_130pax_yeyoka',
+        'kiddieparty_150pax': 'kiddie_150pax_m7cdrz',
+        'kiddieparty_160pax': 'kiddie_160pax_b5ezdz',
+        'kiddieparty_170pax': 'kiddie_170pax_irkxsg',
+        'kiddieparty_180pax': 'kiddie_180pax_knwwyp',
+        'kiddieparty_200pax': 'kiddie_200pax_kmpgn4',
+
+        #Christening
+        'christening_50pax': 'christening_50pax_nxh9ke',
+        'christening_70pax': 'christening_70pax_cyznmy',
+        'christening_80pax': 'christening_80pax_slf4sl',
+        'christening_100pax': 'christening_100pax_insvxv',
+        'christening_120pax': 'christening_120pax_ua9yie',
+        'christening_150pax': 'christening_150pax_idheaa',
+        'christening_200pax': 'christening_200pax_t3vuye',
+
+    }
+
+    currentId = cloud_img_public_ids.get(name.lower().strip(), [])
 
     return cloudinary.utils.cloudinary_url('wedding_170pax_wb3mcl', secure=True)[0]
