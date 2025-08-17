@@ -4,7 +4,7 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'chatbot/css/main.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" type="image/png" href="{% static 'chatbot/images/logo-round.png' %}">
+    <link rel="icon" type="image/png" href="{% static 'main/images/logo-round.png' %}">
     <title>Virtual Event Assistant</title>
 </head>
 <body>
@@ -36,20 +36,17 @@
     
     <div id="main" class="main-content">
         <div class="top">            
-    <div class="left" style="display: flex; align-items: center; gap: 12px;">
-        <a href="{% url 'home' %}" title="Go Back" style="padding: 6px 12px; background-color: #fff; color: #333; border-radius: 8px; text-decoration: none; font-weight: 500; border: 1px solid #ccc; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            ← Back
-        </a>
-        <img src="{% static 'images/CLogo-Notext.png' %}" alt="Company Logo" width="60">
-        <h2>Layout with Patrice</h2>
-    </div>
-
+            <div class="left">
+                <a href="{% url 'main' %}" class="back-btn" title="Back to Home">
+                    <i class="fa-solid fa-arrow-left"></i> Back
+                </a>
+                <img src="{% static 'main/images/CLogo-Notext.png' %}" alt="Company Logo" width="60">
+                <h2>Virtual Event Assistant</h2>
+            </div>
             <div class="right">
                 <button id="saveChatBtn">Save Chat</button>
                 <div class="vertical-divider"></div>
-                <a href="{% url 'editprofile' %}">
-                    <img src="{% static 'images/sampleprofile.jpg' %}" alt="Profile Picture" width="60" title="Profile">
-                </a>
+                <img src="{% static 'main/images/sampleprofile.jpg' %}" alt="Profile Picture" width="60" title="Profile">
             </div>
         </div>
 
@@ -57,223 +54,140 @@
             {% for msg in chat_history %}
             <div class="{{ msg.sender }} chat-message">
                 <div class="message-body">
-                    {% if msg.show_date_input %}
-                        <div class="message-text" style="margin-bottom: 10px;">{{ msg.text|safe }}</div>
-                        <div class="date-input-container">
-                            <input type="date" id="eventDate_{{ forloop.counter }}" class="date-input" required>
-                            <button type="button" class="date-submit-btn" onclick="submitDate('eventDate_{{ forloop.counter }}')">Submit Date</button>
-                        </div>
-                    {% elif msg.show_event_buttons %}
-                        <div class="message-text" style="margin-bottom: 10px;">{{ msg.text|safe }}</div>
-                        <div class="event-buttons-container">
-                            <button type="button" class="event-btn" onclick="selectEventType('Kiddie Party', 'event_type_kiddie_{{ forloop.counter }}')">Kiddie Party</button>
-                            <button type="button" class="event-btn" onclick="selectEventType('Birthday Party', 'event_type_birthday_{{ forloop.counter }}')">Birthday Party</button>
-                            <button type="button" class="event-btn" onclick="selectEventType('Wedding', 'event_type_wedding_{{ forloop.counter }}')">Wedding</button>
-                            <button type="button" class="event-btn" onclick="selectEventType('Christening', 'event_type_christening_{{ forloop.counter }}')">Christening</button>
-                            <div class="custom-event-input" style="margin-top: 10px;">
-                                <input type="text" id="customEventType_{{ forloop.counter }}" placeholder="Or type your custom event type" class="custom-event-text">
-                                <button type="button" class="custom-event-btn" onclick="submitCustomEvent('customEventType_{{ forloop.counter }}')">Submit Custom Event</button>
-                            </div>
-                        </div>
-                    {% elif msg.show_pax_input %}
-                        <div class="message-text" style="margin-bottom: 10px;">{{ msg.text|safe }}</div>
-                        <div class="pax-input-container">
-                            <select id="paxSelect_{{ forloop.counter }}" class="pax-select">
-                                <option value="">--Select Number of Guests--</option>
-                                {% for pax_option in msg.pax_options %}
-                                    <option value="{{ pax_option }}">{{ pax_option }}</option>
-                                {% endfor %}
-                            </select>
-                            <button type="button" class="pax-submit-btn" onclick="submitPax('paxSelect_{{ forloop.counter }}')">Submit</button>
-                            <div class="custom-pax-input" style="margin-top: 10px;">
-                                <input type="number" id="customPax_{{ forloop.counter }}" placeholder="Or type custom number" class="custom-pax-text" min="1">
-                                <button type="button" class="custom-pax-btn" onclick="submitCustomPax('customPax_{{ forloop.counter }}')">Submit Custom</button>
-                            </div>
-                        </div>
-                    {% elif msg.show_dish_buttons %}
-                        <div class="dish-buttons-container">
-                            <div style="font-size: 1.15em; font-weight: bold; color: #fff; margin-bottom: 10px;">
-                                {{ msg.text|safe }}
-                            </div>
-                            {% for category, dishes in msg.dish_options.items %}
-                                <div class="dish-category-group">
-                                    <h4 class="dish-category-heading">{{ category }}</h4>
-                                    <div class="dish-list">
-                                        {% for dish in dishes %}
-                                            <button type="button" class="dish-btn" data-dish="{{ dish }}" onclick="toggleDishSelection(this, '{{ dish }}')">{{ dish }}</button>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            {% endfor %}
-                            <div class="dish-selection-footer">
-                                <button type="button" class="submit-dishes-btn" onclick="submitSelectedDishes()">Done Selecting Dishes</button>
-                            </div>
-                        </div>
-                    {% elif msg.show_pasta_buttons %}
-                        <div class="pasta-buttons-container">
-                            <div style="font-size: 1.15em; font-weight: bold; color: #fff; margin-bottom: 10px;">
-                                {{ msg.text|safe }}
-                            </div>
-                            <div class="pasta-list">
-                                {% for pasta_item in msg.pasta_options %}
-                                    <button type="button" class="pasta-btn" data-pasta="{{ pasta_item }}" onclick="submitPastaSelection('{{ pasta_item }}')">{{ pasta_item }}</button>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% elif msg.show_drink_buttons %}
-                        <div class="drink-buttons-container">
-                            <div style="font-size: 1.15em; font-weight: bold; color: #fff; margin-bottom: 10px;">
-                                {{ msg.text|safe }}
-                            </div>
-                            <div class="drink-list">
-                                {% for drink_item in msg.drink_options %}
-                                    <button type="button" class="drink-btn" data-drink="{{ drink_item }}" onclick="submitDrinkSelection('{{ drink_item }}')">{{ drink_item }}</button>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% elif msg.show_theme_category_buttons %}
-                        <div class="theme-category-buttons-container">
-                            <div style="font-size: 1.15em; font-weight: bold; color: #fff; margin-bottom: 10px;">
-                                Now, what type of theme are you interested in? Please choose one of the following options:
-                            </div>
-                            {% for category in msg.theme_category_options %}
-                                <button type="button" class="theme-category-btn" onclick="selectThemeCategory('{{ category }}')">{{ category }}</button>
+                    {% if msg.food_menu_images %}
+                        <div class="image-gallery">
+                            {% for img in msg.food_menu_images %}
+                                <a href="{{ img }}" target="_blank">
+                                    <img src="{{ img }}" alt="Food Menu" class="gallery-img">
+                                </a>
                             {% endfor %}
                         </div>
-                    {% elif msg.show_theme_buttons %}
-                        <div class="theme-buttons-container">
-                             <div style="font-size: 1.15em; font-weight: bold; color: #fff; margin-bottom: 10px;">
-                                Please select from the options given below:
-                            </div>
-                            {% for name, img in msg.theme_options %}
-                                <button type="button" class="theme-btn" onclick="selectTheme('{{ name }}')">
-                                    {{ name }}
-                                    {% if img %}
-                                        <img src="{{ img }}" alt="{{ name }}" style="width:150px; border-radius:6px; margin-top:8px; display:block;">
                     {% endif %}
-                                </button>
-                            {% endfor %}
-                        </div>
-                    {% elif msg.show_theme_confirmation %}
-                        <div class="theme-confirmation-container">
+                    {% if msg.theme_confirm_images %}
+                        <div class="theme-confirm-gallery">
                             <div style="font-size: 1.15em; font-weight: bold; color: #fff; margin-bottom: 10px;">
-                                {{ msg.text|safe }}
+                                Do you want to keep the generated image as the theme design or do you prefer using the ones we have available? Type 'ai' or 'given'.
                             </div>
                             <div class="image-gallery">
                                 {% for img in msg.theme_confirm_images %}
-                                    <a href="{{ img }}">
+                                    <a href="{{ img }}" target="_blank">
                                         <img src="{{ img }}" alt="{{ msg.theme_confirm_name }}" class="gallery-img">
                                     </a>
                                 {% endfor %}
                             </div>
-                            <div class="confirmation-buttons" style="margin-top: 15px;">
-                                <button type="button" class="confirm-yes-btn" onclick="sendConfirmation('Yes')">Yes</button>
-                                <button type="button" class="confirm-no-btn" onclick="sendConfirmation('No')">No</button>
+                            {% if msg.ai_generated_image %}
+                            <div class="ai-generated-theme" style="margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                                <strong style="display: block; margin-bottom: 10px;">AI Generated Theme Suggestion:</strong>
+                                <a href="{{ msg.ai_generated_image }}" target="_blank">
+                                    <img src="{{ msg.ai_generated_image }}" alt="AI Generated Theme" style="width:200px; border-radius:8px; margin:8px 0; display:block;">
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    {% elif msg.theme_options %}
+                        <div class="theme-guide">
+                            <strong>Theme Options:</strong>
+                            <ol style="margin-bottom: 0;">
+                                {% for name, img in msg.theme_options %}
+                                    <li style="margin-bottom: 18px;">
+                                        {{ name }}<br>
+                                        {% if img %}
+                                            <a href="{{ img }}" target="_blank">
+                                                <img src="{{ img }}" alt="{{ name }}" style="width:200px; border-radius:8px; margin:8px 0; display:block;">
+                                            </a>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ol>
+                            <div style="margin-bottom: 10px; color: #888; font-size: 0.95em;">
+                                Please choose a theme by typing its number or name below.
+                            </div>
+                        </div>
+                    {% elif msg.package_options %}
+                        <div class="theme-guide">
+                            <strong>Package Options:</strong>
+                            <ol style="margin-bottom: 0;">
+                                {% for name, img in msg.package_options %}
+                                    <li style="margin-bottom: 18px;">
+                                        {{ name }}<br>
+                                        {% if img %}
+                                            <a href="{{ img }}" target="_blank">
+                                                <img src="{{ img }}" alt="{{ name }}" style="width:200px; border-radius:8px; margin:8px 0; display:block;">
+                                            </a>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ol>
+                            <div style="margin-bottom: 10px; color: #888; font-size: 0.95em;">
+                                Please choose a package by typing its number below.
                             </div>
                         </div>
                     {% elif msg.package_image_selected %}
                         <div class="theme-confirm-gallery">
                             <div style="font-size: 1.15em; font-weight: bold; color: #fff; margin-bottom: 10px;">
-                                {{ msg.text|safe }}<br><br>
-                                <a href="{{ msg.package_image_selected }}">
+                                You selected: {{ msg.package_image_label }}<br>
+                                <a href="{{ msg.package_image_selected }}" target="_blank">
                                     <img src="{{ msg.package_image_selected }}" alt="{{ msg.package_image_label }}" class="gallery-img">
                                 </a>
                             </div>
-                            <div class="package-buttons-container">
-                                <div style="font-size: 1.15em; font-weight: bold; color: #fff; margin-bottom: 10px;">
-                                    Which package do you want for this?
-                                </div>
-                                <button type="button" class="package-btn" onclick="selectPackageLetter('A')">Package A</button>
-                                <button type="button" class="package-btn" onclick="selectPackageLetter('B')">Package B</button>
-                                <button type="button" class="package-btn" onclick="selectPackageLetter('C')">Package C</button>
+                            <div style="margin-bottom: 10px; color: #888; font-size: 0.95em;">
+                                Which package do you want for this? (Type A, B, or C)
                             </div>
-                        </div>
-                    {% elif msg.show_food_menu_section %}
-                        <div class="food-menu-section-container">
-                            {% if msg.text %}
-                                {{ msg.text|safe }}
-                            {% endif %}
-                            {% if msg.images %}
-                                <div class="image-gallery">
-                                    {% for img in msg.images %}
-                                    <a href="{{ img }}">
-                                        <img src="{{ img }}" alt="food menu image" class="gallery-img">
-                                    </a>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            <div class="food-menu-review-buttons">
-                                <button type="button" class="food-menu-ok-btn" onclick="submitFoodMenuReview()">OK</button>
-                            </div>
-                        </div>
-                    {% elif msg.show_finish_options %}
-                        <div class="finish-options-container">
-                            <div style="font-size: 1.15em; font-weight: bold; color: #fff; margin-bottom: 10px;">
-                                {{ msg.text|safe }}
-                            </div>
-                            <div class="finish-buttons">
-                                <button type="button" class="finish-plan-btn" onclick="sendFinish()">Finish Plan</button>
-                            </div>
-                            <div class="change-options-buttons">
-                                <button type="button" class="change-option-btn" onclick="sendChangeCommand('change date')">Change Date</button>
-                                <button type="button" class="change-option-btn" onclick="sendChangeCommand('change event type')">Change Event Type</button>
-                                <button type="button" class="change-option-btn" onclick="sendChangeCommand('change number of pax')">Change Number of Pax</button>
-                                <button type="button" class="change-option-btn" onclick="sendChangeCommand('change venue location')">Change Venue/Location</button>
-                                <button type="button" class="change-option-btn" onclick="sendChangeCommand('change color')">Change Color</button>
-                                <button type="button" class="change-option-btn" onclick="sendChangeCommand('change theme')">Change Theme</button>
-                                <button type="button" class="change-option-btn" onclick="sendChangeCommand('change package')">Change Package</button>
-                                <button type="button" class="change-option-btn" onclick="sendChangeCommand('change food menu')">Change Food Menu</button>
-                            </div>
-                        </div>
-                    {% elif msg.show_color_picker %}
-                        <div class="color-picker-container">
-                            <div style="font-size: 1.15em; font-weight: bold; color: #fff; margin-bottom: 10px;">
-                                {{ msg.text|safe }}
-                            </div>
-                            <input type="color" id="colorPicker_{{ forloop.counter }}" class="color-picker-input" value="#ff0000">
-                            <button type="button" class="color-submit-btn" onclick="submitColor('colorPicker_{{ forloop.counter }}')">Submit Color</button>
                         </div>
                     {% elif msg.text %}
                         {% if msg.text == 'Here is a summary of your event plan:' and msg.summary_lines %}
-                            <div class="summary-printable" style="margin-bottom: 16px;">
-                                <div class="summary-header">
-                                    <img src="{% static 'images/CLogo-text.jpg' %}" alt="Company Logo" class="summary-logo">
-                                    <h2 class="summary-title">Layout with Patrice</h2>
-                                    <div class="summary-sub">Here is a summary of your event plan:</div>
-                                </div>
-                                {% if msg.summary_html %}
-                                    {{ msg.summary_html|safe }}
-                                {% else %}
-                                    <ul style="margin-bottom: 0;">
-                                        {% for line in msg.summary_lines %}
-                                            <li style="margin-bottom: 8px;">
-                                                {{ line.value|safe }}
-                                                {% if line.type == 'theme' and line.img %}<br>
-                                                    <a href="{{ line.img }}">
-                                                        <img src="{{ line.img }}" alt="Theme Image" class="gallery-img" style="max-width:180px; max-height:180px; border:2px solid #fff; margin:8px 0;">
-                                                    </a>
-                                                {% endif %}
-                                                {% if line.type == 'package' and line.img %}<br>
-                                                    <a href="{{ line.img }}">
-                                                        <img src="{{ line.img }}" alt="Package Image" class="gallery-img" style="max-width:180px; max-height:180px; border:2px solid #fff; margin:8px 0;">
-                                                    </a>
-                                                {% endif %}
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                {% endif %}
+                            <div style="margin-bottom: 16px;">
+                                <div style="margin-bottom: 8px; font-weight: bold;">Here is a summary of your event plan:</div>
+                                <ul style="margin-bottom: 0;">
+                                    {% for line in msg.summary_lines %}
+                                        <li style="margin-bottom: 8px;">
+                                            {{ line.value }}
+                                            {% if line.type == 'theme' and line.img %}<br>
+                                                <a href="{{ line.img }}" target="_blank">
+                                                    <img src="{{ line.img }}" alt="Theme Image" class="gallery-img" style="max-width:180px; max-height:180px; border:2px solid #fff; margin:8px 0;">
+                                                </a>
+                                            {% endif %}
+                                            {% if line.type == 'package' and line.img %}<br>
+                                                <a href="{{ line.img }}" target="_blank">
+                                                    <img src="{{ line.img }}" alt="Package Image" class="gallery-img" style="max-width:180px; max-height:180px; border:2px solid #fff; margin:8px 0;">
+                                                </a>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
                                 <div style="margin-top: 12px;">Thank you for using the Event theme assistant!</div>
-                                <div class="print-btn-wrapper" style="margin-top: 16px;">
-                                    <button type="button" class="print-summary-btn" onclick="window.print()">Print PDF</button>
-                                </div>
                             </div>
                         {% else %}
                             {{ msg.text|safe }}
                         {% endif %}
                     {% endif %}
+                    {% if msg.image %}
+                        <a href="{{ msg.image }}" target="_blank">
+                            <img src="{{ msg.image }}" alt="image" class="chat-image">
+                        </a>
+                    {% elif msg.images %}
+                        <div class="image-gallery">
+                            {% for img in msg.images %}
+                            <a href="{{ img }}" target="_blank">
+                                <img src="{{ img }}" alt="image" class="gallery-img">
+                            </a>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if msg.selected_theme_images %}
+                        <div class="theme-confirm-gallery">
+                            <div class="image-gallery">
+                                {% for img in msg.selected_theme_images %}
+                                    <a href="{{ img }}" target="_blank">
+                                        <img src="{{ img }}" alt="{{ msg.theme_confirm_name }}" class="gallery-img">
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
-            {% endfor %}
+        {% endfor %}        
         </div>
 
         <form method="post" class="chat-form">
@@ -287,6 +201,10 @@
     </div>
 
     <script>
+        // Debug: Check if CSRF token is loaded
+        console.log('CSRF Token:', '{{ csrf_token }}');
+        console.log('CSRF Token length:', '{{ csrf_token }}'.length);
+        
         const textarea = document.querySelector('.chat-form textarea');
         const charCount = document.getElementById('charCount');
         const sendBtn = document.querySelector('.chat-form button');
@@ -333,7 +251,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    'X-CSRFToken': '{{ csrf_token }}'
                 },
                 body: JSON.stringify({ title: "{{ current_title }}" })
             })
@@ -345,6 +263,10 @@
                 } else {
                     alert('Error saving chat.');
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error saving chat. Please try again.');
             });
         });
 
@@ -353,15 +275,25 @@
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 const sessionId = btn.getAttribute('data-session-id');
+                console.log('Delete button clicked for session:', sessionId);
+                console.log('CSRF Token being used:', '{{ csrf_token }}');
+                
                 if (confirm('Are you sure you want to delete this chat?')) {
-                    fetch(`/chatbot/delete/${sessionId}/`, {
+                    const deleteUrl = `/chatbot/delete/${sessionId}/`;
+                    console.log('Sending delete request to:', deleteUrl);
+                    
+                    fetch(deleteUrl, {
                         method: 'POST',
                         headers: {
-                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                            'X-CSRFToken': '{{ csrf_token }}'
                         }
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        console.log('Delete response status:', response.status);
+                        return response.json();
+                    })
                     .then(data => {
+                        console.log('Delete response data:', data);
                         if (data.status === 'success') {
                             btn.closest('.convo').remove();
                             // If the deleted session is the current one, redirect to new chat
@@ -372,6 +304,10 @@
                         } else {
                             alert('Error deleting chat.');
                         }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error deleting chat. Please try again.');
                     });
                 }
             });
@@ -389,12 +325,16 @@
                         fetch(`/chatbot/delete/${sessionId}/`, {
                             method: 'POST',
                             headers: {
-                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                                'X-CSRFToken': '{{ csrf_token }}'
                             }
                         })
                         .then(response => response.json())
                         .then(data => {
                             window.location.href = "{% url 'new_chat_session' %}";
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Error clearing chat. Please try again.');
                         });
                     } else {
                         // Just clear session and redirect
@@ -403,674 +343,6 @@
                 }
             });
         });
-
-        function submitDate(inputId) {
-            const dateInput = document.getElementById(inputId);
-            const date = dateInput.value;
-            console.log('Attempting to submit date:', date);
-            if (date) {
-                const textarea = document.querySelector('.chat-form textarea');
-                textarea.value = date;
-                document.querySelector('.chat-form').submit();
-            }
-        }
-
-        function selectEventType(eventType) {
-            const textarea = document.querySelector('.chat-form textarea');
-            textarea.value = eventType;
-            document.querySelector('.chat-form').submit();
-        }
-
-        function submitCustomEvent(inputId) {
-            const customInput = document.getElementById(inputId);
-            const customEvent = customInput.value.trim();
-            if (customEvent) {
-                const textarea = document.querySelector('.chat-form textarea');
-                textarea.value = customEvent;
-                document.querySelector('.chat-form').submit();
-            }
-        }
-
-        function submitPax(selectId) {
-            const paxSelect = document.getElementById(selectId);
-            const pax = paxSelect.value;
-            if (pax) {
-                const textarea = document.querySelector('.chat-form textarea');
-                textarea.value = pax;
-                document.querySelector('.chat-form').submit();
-            }
-        }
-
-        function submitCustomPax(inputId) {
-            const customPaxInput = document.getElementById(inputId);
-            const customPax = customPaxInput.value.trim();
-            if (customPax) {
-                const textarea = document.querySelector('.chat-form textarea');
-                textarea.value = customPax;
-                document.querySelector('.chat-form').submit();
-            }
-        }
-
-        function selectThemeCategory(category) {
-            const textarea = document.querySelector('.chat-form textarea');
-            textarea.value = category;
-            document.querySelector('.chat-form').submit();
-        }
-
-        function selectTheme(theme) {
-            const textarea = document.querySelector('.chat-form textarea');
-            textarea.value = theme;
-            document.querySelector('.chat-form').submit();
-        }
-
-        function sendConfirmation(response) {
-            const textarea = document.querySelector('.chat-form textarea');
-            textarea.value = response;
-            document.querySelector('.chat-form').submit();
-        }
-
-        function selectPackageLetter(letter) {
-            const textarea = document.querySelector('.chat-form textarea');
-            textarea.value = letter;
-            document.querySelector('.chat-form').submit();
-        }
-
-        function submitFoodMenuReview() {
-            const textarea = document.querySelector('.chat-form textarea');
-            textarea.value = "OK";
-            document.querySelector('.chat-form').submit();
-        }
-
-        // Dish Selection
-        let selectedDishes = new Set();
-
-        function toggleDishSelection(btnEl, dish) {
-            if (selectedDishes.has(dish)) {
-                selectedDishes.delete(dish);
-                btnEl.classList.remove('selected');
-            } else {
-                selectedDishes.add(dish);
-                btnEl.classList.add('selected');
-            }
-        }
-
-        function initializeDishSelection() {
-            // Get previously selected dishes from the hidden span
-            const selectedDishesJson = document.getElementById('selectedDishesJson').textContent;
-            if (selectedDishesJson) {
-                try {
-                    const previousDishes = JSON.parse(selectedDishesJson);
-                    previousDishes.forEach(dish => {
-                        selectedDishes.add(dish);
-                        const button = document.querySelector(`button[data-dish="${dish}"]`);
-                        if (button) {
-                            button.classList.add('selected');
-                        }
-                    });
-                } catch (e) {
-                    console.error('Error parsing selected dishes:', e);
-                }
-            }
-        }
-
-        function submitSelectedDishes() {
-            const textarea = document.querySelector('.chat-form textarea');
-            textarea.value = Array.from(selectedDishes).join(',');
-            if (textarea.value) {
-                document.querySelector('.chat-form').submit();
-            } else {
-                alert('Please select at least one dish.');
-            }
-        }
-
-        // Pasta Selection
-        function submitPastaSelection(pasta) {
-            const textarea = document.querySelector('.chat-form textarea');
-            textarea.value = pasta;
-            console.log('Submitting pasta:', textarea.value);
-            document.querySelector('.chat-form').submit();
-        }
-
-        // Drink Selection
-        function submitDrinkSelection(drink) {
-            const textarea = document.querySelector('.chat-form textarea');
-            textarea.value = drink;
-            console.log('Submitting drink:', textarea.value);
-            document.querySelector('.chat-form').submit();
-        }
-
-        // New functions for Finish/Change buttons
-        function sendFinish() {
-            const textarea = document.querySelector('.chat-form textarea');
-            textarea.value = "finish";
-            document.querySelector('.chat-form').submit();
-        }
-
-        function sendChangeCommand(command) {
-            const textarea = document.querySelector('.chat-form textarea');
-            textarea.value = command;
-            document.querySelector('.chat-form').submit();
-        }
-
-        // General initialization on DOMContentLoaded (for initial load)
-        window.addEventListener('DOMContentLoaded', () => {
-            // Prevent selection of past dates in all date pickers
-            const today = new Date().toISOString().split('T')[0];
-            document.querySelectorAll('input[type="date"]').forEach(input => {
-                input.setAttribute('min', today);
-            });
-
-            if (document.querySelector('.dish-buttons-container')) {
-                initializeDishSelection();
-            }
-        });
-
-        function submitColor(inputId) {
-            const colorInput = document.getElementById(inputId);
-            const color = colorInput.value;
-            if (color) {
-                const textarea = document.querySelector('.chat-form textarea');
-                textarea.value = color;
-                document.querySelector('.chat-form').submit();
-            }
-        }
-
-        // Disable interactive elements in previous messages to prevent out-of-context clicks
-        function disableOldInteractions() {
-            const messages = document.querySelectorAll('.chat-message');
-            if (messages.length === 0) return;
-            // keep last bot + last user message interactive
-            const lastMsg = messages[messages.length - 1];
-            messages.forEach(msg => {
-                if (msg !== lastMsg) {
-                    msg.querySelectorAll('button, input[type="date"], input[type="color"], select').forEach(el => {
-                        el.disabled = true;
-                        el.classList.add('disabled-old');
-                    });
-                }
-            });
-        }
-
-        // call on load and after submit
-        window.addEventListener('DOMContentLoaded', disableOldInteractions);
-        document.querySelector('.chat-form').addEventListener('submit', function() {
-            setTimeout(disableOldInteractions, 200);
-        });
     </script>
-    <span id="selectedDishesJson" style="display:none;">{{ planner_data.food_selection.dishes|json_script:"selectedDishesJson" }}</span>
 </body>
 </html>
-
-<style>
-    .date-input-container {
-        display: flex;
-        gap: 10px;
-        margin: 10px 0;
-    }
-    
-    .date-input {
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 14px;
-    }
-    
-    .date-submit-btn {
-        padding: 8px 16px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-    
-    .date-submit-btn:hover {
-        background-color: #45a049;
-    }
-    
-    .event-buttons-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin: 10px 0;
-    }
-    
-    .event-btn {
-        padding: 12px 20px;
-        background-color: #2196F3;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        text-align: left;
-    }
-    
-    .event-btn:hover {
-        background-color: #1976D2;
-    }
-    
-    .custom-event-input {
-        display: flex;
-        gap: 10px;
-    }
-    
-    .custom-event-text {
-        flex: 1;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 14px;
-    }
-    
-    .custom-event-btn {
-        padding: 8px 16px;
-        background-color: #FF9800;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-    
-    .custom-event-btn:hover {
-        background-color: #F57C00;
-    }
-
-    .pax-input-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin: 10px 0;
-    }
-
-    .pax-select,
-    .custom-pax-text {
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 14px;
-    }
-
-    .pax-submit-btn,
-    .custom-pax-btn {
-        padding: 8px 16px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    .pax-submit-btn:hover,
-    .custom-pax-btn:hover {
-        background-color: #45a049;
-    }
-
-    .custom-pax-input {
-        display: flex;
-        gap: 10px;
-    }
-
-    .dish-buttons-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin: 10px 0;
-    }
-
-    .dish-category-group {
-        margin-bottom: 15px;
-        padding: 10px;
-        border: 1px solid #555;
-        border-radius: 8px;
-        background-color: #333;
-    }
-
-    .dish-category-heading {
-        color: #fff;
-        font-size: 1.1em;
-        margin-top: 0;
-        margin-bottom: 10px;
-        border-bottom: 1px solid #777;
-        padding-bottom: 5px;
-    }
-
-    .dish-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .dish-btn {
-        padding: 10px 15px;
-        background-color: #4CAF50; /* Green for dish buttons */
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        text-align: center; /* Center text for individual buttons */
-        flex-grow: 1; /* Allow buttons to grow */
-        min-width: 150px; /* Minimum width */
-        max-width: 30%; /* Max width for wrapping */
-    }
-
-    .dish-btn:hover {
-        background-color: #45a049; /* Darker green on hover */
-    }
-
-    .dish-btn.selected {
-        background-color: #FFA000; /* Amber for selected */
-        border: 2px solid #FFC107;
-        color: #333;
-        font-weight: bold;
-    }
-
-    .dish-selection-footer {
-        margin-top: 20px;
-        text-align: center;
-    }
-
-    .submit-dishes-btn {
-        padding: 12px 25px;
-        background-color: #007BFF; /* Blue for submit button */
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: bold;
-    }
-
-    .submit-dishes-btn:hover {
-        background-color: #0056b3;
-    }
-
-    /* Styles for Pasta and Drink Buttons */
-    .pasta-buttons-container,
-    .drink-buttons-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin: 10px 0;
-    }
-
-    .pasta-list,
-    .drink-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .pasta-btn,
-    .drink-btn {
-        padding: 10px 15px;
-        background-color: #FF5722; /* Deep Orange for pasta/drink buttons */
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        text-align: center;
-        flex-grow: 1;
-        min-width: 150px;
-        max-width: 30%;
-    }
-
-    .pasta-btn:hover,
-    .drink-btn:hover {
-        background-color: #E64A19; /* Darker orange on hover */
-    }
-
-    .selected-pasta-btn,
-    .selected-drink-btn {
-        background-color: #FFC107; /* Light Amber for selected pasta/drink */
-        border: 2px solid #FFA000;
-        color: #333;
-        font-weight: bold;
-    }
-
-    .theme-category-buttons-container,
-    .theme-buttons-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin: 10px 0;
-    }
-
-    .theme-category-btn,
-    .theme-btn {
-        padding: 12px 20px;
-        background-color: #8A2BE2; /* Purple color for theme buttons */
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        text-align: left;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .theme-category-btn:hover,
-    .theme-btn:hover {
-        background-color: #6A1B9A; /* Darker purple on hover */
-    }
-
-    .theme-confirmation-container .image-gallery {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 10px;
-    }
-
-    .theme-confirmation-container .gallery-img {
-        width: 150px;
-        height: auto;
-        border-radius: 8px;
-        border: 2px solid #ddd;
-    }
-
-    .confirmation-buttons {
-        display: flex;
-        gap: 10px;
-    }
-
-    .confirm-yes-btn,
-    .confirm-no-btn {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        color: white;
-    }
-
-    .confirm-yes-btn {
-        background-color: #4CAF50; /* Green */
-    }
-
-    .confirm-yes-btn:hover {
-        background-color: #45a049;
-    }
-
-    .confirm-no-btn {
-        background-color: #f44336; /* Red */
-    }
-
-    .confirm-no-btn:hover {
-        background-color: #d32f2f;
-    }
-
-    .package-buttons-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin: 10px 0;
-        align-items: flex-start; /* Align items to the start (left) */
-    }
-
-    .package-btn {
-        padding: 12px 20px;
-        background-color: #007BFF; /* Blue for package buttons */
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        width: fit-content; /* Make button width fit its content */
-        flex-grow: 0; /* Prevent stretching */
-        flex-shrink: 0; /* Prevent shrinking */
-        text-align: center; /* Center the text */
-        display: block; /* Ensure it behaves as a block for width */
-    }
-
-    .package-btn:hover {
-        background-color: #0056b3; /* Darker blue on hover */
-    }
-
-    .food-menu-section-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin: 10px 0;
-    }
-
-    .food-menu-ok-btn {
-        padding: 10px 20px;
-        background-color: #4CAF50; /* Green */
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: bold;
-    }
-
-    .food-menu-ok-btn:hover {
-        background-color: #45a049;
-    }
-
-    .finish-options-container {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        margin: 10px 0;
-        padding: 15px;
-        border: 1px solid #555;
-        border-radius: 8px;
-        background-color: #333;
-    }
-
-    .finish-buttons {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 10px;
-    }
-
-    .finish-plan-btn {
-        padding: 12px 25px;
-        background-color: #28a745; /* Green for finish */
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: bold;
-    }
-
-    .finish-plan-btn:hover {
-        background-color: #218838;
-    }
-
-    .change-options-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        justify-content: center;
-    }
-
-    .change-option-btn {
-        padding: 10px 15px;
-        background-color: #007bff; /* Blue for change options */
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        flex-grow: 1;
-        min-width: 150px;
-        text-align: center;
-    }
-
-    .change-option-btn:hover {
-        background-color: #0056b3;
-    }
-
-    .print-summary-btn {
-        padding: 10px 20px;
-        background-color: #4CAF50;
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-    }
-    .print-summary-btn:hover { background-color:#45a049; }
-
-    /* Hide non-summary elements when printing */
-    @media print {
-        body * { visibility: hidden; }
-        .summary-printable, .summary-printable * { visibility: visible; }
-        .summary-printable { position: absolute; left: 0; top: 0; width: 100%; }
-        .print-btn-wrapper { display: none; }
-        @page { margin: 20mm; }
-    }
-
-    /* Summary printable styling */
-    .summary-header { text-align: center; margin-bottom: 20px; }
-    .summary-logo { width: 120px; height: auto; margin-bottom: 8px; }
-    .summary-title { margin: 0; font-size: 1.4em; color:#fff; }
-    .summary-sub { margin-top: 6px; font-weight: bold; font-size: 1.1em; color:#fff; }
-    .summary-printable ul { list-style-type: disc; margin-left: 20px; }
-    .summary-printable li, .summary-printable td, .summary-printable p, .summary-printable h3 { line-height: 1.4em; font-size: 0.95em; color: #fff; }
-    .summary-printable img.gallery-img { border: 1px solid #ccc; }
-
-    /* Override for printing to ensure dark-text on white paper */
-    @media print {
-        .summary-title, .summary-sub, .summary-printable li, .summary-printable td, .summary-printable p, .summary-printable h3 { color: #000 !important; }
-    }
-
-    .color-picker-container {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        margin: 10px 0;
-        align-items: flex-start;
-    }
-
-    .color-picker-input {
-        width: 60px;
-        height: 40px;
-        border: none;
-        cursor: pointer;
-        padding: 0;
-    }
-
-    .color-submit-btn {
-        padding: 8px 16px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    .color-submit-btn:hover {
-        background-color: #45a049;
-    }
-
-    /* style for disabled old controls */
-    .disabled-old { opacity: 0.5; pointer-events: none; }
-</style>

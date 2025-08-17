@@ -4,260 +4,259 @@ from django.templatetags.static import static
 from django.http import JsonResponse
 from .models import ChatSession
 import json
-import os
-from django.conf import settings
-from .utils import (
-    get_fuzzy_match, 
-    generate_ai_theme_image, 
-    wildcard_match,
-    get_theme_suggestions,
-    enhance_bot_response,
-    get_all_theme_images,
-    get_theme_images,
-    get_food_suggestions,
-    get_package_suggestions,
-    get_color_suggestions,
-    get_event_type_suggestions,
-    get_combined_suggestions,
-    validate_and_suggest
-)
 from fuzzywuzzy import process
 
-def get_all_categories():
+def get_faq_categories():
+    """Return all FAQ categories for Nike's Catering Services"""
     return [
-        'disney', 'movie', 'gaming', 'superhero', 'sports', 'animal', 'color', 'special', 'other'
+        'general', 'booking', 'payment', 'cancellation', 'services', 'packages', 'food', 'themes', 'pricing', 'contact'
     ]
 
-def get_category_themes(category):
-    """Helper function to get themes by category"""
-    categories = {
-        'disney': ['mickey', 'frozen', 'cinderella', 'snow white', 'tinkerbell', 'princess'],
-        'movie': ['incredibles', 'spongebob', 'nemo', 'cars'],
-        'gaming': ['mario', 'roblox', 'one piece'],
-        'superhero': ['avengers', 'transformers'],
-        'sports': ['basketball', 'ferrari'],
-        'animal': ['zoo', 'dinosaur', 'bear', 'butterfly'],
-        'color': ['pink', 'green', 'rainbow'],
-        'special': ['halloween', 'wedding', 'traditional'],
-        'other': ['barbie', 'kuromi', 'cocomelon', 'pony']
+def get_faq_questions(category):
+    """Return FAQ questions and answers for a specific category"""
+    faq_data = {
+        'general': {
+            'what is nikes catering services': "Nike's Catering Services is a premier catering company specializing in events like birthdays, weddings, christenings, and kiddie parties. We provide complete event planning, food preparation, setup, and decoration services.",
+            'where are you located': "We are located in [City/Area]. We provide catering services throughout [Region] and surrounding areas.",
+            'how long have you been in business': "We have been serving our community with exceptional catering services since 2014, building a reputation for quality, reliability, and creativity.",
+            'what makes you different from other caterers': "We stand out through our personalized service, creative themes, high-quality food, professional staff, and attention to detail. We treat every event as unique and special.",
+            'do you have insurance and permits': "Yes, we are fully licensed, insured, and comply with all health and safety regulations required for catering services."
+        },
+        'booking': {
+            'how do i book an event': "You can book an event by contacting us through our website.",
+            'how far in advance should i book': "We recommend booking at least 2 weeks in advance for small events and atleast 3 months for larger events like weddings. Popular dates fill up quickly, so early booking is advised.",
+            'what information do you need for booking': "We'll need your event date, time, location, expected guest count, event type, theme preferences, and any special dietary requirements or requests.",
+            'do you require a deposit': "Yes, we require a down payment to secure your booking. The amount varies based on event size and package selected. We require a minum of 10,000 pesos or 20% downpayment for your booking confirmation.",
+            'can i change my event details after booking': "Yes, you can make changes to your event details up to 3 weeks before the event, subject to availability and any additional costs."
+        },
+        'payment': {
+            'what are your payment options': "We accept cash, GCash, bank transfers, and other digital payment methods. Payment plans can be arranged for larger events.",
+            'when is payment due': "A deposit is required upon booking, with the remaining balance due 1 week before the event. Final payment is due on or before the event day.",
+            'do you offer payment plans': "Yes, we offer flexible payment plans for larger events. We can work with you to create a payment schedule that fits your budget.",
+            'are there any hidden fees': "No hidden fees. All costs are clearly outlined in your quote, including setup, service, and cleanup fees.",
+            'do you provide receipts': "Yes, we provide detailed receipts for all payments and can issue invoices for business clients."
+        },
+        'cancellation': {
+            'what is your cancellation policy': "All down payment fees made for reservations are forfeited upon cancellation. Reservation fees are non-refundable, non-transferable, and non-convertible.",
+            'can i reschedule my event': "If the client needs to reschedule the reservation date due to unforeseen events or circumstances, the client must provide us with as much early notice as possible of the rebooking. Rebooking and/or damage fees may apply.",
+            'what happens if i cancel last minute': "Cancellations within 48 hours of the event will result in full payment being due, as we cannot recover costs for last-minute cancellations.",
+            'do you offer refunds': "Deposits and reservation fees are non-refundable as per our cancellation policy. We recommend event insurance for additional protection.",
+            'what if there is bad weather': "We work with you to create a backup plan for outdoor events. In case of severe weather, we can reschedule or move to an indoor location if available."
+        },
+        'services': {
+            'what services do you provide': "We provide complete event services including food preparation, setup and decoration, serving staff, cleanup, theme coordination, and event planning assistance.",
+            'do you provide staff': "Yes, we provide professional serving staff, chefs, and setup crew. Staff numbers are determined by guest count and service level.",
+            'do you handle setup and cleanup': "Yes, we handle all setup before the event and cleanup afterward. This includes tables, chairs, decorations, and food service areas.",
+            'do you provide decorations': "Yes, we provide decorations based on your chosen theme. We can also work with your existing decorations or coordinate with your decorator.",
+            'do you provide tableware and linens': "Yes, we provide all necessary tableware, linens, and serving pieces. We can also coordinate with your existing items if preferred."
+        },
+        'packages': {
+            'what packages do you offer': "We offer various packages for different event types: Birthday Parties and Kiddie Parties  (50-200 pax), Weddings (50-250 pax), and Christenings (50-200 pax). For custom events, we have package for below 100 and up",
+            'what is included in your packages': "Our packages include food, beverages, setup, decoration, serving staff, and cleanup.",
+            'can i customize a package': "Yes, we can customize packages to meet your specific needs. We can add or remove items, adjust portions, or create a completely custom menu.",
+            'do you offer vegetarian options': "Yes, we offer vegetarian and vegan options. We can accommodate various dietary restrictions and preferences.",
+            'what about dietary restrictions': "We can accommodate various dietary restrictions including vegetarian, vegan, gluten-free, and allergy-specific requirements. Please inform us of any special needs during booking."
+        },
+        'food': {
+            'what type of food do you serve': "We serve a wide variety of Filipino and international cuisine including beef, pork, chicken, seafood, vegetables, pasta, and desserts. Our menu can be customized to your preferences.",
+            'is the food prepared fresh': "Yes, all our food is prepared fresh on the day of your event. We use high-quality ingredients and follow strict food safety guidelines.",
+            'can you accommodate special dietary needs': "Yes, we can accommodate various dietary restrictions including vegetarian, vegan, gluten-free, and allergy-specific requirements.",
+            'do you provide tastings': "Yes, we offer food tastings for larger events like weddings every weekend of the month. This allows you to sample our menu and make final selections.",
+            'what about food allergies': "We take food allergies seriously and can accommodate most allergy requirements. Please inform us of any allergies during booking.",
+            'do you provide beverages': "Yes, we provide a selection of beverages including juices, soft drinks, and water. We can also coordinate with your preferred beverage provider.",
+            'can you provide alcohol': "We can coordinate alcohol service, but you'll need to provide the alcohol and obtain necessary permits. We can recommend licensed bartenders."
+        },
+        'themes': {
+            'what themes do you offer': "We offer a wide variety of themes including Disney, Movie, Gaming, Superhero, Sports, Animal, Color, Special Occasions, and more. We can also create custom themes.",
+            'can i customize a theme': "Yes, you can customize themes to match your vision. We can modify colors to create your perfect theme. For default themes that our team already created, please ask the admin for more information.",
+            'do you provide themed decorations': "Yes, we provide themed decorations that match your chosen theme. This includes table settings, centerpieces, and venue decorations.",
+            'can you work with my existing decorations': "Absolutely! We can incorporate your existing decorations with our theme or coordinate with your decorator. Just inform our admin after creating a booking.",
+            'do you offer seasonal themes': "Yes, we offer seasonal themes for holidays and special occasions throughout the year."
+        },
+        'pricing': {
+            'how much do your services cost': "Our pricing varies based on event type, guest count, package selection, and customization requirements. We provide detailed quotes after booking.",
+            'what factors affect pricing': "Pricing is affected by guest count, food selection, service level, theme complexity, location, and any special requirements.",
+            'do you offer discounts': "We offer discounts for large events, repeat customers, and off-peak dates. We can also work with your budget to create a suitable package.",
+            'are there additional fees': "Additional fees may apply for special requests, extended service hours, or additional staff. All fees are clearly outlined in your quote.",
+            'do you offer package deals': "Yes, we offer package deals that provide better value than selecting services individually. Our packages are designed to meet common event needs."
+        },
+        'contact': {
+            'how can i contact you': "You can contact us through our website after creating a booking. The admin responds within 24 hours.",
+            'what are your business hours': "Our website work 24/7. Create a booking and the admin responds within 24 hours.",
+            'do you offer consultations': "Yes, we offer free consultations to discuss your event needs and provide recommendations. Consultations will work after creating a booking.",
+            'how quickly do you respond to inquiries': "We aim to respond to all inquiries within 24 hours.",
+            'can i visit your kitchen': "We have food tastings that happen every weekend of the month. Visiting the kitchen itself is prohibited."
+        }
     }
-    return categories.get(category.lower().strip(), [])
+    return faq_data.get(category.lower(), {})
 
-def get_category_response(category):
-    """Helper function to get specific category responses"""
-    responses = {
-        'disney': "For Disney themes, we have Mickey Mouse, Frozen, Cinderella, Snow White, Tinkerbell, and Princess themes. Which one would you like to see?",
-        'movie': "For Movie themes, we have Incredibles, SpongeBob, Finding Nemo, and Cars themes. Which one interests you?",
-        'gaming': "For Gaming themes, we have Mario, Roblox, and One Piece themes. Which one would you like to explore?",
-        'superhero': "For Superhero themes, we have Avengers and Transformers themes. Which one would you like to see?",
-        'sports': "For Sports themes, we have Basketball and Ferrari Racing themes. Which one interests you?",
-        'animal': "For Animal themes, we have Zoo, Dinosaurs, Bears, and Butterflies themes. Which one would you like to see?",
-        'color': "For Color themes, we have Pink, Green, and Rainbow themes. Which one interests you?",
-        'special': "For Special themes, we have Halloween, Wedding, and Traditional themes. Which one would you like to explore?",
-        'other': "For Other themes, we have Barbie, Kuromi, Cocomelon, and My Little Pony themes. Which one would you like to see?"
+def get_faq_suggestions(user_input):
+    """Get FAQ suggestions based on user input"""
+    all_questions = []
+    all_categories = get_faq_categories()
+    
+    for category in all_categories:
+        questions = get_faq_questions(category)
+        all_questions.extend(questions.keys())
+    
+    # Find best matches with a lower threshold for better typo tolerance
+    matches = process.extract(user_input.lower(), all_questions, limit=3)
+    return [match[0] for match in matches if match[1] >= 40]  # Lowered from 60 to 40
+
+def detect_category_only_request(user_input):
+    """Return a category name if the message is basically asking about a category
+    (e.g., "packages", "about packages"), otherwise return None.
+    """
+    lower_msg = user_input.lower()
+    words = re.findall(r"\w+", lower_msg)
+    if not words:
+        return None
+
+    filler_words = {
+        'about', 'info', 'information', 'details', 'category', 'categories',
+        'question', 'questions', 'on', 'regarding', 'tell', 'me', 'show', 'list', 'the'
     }
-    return responses.get(category.lower(), "I couldn't find that category. Would you like to see our available categories?")
 
-def get_event_packages(event_type):
-    """Helper function to get packages based on event type"""
-    packages = {
-        'birthday': [
-            ('100 pax - Package A', static('main/images/packages/birthday_a.jpg')),
-            ('200 pax - Package B', static('main/images/packages/birthday_b.jpg')),
-            ('300 pax - Package C', static('main/images/packages/birthday_c.jpg'))
-        ],
-        'kiddie': [
-            ('50 pax - Package A', static('main/images/packages/kiddie_a.jpg')),
-            ('100 pax - Package B', static('main/images/packages/kiddie_b.jpg')),
-            ('150 pax - Package C', static('main/images/packages/kiddie_c.jpg'))
-        ],
-        'wedding': [
-            ('200 pax - Package A', static('main/images/packages/wedding_a.jpg')),
-            ('300 pax - Package B', static('main/images/packages/wedding_b.jpg')),
-            ('400 pax - Package C', static('main/images/packages/wedding_c.jpg'))
-        ],
-        'christening': [
-            ('100 pax - Package A', static('main/images/packages/christening_a.jpg')),
-            ('150 pax - Package B', static('main/images/packages/christening_b.jpg')),
-            ('200 pax - Package C', static('main/images/packages/christening_c.jpg'))
-        ]
+    for category in get_faq_categories():
+        if category in words:
+            other_words = [w for w in words if w != category]
+            if all(w in filler_words for w in other_words):
+                return category
+    
+    # Fuzzy catch: very short or single-word inputs that are close to a category name
+    if len(words) <= 3 and len(lower_msg) <= 20:
+        match = process.extractOne(lower_msg, get_faq_categories())
+        if match and match[1] >= 85:
+            return match[0]
+    return None
+
+def get_referenced_categories(user_input):
+    """Return categories referenced in the text using direct mentions or synonyms."""
+    text = user_input.lower()
+    synonym_map = {
+        'packages': ['package', 'packages', 'pax'],
+        'pricing': ['price', 'pricing', 'cost', 'rate', 'rates', 'fee', 'fees'],
+        'booking': ['book', 'booking', 'reserve', 'reservation', 'schedule'],
+        'payment': ['pay', 'payment', 'payments', 'deposit', 'downpayment'],
+        'cancellation': ['cancel', 'cancellation', 'refund', 'reschedule', 'rebook'],
+        'themes': ['theme', 'themes', 'motif'],
+        'food': ['food', 'menu', 'beverage', 'drinks', 'alcohol'],
+        'services': ['service', 'services', 'staff', 'setup', 'decoration'],
+        'contact': ['contact', 'reach', 'message'],
+        'general': ['about', 'info', 'information']
     }
-    return packages.get(event_type.lower(), [])
 
-def get_food_categories():
-    """Helper function to get food categories"""
-    return [
-        'vegetables',
-        'dessert',
-        'pasta',
-        'drinks',
-        'beef',
-        'pork',
-        'chicken',
-        'seafood'
-    ]
+    referenced = []
+    for category, keywords in synonym_map.items():
+        # Exact substring hit
+        if any(kw in text for kw in keywords):
+            referenced.append(category)
+            continue
+        # Fuzzy match for short inputs or typos (e.g., "boking" ~ booking)
+        if len(text.split()) <= 3 and len(text) <= 30:
+            match = process.extractOne(text, keywords + [category])
+            if match and match[1] >= 85:
+                referenced.append(category)
+    return referenced
 
-def get_food_menu(category):
-    """Helper function to get food items by category (updated to match actual menu)"""
-    menu = {
-        'vegetables': [
-            'Buttered Mixed Vegetables',
-            'Chopsuey in White Sauce',
-            'Chopsuey in Oyster Sauce',
-            'Lumpiang Sariwa',
-            'Oriental Mixed Vegetables',
-            'Stir Fry Vegetables',
-        ],
-        'dessert': [
-            'Buko Salad',
-            'Buko Pandan',
-            'Chocolate Fountain',
-            'Coffee Jelly',
-            'Dessert Buffet',
-            'Fruit Salad',
-            'Garden Salad',
-            'Ice Cream',
-            'Leche Flan',
-            'Mango Tapioca',
-            'Tropical Fruits',
-        ],
-        'pasta': [
-            'Baked Macaroni',
-            'Fettuccine Alfredo',
-            'Lasagna Rolls',
-            'Linguine in White or Red Sauce',
-            'Pancit Bihon or Canton',
-            'Penne in White or Red Sauce',
-            'Rigatoni in White or Red Sauce',
-            'Spaghetti',
-        ],
-        'drinks': [
-            'Blue Lemonade',
-            'Cucumber Lemonade',
-            'Four Seasons',
-            'Lemon Tea',
-            'Orange Juice',
-            'Pineapple Juice',
-            'Red Tea',
-        ],
-        'beef': [
-            'Beef Broccoli',
-            'Beef Caldereta',
-            'Beef Kare-Kare',
-            'Beef Teriyaki',
-            'Beef with Gravy Sauce',
-            'Garlic Beef',
-            'Lengua Pastel',
-            'Pot-Roast Beef',
-        ],
-        'pork': [
-            'Grilled Liempo',
-            'Hawaiian Sparibs',
-            'Kare-Kare Bagnet',
-            'Lechon Kawali',
-            'Lengua Pastel',
-            'Lumpiang Shanghai',
-            'Pork BBQ',
-            'Pork Caldereta',
-            'Pork Hamonado',
-            'Pork Menudo',
-            'Pork Morcon',
-            'Pork Teriyaki',
-            'Roast Pork Hawaiian',
-            'Roast Pork with Raisin Sauce',
-        ],
-        'chicken': [
-            'Breaded Fried Chicken',
-            'Buttered Chicken',
-            'Chicken BBQ',
-            'Chicken Cordon Bleu',
-            'Chicken Lollipop',
-            'Chicken Pastel',
-            'Chicken Teriyaki',
-            'Honey Glazed Chicken',
-            'Hongkong Chicken',
-            'Orange Chicken with Lemon Sauce',
-            'Royal Chicken',
-        ],
-        'seafood': [
-            'Calamares',
-            'Fish Fillet with Chili Sauce',
-            'Fish Fillet with Tartar Sauce',
-            'Fish Tofu',
-            'Mixed Seafoods with Vegetables',
-            'Squid with Lemon Sauce',
-            'Tempura',
-        ],
-    }
-    return menu.get(category.lower(), [])
+def normalize_question_by_category(user_input, category):
+    """Map common phrasings to a canonical FAQ question within a category."""
+    text = user_input.lower()
 
-def get_themes_and_images(category):
-    themes = get_category_themes(category)
-    images = []
-    image_labels = []
-    for theme in themes:
-        theme_imgs = get_theme_images(theme)
-        if theme_imgs:
-            images.append(theme_imgs[0])
-            image_labels.append(theme.title())
-    return themes, images, image_labels
+    if category == 'packages':
+        if any(w in text for w in ['see', 'show', 'list', 'available', 'options']):
+            return 'what packages do you offer'
+        if any(w in text for w in ['include', 'included', 'includes', 'inside', 'content', 'contents']):
+            return 'what is included in your packages'
+        if 'custom' in text or 'customize' in text or 'customise' in text:
+            return 'can i customize a package'
+        if any(w in text for w in ['vegetarian', 'vegan']):
+            return 'do you offer vegetarian options'
+        if any(w in text for w in ['diet', 'restriction', 'restrictions', 'allergy', 'allergies']):
+            return 'what about dietary restrictions'
 
-def get_category_description(category):
-    desc = {
-        'disney': 'For Disney themes, we have: Mickey, Frozen, Cinderella, Snow White, Tinkerbell, Princess.',
-        'movie': 'For Movie themes, we have: Incredibles, Spongebob, Nemo, Cars.',
-        'gaming': 'For Gaming themes, we have: Mario, Roblox, One Piece.',
-        'superhero': 'For Superhero themes, we have: Avengers, Transformers.',
-        'sports': 'For Sports themes, we have: Basketball, Ferrari.',
-        'animal': 'For Animal themes, we have: Zoo, Dinosaur, Bear, Butterfly.',
-        'color': 'For Color themes, we have: Pink, Green, Rainbow.',
-        'special': 'For Special themes, we have: Halloween, Wedding, Traditional.',
-        'other': 'For Other themes, we have: Barbie, Kuromi, Cocomelon, Pony.'
-    }
-    return desc.get(category, '')
+    if category == 'pricing':
+        if any(w in text for w in ['price', 'pricing', 'cost', 'rate', 'rates', 'how much']):
+            return 'how much do your services cost'
+        if any(w in text for w in ['discount', 'discounts', 'promo', 'promotion']):
+            return 'do you offer discounts'
+        if 'fee' in text or 'fees' in text:
+            return 'are there additional fees'
+        if 'deal' in text or 'package deal' in text:
+            return 'do you offer package deals'
 
-def get_event_package_images(event_type):
-    """Dynamically get all package images for the event type from the static directory."""
-    static_dir = os.path.join(settings.BASE_DIR, 'main', 'static', 'main', 'images', 'packages')
-    prefix = event_type.lower()
-    images = []
-    for fname in os.listdir(static_dir):
-        if fname.lower().startswith(prefix):
-            images.append((fname.replace('.jpg', '').replace('_', ' ').title(), f'/static/main/images/packages/{fname}'))
-    images.sort()  # Optional: sort by name
-    return images
+    if category == 'booking':
+        if any(w in text for w in ['change', 'modify', 'edit']):
+            return 'can i change my event details after booking'
+        if any(w in text for w in ['book', 'reserve', 'schedule']):
+            return 'how do i book an event'
 
-# Package rules for all event types
-PACKAGE_RULES = {
-    'A': {'dishes': 3, 'pasta': 1, 'drinks': 1, 'rice': True, 'dessert': True},
-    'B': {'dishes': 4, 'pasta': 1, 'drinks': 1, 'rice': True, 'dessert': True},
-    'C': {'dishes': 5, 'pasta': 1, 'drinks': 1, 'rice': True, 'dessert': True},
-}
+    return None
 
-def get_food_menu_images():
-    """Return all food menu images for display."""
-    static_dir = os.path.join(settings.BASE_DIR, 'main', 'static', 'main', 'images', 'foodMenu')
-    images = []
-    for fname in os.listdir(static_dir):
-        if fname.lower().endswith('.jpg'):
-            images.append(f'/static/main/images/foodMenu/{fname}')
-    images.sort()
-    return images
+def find_best_faq_match(user_input, questions):
+    """Find the best matching FAQ question using multiple strategies"""
+    user_input_lower = user_input.lower().strip()
+    user_words = set(user_input_lower.split())
+    
+    # Skip very short inputs that are likely greetings
+    if len(user_input_lower) < 10 and len(user_words) <= 2:
+        # Check if it's just a greeting or very short input
+        greetings = {'hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening', 'morning', 'afternoon', 'evening'}
+        if user_input_lower in greetings or any(greeting in user_input_lower for greeting in greetings):
+            return None, 0
+    
+    best_match = None
+    best_score = 0
+    
+    for question in questions.keys():
+        question_words = set(question.lower().split())
+        
+        # Strategy 1: Exact word matching (but require meaningful matches)
+        common_words = user_words.intersection(question_words)
+        # Filter out very common words that don't add meaning
+        meaningful_words = {word for word in common_words if len(word) > 2 and word not in {
+            'the', 'and', 'or', 'for', 'with', 'from', 'about', 'what', 'how', 'when', 'where', 'why', 'do', 'you', 'your', 'are', 'is', 'can', 'will', 'have', 'has', 'had', 'does', 'did'
+        }}
+        
+        if len(meaningful_words) >= 2:  # At least 2 meaningful words must match
+            score = len(meaningful_words) / max(len(user_words), len(question_words))
+            if score > best_score:
+                best_score = score
+                best_match = question
+        
+        # Strategy 2: Fuzzy matching for individual words (but only for longer words)
+        for user_word in user_words:
+            if len(user_word) > 3:  # Only check words longer than 3 characters
+                for question_word in question_words:
+                    if len(question_word) > 3:
+                        # Use fuzzy matching for individual words
+                        similarity = process.fuzz.ratio(user_word.lower(), question_word.lower())
+                        if similarity >= 75:  # Higher threshold for word-level similarity
+                            score = similarity / 100.0
+                            if score > best_score:
+                                best_score = score
+                                best_match = question
+                                break
+    
+    # Strategy 3: Overall fuzzy matching as fallback (but with higher threshold)
+    if not best_match or best_score < 0.4:  # Increased threshold
+        overall_matches = process.extract(user_input_lower, questions.keys(), limit=1)
+        if overall_matches and overall_matches[0][1] >= 65:  # Higher threshold for overall matching
+            best_match = overall_matches[0][0]
+            best_score = overall_matches[0][1] / 100.0
+    
+    return best_match, best_score
 
 def chatbot_view(request):
     # Always start fresh if session is new or uninitialized
     if not request.session.get('initialized', False):
         request.session['chat_history'] = [
-            {'sender': 'bot', 'text': "Welcome! Do you need help with event planning or do you want to view FAQs? (Type 'event planning' or 'faq')"}
+            {'sender': 'bot', 'text': "Welcome to Nike's Catering Services! I'm your virtual assistant. How can I help you today? Feel free to ask me anything about our services, packages, pricing, booking, themes, food options, or any other questions you might have about our catering services."}
         ]
-        request.session['planner_state'] = 'start'
-        request.session['planner_data'] = {}
         request.session['initialized'] = True
         request.session.modified = True
 
     chat_history = request.session.get('chat_history', [])
-    planner_state = request.session.get('planner_state', 'start')
-    planner_data = request.session.get('planner_data', {})
 
     if request.method == 'POST':
         user_message = request.POST.get('message')
@@ -266,454 +265,16 @@ def chatbot_view(request):
 
         bot_response = None
 
-        # --- GLOBAL: Allow user to change color, theme, event, or package at any time before summary ---
-        color_keywords = [
-            'change color', 'choose another color', 'pick a new color', 'switch color', 'change palette', 'pick another color', 'select different color',
-            'i want to change the color', 'i want to select another color', 'i want to pick a different color', 'go back to color', 'reset color', 'back to color selection', 'color options', 'different color', 'color change'
-        ]
-        theme_keywords = [
-            'change theme', 'choose another theme', 'pick a new theme', 'switch theme', 'i want another theme', 'pick another theme', 'select different theme', 'choose theme', 'select theme',
-            'i want to change the theme', 'i want to select another theme', 'i want to pick a different theme', 'go back to theme', 'reset theme', 'back to theme selection', 'theme options', 'different theme', 'theme change',
-            'modify theme', 'update theme', 'edit theme', 'alter theme', 'redo theme', 'reselect theme', 'pick theme again', 'pick again theme', 'start theme over', 'theme selection again', 'theme again', 'theme redo', 'theme reselect', 'theme edit', 'theme update', 'theme modify', 'theme alter', 'theme reset', 'theme pick again', 'theme pick new', 'theme pick different', 'theme pick another', 'theme pick', 'theme choose again', 'theme choose new', 'theme choose different', 'theme choose another', 'theme choose', 'theme select again', 'theme select new', 'theme select different', 'theme select another', 'theme select'
-        ]
-        event_keywords = [
-            'change event', 'choose another event', 'pick a new event', 'switch event', 'change event type', 'pick another event', 'select different event', 'choose event', 'select event',
-            'i want to change the event', 'i want to select another event', 'i want to pick a different event', 'go back to event', 'reset event', 'back to event selection', 'event options', 'different event', 'event change',
-            'i want to select other type of event', 'i want to select other event type', 'i want to change the type of event', 'change my event', 'start over', 'back to event type', 'pick a new event', 'new event'
-        ]
-        package_keywords = [
-            'change package', 'choose another package', 'pick a new package', 'switch package', 'pick another package', 'select different package', 'choose package', 'select package',
-            'i want to change the package', 'i want to select another package', 'i want to pick a different package', 'go back to package', 'reset package', 'back to package selection', 'package options', 'different package', 'package change'
-        ]
-        restart_keywords = [
-            'restart', 'start over', 'reset', 'new plan', 'new event'
-        ]
-        help_keywords = ['/help']
-        def matches_any(keywords):
-            return any(k in lower_msg for k in keywords)
-
-        # If the user tries to change a field after it is already completed, prompt to restart
-        completed_states = ['food_select_dishes', 'food_select_pasta', 'food_select_drink', 'food_select_finish', 'summary']
-        if planner_state in completed_states and (
-            matches_any(color_keywords) or matches_any(theme_keywords) or matches_any(event_keywords) or matches_any(package_keywords)
-        ):
-            bot_response = {
-                'sender': 'bot',
-                'text': "You have already completed this step. If you want to start over and make changes, please type 'reset' or 'restart'."
-            }
-            chat_history.append(bot_response)
-            request.session['chat_history'] = chat_history
-            request.session.modified = True
-            return render(request, 'main/chatbot.html', {
-                'chat_history': chat_history,
-                'saved_sessions': ChatSession.objects.all().order_by('-updated_at'),
-                'current_title': 'New Chat'
-            })
-
-        # Restart command
-        if matches_any(restart_keywords):
+        # Handle restart command
+        if any(keyword in lower_msg for keyword in ['restart', 'start over', 'reset', 'new chat', 'clear']):
             request.session.flush()
             bot_response = {
                 'sender': 'bot',
-                'text': "The chat has been reset. Welcome! Do you need help with event planning or do you want to view FAQs? (Type 'event planning' or 'faq')"
+                'text': "Welcome to Nike's Catering Services! I'm your virtual assistant. How can I help you today? Feel free to ask me anything about our services, packages, pricing, booking, themes, food options, or any other questions you might have about our catering services."
             }
-            request.session['planner_state'] = 'start'
-            request.session['planner_data'] = {}
             request.session['initialized'] = True
             chat_history = [bot_response]
             request.session['chat_history'] = chat_history
-            request.session.modified = True
-            return render(request, 'main/chatbot.html', {
-                'chat_history': chat_history,
-                'saved_sessions': ChatSession.objects.all().order_by('-updated_at'),
-                'current_title': 'New Chat'
-            })
-
-        # Help command
-        if matches_any(help_keywords):
-            bot_response = {
-                'sender': 'bot',
-                'text': "You can type any of the following at any time:\n- change color\n- change theme\n- change event\n- change package\n- restart\n- help\nContinue your event planning or type a command above."
-            }
-            chat_history.append(bot_response)
-            request.session['chat_history'] = chat_history
-            request.session.modified = True
-            return render(request, 'main/chatbot.html', {
-                'chat_history': chat_history,
-                'saved_sessions': ChatSession.objects.all().order_by('-updated_at'),
-                'current_title': 'New Chat'
-            })
-
-        # Store the current state to return to after change
-        if matches_any(color_keywords):
-            request.session['return_to_state'] = planner_state
-            bot_response = {
-                'sender': 'bot',
-                'text': "Would you like to use the default color palette for this theme, or do you want to modify the colors? (Type 'default' or specify your colors.)"
-            }
-            request.session['planner_state'] = 'color_palette_confirm'
-            chat_history.append(bot_response)
-            request.session['chat_history'] = chat_history
-            request.session['planner_data'] = planner_data
-            request.session.modified = True
-            return render(request, 'main/chatbot.html', {
-                'chat_history': chat_history,
-                'saved_sessions': ChatSession.objects.all().order_by('-updated_at'),
-                'current_title': 'New Chat'
-            })
-        if matches_any(theme_keywords):
-            request.session['return_to_state'] = planner_state
-            event_type = planner_data.get('event_type')
-            # Clear previous theme/category selection so the next category is always fresh
-            planner_data.pop('current_themes', None)
-            planner_data.pop('current_category', None)
-            planner_data.pop('theme', None)
-            if not event_type:
-                bot_response = {
-                    'sender': 'bot',
-                    'text': "Please select an event type first (Kiddie Party, Birthday Party, Wedding, or Christening)."
-                }
-                request.session['planner_state'] = 'event_type'
-            else:
-                # Show theme categories as a bulleted list without numbers
-                theme_categories = ['Disney', 'Movie', 'Gaming', 'Superhero', 'Sports', 'Animal', 'Color', 'Special', 'Other']
-                category_bullets = '<ul>' + ''.join([f'<li>{cat}</li>' for cat in theme_categories]) + '</ul>'
-                bot_response = {
-                    'sender': 'bot',
-                    'text': f"Great choice! Now, what type of theme are you interested in? Please choose one of the following options:{category_bullets}(Type the category name, e.g., 'Disney')"
-                }
-            chat_history.append(bot_response)
-            request.session['chat_history'] = chat_history
-            request.session['planner_data'] = planner_data
-            request.session.modified = True
-            return render(request, 'main/chatbot.html', {
-                'chat_history': chat_history,
-                'saved_sessions': ChatSession.objects.all().order_by('-updated_at'),
-                'current_title': 'New Chat'
-            })
-        if matches_any(event_keywords):
-            request.session['return_to_state'] = planner_state
-            # Always show event type options
-            event_type_options = ['Kiddie Party', 'Birthday Party', 'Wedding', 'Christening']
-            event_type_bullets = '<ul>' + ''.join([f'<li>{cat}</li>' for cat in event_type_options]) + '</ul>'
-            bot_response = {
-                'sender': 'bot',
-                'text': f"What type of event would you like to plan? Please choose one of the following options:{event_type_bullets}(Type the category name, e.g., 'Wedding')"
-            }
-            request.session['planner_state'] = 'event_type'
-            chat_history.append(bot_response)
-            request.session['chat_history'] = chat_history
-            request.session['planner_data'] = planner_data
-            request.session.modified = True
-            return render(request, 'main/chatbot.html', {
-                'chat_history': chat_history,
-                'saved_sessions': ChatSession.objects.all().order_by('-updated_at'),
-                'current_title': 'New Chat'
-            })
-        if matches_any(package_keywords):
-            request.session['return_to_state'] = planner_state
-            event_type_input = planner_data.get('event_type', '').lower()
-            event_type_map = {
-                'kiddie party': 'kiddie',
-                'birthday party': 'birthday',
-                'wedding': 'wedding',
-                'christening': 'christening',
-            }
-            event_type = event_type_map.get(event_type_input, event_type_input)
-            if not event_type:
-                # Prompt for event type first
-                event_type_options = ['Kiddie Party', 'Birthday Party', 'Wedding', 'Christening']
-                event_type_bullets = '<ul>' + ''.join([f'<li>{cat}</li>' for cat in event_type_options]) + '</ul>'
-                bot_response = {
-                    'sender': 'bot',
-                    'text': f"Please select an event type first:{event_type_bullets}(Type the category name, e.g., 'Wedding')"
-                }
-                request.session['planner_state'] = 'event_type'
-            else:
-                package_images = get_event_package_images(event_type)
-                bot_response = {
-                    'sender': 'bot',
-                    'text': f"Here are our available packages for {event_type_input.title()}:",
-                    'package_options': package_images
-                }
-                request.session['planner_state'] = 'package_image_choice'
-            chat_history.append(bot_response)
-            request.session['chat_history'] = chat_history
-            request.session['planner_data'] = planner_data
-            request.session.modified = True
-            return render(request, 'main/chatbot.html', {
-                'chat_history': chat_history,
-                'saved_sessions': ChatSession.objects.all().order_by('-updated_at'),
-                'current_title': 'New Chat'
-            })
-
-        # After color/theme/event/package change, return to previous state if set
-        if planner_state in ['color_palette_confirm', 'theme_choice', 'event_type', 'package_image_choice'] and 'return_to_state' in request.session and request.session['return_to_state']:
-            # Only trigger return if the user has just completed the change (e.g., after color, theme, event, or package selection)
-            return_to_state = request.session.pop('return_to_state')
-            # For color, update color_palette and IMMEDIATELY prompt for package selection
-            if planner_state == 'color_palette_confirm':
-                color_options = ['default', 'custom']
-                valid_color_palettes = [
-                    'red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'white', 'black', 'gold', 'silver', 'brown', 'gray', 'beige', 'ivory', 'cream', 'peach', 'maroon', 'navy', 'teal', 'turquoise', 'aqua', 'lavender', 'violet', 'magenta', 'lime', 'mint', 'coral', 'pearl', 'rose', 'champagne', 'burgundy', 'pastel', 'rainbow', 'multicolor', 'colorful',
-                ]
-                popular_combos = [
-                    'red and gold', 'blue and gold', 'blue and yellow', 'pink and gold', 'pink and purple', 'blue and silver', 'gold and white', 'white and gold', 'black and gold', 'black and white', 'green and gold', 'mint and peach', 'peach and gold', 'red and white', 'yellow and white', 'purple and silver', 'navy and gold', 'navy and silver', 'rose gold', 'champagne and gold', 'pastel rainbow', 'pastel pink', 'pastel blue', 'pastel green', 'pastel yellow', 'pastel purple', 'pastel mint', 'pastel peach', 'pastel orange', 'pastel lavender', 'pastel violet', 'pastel magenta', 'pastel coral', 'pastel cream', 'pastel beige', 'pastel ivory', 'pastel rose', 'pastel mint and peach', 'pastel pink and gold', 'pastel blue and gold',
-                ]
-                normalized_msg = lower_msg.strip()
-                color_selected = None
-                try:
-                    idx = int(normalized_msg) - 1
-                    if 0 <= idx < len(color_options):
-                        color_selected = color_options[idx]
-                except Exception:
-                    pass
-                if not color_selected:
-                    color_match, score = get_fuzzy_match(normalized_msg, color_options)
-                    if color_match and (score >= 90):
-                        color_selected = color_match
-                theme_selected = planner_data.get('theme', None)
-                images = get_theme_images(theme_selected) if theme_selected else []
-                ai_image = generate_ai_theme_image(theme_selected) if theme_selected else None
-                theme_image_choice = planner_data.get('theme_image_choice', 'given')
-                if theme_image_choice == 'ai':
-                    images_to_show = [ai_image] if ai_image else []
-                else:
-                    images_to_show = images
-                is_valid_palette = False
-                if color_selected or normalized_msg == 'default':
-                    is_valid_palette = True
-                else:
-                    user_palette = normalized_msg.lower().replace(' and ', ',').replace(' & ', ',')
-                    user_palette = user_palette.replace(';', ',')
-                    color_parts = [c.strip() for c in user_palette.split(',') if c.strip()]
-                    valid_colors_lower = [c.lower() for c in valid_color_palettes]
-                    if 1 <= len(color_parts) <= 3 and all(c in valid_colors_lower for c in color_parts):
-                        is_valid_palette = True
-                    else:
-                        combos_lower = [c.lower() for c in popular_combos]
-                        if normalized_msg.lower() in combos_lower:
-                            is_valid_palette = True
-                if is_valid_palette:
-                    planner_data['color_palette'] = color_selected or normalized_msg
-                    event_type_input = planner_data.get('event_type', '').lower()
-                    event_type_map = {
-                        'kiddie party': 'kiddie',
-                        'birthday party': 'birthday',
-                        'wedding': 'wedding',
-                        'christening': 'christening',
-                    }
-                    event_type = event_type_map.get(event_type_input, event_type_input)
-                    package_images = get_event_package_images(event_type)
-                    bot_response = {
-                        'sender': 'bot',
-                        'text': f"Here are our available packages for {event_type_input.title()}:",
-                        'package_options': package_images
-                    }
-                    request.session['planner_state'] = 'package_image_choice'
-                else:
-                    # Improved fuzzy suggestion for color palettes
-                    all_palettes = valid_color_palettes + popular_combos
-                    # Get top 3 close matches
-                    suggestions = process.extract(normalized_msg, all_palettes, limit=3)
-                    suggestions = [s for s in suggestions if s[1] >= 70]
-                    # If user entered two colors, try to match each color and suggest a combo
-                    combo_suggestion = None
-                    if len(color_parts) == 2:
-                        c1, c2 = color_parts
-                        c1_match, c1_score = process.extractOne(c1, valid_colors_lower)
-                        c2_match, c2_score = process.extractOne(c2, valid_colors_lower)
-                        if c1_score >= 80 and c2_score >= 80:
-                            # Try to find a combo in popular_combos
-                            for combo in popular_combos:
-                                if c1_match in combo and c2_match in combo:
-                                    combo_suggestion = combo
-                                    break
-                            if not combo_suggestion:
-                                combo_suggestion = f"{valid_color_palettes[valid_colors_lower.index(c1_match)]} and {valid_color_palettes[valid_colors_lower.index(c2_match)]}"
-                    if combo_suggestion:
-                        suggestion_text = f"Did you mean '{combo_suggestion}'? Please type a valid color palette or 'default'."
-                    elif suggestions:
-                        suggestion_text = f"Did you mean '{suggestions[0][0]}'? Please type a valid color palette or 'default'."
-                    else:
-                        suggestion_text = "Please specify a valid color palette (e.g., 'blue and gold', 'pastel', 'rainbow', 'pink and gold', or any 1-3 colors from the standard palette) or type 'default' to use the original colors."
-                    bot_response = {
-                        'sender': 'bot',
-                        'text': suggestion_text,
-                        'selected_theme_images': images_to_show,
-                        'theme_confirm_name': theme_selected.title() if theme_selected else '',
-                    }
-            # For theme, update theme and IMMEDIATELY prompt for color palette
-            if planner_state == 'theme_choice':
-                all_cats = get_all_categories()
-                normalized_msg = lower_msg.strip()
-                # Try category matching first
-                is_valid, corrected_input, suggestions = validate_and_suggest(normalized_msg, all_cats, "category")
-                if is_valid:
-                    selected_category = corrected_input
-                    themes, images, image_labels = get_themes_and_images(selected_category)
-                    theme_options = [(theme.title(), get_theme_images(theme)[0] if get_theme_images(theme) else None) for theme in themes]
-                    cat_desc = get_category_description(selected_category)
-                    bot_response = {
-                        'sender': 'bot',
-                        'text': f"These are some sample themes we have catered for the {selected_category.title()} category.\n{cat_desc}\n\nWhich theme do you want to use for your event?",
-                        'theme_options': theme_options,
-                    }
-                    planner_data['current_themes'] = themes
-                    planner_data['current_category'] = selected_category
-                else:
-                    # Try theme matching (by number or name)
-                    current_themes = planner_data.get('current_themes', [])
-                    theme_selected = None
-                    # Try number selection
-                    try:
-                        idx = int(normalized_msg) - 1
-                        if 0 <= idx < len(current_themes):
-                            theme_selected = current_themes[idx]
-                    except Exception:
-                        pass
-                    # Try name selection
-                    if not theme_selected:
-                        is_valid, corrected_input, suggestions = validate_and_suggest(normalized_msg, current_themes, "theme")
-                        if is_valid:
-                            theme_selected = corrected_input
-                    if theme_selected:
-                        planner_data['theme'] = theme_selected
-                        images = get_theme_images(theme_selected)
-                        ai_image = generate_ai_theme_image(theme_selected)
-                        bot_response = {
-                            'sender': 'bot',
-                            'text': 'Do you want to keep the generated image as the theme design or do you prefer using the ones we have available? Type "ai" or "given".',
-                            'theme_confirm_images': images,
-                            'theme_confirm_name': theme_selected.title(),
-                            'ai_generated_image': ai_image,
-                        }
-                        request.session['planner_state'] = 'theme_image_choice'
-                    else:
-                        if suggestions:
-                            bot_response = {
-                                'sender': 'bot',
-                                'text': enhance_bot_response(
-                                    "I didn't understand. Did you mean one of these themes?",
-                                    suggestions
-                                ),
-                                'theme_options': [(theme.title(), get_theme_images(theme)[0] if get_theme_images(theme) else None) for theme in suggestions]
-                            }
-                        else:
-                            theme_categories = ['Disney', 'Movie', 'Gaming', 'Superhero', 'Sports', 'Animal', 'Color', 'Special', 'Other']
-                            category_bullets = '<ul>' + ''.join([f'<li>{cat}</li>' for cat in theme_categories]) + '</ul>'
-                            bot_response = {
-                                'sender': 'bot',
-                                'text': f"I didn't understand. Please choose a category from the list below:{category_bullets}"
-                            }
-            # For event, update event_type and IMMEDIATELY prompt for theme selection
-            if planner_state == 'event_type':
-                valid_events = ['kiddie party', 'birthday party', 'wedding', 'christening']
-                normalized_msg = lower_msg.strip()
-                event_selected = None
-                # Try number selection first
-                try:
-                    idx = int(normalized_msg) - 1
-                    if 0 <= idx < len(valid_events):
-                        event_selected = valid_events[idx]
-                except Exception:
-                    pass
-                # If number selection failed, try enhanced matching
-                if not event_selected:
-                    is_valid, corrected_input, suggestions = validate_and_suggest(normalized_msg, valid_events, "event type")
-                    if is_valid:
-                        event_selected = corrected_input
-                if event_selected:
-                    planner_data['event_type'] = event_selected
-                    theme_categories = ['Disney', 'Movie', 'Gaming', 'Superhero', 'Sports', 'Animal', 'Color', 'Special', 'Other']
-                    category_bullets = '<ul>' + ''.join([f'<li>{cat}</li>' for cat in theme_categories]) + '</ul>'
-                    bot_response = {
-                        'sender': 'bot',
-                        'text': f"Great choice! Now, what type of theme are you interested in? Please choose one of the following options:{category_bullets}(Type the category name, e.g., 'Disney')"
-                    }
-                    request.session['planner_state'] = 'theme_choice'
-                else:
-                    event_type_options = ['Kiddie Party', 'Birthday Party', 'Wedding', 'Christening']
-                    event_type_bullets = '<ul>' + ''.join([f'<li>{cat}</li>' for cat in event_type_options]) + '</ul>'
-                    bot_response = {
-                        'sender': 'bot',
-                        'text': f"What type of event would you like to plan? Please choose one of the following options:{event_type_bullets}(Type the category name, e.g., 'Wedding')"
-                    }
-                    request.session['planner_state'] = 'event_type'
-                chat_history.append(bot_response)
-                request.session['chat_history'] = chat_history
-                request.session['planner_data'] = planner_data
-                request.session.modified = True
-                return render(request, 'main/chatbot.html', {
-                    'chat_history': chat_history,
-                    'saved_sessions': ChatSession.objects.all().order_by('-updated_at'),
-                    'current_title': 'New Chat'
-                })
-            # For package, update package selection and IMMEDIATELY prompt for package letter
-            if planner_state == 'package_image_choice':
-                event_type_input = planner_data.get('event_type', '').lower()
-                event_type_map = {
-                    'kiddie party': 'kiddie',
-                    'birthday party': 'birthday',
-                    'wedding': 'wedding',
-                    'christening': 'christening',
-                }
-                event_type = event_type_map.get(event_type_input, event_type_input)
-                package_images = get_event_package_images(event_type)
-                package_names = [pkg[0] for pkg in package_images]
-                package_selected = None
-                # Try number selection first
-                try:
-                    idx = int(user_message.strip()) - 1
-                    if 0 <= idx < len(package_images):
-                        package_selected = idx
-                    else:
-                        package_selected = None
-                        # If the input is a number but out of range, do not try fuzzy matching
-                except Exception:
-                    package_selected = None
-                    # Only try fuzzy/wildcard matching if input is not a number at all
-                    is_valid, corrected_input, suggestions = validate_and_suggest(lower_msg, package_names, "package")
-                    if is_valid:
-                        package_selected = package_names.index(corrected_input)
-                if package_selected is not None and 0 <= package_selected < len(package_images):
-                    planner_data['package_image'] = package_images[package_selected][1]
-                    planner_data['package_image_label'] = package_images[package_selected][0]
-                    bot_response = {
-                        'sender': 'bot',
-                        'text': f"Which package do you want for {package_images[package_selected][0]}? (Type A, B, or C)",
-                        'package_image_selected': package_images[package_selected][1],
-                        'package_image_label': package_images[package_selected][0],
-                    }
-                    request.session['planner_state'] = 'package_letter_choice'
-                else:
-                    # Numbered list for package options
-                    numbered_options = '<ul>' + ''.join([f'<li>{i+1}. {name}</li>' for i, name in enumerate(package_names)]) + '</ul>'
-                    bot_response = {
-                        'sender': 'bot',
-                        'text': f"Please select from the options given below:{numbered_options}"
-                    }
-                chat_history.append(bot_response)
-                request.session['chat_history'] = chat_history
-                request.session['planner_data'] = planner_data
-                request.session.modified = True
-                return render(request, 'main/chatbot.html', {
-                    'chat_history': chat_history,
-                    'saved_sessions': ChatSession.objects.all().order_by('-updated_at'),
-                    'current_title': 'New Chat'
-                })
-            # If returning to finish, prompt for finish/done
-            if return_to_state == 'food_select_finish':
-                bot_response = {
-                    'sender': 'bot',
-                    'text': "Type 'finish' or 'done' to see the summary of your event plan."
-                }
-                request.session['planner_state'] = 'food_select_finish'
-            else:
-                request.session['planner_state'] = return_to_state
-            chat_history.append(bot_response)
-            request.session['chat_history'] = chat_history
-            request.session['planner_data'] = planner_data
             request.session.modified = True
             return render(request, 'chatbot/main/chatbot.html', {
                 'chat_history': chat_history,
@@ -721,647 +282,207 @@ def chatbot_view(request):
                 'current_title': 'New Chat'
             })
 
-        # Step 0: Start - event planning or FAQ
-        if planner_state == 'start':
-            # Prioritize event planning/faq over help
-            if 'faq' in lower_msg:
-                bot_response = {
-                    'sender': 'bot',
-                    'text': (
-                        "Here are some frequently asked questions:<ul>"
-                        "<li>How do I book an event?</li>"
-                        "<li>What are your payment options?</li>"
-                        "<li>Can I customize a theme?</li>"
-                        "<li>What is your cancellation policy?</li>"
-                        "</ul>(Type your question or 'event planning' to start planning an event.)"
-                    )
-                }
-                request.session['planner_state'] = 'faq'
-            elif 'event' in lower_msg or 'plan' in lower_msg:
-                theme_categories = ['Disney', 'Movie', 'Gaming', 'Superhero', 'Sports', 'Animal', 'Color', 'Special', 'Other']
-                category_bullets = '<ul>' + ''.join([f'<li>{cat}</li>' for cat in theme_categories]) + '</ul>'
-                bot_response = {
-                    'sender': 'bot',
-                    'text': f"What type of event would you like to plan? (Kiddie Party, Birthday Party, Wedding, or Christening)"
-                }
-                request.session['planner_state'] = 'event_type'
-            elif matches_any(help_keywords):
-                bot_response = {
-                    'sender': 'bot',
-                    'text': "You can type any of the following at any time:\n- change color\n- change theme\n- change event\n- change package\n- restart\n- help\nContinue your event planning or type a command above."
-                }
-            else:
-                bot_response = {
-                    'sender': 'bot',
-                    'text': "Do you need help with event planning or do you want to view FAQs? (Type 'event planning' or 'faq')"
-                }
-        # After FAQ is shown, if in 'faq' state, check if user typed a question
-        if planner_state == 'faq':
-            faq_qas = {
-                'how do i book an event': "You can enjoy complete event planning with us. Our team will assist you every step of the way.",
-                'what are your payment options': "We accept GCash or cash payments.",
-                'can i customize a theme': "Yes, you can! Our virtual event assistant can help you, or you may further refine your theme/design with our admin team.",
-                'what is your cancellation policy': "All down payment fees made for reservations are forfeited upon cancellation. Reservation fees are non-refundable, non-transferable, and non-convertible."
-            }
-            normalized_msg = lower_msg.strip().rstrip('?').lower()
-            if 'event planning' in normalized_msg:
-                theme_categories = ['Disney', 'Movie', 'Gaming', 'Superhero', 'Sports', 'Animal', 'Color', 'Special', 'Other']
-                category_bullets = '<ul>' + ''.join([f'<li>{cat}</li>' for cat in theme_categories]) + '</ul>'
-                bot_response = {
-                    'sender': 'bot',
-                    'text': f"What type of event would you like to plan? (Kiddie Party, Birthday Party, Wedding, or Christening)"
-                }
-                request.session['planner_state'] = 'event_type'
-                chat_history.append(bot_response)
-                request.session['chat_history'] = chat_history
-                request.session.modified = True
-                return render(request, 'main/chatbot.html', {
-                    'chat_history': chat_history,
-                    'saved_sessions': ChatSession.objects.all().order_by('-updated_at'),
-                    'current_title': 'New Chat'
-                })
-            # Fuzzy match user input to FAQ questions
-            #from .utils import get_fuzzy_match
-            faq_questions = list(faq_qas.keys())
-            match, score = get_fuzzy_match(normalized_msg, faq_questions)
-            if match and score >= 80:
-                bot_response = {
-                    'sender': 'bot',
-                    'text': faq_qas[match]
-                }
-                chat_history.append(bot_response)
-                request.session['chat_history'] = chat_history
-                request.session.modified = True
-                return render(request, 'main/chatbot.html', {
-                    'chat_history': chat_history,
-                    'saved_sessions': ChatSession.objects.all().order_by('-updated_at'),
-                    'current_title': 'New Chat'
-                })
-            # If not a valid question or 'event planning', guide the user
+        # Handle help command
+        if any(keyword in lower_msg for keyword in ['help', 'what can you do', 'commands', 'options']):
+            categories = get_faq_categories()
+            category_list = '<ul>' + ''.join([f'<li>{cat.title()}</li>' for cat in categories]) + '</ul>'
             bot_response = {
                 'sender': 'bot',
-                'text': "Please choose a question from the list above or type 'event planning' to start planning an event."
+                'text': f"I can help you with information about Nike's Catering Services. Here are the main topics I can assist with:{category_list}You can ask me specific questions about any of these areas, or just type your question naturally!"
             }
-            chat_history.append(bot_response)
-            request.session['chat_history'] = chat_history
-            request.session.modified = True
-            return render(request, 'main/chatbot.html', {
-                'chat_history': chat_history,
-                'saved_sessions': ChatSession.objects.all().order_by('-updated_at'),
-                'current_title': 'New Chat'
-            })
-        # Step 1: Event Type Selection (with validation)
-        elif planner_state == 'event_type':
-            valid_events = ['kiddie party', 'birthday party', 'wedding', 'christening']
-            normalized_msg = lower_msg.strip()
-            event_selected = None
-            # Try number selection first
-            try:
-                idx = int(normalized_msg) - 1
-                if 0 <= idx < len(valid_events):
-                    event_selected = valid_events[idx]
-            except Exception:
-                pass
-            # Try name selection if number selection failed
-            if not event_selected:
-                is_valid, corrected_input, suggestions = validate_and_suggest(normalized_msg, valid_events, "event type")
-                if is_valid:
-                    event_selected = corrected_input
-            if event_selected:
-                planner_data['event_type'] = event_selected
-                theme_categories = ['Disney', 'Movie', 'Gaming', 'Superhero', 'Sports', 'Animal', 'Color', 'Special', 'Other']
-                category_bullets = '<ul>' + ''.join([f'<li>{cat}</li>' for cat in theme_categories]) + '</ul>'
-                bot_response = {
-                    'sender': 'bot',
-                    'text': f"Great choice! Now, what type of theme are you interested in? Please choose one of the following options:{category_bullets}(Type the category name, e.g., 'Disney')"
-                }
-                request.session['planner_state'] = 'theme_choice'
-            else:
-                event_type_options = ['Kiddie Party', 'Birthday Party', 'Wedding', 'Christening']
-                event_type_bullets = '<ul>' + ''.join([f'<li>{cat}</li>' for cat in event_type_options]) + '</ul>'
-                bot_response = {
-                    'sender': 'bot',
-                    'text': f"What type of event would you like to plan? Please choose one of the following options:{event_type_bullets}(Type the category name, e.g., 'Wedding')"
-                }
-                request.session['planner_state'] = 'event_type'
-            chat_history.append(bot_response)
-            request.session['chat_history'] = chat_history
-            request.session['planner_data'] = planner_data
-            request.session.modified = True
-            return render(request, 'main/chatbot.html', {
-                'chat_history': chat_history,
-                'saved_sessions': ChatSession.objects.all().order_by('-updated_at'),
-                'current_title': 'New Chat'
-            })
-        # Step 2: Theme Selection (with validation)
-        elif planner_state == 'theme_choice':
-            all_cats = get_all_categories()
-            normalized_msg = lower_msg.strip()
-            # Try category matching first
-            is_valid, corrected_input, suggestions = validate_and_suggest(normalized_msg, all_cats, "category")
-            if is_valid:
-                selected_category = corrected_input
-                themes, images, image_labels = get_themes_and_images(selected_category)
-                theme_options = [(theme.title(), get_theme_images(theme)[0] if get_theme_images(theme) else None) for theme in themes]
-                cat_desc = get_category_description(selected_category)
-                bot_response = {
-                    'sender': 'bot',
-                    'text': f"These are some sample themes we have catered for the {selected_category.title()} category.\n{cat_desc}\n\nWhich theme do you want to use for your event?",
-                    'theme_options': theme_options,
-                }
-                planner_data['current_themes'] = themes
-                planner_data['current_category'] = selected_category
-            else:
-                # Try theme matching (by number or name)
-                current_themes = planner_data.get('current_themes', [])
-                theme_selected = None
-                # Try number selection
-                try:
-                    idx = int(normalized_msg) - 1
-                    if 0 <= idx < len(current_themes):
-                        theme_selected = current_themes[idx]
-                except Exception:
-                    pass
-                # Try name selection
-                if not theme_selected:
-                    is_valid, corrected_input, suggestions = validate_and_suggest(normalized_msg, current_themes, "theme")
-                    if is_valid:
-                        theme_selected = corrected_input
-                if theme_selected:
-                    planner_data['theme'] = theme_selected
-                    images = get_theme_images(theme_selected)
-                    ai_image = generate_ai_theme_image(theme_selected)
-                    bot_response = {
-                        'sender': 'bot',
-                        'text': 'Do you want to keep the generated image as the theme design or do you prefer using the ones we have available? Type "ai" or "given".',
-                        'theme_confirm_images': images,
-                        'theme_confirm_name': theme_selected.title(),
-                        'ai_generated_image': ai_image,
-                    }
-                    request.session['planner_state'] = 'theme_image_choice'
-                else:
-                    # Numbered list for theme options
-                    theme_options = [(theme.title(), get_theme_images(theme)[0] if get_theme_images(theme) else None) for theme in current_themes]
-                    numbered_theme_options = '<ul>' + ''.join([f'<li>{i+1}. {theme[0]}</li>' for i, theme in enumerate(theme_options)]) + '</ul>'
-                    bot_response = {
-                        'sender': 'bot',
-                        'text': f"Please select from the options given below:{numbered_theme_options}"
-                    }
-                chat_history.append(bot_response)
-                request.session['chat_history'] = chat_history
-                request.session['planner_data'] = planner_data
-                request.session.modified = True
-                return render(request, 'main/chatbot.html', {
-                    'chat_history': chat_history,
-                    'saved_sessions': ChatSession.objects.all().order_by('-updated_at'),
-                    'current_title': 'New Chat'
-                })
 
-        # Step 4: Color Palette Confirmation
-        elif planner_state == 'color_palette_confirm':
-            valid_color_palettes = [
-                'red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'white', 'black', 'gold', 'silver', 'brown', 'gray', 'beige', 'ivory', 'cream', 'peach', 'maroon', 'navy', 'teal', 'turquoise', 'aqua', 'lavender', 'violet', 'magenta', 'lime', 'mint', 'coral', 'pearl', 'rose', 'champagne', 'burgundy', 'pastel', 'rainbow', 'multicolor', 'colorful',
-            ]
-            popular_combos = [
-                'red and gold', 'blue and gold', 'blue and yellow', 'pink and gold', 'pink and purple', 'blue and silver', 'gold and white', 'white and gold', 'black and gold', 'black and white', 'green and gold', 'mint and peach', 'peach and gold', 'red and white', 'yellow and white', 'purple and silver', 'navy and gold', 'navy and silver', 'rose gold', 'champagne and gold', 'pastel rainbow', 'pastel pink', 'pastel blue', 'pastel green', 'pastel yellow', 'pastel purple', 'pastel mint', 'pastel peach', 'pastel orange', 'pastel lavender', 'pastel violet', 'pastel magenta', 'pastel coral', 'pastel cream', 'pastel beige', 'pastel ivory', 'pastel rose', 'pastel mint and peach', 'pastel pink and gold', 'pastel blue and gold',
-            ]
-            normalized_msg = lower_msg.strip()
-            # Accept fuzzy/wildcard matches for 'default'
-            default_match, default_score = get_fuzzy_match(normalized_msg, ['default'])
-            if (default_match and default_score >= 80) or wildcard_match('*default*', normalized_msg):
-                color_selected = 'default'
-                planner_data['color_palette'] = color_selected
-                event_type_input = planner_data.get('event_type', '').lower()
-                event_type_map = {
-                    'kiddie party': 'kiddie',
-                    'birthday party': 'birthday',
-                    'wedding': 'wedding',
-                    'christening': 'christening',
-                }
-                event_type = event_type_map.get(event_type_input, event_type_input)
-                package_images = get_event_package_images(event_type)
-                bot_response = {
-                    'sender': 'bot',
-                    'text': f"Here are our available packages for {event_type_input.title()}:",
-                    'package_options': package_images
-                }
-                request.session['planner_state'] = 'package_image_choice'
-            else:
-                # Try matching against both single colors and combinations
-                all_palettes = valid_color_palettes + popular_combos
-                is_valid, corrected_input, suggestions = validate_and_suggest(normalized_msg, all_palettes, "color palette")
-                if is_valid:
-                    color_selected = corrected_input
-                    planner_data['color_palette'] = color_selected
-                    event_type_input = planner_data.get('event_type', '').lower()
-                    event_type_map = {
-                        'kiddie party': 'kiddie',
-                        'birthday party': 'birthday',
-                        'wedding': 'wedding',
-                        'christening': 'christening',
-                    }
-                    event_type = event_type_map.get(event_type_input, event_type_input)
-                    package_images = get_event_package_images(event_type)
-                    bot_response = {
-                        'sender': 'bot',
-                        'text': f"Here are our available packages for {event_type_input.title()}:",
-                        'package_options': package_images
-                    }
-                    request.session['planner_state'] = 'package_image_choice'
-                else:
-                    # Numbered list for color palettes (if needed)
-                    numbered_color_options = '<ul>' + ''.join([f'<li>{i+1}. {c}</li>' for i, c in enumerate(valid_color_palettes + popular_combos)]) + '</ul>'
-                    bot_response = {
-                        'sender': 'bot',
-                        'text': f"Please select from the options given below:{numbered_color_options}"
-                    }
-            chat_history.append(bot_response)
-            request.session['chat_history'] = chat_history
-            request.session['planner_data'] = planner_data
-            request.session.modified = True
-            return render(request, 'main/chatbot.html', {
-                'chat_history': chat_history,
-                'saved_sessions': ChatSession.objects.all().order_by('-updated_at'),
-                'current_title': 'New Chat'
-            })
-
-        # Step 5: Package Image Choice (with validation)
-        elif planner_state == 'package_image_choice':
-            event_type_input = planner_data.get('event_type', '').lower()
-            event_type_map = {
-                'kiddie party': 'kiddie',
-                'birthday party': 'birthday',
-                'wedding': 'wedding',
-                'christening': 'christening',
-            }
-            event_type = event_type_map.get(event_type_input, event_type_input)
-            package_images = get_event_package_images(event_type)
-            package_names = [pkg[0] for pkg in package_images]
-            package_selected = None
-            # Try number selection first
-            try:
-                idx = int(user_message.strip()) - 1
-                if 0 <= idx < len(package_images):
-                    package_selected = idx
-                else:
-                    package_selected = None
-                    # If the input is a number but out of range, do not try fuzzy matching
-            except Exception:
-                package_selected = None
-                # Only try fuzzy/wildcard matching if input is not a number at all
-                is_valid, corrected_input, suggestions = validate_and_suggest(lower_msg, package_names, "package")
-                if is_valid:
-                    package_selected = package_names.index(corrected_input)
-            if package_selected is not None and 0 <= package_selected < len(package_images):
-                planner_data['package_image'] = package_images[package_selected][1]
-                planner_data['package_image_label'] = package_images[package_selected][0]
-                bot_response = {
-                    'sender': 'bot',
-                    'text': f"Which package do you want for {package_images[package_selected][0]}? (Type A, B, or C)",
-                    'package_image_selected': package_images[package_selected][1],
-                    'package_image_label': package_images[package_selected][0],
-                }
-                request.session['planner_state'] = 'package_letter_choice'
-            else:
-                # Numbered list for package options
-                numbered_options = '<ul>' + ''.join([f'<li>{i+1}. {name}</li>' for i, name in enumerate(package_names)]) + '</ul>'
-                bot_response = {
-                    'sender': 'bot',
-                    'text': f"Please select from the options given below:{numbered_options}"
-                }
-            chat_history.append(bot_response)
-            request.session['chat_history'] = chat_history
-            request.session['planner_data'] = planner_data
-            request.session.modified = True
-            return render(request, 'main/chatbot.html', {
-                'chat_history': chat_history,
-                'saved_sessions': ChatSession.objects.all().order_by('-updated_at'),
-                'current_title': 'New Chat'
-            })
-
-        # Step 6: Package Letter Choice
-        elif planner_state == 'package_letter_choice':
-            change_commands = [
-                'change color', 'choose another color', 'pick a new color', 'switch color', 'change palette', 'pick another color', 'select different color',
-                'change package', 'choose another package', 'pick a new package', 'switch package', 'pick another package', 'select different package',
-                'change event', 'choose another event', 'pick a new event', 'switch event', 'change event type', 'pick another event', 'select different event',
-                'change event type', 'event type', 'change theme', 'choose another theme', 'pick a new theme', 'switch theme', 'pick another theme', 'select different theme',
-            ]
-            letter = user_message.strip().upper()
-            letter_selected = None
-            # Strictly accept only A, B, or C
-            if letter in ['A', 'B', 'C']:
-                letter_selected = letter
-            # Allow change commands
-            elif any(cmd in user_message.lower() for cmd in change_commands):
-                letter_selected = None  # Let the global change logic handle it
-            else:
-                letter_selected = None
-            if letter_selected:
-                planner_data['package_letter'] = letter_selected
-                planner_data['package_choice'] = f"{planner_data.get('package_image_label', '')} - Package {letter_selected}"
-                food_menu_images = get_food_menu_images()
-                rules = PACKAGE_RULES[letter_selected]
-                rules_text = f"You can choose:<ul><li>{rules['dishes']} dishes</li><li>{rules['pasta']} pasta</li><li>{rules['drinks']} drink</li></ul>Please note that Steamed Rice and Dessert Buffet are already included.<br><br>Review the menu and type OK when you are ready to make your selections."
-                bot_response = {
-                    'sender': 'bot',
-                    'text': rules_text,
-                    'food_menu_images': food_menu_images
-                }
-                request.session['planner_state'] = 'food_menu_review'
-            elif any(cmd in user_message.lower() for cmd in change_commands):
-                # Let the global change logic handle it (do nothing here)
-                pass
-            else:
-                bot_response = {
-                    'sender': 'bot',
-                    'text': "Please type A, B, or C for the package letter. Only these letters are accepted.",
-                    'package_image_selected': planner_data.get('package_image'),
-                    'package_image_label': planner_data.get('package_image_label'),
-                }
-
-        # Step 7: Food Menu Review (wait for user to type OK/Ready)
-        elif planner_state == 'food_menu_review':
-            if user_message.strip().lower() in ['ok', 'ready', 'done', 'go']:
-                package_letter = planner_data.get('package_letter')
-                rules = PACKAGE_RULES[package_letter]
-                bot_response = {
-                    'sender': 'bot',
-                    'text': f"Please select {rules['dishes']} dishes (type them separated by commas)."
-                }
-                planner_data['food_selection_state'] = 'dishes'
-                planner_data['food_selection'] = {}
-                request.session['planner_state'] = 'food_select_dishes'
-                request.session['planner_data'] = planner_data
-            else:
-                food_menu_images = get_food_menu_images()
-                bot_response = {
-                    'sender': 'bot',
-                    'text': 'Please review the food menu above and type OK when you are ready to make your selections.',
-                    'food_menu_images': food_menu_images
-                }
-
-        # Step 8: Food Select Dishes
-        elif planner_state == 'food_select_dishes':
-            change_commands = [
-                'change color', 'choose another color', 'pick a new color', 'switch color', 'change palette', 'pick another color', 'select different color',
-                'change package', 'choose another package', 'pick a new package', 'switch package', 'pick another package', 'select different package',
-                'change event', 'choose another event', 'pick a new event', 'switch event', 'change event type', 'pick another event', 'select different event',
-                'change event type', 'event type', 'change theme', 'choose another theme', 'pick a new theme', 'switch theme', 'pick another theme', 'select different theme',
-            ]
-            package_letter = planner_data.get('package_letter')
-            rules = PACKAGE_RULES[package_letter]
-            dish_cats = ['vegetables', 'beef', 'pork', 'chicken', 'seafood']
-            valid_dishes = []
-            for cat in dish_cats:
-                valid_dishes += get_food_menu(cat)
-            
-            dishes = [d.strip() for d in user_message.split(',') if d.strip()]
-            corrected_dishes = []
-            invalid = []
-            
-            for d in dishes:
-                is_valid, corrected_input, suggestions = validate_and_suggest(d.lower(), valid_dishes, "dish")
-                if is_valid:
-                    corrected_dishes.append(corrected_input)
-                else:
-                    if suggestions:
-                        invalid.append((d, suggestions[0]))
-                    else:
-                        invalid.append((d, None))
-
-            if any(cmd in user_message.lower() for cmd in change_commands):
-                pass  # Let global change logic handle
-            elif len(corrected_dishes) != rules['dishes'] or invalid:
-                error_msg = f"One or more of your selected dishes are not on the menu or you selected the wrong number. Please choose {rules['dishes']} from the following categories:<br>"
-                error_msg += "<ul><li>Vegetables</li><li>Beef</li><li>Pork</li><li>Chicken</li><li>Seafood</li></ul>"
-                if invalid:
-                    suggestions = []
-                    for orig, suggestion in invalid:
-                        if suggestion:
-                            suggestions.append(f"Did you mean '{suggestion}' for '{orig}'?")
-                    if suggestions:
-                        error_msg += "<br>" + "<br>".join(suggestions)
-                bot_response = {
-                    'sender': 'bot',
-                    'text': error_msg
-                }
-            else:
-                planner_data['food_selection']['dishes'] = corrected_dishes
-                bot_response = {
-                    'sender': 'bot',
-                    'text': f"Please select {rules['pasta']} pasta (type it)."
-                }
-                request.session['planner_state'] = 'food_select_pasta'
-                request.session['planner_data'] = planner_data
-
-        # Step 9: Food Select Pasta
-        elif planner_state == 'food_select_pasta':
-            change_commands = [
-                'change color', 'choose another color', 'pick a new color', 'switch color', 'change palette', 'pick another color', 'select different color',
-                'change package', 'choose another package', 'pick a new package', 'switch package', 'pick another package', 'select different package',
-                'change event', 'choose another event', 'pick a new event', 'switch event', 'change event type', 'pick another event', 'select different event',
-                'change event type', 'event type', 'change theme', 'choose another theme', 'pick a new theme', 'switch theme', 'pick another theme', 'select different theme',
-            ]
-            package_letter = planner_data.get('package_letter')
-            rules = PACKAGE_RULES[package_letter]
-            valid_pasta = get_food_menu('pasta')
-            valid_pasta_lower = [p.lower() for p in valid_pasta]
-            pasta = [p.strip() for p in user_message.split(',') if p.strip()]
-            corrected_pasta = []
-            invalid = []
-            for p in pasta:
-                match, score = get_fuzzy_match(p.lower(), valid_pasta_lower)
-                if match and score >= 80:
-                    corrected_pasta.append(valid_pasta[valid_pasta_lower.index(match)])
-                else:
-                    # Try to find a close match for suggestion
-                    close_match, close_score = get_fuzzy_match(p.lower(), valid_pasta_lower)
-                    if close_match and close_score >= 60:
-                        invalid.append((p, valid_pasta[valid_pasta_lower.index(close_match)]))
-                    else:
-                        invalid.append((p, None))
-
-            if any(cmd in user_message.lower() for cmd in change_commands):
-                pass
-            elif len(corrected_pasta) != rules['pasta'] or invalid:
-                error_msg = f"One or more of your selected pasta are not on the menu or you selected the wrong number. Please select {rules['pasta']} pasta from the menu."
-                # Add suggestions for invalid pasta
-                if invalid:
-                    suggestions = []
-                    for orig, suggestion in invalid:
-                        if suggestion:
-                            suggestions.append(f"Did you mean '{suggestion}' for '{orig}'?")
-                    if suggestions:
-                        error_msg += "<br>" + "<br>".join(suggestions)
-                bot_response = {
-                    'sender': 'bot',
-                    'text': error_msg
-                }
-            else:
-                planner_data['food_selection']['pasta'] = corrected_pasta
-                bot_response = {
-                    'sender': 'bot',
-                    'text': f"Please select {rules['drinks']} drink (type it)."
-                }
-                request.session['planner_state'] = 'food_select_drink'
-                request.session['planner_data'] = planner_data
-
-        # Step 10: Food Select Drink
-        elif planner_state == 'food_select_drink':
-            change_commands = [
-                'change color', 'choose another color', 'pick a new color', 'switch color', 'change palette', 'pick another color', 'select different color',
-                'change package', 'choose another package', 'pick a new package', 'switch package', 'pick another package', 'select different package',
-                'change event', 'choose another event', 'pick a new event', 'switch event', 'change event type', 'pick another event', 'select different event',
-                'change event type', 'event type', 'change theme', 'choose another theme', 'pick a new theme', 'switch theme', 'pick another theme', 'select different theme',
-            ]
-            package_letter = planner_data.get('package_letter')
-            rules = PACKAGE_RULES[package_letter]
-            valid_drinks = get_food_menu('drinks')
-            valid_drinks_lower = [d.lower() for d in valid_drinks]
-            drinks = [d.strip() for d in user_message.split(',') if d.strip()]
-            corrected_drinks = []
-            invalid = []
-            for d in drinks:
-                match, score = get_fuzzy_match(d.lower(), valid_drinks_lower)
-                if match and score >= 80:
-                    corrected_drinks.append(valid_drinks[valid_drinks_lower.index(match)])
-                else:
-                    # Try to find a close match for suggestion
-                    close_match, close_score = get_fuzzy_match(d.lower(), valid_drinks_lower)
-                    if close_match and close_score >= 60:
-                        invalid.append((d, valid_drinks[valid_drinks_lower.index(close_match)]))
-                    else:
-                        invalid.append((d, None))
-
-            if any(cmd in user_message.lower() for cmd in change_commands):
-                pass
-            elif len(corrected_drinks) != rules['drinks'] or invalid:
-                error_msg = f"One or more of your selected drinks are not on the menu or you selected the wrong number. Please select {rules['drinks']} drink from the menu."
-                # Add suggestions for invalid drinks
-                if invalid:
-                    suggestions = []
-                    for orig, suggestion in invalid:
-                        if suggestion:
-                            suggestions.append(f"Did you mean '{suggestion}' for '{orig}'?")
-                    if suggestions:
-                        error_msg += "<br>" + "<br>".join(suggestions)
-                bot_response = {
-                    'sender': 'bot',
-                    'text': error_msg
-                }
-            else:
-                planner_data['food_selection']['drinks'] = corrected_drinks
-                bot_response = {
-                    'sender': 'bot',
-                    'text': "Type 'finish' or 'done' to see the summary of your event plan."
-                }
-                request.session['planner_state'] = 'food_select_finish'
-                request.session['planner_data'] = planner_data
-
-        # Step 11: Food Select Finish
-        elif planner_state == 'food_select_finish':
-            if user_message.strip().lower() in ['finish', 'done']:
-                selected = planner_data['food_selection']
-                # Get summary images
-                package_image = planner_data.get('package_image')
-                theme = planner_data.get('theme')
-                images = get_theme_images(theme) if theme else []
-                ai_image = generate_ai_theme_image(theme) if theme else None
-                theme_image_choice = planner_data.get('theme_image_choice', 'given')
-                if theme_image_choice == 'ai':
-                    theme_image = ai_image
-                else:
-                    theme_image = images[0] if images else None
-                # Prepare summary lines for template
-                summary_lines = []
-                summary_lines.append({'type': 'text', 'value': f"Event type: {planner_data.get('event_type', 'N/A').title()}"})
-                summary_lines.append({'type': 'theme', 'value': f"Theme: {planner_data.get('theme', 'N/A').title()}", 'img': theme_image})
-                summary_lines.append({'type': 'text', 'value': f"Color palette: {planner_data.get('color_palette', 'N/A')}"})
-                summary_lines.append({'type': 'package', 'value': f"Package: {planner_data.get('package_choice', 'N/A')}", 'img': package_image})
-                summary_lines.append({'type': 'text', 'value': "Food Selection:"})
-                summary_lines.append({'type': 'text', 'value': f"Dishes: {', '.join(selected['dishes'])}"})
-                summary_lines.append({'type': 'text', 'value': f"Pasta: {', '.join(selected['pasta'])}"})
-                summary_lines.append({'type': 'text', 'value': f"Drinks: {', '.join(selected['drinks'])}"})
-                summary_lines.append({'type': 'text', 'value': "Rice: Steamed Rice"})
-                summary_lines.append({'type': 'text', 'value': "Dessert: Dessert Buffet"})
-                bot_response = {
-                    'sender': 'bot',
-                    'text': "Here is a summary of your event plan:",
-                    'summary_lines': summary_lines,
-                }
-                request.session['planner_state'] = 'start'
-                request.session['planner_data'] = {}
-            else:
-                bot_response = {
-                    'sender': 'bot',
-                    'text': "Type 'finish' or 'done' to see the summary of your event plan."
-                }
-
-        # New Step: Theme Image Choice
-        elif planner_state == 'theme_image_choice':
-            ai_match, ai_score = get_fuzzy_match(lower_msg, ['ai'])
-            given_match, given_score = get_fuzzy_match(lower_msg, ['given'])
-            if (ai_match and ai_score >= 80) or wildcard_match('*ai*', lower_msg):
-                planner_data['theme_image_choice'] = 'ai'
-                theme = planner_data.get('theme')
-                images = get_theme_images(theme) if theme else []
-                ai_image = generate_ai_theme_image(theme) if theme else None
-                images_to_show = [ai_image] if ai_image else []
-                bot_response = {
-                    'sender': 'bot',
-                    'text': "Would you like to use the default color palette for this theme, or do you want to modify the colors? (Type 'default' or specify your colors.)",
-                    'selected_theme_images': images_to_show,
-                    'theme_confirm_name': theme.title() if theme else '',
-                }
-                request.session['planner_state'] = 'color_palette_confirm'
-            elif (given_match and given_score >= 80) or wildcard_match('*given*', lower_msg):
-                planner_data['theme_image_choice'] = 'given'
-                theme = planner_data.get('theme')
-                images = get_theme_images(theme) if theme else []
-                ai_image = generate_ai_theme_image(theme) if theme else None
-                images_to_show = images
-                bot_response = {
-                    'sender': 'bot',
-                    'text': "Would you like to use the default color palette for this theme, or do you want to modify the colors? (Type 'default' or specify your colors.)",
-                    'selected_theme_images': images_to_show,
-                    'theme_confirm_name': theme.title() if theme else '',
-                }
-                request.session['planner_state'] = 'color_palette_confirm'
-            else:
-                # Reprompt if invalid input
-                theme = planner_data.get('theme')
-                images = get_theme_images(theme) if theme else []
-                ai_image = generate_ai_theme_image(theme) if theme else None
-                bot_response = {
-                    'sender': 'bot',
-                    'text': "Please select from the options given below:<ul><li>ai</li><li>given</li></ul>",
-                    'theme_confirm_images': images,
-                    'theme_confirm_name': theme.title() if theme else '',
-                    'ai_generated_image': ai_image,
-                }
-            chat_history.append(bot_response)
-            request.session['chat_history'] = chat_history
-            request.session['planner_data'] = planner_data
-            request.session.modified = True
-            return render(request, 'main/chatbot.html', {
-                'chat_history': chat_history,
-                'saved_sessions': ChatSession.objects.all().order_by('-updated_at'),
-                'current_title': 'New Chat'
-            })
-
-        # Fallback: always guide to start
-        if bot_response is None:
+        # Handle greetings
+        elif any(keyword in lower_msg for keyword in ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening', 'morning', 'afternoon', 'evening']):
             bot_response = {
                 'sender': 'bot',
-                'text': "What type of event would you like to plan? (Kiddie Party, Birthday Party, Wedding, or Christening)"
+                'text': "Hello! Welcome to Nike's Catering Services. I'm here to help you with any questions about our catering services, packages, pricing, booking, themes, or food options. How can I assist you today?"
             }
-            request.session['planner_state'] = 'event_type'
 
-        chat_history.append(bot_response)
-        request.session['chat_history'] = chat_history
-        request.session['planner_data'] = planner_data
-        request.session.modified = True
+        # Handle direct theme requests (e.g., "mickey", "barbie", "show avengers")
+        elif any(keyword in lower_msg for keyword in ['show', 'see', 'sample', 'samples', 'image', 'images', 'picture', 'pictures', 'gallery', 'photo', 'photos']) or any(theme in lower_msg for theme in ['mickey', 'barbie', 'avengers', 'frozen', 'cinderella', 'spongebob', 'mario', 'basketball', 'pink', 'green', 'halloween', 'wedding']):
+            print(f"[DEBUG] Theme detection triggered for: {lower_msg}")
+            
+            # Simple test for "mickey" to see if images work
+            if 'mickey' in lower_msg:
+                print(f"[DEBUG] Mickey detected, testing image display")
+                test_images = [
+                    'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1/mickey1_tjr7h0.jpg',
+                    'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1/mickey2_pxslgt.jpg',
+                    'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1/mickey3_qiya8u.jpg'
+                ]
+                bot_response = {
+                    'sender': 'bot',
+                    'text': "Here are sample images for the Mickey theme!",
+                    'images': test_images
+                }
+                print(f"[DEBUG] Test response created with {len(test_images)} images")
+            else:
+                from .utils import get_available_theme_names, get_theme_images, get_fuzzy_match
+                all_themes = get_available_theme_names()
+                print(f"[DEBUG] Available themes: {all_themes[:5]}...")
+                theme_match, score = get_fuzzy_match(lower_msg, all_themes, threshold=75)
+                print(f"[DEBUG] Theme match result: {theme_match} with score {score}")
+                
+                if theme_match:
+                    print(f"[DEBUG] Getting images for theme: {theme_match}")
+                    imgs = get_theme_images(theme_match)
+                    print(f"[DEBUG] Images returned: {len(imgs) if imgs else 0} images")
+                    if imgs:
+                        bot_response = {
+                            'sender': 'bot',
+                            'text': f"Here are sample images for the {theme_match.title()} theme.",
+                            'images': imgs
+                        }
+                    else:
+                        bot_response = {
+                            'sender': 'bot',
+                            'text': f"I found the {theme_match.title()} theme, but I'm having trouble loading the images right now. Please try again later."
+                        }
+                else:
+                    # If no specific theme matched, show available themes
+                    examples = ', '.join([name.title() for name in all_themes[:8]])
+                    bot_response = {
+                        'sender': 'bot',
+                        'text': f"I can show you sample images for many themes! Try typing a specific theme name like: {examples}. You can also type 'show mickey' or 'see barbie' to view specific theme images."
+                    }
+
+        # Handle category requests
+        elif any(keyword in lower_msg for keyword in ['show categories', 'list categories', 'what topics', 'categories']):
+            categories = get_faq_categories()
+            category_list = '<ul>' + ''.join([f'<li>{cat.title()}</li>' for cat in categories]) + '</ul>'
+            bot_response = {
+                'sender': 'bot',
+                'text': f"Here are the main categories I can help you with:{category_list}Ask me about any specific category or just ask your question directly!"
+            }
+
+        else:
+            # Try answering within categories explicitly referenced in the message first
+            prioritized_categories = get_referenced_categories(user_message)
+            all_categories = get_faq_categories()
+            remaining_categories = [c for c in all_categories if c not in prioritized_categories]
+
+            found_answer = False
+
+            # 1) Category-only request -> list questions for that category
+            category_only = detect_category_only_request(user_message)
+            if category_only:
+                if category_only == 'themes':
+                    # Special handling for themes - show both FAQ questions AND theme categories
+                    from .utils import get_available_theme_names
+                    theme_names = get_available_theme_names()
+                    
+                    # Get FAQ questions for themes
+                    questions = get_faq_questions('themes')
+                    question_list = '<ul>' + ''.join([f'<li>{q.replace("_", " ").title()}</li>' for q in questions.keys()]) + '</ul>'
+                    
+                    # Show theme categories
+                    theme_categories = [
+                        'Disney', 'Movie', 'Gaming',
+                        'Superhero', 'Sports', 'Animals',
+                        'Colors', 'Special Themes', 'Other Popular Themes'
+                    ]
+                    theme_list = '<ul>' + ''.join([f'<li>{cat}</li>' for cat in theme_categories]) + '</ul>'
+                    examples = ', '.join([name.title() for name in theme_names[:8]])
+                    
+                    bot_response = {
+                        'sender': 'bot',
+                        'text': f"Here are some common questions about Themes:{question_list}<br><br>Here are our theme categories:{theme_list}<br><br>We have many themes including: {examples}<br><br>To see sample images for a specific theme, type the theme name like 'mickey', 'show avengers', or 'see barbie'."
+                    }
+                else:
+                    questions = get_faq_questions(category_only)
+                    question_list = '<ul>' + ''.join([f'<li>{q.replace("_", " ").title()}</li>' for q in questions.keys()]) + '</ul>'
+                    bot_response = {
+                        'sender': 'bot',
+                        'text': f"Here are some common questions about {category_only.title()}:{question_list}Ask me any of these questions or ask something else!"
+                    }
+                found_answer = True
+
+            # 2) If not just a category, try normalized question inside referenced categories
+            if not found_answer and prioritized_categories:
+                for category in prioritized_categories:
+                    # Special: theme image flow if user asks to see/show samples
+                    if category == 'themes':
+                        from .utils import get_available_theme_names, get_theme_images, get_fuzzy_match
+                        lower_text = user_message.lower()
+                        wants_samples = any(k in lower_text for k in ['show', 'see', 'sample', 'samples', 'image', 'images', 'picture', 'pictures', 'gallery', 'photo', 'photos'])
+                        all_themes = get_available_theme_names()
+                        theme_match, score = get_fuzzy_match(lower_text, all_themes, threshold=75)
+                        if theme_match and (wants_samples or 'theme' in lower_text or 'themes' in lower_text):
+                            imgs = get_theme_images(theme_match)
+                            if imgs:
+                                bot_response = {
+                                    'sender': 'bot',
+                                    'text': f"Here are sample images for the {theme_match.title()} theme.",
+                                    'images': imgs
+                                }
+                                found_answer = True
+                                break
+                        # If they are in theme context but no theme matched, offer prompt with examples
+                        if 'themes' in prioritized_categories and not wants_samples and not found_answer:
+                            examples = ', '.join([name.title() for name in all_themes[:8]])
+                            bot_response = {
+                                'sender': 'bot',
+                                'text': f"We have many theme categories. Would you like to see samples for a specific one? For example: {examples}. You can type 'show avengers' or 'see barbie'."
+                            }
+                            found_answer = True
+                            break
+
+                    questions = get_faq_questions(category)
+                    normalized = normalize_question_by_category(user_message, category)
+                    if normalized and normalized in questions:
+                        bot_response = {
+                            'sender': 'bot',
+                            'text': questions[normalized]
+                        }
+                        # Add theme follow-up prompt if applicable
+                        if category == 'themes':
+                            from .utils import get_available_theme_names
+                            examples = ', '.join([name.title() for name in get_available_theme_names()[:6]])
+                            bot_response['text'] += f"<br><br>Would you like to see sample images for a theme? For example: {examples}. You can type 'show avengers' or 'see barbie'."
+                        found_answer = True
+                        break
+
+            # 3) If still no answer, try best-match inside referenced categories first
+            if not found_answer:
+                for category in prioritized_categories + remaining_categories:
+                    questions = get_faq_questions(category)
+                    best_match, match_score = find_best_faq_match(user_message, questions)
+                    if best_match and match_score >= 0.5:
+                        text = questions[best_match]
+                        # If this came from themes, append the prompt to view sample images
+                        if category == 'themes':
+                            from .utils import get_available_theme_names
+                            examples = ', '.join([name.title() for name in get_available_theme_names()[:6]])
+                            text += f"<br><br>Would you like to see sample images for a theme? For example: {examples}. You can type 'show avengers' or 'see barbie'."
+                        bot_response = {
+                            'sender': 'bot',
+                            'text': text
+                        }
+                        found_answer = True
+                        break
+
+            # 4) Suggestions fallback
+            if not found_answer:
+                suggestions = get_faq_suggestions(user_message)
+                if suggestions:
+                    suggestion_text = "I didn't find an exact match, but here are some related questions you might want to ask:\n"
+                    suggestion_text += '<ul>' + ''.join([f'<li>{s.replace("_", " ").title()}</li>' for s in suggestions]) + '</ul>'
+                    suggestion_text += "Or you can ask me about our services, packages, pricing, or booking process, You can also type 'help' to see what I can assist you with."
+                    bot_response = {
+                        'sender': 'bot',
+                        'text': suggestion_text
+                    }
+                else:
+                    bot_response = {
+                        'sender': 'bot',
+                        'text': "I'm not sure I understand your question. You can ask me about our catering services, packages, pricing, booking, or any other specific questions. You can also type 'help' to see what I can assist you with."
+                    }
+
+        # Add bot response to chat history
+        if bot_response:
+            chat_history.append(bot_response)
+            request.session['chat_history'] = chat_history
+            request.session.modified = True
 
     # Auto-generate a title for the chat session based on the first user message
     if chat_history and len(chat_history) > 1:
@@ -1395,14 +516,10 @@ def save_chat_session(request):
         data = json.loads(request.body)
         chat_history = request.session.get('chat_history', [])
         title = get_first_user_message(chat_history)
-        planner_state = request.session.get('planner_state', 'start')
-        planner_data = request.session.get('planner_data', {})
         user = request.user if request.user.is_authenticated else None
         session = ChatSession.objects.create(
             title=title,
             chat_history=chat_history,
-            planner_state=planner_state,
-            planner_data=planner_data,
             user=user
         )
         return JsonResponse({'id': session.id, 'title': session.title})
@@ -1415,8 +532,6 @@ def list_chat_sessions(request):
 def load_chat_session(request, session_id):
     session = get_object_or_404(ChatSession, id=session_id)
     request.session['chat_history'] = session.chat_history
-    request.session['planner_state'] = session.planner_state
-    request.session['planner_data'] = session.planner_data
     request.session.modified = True
     return redirect('chatbot')
 
@@ -1427,9 +542,7 @@ def delete_chat_session(request, session_id):
 
 def new_chat_session(request):
     request.session.pop('chat_history', None)
-    request.session.pop('planner_state', None)
-    request.session.pop('planner_data', None)
-    request.session.pop('initialized', None)  # Remove the flag so chatbot_view will re-initialize
+    request.session.pop('initialized', None)
     request.session.modified = True
     return redirect('chatbot')
 

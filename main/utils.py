@@ -164,63 +164,21 @@ def get_all_theme_images(theme_name):
 
 def get_theme_images(theme):
     """Helper function to get images based on theme"""
-    # Use Cloudinary
-    themes_public_ids = {
-        # Disney & Princess Themes
-        'mickey': ['mickey1_tjr7h0', 'mickey2_pxslgt', 'mickey3_qiya8u'],
-        'frozen': ['frozen1_dk7v5o', 'frozen2_tyo4wh', 'frozen3_juo1gl'],
-        'cinderella': ['cinderella1_mmllks', 'cinderalla2_je5abg', 'cinderella3_ryewrw'],
-        'snow white': ['snowwhite1_ebjhlv', 'snowwhite2_xoq7wp', 'snowwhite3_qgghb6'],
-        'tinkerbell': ['tinkerbell1_wutjm9', 'tinkerbell2_rvusmy', 'tinkerbell3_x1vztm'],
-        'princess': ['princess1_ckf2ef', 'princess2_rn0z7q', 'princess3_flsdje'],
-        
-        # Movie & Animation Themes
-        'incredibles': ['incredibles1_j3ecdz', 'incredibles2_t6woik', 'incredibles3_rsnody'],
-        'spongebob': ['spongebob1_jygh8a', 'spongebob2_nhnz7r', 'spongebob3_lnksll', 'spongebob4_z3pwmv'],
-        'nemo': ['nemo1_fwlhqc', 'nemo2_csahmk', 'nemo3_ffr1bz'],
-        'cars': ['cars1_m5dywg', 'cars2_owb6uf', 'cars3_vlbluf'],
-        
-        # Gaming & Entertainment
-        'mario': ['mario1_htowh3', 'mario2_nhrpwo', 'mario3_wxhbpr'],
-        'roblox': ['roblox1_g3jscs', 'roblox2_hpso4g', 'roblox3_pkrmmz'],
-        'one piece': ['onepiece1_ihxymg', 'onepiece2_kqlelt', 'onepiece3_gixekh'],
-        
-        # Superhero & Action
-        'avengers': ['avengers1_z8kgd7', 'avengers2_kgeegl', 'avengers3_rp9hxm'],
-        'transformers': ['transformers1_hpi1nw', 'transformers2_yrvfhz', 'transformers3_jkxnmk'],
-        
-        # Sports & Vehicles
-        'basketball': ['bball1_lzy501', 'bball2_zmutfl', 'bball3_u7hgin'],
-        'ferrari': ['ferrari1_gjoxg9', 'ferrari2_bnyapi', 'ferrari3_oqh4xi'],
-        
-        # Nature & Animals
-        'zoo': ['zoo1_lkhguo', 'zoo2_izmxug', 'zoo3_tpivyn'],
-        'dinosaur': ['dino1_rgtkxl', 'dino2_i21hjp', 'dino3_emjiim'],
-        'bear': ['bear1_h4p6et', 'bear2_bliufl', 'bear3_uyhzr7'],
-        'butterfly': ['butterfly1_jnpau7', 'butterfly2_o3gnyl', 'butterfly3_g2eouo'],
-        
-        # Colors & Styles
-        'pink': ['pink1_xpydyr', 'pink2_zws6c6', 'pink3_du7zpo', 'pink4_zg4mno'],
-        'green': ['green1_fkl6x9', 'green2_fxbdhw', 'green3_mzeklc'],
-        'rainbow': ['rainbow1_pqsbfi', 'rainbow2_be8qcj', 'rainbow3_pf0k0c'],
-        
-        # Special Themes
-        'halloween': ['halloween1_x4onph', 'halloween2_tp5kqb', 'halloween3_xaypho'],
-        'wedding': ['wedding1_i4j4ed', 'wedding2_ahxv8y', 'wedding3_ebx0yl'],
-        'traditional': ['traditional1_fdjojh', 'traditional2_v0a3un', 'traditional3_e2c2vc'],
-        
-        # Other Popular Themes
-        'barbie': ['barbie1_y2kro4', 'barbie2_adipbp', 'barbie3_wmmwam'],
-        'kuromi': ['kuromi1_eoqwpc', 'kuromi2_ielfn3', 'kuromi3_nchbhx'],
-        'cocomelon': ['cocolemon1_xvkaxa', 'cocomelon2_x8gwf6', 'cocomelon3_bjw2xa'],
-        'pony': ['pony1_rdvceu', 'pony2_u9xona', 'pony3_idj8mn'],
-    }
-
-    theme_public_ids = themes_public_ids.get(theme.lower().strip(), [])
-
-    image_urls = [cloudinary.utils.cloudinary_url(public_id, secure=True)[0] for public_id in theme_public_ids]
-
-    return image_urls
+    theme_public_ids = THEMES_PUBLIC_IDS.get(theme.lower().strip(), [])
+    
+    if not theme_public_ids:
+        print(f"[DEBUG] No public IDs found for theme: {theme}")
+        return []
+    
+    print(f"[DEBUG] Found {len(theme_public_ids)} images for theme: {theme}")
+    
+    try:
+        image_urls = [cloudinary.utils.cloudinary_url(public_id, secure=True)[0] for public_id in theme_public_ids]
+        print(f"[DEBUG] Generated URLs for {theme}: {image_urls[:2]}...")  # Show first 2 URLs
+        return image_urls
+    except Exception as e:
+        print(f"[ERROR] Failed to generate Cloudinary URLs for {theme}: {e}")
+        return []
 
 def get_food_categories():
     """Helper function to get food categories"""
@@ -338,22 +296,25 @@ def get_all_dishes_for_selection():
             all_dishes_grouped[category.title()] = dishes # Capitalize category names
     return all_dishes_grouped
 
+
+
+
 # TODO: TRANSFER THIS ON ENV
-# CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME', 'dzjrdqkiw')
-# CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY', '891881498673297')
-# CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET', 'Z7QaNRs-E_qgvkCByZxev7fwyiU')
+CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME', 'dzjrdqkiw')
+CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY', '891881498673297')
+CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET', 'Z7QaNRs-E_qgvkCByZxev7fwyiU')
 
 # Optional: Configure as default storage for Django's collectstatic
 # DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaStorage'
 # STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticStorage'
 
 # Configure Cloudinary directly (alternative to CLOUDINARY_URL environment variable)
-# cloudinary.config(
-#     cloud_name = CLOUDINARY_CLOUD_NAME,
-#     api_key = CLOUDINARY_API_KEY,
-#     api_secret = CLOUDINARY_API_SECRET,
-#     secure = True # Use HTTPS
-# )
+cloudinary.config(
+    cloud_name = CLOUDINARY_CLOUD_NAME,
+    api_key = CLOUDINARY_API_KEY,
+    api_secret = CLOUDINARY_API_SECRET,
+    secure = True # Use HTTPS
+)
 
 # cloudinary.config( 
 #     cloud_name = config('CLOUDINARY_CLOUD_NAME'), 
@@ -361,3 +322,58 @@ def get_all_dishes_for_selection():
 #     api_secret = config('CLOUDINARY_API_KEY'), # Click 'View API Keys' above to copy your API secret
 #     secure=True
 # )
+
+THEMES_PUBLIC_IDS = {
+        
+        # Disney & Princess Themes
+        'mickey': ['mickey1_tjr7h0', 'mickey2_pxslgt', 'mickey3_qiya8u'],
+        'frozen': ['frozen1_dk7v5o', 'frozen2_tyo4wh', 'frozen3_juo1gl'],
+        'cinderella': ['cinderella1_mmllks', 'cinderalla2_je5abg', 'cinderella3_ryewrw'],
+        'snow white': ['snowwhite1_ebjhlv', 'snowwhite2_xoq7wp', 'snowwhite3_qgghb6'],
+        'tinkerbell': ['tinkerbell1_wutjm9', 'tinkerbell2_rvusmy', 'tinkerbell3_x1vztm'],
+        'princess': ['princess1_ckf2ef', 'princess2_rn0z7q', 'princess3_flsdje'],
+        
+        # Movie & Animation Themes
+        'incredibles': ['incredibles1_j3ecdz', 'incredibles2_t6woik', 'incredibles3_rsnody'],
+        'spongebob': ['spongebob1_jygh8a', 'spongebob2_nhnz7r', 'spongebob3_lnksll', 'spongebob4_z3pwmv'],
+        'nemo': ['nemo1_fwlhqc', 'nemo2_csahmk', 'nemo3_ffr1bz'],
+        'cars': ['cars1_m5dywg', 'cars2_owb6uf', 'cars3_vlbluf'],
+        
+        # Gaming & Entertainment
+        'mario': ['mario1_htowh3', 'mario2_nhrpwo', 'mario3_wxhbpr'],
+        'roblox': ['roblox1_g3jscs', 'roblox2_hpso4g', 'roblox3_pkrmmz'],
+        'one piece': ['onepiece1_ihxymg', 'onepiece2_kqlelt', 'onepiece3_gixekh'],
+        
+        # Superhero & Action
+        'avengers': ['avengers1_z8kgd7', 'avengers2_kgeegl', 'avengers3_rp9hxm'],
+        'transformers': ['transformers1_hpi1nw', 'transformers2_yrvfhz', 'transformers3_jkxnmk'],
+        
+        # Sports & Vehicles
+        'basketball': ['bball1_lzy501', 'bball2_zmutfl', 'bball3_u7hgin'],
+        'ferrari': ['ferrari1_gjoxg9', 'ferrari2_bnyapi', 'ferrari3_oqh4xi'],
+        
+        # Nature & Animals
+        'zoo': ['zoo1_lkhguo', 'zoo2_izmxug', 'zoo3_tpivyn'],
+        'dinosaur': ['dino1_rgtkxl', 'dino2_i21hjp', 'dino3_emjiim'],
+        'bear': ['bear1_h4p6et', 'bear2_bliufl', 'bear3_uyhzr7'],
+        'butterfly': ['butterfly1_jnpau7', 'butterfly2_o3gnyl', 'butterfly3_g2eouo'],
+        
+        # Colors & Styles
+        'pink': ['pink1_xpydyr', 'pink2_zws6c6', 'pink3_du7zpo', 'pink4_zg4mno'],
+        'green': ['green1_fkl6x9', 'green2_fxbdhw', 'green3_mzeklc'],
+        'rainbow': ['rainbow1_pqsbfi', 'rainbow2_be8qcj', 'rainbow3_pf0k0c'],
+        
+        # Special Themes
+        'halloween': ['halloween1_x4onph', 'halloween2_tp5kqb', 'halloween3_xaypho'],
+        'wedding': ['wedding1_i4j4ed', 'wedding2_ahxv8y', 'wedding3_ebx0yl'],
+        'traditional': ['traditional1_fdjojh', 'traditional2_v0a3un', 'traditional3_e2c2vc'],
+        
+        # Other Popular Themes
+        'barbie': ['barbie1_y2kro4', 'barbie2_adipbp', 'barbie3_wmmwam'],
+        'kuromi': ['kuromi1_eoqwpc', 'kuromi2_ielfn3', 'kuromi3_nchbhx'],
+        'cocomelon': ['cocolemon1_xvkaxa', 'cocomelon2_x8gwf6', 'cocomelon3_bjw2xa'],
+        'pony': ['pony1_rdvceu', 'pony2_u9xona', 'pony3_idj8mn'],
+    }
+def get_available_theme_names():
+    """Return a list of all available theme names."""
+    return list(THEMES_PUBLIC_IDS.keys())
