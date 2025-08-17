@@ -57,7 +57,7 @@
         {% if edit and post.images.all %}
             <div id="existing-images-data" data-images='[
                 {% for img in post.images.all %}
-                    {"id": "{{ img.id }}", "url": "{{ img.image.url }}"}{% if not forloop.last %},{% endif %}
+                    {"id": "{{ img.id }}", "url": "{{ img.image.display_url }}"}{% if not forloop.last %},{% endif %}
                 {% endfor %}
             ]'></div>
         {% endif %}
