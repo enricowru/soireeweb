@@ -3,7 +3,13 @@ from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from ..models import Review
+from django.core.mail import send_mail
+from django.conf import settings
+from django.utils import timezone
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from ..models import Review, PasswordResetOTP
 
 Users = get_user_model()
 
@@ -110,4 +116,141 @@ def admin_required(view_func):
             return redirect('login')
         return view_func(request, *args, **kwargs)
     return wrapper
+
+
+# ✅ FORGOT PASSWORD FUNCTIONALITY
+
+def forgot_password_request(request):
+    """Handle forgot password email submission"""
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip()
+        
+        if not email:
+            return JsonResponse({'success': False, 'message': 'Email is required.'})
+        
+        # Check if user with this email exists
+        try:
+            user = Users.objects.get(email=email)
+        except Users.DoesNotExist:
+            # Don't reveal if email exists for security
+            return JsonResponse({'success': True, 'message': 'If this email exists, an OTP has been sent.'})
+        
+        # Invalidate any existing OTPs for this email
+        PasswordResetOTP.objects.filter(email=email, is_used=False).update(is_used=True)
+        
+        # Create new OTP
+        otp = PasswordResetOTP.objects.create(email=email)
+        
+        # Send email with OTP
+        try:
+            subject = 'SoireeWeb - Password Reset OTP'
+            message = f"""
+Hi {user.first_name or 'User'},
+
+You have requested to reset your password for SoireeWeb.
+
+Your OTP code is: {otp.otp_code}
+
+This code will expire in 15 minutes.
+
+If you didn't request this, please ignore this email.
+
+Best regards,
+SoireeWeb Team
+            """
+            
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=False,
+            )
+            
+            return JsonResponse({'success': True, 'message': 'OTP has been sent to your email.'})
+            
+        except Exception as e:
+            print(f"Email sending failed: {e}")
+            return JsonResponse({'success': False, 'message': 'Failed to send email. Please try again.'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+
+def forgot_password_verify_otp(request):
+    """Handle OTP verification"""
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip()
+        otp_code = request.POST.get('otp_code', '').strip()
+        
+        if not email or not otp_code:
+            return JsonResponse({'success': False, 'message': 'Email and OTP are required.'})
+        
+        # Find valid OTP
+        try:
+            otp = PasswordResetOTP.objects.get(
+                email=email,
+                otp_code=otp_code,
+                is_used=False
+            )
+            
+            if not otp.is_valid():
+                return JsonResponse({'success': False, 'message': 'OTP has expired. Please request a new one.'})
+            
+            # Store email in session for password reset
+            request.session['reset_email'] = email
+            request.session['otp_verified'] = True
+            
+            return JsonResponse({'success': True, 'message': 'OTP verified successfully!'})
+            
+        except PasswordResetOTP.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Invalid OTP code.'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+
+def forgot_password_reset(request):
+    """Handle new password submission"""
+    if request.method == 'POST':
+        new_password = request.POST.get('new_password', '').strip()
+        confirm_password = request.POST.get('confirm_password', '').strip()
+        
+        # Check if OTP was verified
+        if not request.session.get('otp_verified', False):
+            return JsonResponse({'success': False, 'message': 'OTP verification required.'})
+        
+        email = request.session.get('reset_email')
+        if not email:
+            return JsonResponse({'success': False, 'message': 'Session expired. Please start over.'})
+        
+        if not new_password or not confirm_password:
+            return JsonResponse({'success': False, 'message': 'All fields are required.'})
+        
+        if len(new_password) < 8 or len(new_password) > 16:
+            return JsonResponse({'success': False, 'message': 'Password must be 8 to 16 characters long.'})
+        
+        if new_password != confirm_password:
+            return JsonResponse({'success': False, 'message': 'Passwords do not match.'})
+        
+        try:
+            # Update user password
+            user = Users.objects.get(email=email)
+            user.set_password(new_password)
+            user.save()
+            
+            # Mark OTP as used
+            PasswordResetOTP.objects.filter(email=email, is_used=False).update(is_used=True)
+            
+            # Clear session
+            request.session.pop('reset_email', None)
+            request.session.pop('otp_verified', None)
+            
+            return JsonResponse({'success': True, 'message': 'Password reset successfully! You can now login.'})
+            
+        except Users.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'User not found.'})
+        except Exception as e:
+            print(f"Password reset failed: {e}")
+            return JsonResponse({'success': False, 'message': 'Failed to reset password. Please try again.'})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 

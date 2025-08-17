@@ -38,7 +38,7 @@
         </div>
         <div class="forgot-remember">
           <label><input type="checkbox" name="remember_me"> Remember me</label>
-          <a href="#">Forgot password?</a>
+          <a href="#" id="forgot-password-link">Forgot password?</a>
         </div>
         <button type="submit">Login</button>
     </form>
@@ -94,6 +94,62 @@
       </form>
       <p>Already have an account? <a href="#" id="show-login">Login here</a></p>
     </div>
+
+    <!-- ✅ FORGOT PASSWORD FORMS -->
+    
+    <!-- Email Request Form -->
+    <div class="login-container" id="forgot-email-form" style="display:none;">
+      <h2>FORGOT PASSWORD</h2>
+      <p style="color: #666; text-align: center; margin-bottom: 20px;">Enter your email to receive an OTP</p>
+      
+      <div id="forgot-email-message" class="message-container" style="display:none;"></div>
+      
+      <form id="forgotEmailForm" autocomplete="off">
+        <label for="forgot-email">Email:</label>
+        <input type="email" id="forgot-email" name="email" required>
+        <button type="submit" id="send-otp-btn">Send OTP</button>
+      </form>
+      <p><a href="#" id="back-to-login">Back to Login</a></p>
+    </div>
+
+    <!-- OTP Verification Form -->
+    <div class="login-container" id="forgot-otp-form" style="display:none;">
+      <h2>VERIFY OTP</h2>
+      <p style="color: #666; text-align: center; margin-bottom: 20px;">Enter the 6-digit code sent to your email</p>
+      
+      <div id="forgot-otp-message" class="message-container" style="display:none;"></div>
+      
+      <form id="forgotOtpForm" autocomplete="off">
+        <label for="forgot-otp">OTP Code:</label>
+        <input type="text" id="forgot-otp" name="otp_code" maxlength="6" pattern="[0-9]{6}" required placeholder="123456">
+        <button type="submit" id="verify-otp-btn">Verify OTP</button>
+      </form>
+      <p><a href="#" id="resend-otp">Resend OTP</a> | <a href="#" id="back-to-email">Change Email</a></p>
+    </div>
+
+    <!-- Password Reset Form -->
+    <div class="login-container" id="forgot-reset-form" style="display:none;">
+      <h2>RESET PASSWORD</h2>
+      <p style="color: #666; text-align: center; margin-bottom: 20px;">Enter your new password</p>
+      
+      <div id="forgot-reset-message" class="message-container" style="display:none;"></div>
+      
+      <form id="forgotResetForm" autocomplete="off">
+        <label for="new-password">New Password:</label>
+        <div class="password-wrapper">
+          <input type="password" id="new-password" name="new_password" required minlength="8" maxlength="16">
+          <i class="fa-solid fa-eye-slash toggle-password" toggle="#new-password"></i>
+        </div>
+        
+        <label for="confirm-new-password">Confirm Password:</label>
+        <div class="password-wrapper">
+          <input type="password" id="confirm-new-password" name="confirm_password" required minlength="8" maxlength="16">
+          <i class="fa-solid fa-eye-slash toggle-password" toggle="#confirm-new-password"></i>
+        </div>
+        
+        <button type="submit" id="reset-password-btn">Reset Password</button>
+      </form>
+    </div>
   </div>
 
   <script>
@@ -101,14 +157,54 @@
     // Toggle between login and register
     document.getElementById('show-register').onclick = function (e) {
       e.preventDefault();
-      document.getElementById('login-form').style.display = 'none';
-      document.getElementById('register-form').style.display = 'block';
+      showForm('register-form');
     };
     document.getElementById('show-login').onclick = function (e) {
       e.preventDefault();
-      document.getElementById('register-form').style.display = 'none';
-      document.getElementById('login-form').style.display = 'block';
+      showForm('login-form');
     };
+
+    // ✅ FORGOT PASSWORD NAVIGATION
+    document.getElementById('forgot-password-link').onclick = function (e) {
+      e.preventDefault();
+      showForm('forgot-email-form');
+    };
+
+    document.getElementById('back-to-login').onclick = function (e) {
+      e.preventDefault();
+      showForm('login-form');
+    };
+
+    document.getElementById('back-to-email').onclick = function (e) {
+      e.preventDefault();
+      showForm('forgot-email-form');
+    };
+
+    // Helper function to show forms
+    function showForm(formId) {
+      const forms = ['login-form', 'register-form', 'forgot-email-form', 'forgot-otp-form', 'forgot-reset-form'];
+      forms.forEach(id => {
+        document.getElementById(id).style.display = 'none';
+      });
+      document.getElementById(formId).style.display = 'block';
+      
+      // Clear any previous messages
+      clearMessages();
+    }
+
+    function clearMessages() {
+      const messageContainers = document.querySelectorAll('.message-container');
+      messageContainers.forEach(container => {
+        container.style.display = 'none';
+        container.innerHTML = '';
+      });
+    }
+
+    function showMessage(containerId, message, isError = false) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = `<div class="${isError ? 'error-message' : 'success-message'}">${message}</div>`;
+      container.style.display = 'block';
+    }
 
     // Toggle password show/hide
     document.querySelectorAll('.toggle-password').forEach(function (eye) {
@@ -118,6 +214,206 @@
         this.classList.toggle('fa-eye');
         this.classList.toggle('fa-eye-slash');
       });
+    });
+
+    // ✅ FORGOT PASSWORD EMAIL FORM
+    document.getElementById('forgotEmailForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('forgot-email').value.trim();
+      const submitBtn = document.getElementById('send-otp-btn');
+      
+      if (!email) {
+        showMessage('forgot-email-message', 'Please enter your email address.', true);
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+
+      try {
+        const formData = new FormData();
+        formData.append('email', email);
+
+        const res = await fetch(`${BASE_URL}/forgot-password/request/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+          },
+          body: formData
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          showMessage('forgot-email-message', result.message, false);
+          
+          // Store email for next step
+          window.resetEmail = email;
+          
+          // Show OTP form after 2 seconds
+          setTimeout(() => {
+            showForm('forgot-otp-form');
+          }, 2000);
+        } else {
+          showMessage('forgot-email-message', result.message, true);
+        }
+      } catch (err) {
+        console.error("Network error:", err);
+        showMessage('forgot-email-message', 'Failed to send OTP. Please try again.', true);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send OTP';
+      }
+    });
+
+    // ✅ FORGOT PASSWORD OTP VERIFICATION
+    document.getElementById('forgotOtpForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      
+      const otpCode = document.getElementById('forgot-otp').value.trim();
+      const submitBtn = document.getElementById('verify-otp-btn');
+      
+      if (!otpCode || otpCode.length !== 6) {
+        showMessage('forgot-otp-message', 'Please enter a valid 6-digit OTP code.', true);
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Verifying...';
+
+      try {
+        const formData = new FormData();
+        formData.append('email', window.resetEmail);
+        formData.append('otp_code', otpCode);
+
+        const res = await fetch(`${BASE_URL}/forgot-password/verify-otp/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+          },
+          body: formData
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          showMessage('forgot-otp-message', result.message, false);
+          
+          // Show reset form after 1 second
+          setTimeout(() => {
+            showForm('forgot-reset-form');
+          }, 1000);
+        } else {
+          showMessage('forgot-otp-message', result.message, true);
+        }
+      } catch (err) {
+        console.error("Network error:", err);
+        showMessage('forgot-otp-message', 'Failed to verify OTP. Please try again.', true);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Verify OTP';
+      }
+    });
+
+    // ✅ RESEND OTP
+    document.getElementById('resend-otp').onclick = async function (e) {
+      e.preventDefault();
+      
+      if (!window.resetEmail) {
+        showForm('forgot-email-form');
+        return;
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append('email', window.resetEmail);
+
+        const res = await fetch(`${BASE_URL}/forgot-password/request/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+          },
+          body: formData
+        });
+
+        const result = await res.json();
+        
+        if (result.success) {
+          showMessage('forgot-otp-message', 'New OTP has been sent to your email.', false);
+          document.getElementById('forgot-otp').value = '';
+        } else {
+          showMessage('forgot-otp-message', result.message, true);
+        }
+      } catch (err) {
+        console.error("Network error:", err);
+        showMessage('forgot-otp-message', 'Failed to resend OTP. Please try again.', true);
+      }
+    };
+
+    // ✅ FORGOT PASSWORD RESET FORM
+    document.getElementById('forgotResetForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      
+      const newPassword = document.getElementById('new-password').value;
+      const confirmPassword = document.getElementById('confirm-new-password').value;
+      const submitBtn = document.getElementById('reset-password-btn');
+      
+      if (!newPassword || !confirmPassword) {
+        showMessage('forgot-reset-message', 'Please fill in all fields.', true);
+        return;
+      }
+
+      if (newPassword.length < 8 || newPassword.length > 16) {
+        showMessage('forgot-reset-message', 'Password must be 8 to 16 characters long.', true);
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        showMessage('forgot-reset-message', 'Passwords do not match.', true);
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Resetting...';
+
+      try {
+        const formData = new FormData();
+        formData.append('new_password', newPassword);
+        formData.append('confirm_password', confirmPassword);
+
+        const res = await fetch(`${BASE_URL}/forgot-password/reset/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+          },
+          body: formData
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          showMessage('forgot-reset-message', result.message, false);
+          
+          // Clear stored email
+          delete window.resetEmail;
+          
+          // Redirect to login after 3 seconds
+          setTimeout(() => {
+            showForm('login-form');
+            // Clear reset form
+            document.getElementById('forgotResetForm').reset();
+          }, 3000);
+        } else {
+          showMessage('forgot-reset-message', result.message, true);
+        }
+      } catch (err) {
+        console.error("Network error:", err);
+        showMessage('forgot-reset-message', 'Failed to reset password. Please try again.', true);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Reset Password';
+      }
     });
 
      // Validate and submit register form

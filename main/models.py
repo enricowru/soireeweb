@@ -4,9 +4,11 @@ from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.contrib.auth.models import User
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.conf import settings
 from cloudinary.utils import cloudinary_url
+import random
+import string
 # from djongo import models as djongo_models  # Uncomment if using Djongo
 
 # ✅ Custom User Model
@@ -24,6 +26,31 @@ class User(AbstractUser):
 
     class Meta:
         db_table = 'users'
+
+# ✅ OTP Model for Password Reset
+class PasswordResetOTP(models.Model):
+    email = models.EmailField()
+    otp_code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+    
+    def save(self, *args, **kwargs):
+        if not self.otp_code:
+            self.otp_code = ''.join(random.choices(string.digits, k=6))
+        if not self.expires_at:
+            self.expires_at = timezone.now() + timedelta(minutes=15)  # OTP expires in 15 minutes
+        super().save(*args, **kwargs)
+    
+    def is_valid(self):
+        return not self.is_used and timezone.now() <= self.expires_at
+    
+    class Meta:
+        db_table = 'password_reset_otp'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"OTP for {self.email} - {self.otp_code}"
 
 class Role(models.Model):
     name = models.CharField(max_length=50, unique=True)
