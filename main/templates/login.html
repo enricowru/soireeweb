@@ -105,6 +105,7 @@
       <div id="forgot-email-message" class="message-container" style="display:none;"></div>
       
       <form id="forgotEmailForm" autocomplete="off">
+        {% csrf_token %}
         <label for="forgot-email">Email:</label>
         <input type="email" id="forgot-email" name="email" required>
         <button type="submit" id="send-otp-btn">Send OTP</button>
@@ -120,6 +121,7 @@
       <div id="forgot-otp-message" class="message-container" style="display:none;"></div>
       
       <form id="forgotOtpForm" autocomplete="off">
+        {% csrf_token %}
         <label for="forgot-otp">OTP Code:</label>
         <input type="text" id="forgot-otp" name="otp_code" maxlength="6" pattern="[0-9]{6}" required placeholder="123456">
         <button type="submit" id="verify-otp-btn">Verify OTP</button>
@@ -135,6 +137,7 @@
       <div id="forgot-reset-message" class="message-container" style="display:none;"></div>
       
       <form id="forgotResetForm" autocomplete="off">
+        {% csrf_token %}
         <label for="new-password">New Password:</label>
         <div class="password-wrapper">
           <input type="password" id="new-password" name="new_password" required minlength="8" maxlength="16">
@@ -179,6 +182,19 @@
       e.preventDefault();
       showForm('forgot-email-form');
     };
+
+    // Helper function to get CSRF token from the current form
+    function getCSRFToken() {
+      // Try to get from any visible form
+      const csrfTokens = document.querySelectorAll('[name=csrfmiddlewaretoken]');
+      for (let token of csrfTokens) {
+        if (token.closest('form') && token.closest('form').style.display !== 'none') {
+          return token.value;
+        }
+      }
+      // Fallback to any available token
+      return csrfTokens[0] ? csrfTokens[0].value : '';
+    }
 
     // Helper function to show forms
     function showForm(formId) {
@@ -238,7 +254,7 @@
         const res = await fetch(`${BASE_URL}/forgot-password/request/`, {
           method: 'POST',
           headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            'X-CSRFToken': getCSRFToken()
           },
           body: formData
         });
@@ -290,7 +306,7 @@
         const res = await fetch(`${BASE_URL}/forgot-password/verify-otp/`, {
           method: 'POST',
           headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            'X-CSRFToken': getCSRFToken()
           },
           body: formData
         });
@@ -332,7 +348,7 @@
         const res = await fetch(`${BASE_URL}/forgot-password/request/`, {
           method: 'POST',
           headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            'X-CSRFToken': getCSRFToken()
           },
           body: formData
         });
@@ -385,7 +401,7 @@
         const res = await fetch(`${BASE_URL}/forgot-password/reset/`, {
           method: 'POST',
           headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            'X-CSRFToken': getCSRFToken()
           },
           body: formData
         });

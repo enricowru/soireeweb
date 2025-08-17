@@ -8,6 +8,8 @@ from django.conf import settings
 from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.middleware.csrf import get_token
 import json
 from ..models import Review, PasswordResetOTP
 
@@ -120,9 +122,10 @@ def admin_required(view_func):
 
 # ✅ FORGOT PASSWORD FUNCTIONALITY
 
+@require_http_methods(["POST"])
 def forgot_password_request(request):
     """Handle forgot password email submission"""
-    if request.method == 'POST':
+    try:
         email = request.POST.get('email', '').strip()
         
         if not email:
@@ -173,12 +176,15 @@ SoireeWeb Team
             print(f"Email sending failed: {e}")
             return JsonResponse({'success': False, 'message': 'Failed to send email. Please try again.'})
     
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+    except Exception as e:
+        print(f"Error in forgot_password_request: {e}")
+        return JsonResponse({'success': False, 'message': 'An error occurred. Please try again.'})
 
 
+@require_http_methods(["POST"])
 def forgot_password_verify_otp(request):
     """Handle OTP verification"""
-    if request.method == 'POST':
+    try:
         email = request.POST.get('email', '').strip()
         otp_code = request.POST.get('otp_code', '').strip()
         
@@ -205,12 +211,15 @@ def forgot_password_verify_otp(request):
         except PasswordResetOTP.DoesNotExist:
             return JsonResponse({'success': False, 'message': 'Invalid OTP code.'})
     
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+    except Exception as e:
+        print(f"Error in forgot_password_verify_otp: {e}")
+        return JsonResponse({'success': False, 'message': 'An error occurred. Please try again.'})
 
 
+@require_http_methods(["POST"])
 def forgot_password_reset(request):
     """Handle new password submission"""
-    if request.method == 'POST':
+    try:
         new_password = request.POST.get('new_password', '').strip()
         confirm_password = request.POST.get('confirm_password', '').strip()
         
@@ -252,5 +261,7 @@ def forgot_password_reset(request):
             print(f"Password reset failed: {e}")
             return JsonResponse({'success': False, 'message': 'Failed to reset password. Please try again.'})
     
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+    except Exception as e:
+        print(f"Error in forgot_password_reset: {e}")
+        return JsonResponse({'success': False, 'message': 'An error occurred. Please try again.'})
 
