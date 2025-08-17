@@ -231,3 +231,15 @@ def _push_ws_event(chat_id: int, payload: dict):
         await channel_layer.group_send(f"booking_{chat_id}", payload)
 
     asyncio.run(_send())
+
+def get_cloud_image_by_name(name) -> str:
+    """Helper function to get images based on theme"""
+    # Use Cloudinary
+    # cloud_img_public_ids = {
+    #     # Disney & Princess Themes
+    #     'wedding_170pax': 'wedding_170pax_wb3mcl'
+    # }
+
+    # currentId = cloud_img_public_ids.get(name.lower().strip(), [])
+
+    return cloudinary.utils.cloudinary_url('wedding_170pax_wb3mcl', secure=True)[0]

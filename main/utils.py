@@ -166,7 +166,6 @@ def get_theme_images(theme):
     """Helper function to get images based on theme"""
     # Use Cloudinary
     themes_public_ids = {
-        
         # Disney & Princess Themes
         'mickey': ['mickey1_tjr7h0', 'mickey2_pxslgt', 'mickey3_qiya8u'],
         'frozen': ['frozen1_dk7v5o', 'frozen2_tyo4wh', 'frozen3_juo1gl'],

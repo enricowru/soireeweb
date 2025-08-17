@@ -47,6 +47,7 @@ urlpatterns = [
     path("chat/<int:chat_id>/messages-json/", views.chat_messages_json, name="chat_messages_json"),
     
     path('bookhere/', views.bookhere, name='bookhere'),
+    path('cloudImg', views.get_cloud_image_by_name, name='cloudImg'),
     path('bookhere_submit', views.bookhere_submit, name="bookhere_submit"),
     path('my_bookings', views.my_bookings, name='my_bookings'),
     

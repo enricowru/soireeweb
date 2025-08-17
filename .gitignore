@@ -3,3 +3,8 @@
 
 .env
 media/
+/main/api/__pycache__
+/config/__pycache__
+/main/api/__pycache__
+/main/views/__pycache__
+/main/templatetags/__pycache__
