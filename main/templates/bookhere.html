@@ -516,18 +516,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
         answers[3]=val;
         bookDetails.NumberOfPax = val;
 
-        fetch("{% url 'cloudImg' %}", {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            },
-            body: `${bookDetails.TypeOfEvent.toLower()}_${bookDetails.NumberOfPax}`,
-        }).then(response => {
-             document.getElementById('package_img').src = response;
-            console.log(response);
-        })
-        .catch(error => {
-        });
+        // fetch("{% url 'cloudImg' %}", {
+        //     method: 'POST',
+        //     headers: {
+        //         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        //     },
+        //     body: `${bookDetails.TypeOfEvent.toLower()}_${bookDetails.NumberOfPax}`,
+        // }).then(response => {
+        //      document.getElementById('package_img').src = response;
+        //     console.log(response);
+        // })
+        // .catch(error => {
+        // });
+
+         document.getElementById('package_img').src = 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1749018729/wedding_170pax_wb3mcl.jpg';
 
         paxModal.style.display='none';
         updateStepProgress();
