@@ -121,7 +121,7 @@ def delete_event(request, event_id):
             deleted_by=request.user
         )
         event.delete()
-        messages.success(request, 'Event deleted successfully!')
+        messages.success(request, 'Event removed successfully!')
         return redirect('admin_dashboard')
     return render(request, 'main/event_confirm_delete.html', {'event': event})
 
@@ -453,7 +453,7 @@ def booking_requests_status(request, id):
             # Booking details for CREATED
             'booking_details': {
                 'event_type': booking.event_type,
-                'location': booking.location,
+                'location': booking.venue,
                 'pax': booking.pax,
                 'package': booking.package,
                 'dish_list': booking.dish_list(), 
