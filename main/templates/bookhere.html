@@ -21,26 +21,28 @@
     <!-- ----------  STEP PROGRESS BAR  ---------- -->
     <div class="step-progress-bar">
         {% comment %} 7 steps {% endcomment %}
-        {% for s in "0123456" %}
+        {% for s in "01234567" %}
             <div class="step" data-step="{{ forloop.counter0 }}">
                 <div class="step-icon">
                     {% if forloop.counter0 == 0 %}<i class="fa-regular fa-calendar"></i>{% endif %}
-                    {% if forloop.counter0 == 1 %}<i class="fa-regular fa-clipboard"></i>{% endif %}
-                    {% if forloop.counter0 == 2 %}<i class="fa-solid fa-users"></i>{% endif %}
-                    {% if forloop.counter0 == 3 %}<i class="fa-solid fa-location-dot"></i>{% endif %}
-                    {% if forloop.counter0 == 4 %}<i class="fa-solid fa-palette"></i>{% endif %}
-                    {% if forloop.counter0 == 5 %}<i class="fa-solid fa-box"></i>{% endif %}
-                    {% if forloop.counter0 == 6 %}<i class="fa-solid fa-utensils"></i>{% endif %}
+                    {% if forloop.counter0 == 1 %}<i class="fa-regular fa-calendar"></i>{% endif %}
+                    {% if forloop.counter0 == 2 %}<i class="fa-regular fa-clipboard"></i>{% endif %}
+                    {% if forloop.counter0 == 3 %}<i class="fa-solid fa-users"></i>{% endif %}
+                    {% if forloop.counter0 == 4 %}<i class="fa-solid fa-location-dot"></i>{% endif %}
+                    {% if forloop.counter0 == 5 %}<i class="fa-solid fa-palette"></i>{% endif %}
+                    {% if forloop.counter0 == 6 %}<i class="fa-solid fa-box"></i>{% endif %}
+                    {% if forloop.counter0 == 7 %}<i class="fa-solid fa-utensils"></i>{% endif %}
                 </div>
                 <div class="step-circle"><span class="step-check"><i class="fa fa-check"></i></span></div>
                 <div class="step-label">
-                    {% if forloop.counter0 == 0 %}Date of Event{% endif %}
-                    {% if forloop.counter0 == 1 %}Type of Event{% endif %}
-                    {% if forloop.counter0 == 2 %}Number of Pax{% endif %}
-                    {% if forloop.counter0 == 3 %}Location{% endif %}
-                    {% if forloop.counter0 == 4 %}Color Motif{% endif %}
-                    {% if forloop.counter0 == 5 %}Packages{% endif %}
-                    {% if forloop.counter0 == 6 %}Food Menu{% endif %}
+                    {% if forloop.counter0 == 0 %}Celebrant{% endif %}
+                    {% if forloop.counter0 == 1 %}Date of Event{% endif %}
+                    {% if forloop.counter0 == 2 %}Type of Event{% endif %}
+                    {% if forloop.counter0 == 3 %}Number of Pax{% endif %}
+                    {% if forloop.counter0 == 4 %}Location{% endif %}
+                    {% if forloop.counter0 == 5 %}Color Motif{% endif %}
+                    {% if forloop.counter0 == 6 %}Packages{% endif %}
+                    {% if forloop.counter0 == 7 %}Food Menu{% endif %}
                 </div>
             </div>
             {% if not forloop.last %}<div class="step-line"></div>{% endif %}
@@ -48,7 +50,21 @@
     </div>
 
     <!-- ========================================================= -->
-    <!--                       STEP 0 – DATE                       -->
+    <!--                       STEP 0 – celebrant                  -->
+    <!-- ========================================================= -->
+    <div id="name-modal" class="date-modal" style="display:none;">
+        <div class="date-modal-content">
+            <div id="alert-name" class="modal-alert alert alert-danger d-none"></div>
+            <div class="date-modal-message">What's the celebrant's name?</div>
+            <form id="name-form" autocomplete="off">
+                <input type="text" id="celebrant-name" class="date-input" required placeholder="Enter full name">
+                <button type="submit" class="date-submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!--                       STEP 1 – DATE                       -->
     <!-- ========================================================= -->
     <div id="date-modal" class="date-modal" style="display:none;">
         <div class="date-modal-content">
@@ -67,7 +83,7 @@
     </div>
 
     <!-- ========================================================= -->
-    <!--                     STEP 1 – EVENT TYPE                    -->
+    <!--                     STEP 2 – EVENT TYPE                    -->
     <!-- ========================================================= -->
     <div id="event-modal" class="date-modal" style="display:none;">
         <div class="date-modal-content">
@@ -92,7 +108,7 @@
     </div>
 
     <!-- ========================================================= -->
-    <!--                     STEP 2 – PAX                           -->
+    <!--                     STEP 3 – PAX                           -->
     <!-- ========================================================= -->
     <div id="pax-modal" class="date-modal" style="display:none;">
         <div class="date-modal-content">
@@ -124,52 +140,65 @@
     </div>
 
     <!-- ========================================================= -->
-    <!--                  STEP 3 – LOCATION                         -->
+    <!--                  STEP 4 – LOCATION                         -->
     <!-- ========================================================= -->
     <div id="location-modal" class="date-modal" style="display:none;">
-        <div class="date-modal-content" style="align-items:flex-start;">
+        <div class="date-modal-content">
             <div id="alert-location" class="modal-alert alert alert-danger d-none"></div>
-
-            <div class="date-modal-message" style="margin-bottom:12px;">
-                Great! Now, please provide the venue or location for your event.
-            </div>
-
-            <div class="luzon-map-container" style="position:relative; width:350px; height:400px; margin-bottom:10px;">
-                <img id="luzon-map"
-                     src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Ph_locator_map_luzon.png"
-                     alt="Luzon Map"
-                     style="width:100%; height:100%; border-radius:10px; border:2px solid #AD974F;">
-                <img id="map-pin"
-                     src="https://cdn-icons-png.flaticon.com/512/684/684908.png"
-                     alt="Pin" style="display:none; position:absolute; width:32px; height:32px;
-                     transform:translate(-50%, -100%); pointer-events:none;">
-            </div>
-
-            <form id="location-form" style="width:100%; display:flex; flex-direction:column; align-items:center; gap:10px;">
-                <input type="text" id="location-input" class="custom-location-input"
-                       placeholder="Or type your venue/location here…"
-                       style="width:80%; margin-bottom:8px; text-align:center;">
-                <button type="submit" class="location-submit">Submit Location</button>
+            <div class="date-modal-message">Please enter the venue name and upload a floor plan.</div>
+            <form id="location-form" style="width:100%; display:flex; flex-direction:column; gap:10px;" enctype="multipart/form-data">
+                <input type="text" id="venue-input" class="custom-location-input" placeholder="Venue name..." required>
+                <label for="wizard-floorplan">Upload Floor Plan:</label>
+                <input type="file" id="wizard-floorplan" accept="image/*">
+                <img id="floorplan-preview" style="max-width:100%; border:1px solid #ccc; border-radius:8px; display:none;">
+                <button type="submit" class="location-submit">Submit</button>
             </form>
         </div>
     </div>
 
     <!-- ========================================================= -->
-    <!--                    STEP 4 – COLOR                          -->
+    <!--                    STEP 5 – COLOR                          -->
     <!-- ========================================================= -->
-    <div id="color-modal" class="date-modal" style="display:none;">
+     <div id="color-modal" class="date-modal" style="display:none;">
         <div class="date-modal-content">
             <div id="alert-color" class="modal-alert alert alert-danger d-none"></div>
-
-            <div class="date-modal-message">Great! Please choose a color palette for your event.</div>
-
-            <form id="color-form" autocomplete="off" style="width:100%; display:flex; flex-direction:column; gap:16px;">
-                <div style="display:flex; align-items:center; gap:16px;">
-                    <input type="color" id="color-picker" value="#ff0000"
-                           style="width:48px; height:48px; border:none; cursor:pointer;">
-                    <span id="color-hex" style="font-size:1.1rem; color:#AD974F;">#ff0000</span>
-                </div>
-                <button type="submit" class="color-submit">Submit Color</button>
+            <div class="date-modal-message">Choose a color motif for your event.</div>
+            <form id="color-form" autocomplete="off" style="width:100%;">
+                <select id="color-select" class="form-select" required>
+                    <option value="" disabled selected>--Select Color--</option>
+                    <option value="Red">Red</option>
+                    <option value="Blue">Blue</option>
+                    <option value="Green">Green</option>
+                    <option value="Yellow">Yellow</option>
+                    <option value="Pink">Pink</option>
+                    <option value="Purple">Purple</option>
+                    <option value="Orange">Orange</option>
+                    <option value="Teal">Teal</option>
+                    <option value="Brown">Brown</option>
+                    <option value="Black">Black</option>
+                    <option value="White">White</option>
+                    <option value="Gray">Gray</option>
+                    <option value="Gold">Gold</option>
+                    <option value="Silver">Silver</option>
+                    <option value="Maroon">Maroon</option>
+                    <option value="Navy">Navy</option>
+                    <option value="Lavender">Lavender</option>
+                    <option value="Magenta">Magenta</option>
+                    <option value="Cyan">Cyan</option>
+                    <option value="Olive">Olive</option>
+                    <option value="Coral">Coral</option>
+                    <option value="Turquoise">Turquoise</option>
+                    <option value="Peach">Peach</option>
+                    <option value="Beige">Beige</option>
+                    <option value="Mint">Mint</option>
+                    <option value="Plum">Plum</option>
+                    <option value="Indigo">Indigo</option>
+                    <option value="Sky Blue">Sky Blue</option>
+                    <option value="Khaki">Khaki</option>
+                    <option value="Charcoal">Charcoal</option>
+                    <option value="Rose">Rose</option>
+                </select>
+                <button type="submit" class="color-submit" style="margin-top:10px;">Submit</button>
             </form>
         </div>
     </div>
@@ -186,7 +215,7 @@
             </div>
 
             <div style="display:flex; justify-content:center; margin-bottom:18px;">
-                <img id="package_img" src="https://i.ibb.co/6b7Qw8d/sample-package.jpg" alt="Package Sample"
+                <img src="https://i.ibb.co/6b7Qw8d/sample-package.jpg" alt="Package Sample"
                      style="width:240px; border-radius:12px; box-shadow:0 2px 8px #0002;">
             </div>
 
@@ -329,9 +358,10 @@
 </div><!-- /.bookhere-progress-container -->
 
 <!-- ----------  HIDDEN FINAL FORM  ---------- -->
-<form id="final-booking-form" method="POST" action="{% url 'bookhere_submit' %}" style="display:none;">
+<form id="final-booking-form" method="POST" action="{% url 'bookhere_submit' %}" style="display:none;" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="hidden" name="payload" id="booking-payload">
+    <input type="file" name="floorplan-payload" id="floorplan-payload" style="display:none;" accept="image/*">
 </form>
 
 <!-- ============================================================== -->
@@ -339,9 +369,6 @@
 <!-- ============================================================== -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script>
-/* =================================================================
-   Utility helpers for alert handling
-==================================================================*/
 function showAlert(modalId, msg){
     const alertDiv = document.getElementById('alert-'+modalId);
     if(alertDiv){
@@ -357,270 +384,240 @@ function clearAlert(modalId){
     }
 }
 
- class BookDetails {
-    constructor(CustomerName, Schedule, TypeOfEvent, NumberOfPax, Location, ColorMotif, Package, ListOfFood) {
-        this.CustomerName = CustomerName; 
-        this.Schedule = Schedule;
-            this.TypeOfEvent = TypeOfEvent ;
-            this.NumberOfPax  = NumberOfPax;
-            this.Location = Location;
-            this.ColorMotif = ColorMotif;
-            this.Package = Package ;
-            this.ListOfFood = ListOfFood;
-    }
-  }
-
-
 document.addEventListener('DOMContentLoaded', ()=>{
+    const nameModal = document.getElementById('name-modal');
+    const dateModal = document.getElementById('date-modal');
+    const eventModal = document.getElementById('event-modal');
+    const paxModal = document.getElementById('pax-modal');
+    const locationModal = document.getElementById('location-modal');
+    const colorModal = document.getElementById('color-modal');
+    const packagesModal = document.getElementById('packages-modal');
+    const foodModal = document.getElementById('foodmenu-modal');
+    const floorplanInput = document.getElementById('wizard-floorplan');
+    const floorplanPreview = document.getElementById('floorplan-preview');
+    const finalFloorPlan = document.getElementById('floorplan-payload');
+    const answers=[null,null,null,null,null,null,null,null]; // [name,date,event,pax,location,color,package,food]
 
-  /* ---------- cached refs ---------- */
-  const dateModal     = document.getElementById('date-modal');
-  const eventModal    = document.getElementById('event-modal');
-  const paxModal      = document.getElementById('pax-modal');
-  const locationModal = document.getElementById('location-modal');
-  const colorModal    = document.getElementById('color-modal');
-  const packagesModal = document.getElementById('packages-modal');
-  const foodModal     = document.getElementById('foodmenu-modal');
-  const luzonMap      = document.getElementById('luzon-map');
-  const mapPin        = document.getElementById('map-pin');
+    function updateStepProgress(){
+        document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('completed',!!answers[i]));
+        document.querySelectorAll('.step-line').forEach((l,i)=>l.classList.toggle('completed',!!answers[i]));
+    }
 
-  const answers=[null,null,null,null,null,null,null]; // 7 steps
-  const bookDetails = new BookDetails();
-  const baseImg = "{% static 'main/images/' %}";
-
-  function updateStepProgress(){
-      document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('completed', !!answers[i]));
-      document.querySelectorAll('.step-line').forEach((l,i)=>l.classList.toggle('completed', !!answers[i]));
-  }
-
-
-  /* ==================================================== */
-  /*                    STEP 0 – DATE                     */
-  /* ==================================================== */
-  document.getElementById('date-form').addEventListener('submit',e=>{
-      e.preventDefault();
-      const val=document.getElementById('date-picker').value;
-      if(!val){
-          showAlert('date','Please choose a date.');
-          return;
-      }
-      clearAlert('date');
-      answers[0]=val;
-      bookDetails.Schedule = val;
-      dateModal.style.display='none';
-      updateStepProgress();
-  });
-
-  /* ==================================================== */
-  /*                STEP 1 – EVENT TYPE                   */
-  /* ==================================================== */
-  document.querySelectorAll('.event-btn').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-          clearAlert('event');
-          answers[1]=btn.textContent.trim();
-          bookDetails.TypeOfEvent = btn.textContent.trim();
-          eventModal.style.display='none';
-          updateStepProgress();
-      });
-  });
-  document.getElementById('custom-event-form').addEventListener('submit',e=>{
-      e.preventDefault();
-      const val=document.querySelector('.custom-event-input').value.trim();
-      if(!val){
-          showAlert('event','Please type a custom event name.');
-          return;
-      }
-      clearAlert('event');
-      answers[1]=val;
-      bookDetails.TypeOfEvent = btn.textContent.trim();
-      eventModal.style.display='none';
-      updateStepProgress();
-  });
-
-  /* ==================================================== */
-  /*                    STEP 2 – PAX                      */
-  /* ==================================================== */
-  document.getElementById('pax-form').addEventListener('submit',e=>{
-      e.preventDefault();
-      const val=document.getElementById('pax-select').value;
-      if(!val){
-          showAlert('pax','Please select the number of guests.');
-          return;
-      }
-      clearAlert('pax');
-      answers[2]=val;
-      bookDetails.NumberOfPax =val;
-      paxModal.style.display='none';
-
-     
-      document.getElementById('package_img').src = `${baseImg}${bookDetails.TypeOfEvent}_${bookDetails.NumberOfPax}`;
-
-      updateStepProgress();
-  });
-
-  document.getElementById('custom-pax-form').addEventListener('submit',e=>{
-      e.preventDefault();
-      const val=document.querySelector('.custom-pax-input').value;
-      if(!val){
-          showAlert('pax','Please type a custom number.');
-          return;
-      }
-      clearAlert('pax');
-      answers[2]=val;
-      bookDetails.NumberOfPax =val;
-      paxModal.style.display='none';
-
-      document.getElementById('package_img').src = `${baseImg}${bookDetails.TypeOfEvent}_${bookDetails.NumberOfPax}`;
-
-      updateStepProgress();
-  });
-
-  /* ==================================================== */
-  /*                STEP 3 – LOCATION                     */
-  /* ==================================================== */
-  luzonMap.addEventListener('click',e=>{
-      clearAlert('location');
-      const rect=luzonMap.getBoundingClientRect();
-      const x=e.clientX-rect.left, y=e.clientY-rect.top;
-      answers[3]=`${x},${y}`;
-      bookDetails.Location =`${x},${y}`;
-      mapPin.style.left=`${x}px`;
-      mapPin.style.top=`${y}px`;
-      mapPin.style.display='block';
-      updateStepProgress();
-  });
-  document.getElementById('location-form').addEventListener('submit',e=>{
-      e.preventDefault();
-      const val=document.getElementById('location-input').value.trim();
-      if(!val){
-          showAlert('location','Please enter a venue / location.');
-          return;
-      }
-      clearAlert('location');
-      answers[3]=val;
-      bookDetails.Location = val;
-      locationModal.style.display='none';
-      updateStepProgress();
-  });
-
-  /* ==================================================== */
-  /*                 STEP 4 – COLOR                       */
-  /* ==================================================== */
-  document.getElementById('color-form').addEventListener('submit',e=>{
-      e.preventDefault();
-      const val=document.getElementById('color-picker').value;
-      if(!val){
-          showAlert('color','Please pick a color.');
-          return;
-      }
-      clearAlert('color');
-      answers[4]=val;
-      bookDetails.ColorMotif = val;
-      document.getElementById('color-hex').textContent=val;
-      colorModal.style.display='none';
-      updateStepProgress();
-  });
-
-  /* ==================================================== */
-  /*                STEP 5 – PACKAGE                      */
-  /* ==================================================== */
-  document.querySelectorAll('.package-choice-btn').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-          clearAlert('package');
-          answers[5]=btn.textContent.trim();
-          bookDetails.Package =btn.textContent.trim();
-          packagesModal.style.display='none';
-          updateStepProgress();
-      });
-  });
-
- /* ==================================================== */
-  /*         STEP 6 – FOOD MENU  (final submit)            */
-  /* ==================================================== */
-
-  /* selection toggle per button */
-  document.querySelectorAll('.food-btn-group').forEach(group=>{
-    const limit=parseInt(group.dataset.limit,10);
-    group.querySelectorAll('.food-btn').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        btn.classList.toggle('selected');
-        const sel=group.querySelectorAll('.food-btn.selected');
-        if(sel.length>limit) btn.classList.remove('selected');
-      });
+    
+    /* STEP 0 - Name */
+    document.getElementById('name-form').addEventListener('submit',e=>{
+        e.preventDefault();
+        const val=document.getElementById('celebrant-name').value.trim();
+        if(!val) return showAlert('name','Please enter a name.');
+        clearAlert('name');
+        answers[0]=val;
+        nameModal.style.display='none';
+        updateStepProgress();
     });
-  });
 
-  /* helper – returns selected labels for a section */
-  const selectedIn = (name) =>{
-    const sec=document.querySelector(`.food-section[data-group="${name}"]`);
-    return sec ? Array.from(sec.querySelectorAll('.food-btn.selected'))
-                  .map(b=>b.textContent.trim()) : [];
-  };
+    /* STEP 1 – Date */
+    document.getElementById('date-form').addEventListener('submit',e=>{
+        e.preventDefault();
+        const val=document.getElementById('date-picker').value;
+        if(!val){
+            showAlert('date','Please choose a date.');
+            return;
+        }
+        clearAlert('date');
+        answers[1]=val; // correct index for date
+        dateModal.style.display='none';
+        updateStepProgress();
+    });
 
-  document.getElementById('foodmenu-form').addEventListener('submit',e=>{
-    e.preventDefault();
+    /* STEP 2 – Event Type */
+    document.querySelectorAll('.event-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+            clearAlert('event');
+            answers[2]=btn.textContent.trim();
+            eventModal.style.display='none';
+            updateStepProgress();
+        });
+    });
+    document.getElementById('custom-event-form').addEventListener('submit',e=>{
+        e.preventDefault();
+        const val=document.querySelector('.custom-event-input').value.trim();
+        if(!val){
+            showAlert('event','Please type a custom event name.');
+            return;
+        }
+        clearAlert('event');
+        answers[2]=val;
+        eventModal.style.display='none';
+        updateStepProgress();
+    });
 
-    const dishGroups = ['beef','pork','chicken','seafood','vegetables'];
-    const dishes     = dishGroups.flatMap(selectedIn);  // combined savoury
+    /* STEP 3 – Pax */
+    document.getElementById('pax-form').addEventListener('submit',e=>{
+        e.preventDefault();
+        const val=document.getElementById('pax-select').value;
+        if(!val){
+            showAlert('pax','Please select the number of guests.');
+            return;
+        }
+        clearAlert('pax');
+        answers[3]=val;
+        paxModal.style.display='none';
+        updateStepProgress();
+    });
+    document.getElementById('custom-pax-form').addEventListener('submit',e=>{
+        e.preventDefault();
+        const val=document.querySelector('.custom-pax-input').value;
+        if(!val){
+            showAlert('pax','Please type a custom number.');
+            return;
+        }
+        clearAlert('pax');
+        answers[3]=val;
+        paxModal.style.display='none';
+        updateStepProgress();
+    });
 
-    const pastaSel   = selectedIn('pasta');
-    const drinkSel   = selectedIn('drink');
+    /* STEP 4 – Location */
+    floorplanInput.addEventListener('change', ()=>{
+        const file = floorplanInput.files[0];
+        const venue=document.getElementById('venue-input').value.trim();
+        if(file){
+            const reader = new FileReader();
+            reader.onload = e => {
+                floorplanPreview.src = e.target.result;
+                floorplanPreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+         answers[4]={venue: venue, floorplan: file };
+    });
 
-    /* -------- validation -------- */
-    if(dishes.length !== 4)
-        return showAlert('food','Select exactly 4 dishes total (any mix of beef/pork/chicken/seafood/vegetables).');
-    if(pastaSel.length !== 1)
-        return showAlert('food','Select exactly 1 pasta.');
-    if(drinkSel.length !== 1)
-        return showAlert('food','Select exactly 1 drink.');
-    clearAlert('food');
+    document.getElementById('location-form').addEventListener('submit',e=>{
+        e.preventDefault();
+        const venue=document.getElementById('venue-input').value.trim();
+        const file=floorplanInput.files[0];
+        if(!venue) return showAlert('location','Please enter a venue name.');
+        clearAlert('location');
+        answers[4]={venue: venue, floorplan: file ? file : null};
+        locationModal.style.display='none';
+        updateStepProgress();
+    });
 
-    /* -------- build payload -------- */
-    const payload = {
-      date        : answers[0],
-      event_type  : answers[1],
-      pax         : answers[2],
-      location    : answers[3],
-      color_hex   : answers[4],
-      package     : answers[5],
-      menu : {
-        dishes : dishes,         
-        pasta  : pastaSel[0],     
-        drink  : drinkSel[0]      
-      }
+    /* STEP 5 – Color */
+    document.getElementById('color-form').addEventListener('submit',e=>{
+        e.preventDefault();
+        const val=document.getElementById('color-select').value;
+        if(!val){
+            showAlert('color','Please pick a color.');
+            return;
+        }
+        clearAlert('color');
+        answers[5]=val;
+        colorModal.style.display='none';
+        updateStepProgress();
+    });
+
+    /* STEP 6 – Package */
+    document.querySelectorAll('.package-choice-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+            clearAlert('package');
+            answers[6]=btn.textContent.trim();
+            packagesModal.style.display='none';
+            updateStepProgress();
+        });
+    });
+
+    /* STEP 7 – Food Menu */
+    document.querySelectorAll('.food-btn-group').forEach(group=>{
+        const limit=parseInt(group.dataset.limit,10);
+        group.querySelectorAll('.food-btn').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                btn.classList.toggle('selected');
+                const sel=group.querySelectorAll('.food-btn.selected');
+                if(sel.length>limit) btn.classList.remove('selected');
+            });
+        });
+    });
+
+    const selectedIn = (name) =>{
+        const sec=document.querySelector(`.food-section[data-group="${name}"]`);
+        return sec ? Array.from(sec.querySelectorAll('.food-btn.selected')).map(b=>b.textContent.trim()) : [];
     };
 
-    document.getElementById('booking-payload').value = JSON.stringify(payload);
-    document.getElementById('final-booking-form').submit();
-  });
+    document.getElementById('foodmenu-form').addEventListener('submit',e=>{
+        e.preventDefault();
+        const dishGroups = ['beef','pork','chicken','seafood','vegetables'];
+        const dishes = dishGroups.flatMap(selectedIn);
+        const pastaSel = selectedIn('pasta');
+        const drinkSel = selectedIn('drink');
 
-  /* ==================================================== */
-  /*       STEP‑CIRCLE NAVIGATION WITH VALIDATION          */
-  /* ==================================================== */
-  function openModalByIdx(idx){
-      if(idx>0 && !answers[idx-1]) return;  // guard
+        if(dishes.length !== 4) return showAlert('food','Select exactly 4 dishes total.');
+        if(pastaSel.length !== 1) return showAlert('food','Select exactly 1 pasta.');
+        if(drinkSel.length !== 1) return showAlert('food','Select exactly 1 drink.');
 
-      [dateModal,eventModal,paxModal,locationModal,colorModal,packagesModal,foodModal]
-        .forEach(m=>m.style.display='none');
+        clearAlert('food');
+        // Assume you have a `File` object stored somewhere from your wizard (answers[4].floorplanFile)
+        const payload = {
+            celebrant_name : answers[0],            // Step 0 - Celebrant's Name
+            date           : answers[1],            // Step 1 - Date of Event
+            event_type     : answers[2],            // Step 2 - Type of Event
+            pax            : answers[3],            // Step 3 - Number of Pax
+            location       : {                      // Step 4 - Venue & Floor Plan
+                venue     : answers[4]?.venue || "",
+            },
+            color_motif    : answers[5],             // Step 5 - Color Motif
+            package        : answers[6],             // Step 6 - Package
+            menu           : {                       // Step 7 - Food Menu
+                dishes : dishes,         
+                pasta  : pastaSel[0],     
+                drink  : drinkSel[0]      
+            }
+        };
+        const formData = new FormData();
+        formData.append("payload", JSON.stringify(payload));
+        if (answers[4] && answers[4].floorplan) {
+        // The key name here must match what you are looking for in Django
+            formData.append("floorplan-payload", answers[4].floorplan);
+        }
+        fetch("{% url 'bookhere_submit' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: formData,
+        }).then(response => {
+            // ... (your response handling)
+        })
+        .catch(error => {
+        });
+  
 
-      if(idx===0) dateModal.style.display='flex';
-      if(idx===1) eventModal.style.display='flex';
-      if(idx===2) paxModal.style.display='flex';
-      if(idx===3) locationModal.style.display='flex';
-      if(idx===4) colorModal.style.display='flex';
-      if(idx===5) packagesModal.style.display='flex';
-      if(idx===6) foodModal.style.display='flex';
-  }
+    });
 
-  document.querySelectorAll('.step-circle').forEach((c,i)=>{
-      c.style.cursor='pointer';
-      c.addEventListener('click',()=>openModalByIdx(i));
-  });
+    /* Navigation */
+    function openModalByIdx(idx){
+        if(idx>0 && !answers[idx-1]) return;
+        [nameModal,dateModal,eventModal,paxModal,locationModal,colorModal,packagesModal,foodModal]
+            .forEach(m=>m.style.display='none');
+        if(idx===0) nameModal.style.display='flex';
+        if(idx===1) dateModal.style.display='flex';
+        if(idx===2) eventModal.style.display='flex';
+        if(idx===3) paxModal.style.display='flex';
+        if(idx===4) locationModal.style.display='flex';
+        if(idx===5) colorModal.style.display='flex';
+        if(idx===6) packagesModal.style.display='flex';
+        if(idx===7) foodModal.style.display='flex';
+    }
 
-  /* initialise wizard */
-  openModalByIdx(0);
-  updateStepProgress();
+    document.querySelectorAll('.step-circle').forEach((c,i)=>{
+        c.style.cursor='pointer';
+        c.addEventListener('click',()=>openModalByIdx(i));
+    });
+
+    openModalByIdx(0);
+    updateStepProgress();
 });
 </script>
+
 </body>
 </html>
