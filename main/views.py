@@ -1,9 +1,15 @@
-from views.auth import *
-from views.design import *
-from views.moderator import *
-from views.reviews import *
-from views.user import *
-from views.chat import *
+
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse
+import json
+from django.contrib.auth.models import User
+import random
+import string
+from django.core.mail import send_mail
+from django.conf import settings
+
+otp_store = {}
 
 
 # def home(request):
@@ -20,6 +26,73 @@ from views.chat import *
 #             'role': role
 #         })
 #     return render(request, 'main.html', {'logged_in': True, 'user_list': user_list})
+
+# --- Forgot Password Endpoints for Mobile/Web ---
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def forgot_password_request(request):
+	try:
+		data = json.loads(request.body)
+		username = data.get('username')
+		if not username:
+			return JsonResponse({'message': 'Username required'}, status=400)
+		try:
+			user = User.objects.get(username=username)
+		except User.DoesNotExist:
+			return JsonResponse({'message': 'User not found'}, status=404)
+		otp = ''.join(random.choices(string.digits, k=6))
+		otp_store[username] = otp
+		# Send OTP via email (or SMS if implemented)
+		send_mail(
+			'Your OTP Code',
+			f'Your OTP code is: {otp}',
+			settings.DEFAULT_FROM_EMAIL,
+			[user.email],
+			fail_silently=True
+		)
+		return JsonResponse({'message': 'OTP sent'})
+	except Exception as e:
+		return JsonResponse({'message': 'Server error', 'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def forgot_password_verify_otp(request):
+	try:
+		data = json.loads(request.body)
+		username = data.get('username')
+		otp = data.get('otp')
+		if not username or not otp:
+			return JsonResponse({'message': 'Username and OTP required'}, status=400)
+		if otp_store.get(username) == otp:
+			return JsonResponse({'message': 'OTP verified'})
+		else:
+			return JsonResponse({'message': 'Invalid OTP'}, status=400)
+	except Exception as e:
+		return JsonResponse({'message': 'Server error', 'error': str(e)}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def forgot_password_reset(request):
+	try:
+		data = json.loads(request.body)
+		username = data.get('username')
+		new_password = data.get('new_password')
+		otp = data.get('otp')
+		if not username or not new_password or not otp:
+			return JsonResponse({'message': 'Username, new password, and OTP required'}, status=400)
+		if otp_store.get(username) != otp:
+			return JsonResponse({'message': 'Invalid OTP'}, status=400)
+		try:
+			user = User.objects.get(username=username)
+			user.set_password(new_password)
+			user.save()
+			del otp_store[username]
+			return JsonResponse({'message': 'Password reset successful'})
+		except User.DoesNotExist:
+			return JsonResponse({'message': 'User not found'}, status=404)
+	except Exception as e:
+		return JsonResponse({'message': 'Server error', 'error': str(e)}, status=500)
 
 # def login_view(request):
 #     message = ''
