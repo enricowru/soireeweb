@@ -123,21 +123,31 @@ def get_post_detail(request, post_id):
 @csrf_exempt
 @require_http_methods(["POST"])
 def toggle_like(request, post_id):
+    print(f"DEBUG: toggle_like called for post_id={post_id}")
+    print(f"DEBUG: request.user = {request.user}")
+    print(f"DEBUG: request.user.is_authenticated = {getattr(request.user, 'is_authenticated', 'No attr')}")
+    print(f"DEBUG: request.META.get('HTTP_COOKIE') = {request.META.get('HTTP_COOKIE', 'No cookies')}")
+    
     user = getattr(request, 'user', AnonymousUser())
     if not user.is_authenticated:
+        print(f"DEBUG: User not authenticated, returning 401")
         return JsonResponse({'error': 'Authentication required'}, status=401)
 
     try:
         post = MobilePost.objects.get(id=post_id)
+        print(f"DEBUG: Found post: {post.title}")
     except MobilePost.DoesNotExist:
+        print(f"DEBUG: Post {post_id} not found")
         return JsonResponse({'error': 'Post not found'}, status=404)
 
     existing = Like.objects.filter(post=post, user=user).first()
     if existing:
         existing.delete()
+        print(f"DEBUG: Unliked post {post_id} for user {user.username}")
         return JsonResponse({'message': 'Post unliked', 'liked': False}, status=200)
     else:
         Like.objects.create(post=post, user=user)
+        print(f"DEBUG: Liked post {post_id} for user {user.username}")
         return JsonResponse({'message': 'Post liked', 'liked': True}, status=200)
 
 # -------------------------------
