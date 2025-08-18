@@ -3,6 +3,7 @@ from django.urls import path, include
 from . import views
 from django.contrib.auth import views as auth_views
 from .api import *
+from .views.auth import forgot_password_request, forgot_password_verify_otp, forgot_password_reset
 
 
 urlpatterns = [
@@ -19,9 +20,9 @@ urlpatterns = [
     path('api/update-profile/', update_profile, name='api_update_profile'),
 
     # ✅ Forgot Password Routes
-    path('forgot-password/request/', views.forgot_password_request, name='forgot_password_request'),
-    path('forgot-password/verify-otp/', views.forgot_password_verify_otp, name='forgot_password_verify_otp'),
-    path('forgot-password/reset/', views.forgot_password_reset, name='forgot_password_reset'),
+    path('forgot-password/request/', forgot_password_request, name='forgot_password_request'),
+    path('forgot-password/verify-otp/', forgot_password_verify_otp, name='forgot_password_verify_otp'),
+    path('forgot-password/reset/', forgot_password_reset, name='forgot_password_reset'),
 
 
     # API endpoint for mobile review submission

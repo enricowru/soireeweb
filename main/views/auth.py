@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.middleware.csrf import get_token
 import json
-from ..models import Review, PasswordResetOTP
+from ..models import Review, PasswordResetOTP, User
 
 Users = get_user_model()
 
@@ -122,19 +122,25 @@ def admin_required(view_func):
 
 # ✅ FORGOT PASSWORD FUNCTIONALITY
 
+@csrf_exempt
 @require_http_methods(["POST"])
 def forgot_password_request(request):
     """Handle forgot password email submission"""
     try:
-        email = request.POST.get('email', '').strip()
+        # Handle both JSON (mobile) and form data (web)
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+            email = data.get('email', '').strip()
+        else:
+            email = request.POST.get('email', '').strip()
         
         if not email:
             return JsonResponse({'success': False, 'message': 'Email is required.'})
         
         # Check if user with this email exists
         try:
-            user = Users.objects.get(email=email)
-        except Users.DoesNotExist:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
             # Don't reveal if email exists for security
             return JsonResponse({'success': True, 'message': 'If this email exists, an OTP has been sent.'})
         
@@ -181,12 +187,19 @@ SoireeWeb Team
         return JsonResponse({'success': False, 'message': 'An error occurred. Please try again.'})
 
 
+@csrf_exempt
 @require_http_methods(["POST"])
 def forgot_password_verify_otp(request):
     """Handle OTP verification"""
     try:
-        email = request.POST.get('email', '').strip()
-        otp_code = request.POST.get('otp_code', '').strip()
+        # Handle both JSON (mobile) and form data (web)
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+            email = data.get('email', '').strip()
+            otp_code = data.get('otp', '').strip()
+        else:
+            email = request.POST.get('email', '').strip()
+            otp_code = request.POST.get('otp_code', '').strip()
         
         if not email or not otp_code:
             return JsonResponse({'success': False, 'message': 'Email and OTP are required.'})
@@ -202,7 +215,11 @@ def forgot_password_verify_otp(request):
             if not otp.is_valid():
                 return JsonResponse({'success': False, 'message': 'OTP has expired. Please request a new one.'})
             
-            # Store email in session for password reset
+            # For mobile, return success immediately
+            if request.content_type == 'application/json':
+                return JsonResponse({'success': True, 'message': 'OTP verified successfully!'})
+            
+            # For web, store email in session for password reset
             request.session['reset_email'] = email
             request.session['otp_verified'] = True
             
@@ -216,20 +233,48 @@ def forgot_password_verify_otp(request):
         return JsonResponse({'success': False, 'message': 'An error occurred. Please try again.'})
 
 
+@csrf_exempt
 @require_http_methods(["POST"])
 def forgot_password_reset(request):
     """Handle new password submission"""
     try:
-        new_password = request.POST.get('new_password', '').strip()
-        confirm_password = request.POST.get('confirm_password', '').strip()
-        
-        # Check if OTP was verified
-        if not request.session.get('otp_verified', False):
-            return JsonResponse({'success': False, 'message': 'OTP verification required.'})
-        
-        email = request.session.get('reset_email')
-        if not email:
-            return JsonResponse({'success': False, 'message': 'Session expired. Please start over.'})
+        # Handle both JSON (mobile) and form data (web)
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+            new_password = data.get('new_password', '').strip()
+            confirm_password = data.get('confirm_password', '').strip()
+            email = data.get('email', '').strip()
+            otp_code = data.get('otp', '').strip()
+            
+            # For mobile, verify OTP again in this step
+            if not email or not otp_code:
+                return JsonResponse({'success': False, 'message': 'Email and OTP are required.'})
+            
+            # Verify OTP is still valid
+            try:
+                otp = PasswordResetOTP.objects.get(
+                    email=email,
+                    otp_code=otp_code,
+                    is_used=False
+                )
+                
+                if not otp.is_valid():
+                    return JsonResponse({'success': False, 'message': 'OTP has expired. Please request a new one.'})
+                    
+            except PasswordResetOTP.DoesNotExist:
+                return JsonResponse({'success': False, 'message': 'Invalid OTP code.'})
+        else:
+            # Web form submission
+            new_password = request.POST.get('new_password', '').strip()
+            confirm_password = request.POST.get('confirm_password', '').strip()
+            
+            # Check if OTP was verified for web
+            if not request.session.get('otp_verified', False):
+                return JsonResponse({'success': False, 'message': 'OTP verification required.'})
+            
+            email = request.session.get('reset_email')
+            if not email:
+                return JsonResponse({'success': False, 'message': 'Session expired. Please start over.'})
         
         if not new_password or not confirm_password:
             return JsonResponse({'success': False, 'message': 'All fields are required.'})
@@ -242,20 +287,21 @@ def forgot_password_reset(request):
         
         try:
             # Update user password
-            user = Users.objects.get(email=email)
+            user = User.objects.get(email=email)
             user.set_password(new_password)
             user.save()
             
             # Mark OTP as used
             PasswordResetOTP.objects.filter(email=email, is_used=False).update(is_used=True)
             
-            # Clear session
-            request.session.pop('reset_email', None)
-            request.session.pop('otp_verified', None)
+            # Clear session for web
+            if request.content_type != 'application/json':
+                request.session.pop('reset_email', None)
+                request.session.pop('otp_verified', None)
             
             return JsonResponse({'success': True, 'message': 'Password reset successfully! You can now login.'})
             
-        except Users.DoesNotExist:
+        except User.DoesNotExist:
             return JsonResponse({'success': False, 'message': 'User not found.'})
         except Exception as e:
             print(f"Password reset failed: {e}")
