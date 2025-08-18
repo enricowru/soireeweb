@@ -9,7 +9,39 @@ import string
 from django.core.mail import send_mail
 from django.conf import settings
 
+import time
+
+# Store OTPs as {email: {otp, username, expires_at}}
 otp_store = {}
+@csrf_exempt
+@require_http_methods(["POST"])
+def forgot_password_request(request):
+	try:
+		data = json.loads(request.body)
+		email = data.get('email')
+		if not email:
+			return JsonResponse({'message': 'Email is required'}, status=400)
+		try:
+			user = User.objects.get(email=email)
+		except User.DoesNotExist:
+			return JsonResponse({'message': 'User not found'}, status=404)
+		otp = ''.join(random.choices(string.digits, k=6))
+		expires_at = time.time() + 300  # OTP valid for 5 minutes
+		otp_store[email] = {
+			'otp': otp,
+			'username': user.username,
+			'expires_at': expires_at
+		}
+		send_mail(
+			'Your OTP Code',
+			f'Your OTP code is: {otp}',
+			settings.DEFAULT_FROM_EMAIL,
+			[email],
+			fail_silently=True
+		)
+		return JsonResponse({'message': 'OTP sent'})
+	except Exception as e:
+		return JsonResponse({'message': 'Server error', 'error': str(e)}, status=500)
 
 
 # def home(request):
@@ -60,14 +92,21 @@ def forgot_password_request(request):
 def forgot_password_verify_otp(request):
 	try:
 		data = json.loads(request.body)
-		username = data.get('username')
+		email = data.get('email')
 		otp = data.get('otp')
-		if not username or not otp:
-			return JsonResponse({'message': 'Username and OTP required'}, status=400)
-		if otp_store.get(username) == otp:
-			return JsonResponse({'message': 'OTP verified'})
-		else:
+		if not email or not otp:
+			return JsonResponse({'message': 'Email and OTP are required'}, status=400)
+		if len(otp) != 6 or not otp.isdigit():
+			return JsonResponse({'message': 'OTP must be 6 digits'}, status=400)
+		otp_data = otp_store.get(email)
+		if not otp_data:
+			return JsonResponse({'message': 'No OTP found for this email'}, status=400)
+		if time.time() > otp_data['expires_at']:
+			del otp_store[email]
+			return JsonResponse({'message': 'OTP expired'}, status=400)
+		if otp != otp_data['otp']:
 			return JsonResponse({'message': 'Invalid OTP'}, status=400)
+		return JsonResponse({'message': 'OTP verified'})
 	except Exception as e:
 		return JsonResponse({'message': 'Server error', 'error': str(e)}, status=500)
 
@@ -76,18 +115,29 @@ def forgot_password_verify_otp(request):
 def forgot_password_reset(request):
 	try:
 		data = json.loads(request.body)
-		username = data.get('username')
-		new_password = data.get('new_password')
+		email = data.get('email')
 		otp = data.get('otp')
-		if not username or not new_password or not otp:
-			return JsonResponse({'message': 'Username, new password, and OTP required'}, status=400)
-		if otp_store.get(username) != otp:
+		new_password = data.get('new_password')
+		confirm_password = data.get('confirm_password')
+		if not email or not otp or not new_password or not confirm_password:
+			return JsonResponse({'message': 'All fields are required'}, status=400)
+		if new_password != confirm_password:
+			return JsonResponse({'message': 'Passwords do not match'}, status=400)
+		if len(otp) != 6 or not otp.isdigit():
+			return JsonResponse({'message': 'OTP must be 6 digits'}, status=400)
+		otp_data = otp_store.get(email)
+		if not otp_data:
+			return JsonResponse({'message': 'No OTP found for this email'}, status=400)
+		if time.time() > otp_data['expires_at']:
+			del otp_store[email]
+			return JsonResponse({'message': 'OTP expired'}, status=400)
+		if otp != otp_data['otp']:
 			return JsonResponse({'message': 'Invalid OTP'}, status=400)
 		try:
-			user = User.objects.get(username=username)
+			user = User.objects.get(email=email)
 			user.set_password(new_password)
 			user.save()
-			del otp_store[username]
+			del otp_store[email]
 			return JsonResponse({'message': 'Password reset successful'})
 		except User.DoesNotExist:
 			return JsonResponse({'message': 'User not found'}, status=404)
