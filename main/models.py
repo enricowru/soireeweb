@@ -135,7 +135,7 @@ class BookingRequest(models.Model):
     event_type   = models.CharField(max_length=60)
     pax          = models.PositiveIntegerField()
     venue        = models.CharField(max_length=255)
-    floorplan    = models.FileField(upload_to='booking_floorplans/')
+    floorplan    = models.FileField(upload_to='booking_floorplans/', max_length=200, blank=True, null=True)
     uploaded_at  = models.DateTimeField(default=timezone.now)
 
     cloudinary_url = models.URLField(blank=True, null=True)  # prod only

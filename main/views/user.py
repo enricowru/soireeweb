@@ -118,7 +118,9 @@ def bookhere_submit(request):
     # ---------- 2) prepare booking fields ----------
     event_date = _dt.date.fromisoformat(data["date"])
     venue = ""
-    floorplan_url = None
+    floorplan_path = None
+    cloudinary_url = None
+    
     if isinstance(data.get("location"), dict):
         venue = data["location"].get("venue", "")
         floorplan_file = request.FILES.get("floorplan-payload")
@@ -130,7 +132,14 @@ def bookhere_submit(request):
             print(f"[DEBUG] Received floorplan file: {floorplan_file.name} ({floorplan_file.size} bytes)")
             saved_value = save_floorplan_with_custom_name(floorplan_file, chat.id)
             print(f"[DEBUG] save_floorplan_with_custom_name returned: {saved_value}")
-            floorplan_url = saved_value  # now always a string (local path or URL)
+            
+            # Separate the handling for production vs development
+            if settings.ENVIRONMENT == "prod":
+                cloudinary_url = saved_value  # Cloudinary URL
+                floorplan_path = None  # None for FileField when using Cloudinary
+            else:
+                floorplan_path = saved_value  # Local file path
+                cloudinary_url = None
 
     # ---------- 3) create BookingRequest ----------
     booking = BookingRequest.objects.create(
@@ -141,7 +150,8 @@ def bookhere_submit(request):
         event_type=data.get("event_type", ""),
         pax=int(data.get("pax", 0)),
         venue=venue,
-        floorplan=floorplan_url,
+        floorplan=floorplan_path,
+        cloudinary_url=cloudinary_url,
         color_motif=data.get("color_motif", ""),
         package=data.get("package", ""),
         dishes=", ".join(data.get("menu", {}).get("dishes", [])),
@@ -150,7 +160,7 @@ def bookhere_submit(request):
         raw_payload=data,
     )
 
-    print(f"[DEBUG] Booking {booking.id} created with floorplan={booking.floorplan}")
+    print(f"[DEBUG] Booking {booking.id} created with floorplan={booking.floorplan} cloudinary_url={booking.cloudinary_url}")
 
     # ---------- 4) first system message ----------
     msg_html = booking_summary(booking)
@@ -181,10 +191,12 @@ def bookhere_submit(request):
 def booking_summary(booking) -> str:
     # Compute display URL
     floorplan_url = None
-    if booking.floorplan:
-        if settings.ENVIRONMENT == "prod":
-            floorplan_url = booking.floorplan
-        else:
+    if settings.ENVIRONMENT == "prod":
+        # In production, use the cloudinary_url field
+        floorplan_url = booking.cloudinary_url
+    else:
+        # In development, use the floorplan file field
+        if booking.floorplan:
             floorplan_url = f"{settings.MEDIA_URL}{booking.floorplan}"
 
     rows = [
