@@ -22,6 +22,9 @@ def me(request):
         'first_name': user.first_name,
         'last_name': user.last_name,
         'full_name': user.get_full_name(),
+        'email': user.email,
+        'mobile': user.mobile,
+        'profile_picture': user.profile_picture,
     }, status=200)
 
 @csrf_exempt
