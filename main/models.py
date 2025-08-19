@@ -376,7 +376,7 @@ class Review(models.Model):
         
 
     def __str__(self):
-        return f"Review by {self.user.username} for {self.event.title}"
+        return f"Review by {self.user.username} - {self.rating} stars"
     
     def get_images(self):
         """Return list of non-empty image URLs"""

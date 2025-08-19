@@ -64,6 +64,12 @@ def list_mobile_reviews(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def submit_mobile_review(request):
+    print(f"[DEBUG] Received review submission request")
+    print(f"[DEBUG] Request method: {request.method}")
+    print(f"[DEBUG] Content type: {request.content_type}")
+    print(f"[DEBUG] POST data: {request.POST}")
+    print(f"[DEBUG] FILES: {request.FILES}")
+    
     # Accept application/json or form-data
     rating = int(request.POST.get('rating') or request.GET.get('rating') or 0)
     comment = request.POST.get('comment') or ''
@@ -117,33 +123,33 @@ def submit_mobile_review(request):
                 except Exception as e:
                     print(f"Error uploading file image {i}: {e}")
 
+    print(f"[DEBUG] Processing rating: {rating}, comment: {comment}, client_id: {client_id}")
+
     if rating <= 0 or rating > 5 or not comment or not client_id:
+        print(f"[ERROR] Validation failed - rating: {rating}, comment: {comment}, client_id: {client_id}")
         return JsonResponse({'error': 'rating (1-5), comment, and client_id are required'}, status=400)
 
     # Ensure numeric client id
     try:
         client_id_int = int(client_id)
+        print(f"[DEBUG] Client ID parsed as: {client_id_int}")
     except (TypeError, ValueError):
+        print(f"[ERROR] Client ID is not numeric: {client_id}")
         return JsonResponse({'error': 'client_id must be numeric'}, status=400)
 
-    # Latest booking for this client (draft or confirmed) to infer event date
-    booking = (
-        BookingRequest.objects.filter(client_id=client_id_int)
-        .order_by('-created_at')
-        .first()
-    )
-    if not booking or not getattr(booking, 'event_date', None):
-        return JsonResponse({'error': 'No booking with event date found for client'}, status=404)
+    # Check if user exists
+    try:
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        user = User.objects.get(id=client_id_int)
+        print(f"[DEBUG] Found user: {user.username}")
+    except User.DoesNotExist:
+        print(f"[ERROR] User with ID {client_id_int} does not exist")
+        return JsonResponse({'error': 'User not found'}, status=404)
 
-    # Find corresponding event by date
-    event = Event.objects.filter(date=booking.event_date).order_by('-date').first()
-    if not event:
-        return JsonResponse({'error': 'Event not found for booking date'}, status=404)
-
-    # Create review (unapproved) tying to user and event with images
+    # Create review directly (no event required since event field is commented out)
     review_data = {
         'user_id': client_id_int,
-        'event': event,
         'rating': rating,
         'comment': comment,
         'is_approved': False,
@@ -152,6 +158,12 @@ def submit_mobile_review(request):
     # Add image URLs to review data (up to 3)
     for i, url in enumerate(image_urls[:3]):
         review_data[f'image{i+1}'] = url
+        print(f"[DEBUG] Added image{i+1}: {url}")
     
-    r = Review.objects.create(**review_data)
-    return JsonResponse({'message': 'Review submitted', 'id': r.id}, status=201)
+    try:
+        r = Review.objects.create(**review_data)
+        print(f"[DEBUG] Created review with ID: {r.id}")
+        return JsonResponse({'message': 'Review submitted successfully', 'id': r.id}, status=201)
+    except Exception as e:
+        print(f"[ERROR] Failed to create review: {e}")
+        return JsonResponse({'error': 'Failed to create review'}, status=500)
