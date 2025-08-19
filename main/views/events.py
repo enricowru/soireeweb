@@ -133,6 +133,7 @@ def api_booking_list(request):
             "event_type": b.event_type,
             "status": b.status,
             "event_date": event_date_str,
+            "chat_id": b.chat.id if b.chat else None,
         })
     return JsonResponse(data, safe=False)
 
