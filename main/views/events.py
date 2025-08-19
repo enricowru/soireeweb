@@ -91,12 +91,48 @@ def api_booking_list(request):
     bookings = BookingRequest.objects.filter(client=request.user).order_by('-id')
     data = []
     for b in bookings:
-        event = b.event_set.first() if hasattr(b, 'event_set') else None
+        event_date_str = None
+        
+        # Logic based on status:
+        # - For draft/pending: use BookingRequest.event_date (format: 2025-09-04)
+        # - For other statuses: use Event.date if exists (format: 2025-08-27 16:00:00+00), fallback to BookingRequest.event_date
+        if b.status.lower() in ['draft', 'pending']:
+            # Use event_date from BookingRequest for draft/pending
+            if b.event_date:
+                # Format: 2025-09-04 → Sep 04, 2025
+                month_names = [
+                    '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+                ]
+                event_date_str = f"{month_names[b.event_date.month]} {b.event_date.day:02d}, {b.event_date.year}"
+        else:
+            # For other statuses, try to get date from related Event first
+            event = b.event_set.first() if hasattr(b, 'event_set') else None
+            if event and hasattr(event, 'date') and event.date:
+                # Format: 2025-08-27 16:00:00+00 → Aug 27, 2025 4:00PM
+                month_names = [
+                    '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+                ]
+                hour = event.date.hour
+                ampm = 'AM' if hour < 12 else 'PM'
+                display_hour = hour if hour <= 12 else hour - 12
+                if display_hour == 0:
+                    display_hour = 12
+                event_date_str = f"{month_names[event.date.month]} {event.date.day}, {event.date.year} {display_hour}:{event.date.minute:02d}{ampm}"
+            elif b.event_date:
+                # Fallback to BookingRequest.event_date
+                month_names = [
+                    '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+                ]
+                event_date_str = f"{month_names[b.event_date.month]} {b.event_date.day:02d}, {b.event_date.year}"
+        
         data.append({
             "id": b.id,
             "event_type": b.event_type,
             "status": b.status,
-            "event_date": event.date.strftime('%b %d, %Y %I:%M %p') if event and event.date else None,
+            "event_date": event_date_str,
         })
     return JsonResponse(data, safe=False)
 
