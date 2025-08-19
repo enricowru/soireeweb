@@ -365,6 +365,10 @@ class Review(models.Model):
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_approved = models.BooleanField(default=False)
+    # Support up to 3 Cloudinary image URLs
+    image1 = models.URLField(blank=True, null=True)
+    image2 = models.URLField(blank=True, null=True)
+    image3 = models.URLField(blank=True, null=True)
 
     class Meta:
         ordering = ['-created_at']
@@ -373,6 +377,17 @@ class Review(models.Model):
 
     def __str__(self):
         return f"Review by {self.user.username} for {self.event.title}"
+    
+    def get_images(self):
+        """Return list of non-empty image URLs"""
+        images = []
+        if self.image1:
+            images.append(self.image1)
+        if self.image2:
+            images.append(self.image2)
+        if self.image3:
+            images.append(self.image3)
+        return images
 
 
 class Theme(models.Model):
@@ -481,36 +496,4 @@ class Like(models.Model):
     class Meta:
         db_table = 'mobile_post_likes'
         unique_together = ('post', 'user')  
-        
-
-
-
-
-# ✅ Mobile Reviews (minimal, independent of main Review/Event)
-class MobileReview(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    name = models.CharField(max_length=150, blank=True, null=True)
-    rating = models.PositiveSmallIntegerField(default=5)
-    comment = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = 'mobile_review'
-        ordering = ['-created_at']
-
-    def display_name(self):
-        if self.user:
-            return self.user.get_full_name() or self.user.username
-        return self.name or 'Guest'
-
-
-class MobileReviewImage(models.Model):
-    review = models.ForeignKey(MobileReview, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='mobile_reviews/')
-
-    class Meta:
-        db_table = 'mobile_review_image'
-
-    def __str__(self):
-        return f"Image for review {self.review_id}"
 

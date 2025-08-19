@@ -5,6 +5,9 @@ from ..models import Review, BookingRequest, Event
 import json
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import get_user_model
+import cloudinary.uploader
+import base64
+import uuid
 
 @csrf_exempt
 @require_http_methods(["GET"])
@@ -49,7 +52,7 @@ def list_mobile_reviews(request):
             'rating': r.rating,
             'comment': r.comment,
             'created_at': r.created_at.isoformat(),
-            'images': [],  # No images for main Review
+            'images': r.get_images(),  # Get the image URLs
         })
     aggs = Review.objects.filter(is_approved=True).aggregate(average=Avg('rating'), count=Count('id'))
     avg = float(aggs['average'] or 0)
@@ -65,16 +68,54 @@ def submit_mobile_review(request):
     rating = int(request.POST.get('rating') or request.GET.get('rating') or 0)
     comment = request.POST.get('comment') or ''
     client_id = None
+    
+    # Handle images from request
+    image_urls = []
+    
     if request.content_type and 'application/json' in request.content_type:
         try:
             body = json.loads(request.body or '{}')
             rating = int(body.get('rating') or rating)
             comment = body.get('comment') or comment
             client_id = body.get('client_id')
+            
+            # Handle base64 images
+            images = body.get('images', [])
+            for i, img_data in enumerate(images[:3]):  # Max 3 images
+                if img_data and img_data.startswith('data:image/'):
+                    try:
+                        # Extract base64 data
+                        format_part, data_part = img_data.split(',', 1)
+                        img_bytes = base64.b64decode(data_part)
+                        
+                        # Upload to Cloudinary
+                        result = cloudinary.uploader.upload(
+                            img_bytes,
+                            public_id=f"review_{uuid.uuid4()}",
+                            folder="reviews"
+                        )
+                        image_urls.append(result['secure_url'])
+                    except Exception as e:
+                        print(f"Error uploading image {i}: {e}")
+                        
         except Exception:
             pass
     else:
         client_id = request.POST.get('client_id')
+        
+        # Handle file uploads
+        for i in range(1, 4):  # image1, image2, image3
+            file = request.FILES.get(f'image{i}')
+            if file:
+                try:
+                    result = cloudinary.uploader.upload(
+                        file,
+                        public_id=f"review_{uuid.uuid4()}",
+                        folder="reviews"
+                    )
+                    image_urls.append(result['secure_url'])
+                except Exception as e:
+                    print(f"Error uploading file image {i}: {e}")
 
     if rating <= 0 or rating > 5 or not comment or not client_id:
         return JsonResponse({'error': 'rating (1-5), comment, and client_id are required'}, status=400)
@@ -99,12 +140,18 @@ def submit_mobile_review(request):
     if not event:
         return JsonResponse({'error': 'Event not found for booking date'}, status=404)
 
-    # Create review (unapproved) tying to user and event
-    r = Review.objects.create(
-        user_id=client_id_int,
-        event=event,
-        rating=rating,
-        comment=comment,
-        is_approved=False,
-    )
+    # Create review (unapproved) tying to user and event with images
+    review_data = {
+        'user_id': client_id_int,
+        'event': event,
+        'rating': rating,
+        'comment': comment,
+        'is_approved': False,
+    }
+    
+    # Add image URLs to review data (up to 3)
+    for i, url in enumerate(image_urls[:3]):
+        review_data[f'image{i+1}'] = url
+    
+    r = Review.objects.create(**review_data)
     return JsonResponse({'message': 'Review submitted', 'id': r.id}, status=201)
