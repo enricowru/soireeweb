@@ -28,6 +28,81 @@ def me(request):
     }, status=200)
 
 @csrf_exempt
+@require_http_methods(["POST"])
+def update_profile(request):
+    user = getattr(request, 'user', None)
+    if not user or not user.is_authenticated:
+        return JsonResponse({'error': 'Authentication required'}, status=401)
+    
+    try:
+        # Handle multipart form data
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        email = request.POST.get('email', '').strip()
+        mobile = request.POST.get('mobile', '').strip()
+        
+        # Validate required fields
+        if not first_name or not last_name or not email:
+            return JsonResponse({
+                'error': 'First name, last name, and email are required'
+            }, status=400)
+        
+        # Update user fields
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.mobile = mobile if mobile else None
+        
+        # Handle profile picture upload
+        if 'profile_picture' in request.FILES:
+            profile_picture = request.FILES['profile_picture']
+            
+            try:
+                # Upload to Cloudinary
+                result = cloudinary.uploader.upload(
+                    profile_picture,
+                    folder="profile_pictures",
+                    public_id=f"user_{user.id}_{uuid.uuid4().hex[:8]}",
+                    transformation=[
+                        {'width': 300, 'height': 300, 'crop': 'fill', 'gravity': 'face'},
+                        {'quality': 'auto', 'fetch_format': 'auto'}
+                    ]
+                )
+                
+                # Save Cloudinary URL
+                user.profile_picture = result['secure_url']
+                print(f'[INFO] Profile picture uploaded to Cloudinary: {result["secure_url"]}')
+                
+            except Exception as e:
+                print(f'[ERROR] Failed to upload profile picture to Cloudinary: {e}')
+                return JsonResponse({
+                    'error': 'Failed to upload profile picture'
+                }, status=500)
+        
+        # Save user
+        user.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Profile updated successfully',
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email,
+                'mobile': user.mobile,
+                'profile_picture': user.profile_picture,
+            }
+        }, status=200)
+        
+    except Exception as e:
+        print(f'[ERROR] Profile update failed: {e}')
+        return JsonResponse({
+            'error': 'Profile update failed'
+        }, status=500)
+
+@csrf_exempt
 def submit_review(request):
     if request.method == 'POST':
         data = json.loads(request.body)
