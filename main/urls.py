@@ -14,7 +14,6 @@ urlpatterns = [
     path('editprofile/', views.editprofile, name='editprofile'),
     path('moredesign/', views.moredesign, name='moredesign'),
     path('home/', views.home, name='home'),
-    path('home/chatbot/', views.home, name='home'),
     path('signup/', signup, name='signup'),
     path('chatbot', include('main.chatbot_urls')),
     path('api/update-profile/', update_profile, name='api_update_profile'),
