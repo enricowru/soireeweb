@@ -13,42 +13,122 @@
         </div>
     </div>
 
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <div class="card">
         <div class="card-header bg-primary text-white">
             <h4 class="mb-0"><i class="fas fa-user-edit"></i> Edit Profile</h4>
         </div>
         <div class="card-body">
-            <form method="post">
+            <form method="post" id="adminEditForm">
                 {% csrf_token %}
                 
                 <div class="mb-3">
                     <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
                     {{ form.username }}
+                    {% if form.username.errors %}
+                        <div class="text-danger small">{{ form.username.errors.0 }}</div>
+                    {% endif %}
                 </div>
                 <div class="mb-3">
                     <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name</label>
                     {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                        <div class="text-danger small">{{ form.first_name.errors.0 }}</div>
+                    {% endif %}
                 </div>
                 <div class="mb-3">
                     <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name</label>
                     {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                        <div class="text-danger small">{{ form.last_name.errors.0 }}</div>
+                    {% endif %}
                 </div>
                 <div class="mb-3">
                     <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
                     {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                    {% endif %}
                 </div>
                 <div class="mb-3">
                     <label for="{{ form.mobile.id_for_label }}" class="form-label">Mobile</label>
                     {{ form.mobile }}
+                    {% if form.mobile.errors %}
+                        <div class="text-danger small">{{ form.mobile.errors.0 }}</div>
+                    {% endif %}
                 </div>
 
                 <div class="text-end">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Save Changes
+                    <button type="submit" id="saveButton" class="btn btn-secondary" disabled>
+                        <i class="fas fa-times"></i> No Changes
                     </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<style>
+.btn-gold {
+    background-color: #ffd700;
+    border-color: #ffd700;
+    color: #000;
+}
+.btn-gold:hover {
+    background-color: #ffed4e;
+    border-color: #ffed4e;
+    color: #000;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('adminEditForm');
+    const saveButton = document.getElementById('saveButton');
+    const fields = form.querySelectorAll('input, textarea, select');
+    
+    // Store initial values
+    const initialValues = {};
+    fields.forEach(field => {
+        initialValues[field.name] = field.value;
+    });
+    
+    function checkForChanges() {
+        let hasChanges = false;
+        
+        fields.forEach(field => {
+            if (field.value !== initialValues[field.name]) {
+                hasChanges = true;
+            }
+        });
+        
+        if (hasChanges) {
+            saveButton.disabled = false;
+            saveButton.className = 'btn btn-gold';
+            saveButton.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+        } else {
+            saveButton.disabled = true;
+            saveButton.className = 'btn btn-secondary';
+            saveButton.innerHTML = '<i class="fas fa-times"></i> No Changes';
+        }
+    }
+    
+    // Add event listeners to all form fields
+    fields.forEach(field => {
+        field.addEventListener('input', checkForChanges);
+        field.addEventListener('change', checkForChanges);
+    });
+    
+    // Initial check
+    checkForChanges();
+});
+</script>
 {% endblock %} 

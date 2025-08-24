@@ -245,9 +245,17 @@ def admin_edit(request):
     if request.method == 'POST':
         form = AdminEditForm(request.POST, user_instance=user)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Admin profile updated successfully.')
-            return redirect('admin_dashboard')
+            try:
+                form.save()
+                messages.success(request, 'Admin profile updated successfully.')
+                return redirect('admin_edit')  # Redirect to same page to refresh
+            except Exception as e:
+                messages.error(request, f'Error updating profile: {str(e)}')
+        else:
+            # Add form errors to messages
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{field.title()}: {error}')
     else:
         form = AdminEditForm(user_instance=user)
 

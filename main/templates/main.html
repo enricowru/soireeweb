@@ -33,10 +33,12 @@
   </header>
 
   <!-- CHATBOT BUTTON -->
+  {% if user.is_authenticated %}
   <a href="{% url 'chatbot' %}" id="chat-ai-btn" class="chat-ai-btn">
     <i class="fa-solid fa-comments"></i>
     <span>Ask Patrice</span>
   </a>
+  {% endif %}
 
 
   <!-- OUR SERVICES -->

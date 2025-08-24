@@ -48,7 +48,7 @@ class ModeratorEditForm(forms.Form):
 
 class AdminEditForm(forms.Form):
     # User fields
-    username = forms.CharField(max_length=150, disabled=True) # Username should not be changed
+    username = forms.CharField(max_length=150)  # Make username editable
     first_name = forms.CharField(max_length=150)
     last_name = forms.CharField(max_length=150)
     email = forms.EmailField()
@@ -65,8 +65,19 @@ class AdminEditForm(forms.Form):
             self.fields['email'].initial = self.user_instance.email
             self.fields['mobile'].initial = self.user_instance.mobile
 
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        # Check if username is unique (excluding current user)
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        
+        if User.objects.filter(username=username).exclude(pk=self.user_instance.pk if self.user_instance else None).exists():
+            raise forms.ValidationError("This username is already taken.")
+        return username
+
     def save(self):
         if self.user_instance:
+            self.user_instance.username = self.cleaned_data['username']
             self.user_instance.first_name = self.cleaned_data['first_name']
             self.user_instance.last_name = self.cleaned_data['last_name']
             self.user_instance.email = self.cleaned_data['email']
