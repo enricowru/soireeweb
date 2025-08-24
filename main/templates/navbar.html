@@ -1,46 +1,44 @@
 {% load static %}
 
 <nav class="navbar">
-    {% if user.is_authenticated %}
-        <ul class="nav-links">
-            <li><a href="{% url 'home' %}#services">Services</a></li>
-            <li class="dropdown">
-                <a href="{% url 'home' %}#menu" class="dropbtn">Packages</a>
-                <ul class="dropdown-content">
-                    <li><a href="{% url 'home' %}#menu">Menu</a></li>
-                    <li><a href="{% url 'home' %}#packages">Event Packages</a></li>
-                    <li><a href="{% url 'home' %}#design">Themes &amp; Design</a></li>
-                </ul>
-            </li>
-            <li><a href="{% url 'home' %}#calendar">Calendar</a></li>
-        </ul>
-    {% endif %}
+    <!-- Left side navigation - always visible -->
+    <ul class="nav-links">
+        <li><a href="{% url 'home' %}#services">Services</a></li>
+        <li class="dropdown">
+            <a href="{% url 'home' %}#menu" class="dropbtn">Packages</a>
+            <ul class="dropdown-content">
+                <li><a href="{% url 'home' %}#menu">Menu</a></li>
+                <li><a href="{% url 'home' %}#packages">Event Packages</a></li>
+                <li><a href="{% url 'home' %}#design">Themes &amp; Design</a></li>
+            </ul>
+        </li>
+        <li><a href="{% url 'home' %}#calendar">Calendar</a></li>
+    </ul>
 
-    <!-- Centered logo when not authenticated -->
-    <div class="logo" style="{% if not user.is_authenticated %}margin: 0 auto;{% endif %}">
+    <!-- Centered logo -->
+    <div class="logo">
         <a href="{% url 'home' %}">
             <img src="{% static 'images/logo-round.png' %}" alt="Nike Catering Logo">
         </a>
     </div>
 
-    {% if user.is_authenticated %}
-        <ul class="nav-links">
-            <li><a href="{% url 'home' %}#reviews">Reviews</a></li>
-            <li class="dropdown">
-                <a href="{% url 'home' %}#about-us" class="dropbtn">About Us</a>
-                <ul class="dropdown-content">
-                    <li><a href="{% url 'home' %}#about-us">Who We Are</a></li>
-                    <li><a href="{% url 'home' %}#faqs">FAQs</a></li>
-                </ul>
-            </li>
+    <!-- Right side navigation - conditional based on authentication -->
+    <ul class="nav-links">
+        <li><a href="{% url 'home' %}#reviews">Reviews</a></li>
+        <li class="dropdown">
+            <a href="{% url 'home' %}#about-us" class="dropbtn">About Us</a>
+            <ul class="dropdown-content">
+                <li><a href="{% url 'home' %}#about-us">Who We Are</a></li>
+                <li><a href="{% url 'home' %}#faqs">FAQs</a></li>
+            </ul>
+        </li>
+        {% if user.is_authenticated %}
             <li><a href="{% url 'my_bookings' %}" class="book-here-btn">My Bookings</a></li>
             <li><a href="{% url 'logout' %}">Logout</a></li>
-        </ul>
-    {% else %}
-        {% comment %} <ul class="nav-links">
-            <li><a href="{% url 'login' %}">Login</a></li>
-        </ul> {% endcomment %}
-    {% endif %}
+        {% else %}
+            <li><a href="{% url 'login' %}" class="book-here-btn">Login</a></li>
+        {% endif %}
+    </ul>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

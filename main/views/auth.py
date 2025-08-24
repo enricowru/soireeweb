@@ -15,32 +15,33 @@ from ..models import Review, PasswordResetOTP, User
 
 Users = get_user_model()
 
-@login_required
 def home(request):
-    if request.user.username == 'admin':
+    # If user is authenticated and is admin, redirect to dashboard
+    if request.user.is_authenticated and request.user.username == 'admin':
         print("Redirecting admin to dashboard")
         return redirect('/admin/dashboard')
 
-    users = Users.objects.all()
+    # Get user list only if authenticated
     user_list = []
+    if request.user.is_authenticated:
+        users = Users.objects.all()
+        for user in users:
+            if user.username == 'admin':
+                role = 'Admin'
+            else:
+                role = 'User'
 
-    for user in users:
-        if user.username == 'admin':
-            role = 'Admin'
-        else:
-            role = 'User'
+            entry = {
+                'username': user.username,
+                'firstname': user.first_name,
+                'lastname': user.last_name,
+                'role': role,
+            }
+            user_list.append(entry)
+            # Debug log each user
+            print(f"Loaded user: {entry}")
 
-        entry = {
-            'username': user.username,
-            'firstname': user.first_name,
-            'lastname': user.last_name,
-            'role': role,
-        }
-        user_list.append(entry)
-
-        # Debug log each user
-        print(f"Loaded user: {entry}")
-
+    # Get top reviews (available for all users)
     top_reviews = (
         Review.objects.filter(is_approved=True)
         .order_by('-rating', '-created_at')[:3]
@@ -51,7 +52,7 @@ def home(request):
         print(f"Review by {r.user}: {r.rating} stars, created at {r.created_at}")
 
     return render(request, 'main.html', {
-        'logged_in': True,
+        'logged_in': request.user.is_authenticated,
         'user_list': user_list,
         'top_reviews': top_reviews
     })
