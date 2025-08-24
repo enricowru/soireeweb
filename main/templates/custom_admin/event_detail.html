@@ -64,9 +64,9 @@
 
     <div class="d-flex mb-4">
         <a href="{% url 'event_edit' event.id %}" class="btn btn-primary me-2">Edit Event</a>
-        <form method="POST" action="{% url 'delete_event' event.id %}" onsubmit="return confirm('Are you sure you want to delete this event? This action cannot be undone.');">
+        <form method="POST" action="{% url 'delete_event' event.id %}" onsubmit="return confirm('Are you sure you want to remove this event? This action cannot be undone.');">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Delete Event</button>
+            <button type="submit" class="btn btn-danger">Remove Event</button>
         </form>
     </div>
 
@@ -143,7 +143,7 @@
                                 <form method="post" action="{% url 'delete_moderator_access' event.id access.id %}" style="display:inline;">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to remove this moderator\'s access?');">
-                                        <i class="fas fa-trash"></i> Delete Access
+                                        <i class="fas fa-trash"></i> Remove Access
                                     </button>
                                 </form>
                             </td>

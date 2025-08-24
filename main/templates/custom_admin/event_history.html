@@ -15,7 +15,7 @@
 
     <div class="card">
         <div class="card-header bg-primary text-white">
-            <h4 class="mb-0"><i class="fas fa-history"></i> Deleted Events</h4>
+            <h4 class="mb-0"><i class="fas fa-history"></i> Removed Events</h4>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -26,8 +26,8 @@
                             <th>Date</th>
                             <th>Description</th>
                             <th>Created At</th>
-                            <th>Deleted At</th>
-                            <th>Deleted By</th>
+                            <th>Removed At</th>
+                            <th>Removed By</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -43,7 +43,7 @@
                         {% empty %}
                         <tr>
                             <td colspan="6" class="text-center py-4">
-                                <i class="fas fa-info-circle"></i> No deleted events found
+                                <i class="fas fa-info-circle"></i> No removed events found
                             </td>
                         </tr>
                         {% endfor %}

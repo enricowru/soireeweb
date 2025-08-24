@@ -32,7 +32,7 @@
 
                             <form method="post" action="{% url 'mobile_post_delete' post.id %}" style="display:inline;">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this post?');">Delete</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Remove this post?');">Remove</button>
                             </form>
                         </td>
                     </tr>

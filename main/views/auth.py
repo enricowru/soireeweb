@@ -105,7 +105,6 @@ def login_view(request):
 
 def logout_view(request):
     request.session.flush()
-    messages.success(request, 'You have been successfully logged out.')
     return redirect('login')
 
 def is_admin(request):
