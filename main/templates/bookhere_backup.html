@@ -1,0 +1,735 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <div class="container">
+        <div class="wizard-content">
+            
+            <!-- ========================================================= -->
+            <!--                       STEP 0 – CELEBRANT                  -->
+            <!-- ========================================================= -->
+            <div id="step-0" class="wizard-step" style="display:none;">
+                <div class="step-form-container">
+                    <div class="step-header">
+                        <h3 class="step-title">What's the celebrant's name?</h3>
+                        <p class="step-subtitle">Let's start with the basics</p>
+                    </div>
+                    
+                    <div id="alert-name" class="alert alert-danger d-none"></div>
+                    
+                    <form id="name-form" class="step-form" autocomplete="off">
+                        <div class="form-group">
+                            <input type="text" id="celebrant-name" class="form-control step-input" 
+                                   required placeholder="Enter full name">
+                        </div>
+                        
+                        <div class="step-navigation">
+                            <button type="submit" class="btn btn-primary next-btn">
+                                Next <i class="fa fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>a charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Here ‑ Nike's Catering Services</title>
+
+    <!-- STYLES -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bookhere.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+{% include 'navbar.html' %}
+
+<!-- ===============   PROGRESS BAR AT TOP   =============== -->
+<div class="wizard-progress-header">
+    <div class="container">
+        <div class="step-progress-bar">
+            {% comment %} 8 steps {% endcomment %}
+            {% for s in "01234567" %}
+                <div class="step" data-step="{{ forloop.counter0 }}">
+                    <div class="step-icon">
+                        {% if forloop.counter0 == 0 %}<i class="fa-solid fa-user"></i>{% endif %}
+                        {% if forloop.counter0 == 1 %}<i class="fa-regular fa-calendar"></i>{% endif %}
+                        {% if forloop.counter0 == 2 %}<i class="fa-regular fa-clipboard"></i>{% endif %}
+                        {% if forloop.counter0 == 3 %}<i class="fa-solid fa-users"></i>{% endif %}
+                        {% if forloop.counter0 == 4 %}<i class="fa-solid fa-location-dot"></i>{% endif %}
+                        {% if forloop.counter0 == 5 %}<i class="fa-solid fa-palette"></i>{% endif %}
+                        {% if forloop.counter0 == 6 %}<i class="fa-solid fa-box"></i>{% endif %}
+                        {% if forloop.counter0 == 7 %}<i class="fa-solid fa-utensils"></i>{% endif %}
+                    </div>
+                    <div class="step-circle"><span class="step-check"><i class="fa fa-check"></i></span></div>
+                    <div class="step-label">
+                        {% if forloop.counter0 == 0 %}Celebrant{% endif %}
+                        {% if forloop.counter0 == 1 %}Date of Event{% endif %}
+                        {% if forloop.counter0 == 2 %}Type of Event{% endif %}
+                        {% if forloop.counter0 == 3 %}Number of Pax{% endif %}
+                        {% if forloop.counter0 == 4 %}Location{% endif %}
+                        {% if forloop.counter0 == 5 %}Color Motif{% endif %}
+                        {% if forloop.counter0 == 6 %}Packages{% endif %}
+                        {% if forloop.counter0 == 7 %}Food Menu{% endif %}
+                    </div>
+                </div>
+                {% if not forloop.last %}<div class="step-line"></div>{% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- ===============   MAIN WIZARD CONTAINER   =============== -->
+<div class="wizard-container">
+    <div class="container">
+        <div class="wizard-content">
+
+    <!-- ========================================================= -->
+    <!--                       STEP 0 – celebrant                  -->
+    <!-- ========================================================= -->
+    <div id="name-modal" class="date-modal" style="display:none;">
+        <div class="date-modal-content">
+            <div id="alert-name" class="modal-alert alert alert-danger d-none"></div>
+            <div class="date-modal-message">What's the celebrant's name?</div>
+            <form id="name-form" autocomplete="off">
+                <input type="text" id="celebrant-name" class="date-input" required placeholder="Enter full name">
+                <button type="submit" class="date-submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!--                       STEP 1 – DATE                       -->
+    <!-- ========================================================= -->
+    <div id="date-modal" class="date-modal" style="display:none;">
+        <div class="date-modal-content">
+            <div id="alert-date" class="modal-alert alert alert-danger d-none"></div>
+
+            <div class="date-modal-message">
+                Hey there! I'm Patrice — your go‑to buddy for planning awesome events.
+                So, what date are we looking at for your event?
+            </div>
+
+            <form id="date-form" autocomplete="off">
+                <input type="date" id="date-picker" class="date-input" required>
+                <button type="submit" class="date-submit">Submit Date</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!--                     STEP 2 – EVENT TYPE                    -->
+    <!-- ========================================================= -->
+    <div id="event-modal" class="date-modal" style="display:none;">
+        <div class="date-modal-content">
+            <div id="alert-event" class="modal-alert alert alert-danger d-none"></div>
+
+            <div class="date-modal-message">
+                Great! Now, what type of event would you like to plan?
+            </div>
+
+            <div class="event-btn-group">
+                <button type="button" class="event-btn">Kiddie Party</button>
+                <button type="button" class="event-btn">Birthday Party</button>
+                <button type="button" class="event-btn">Wedding</button>
+                <button type="button" class="event-btn">Christening</button>
+            </div>
+
+            <form id="custom-event-form" autocomplete="off">
+                <input type="text" class="custom-event-input" placeholder="Or type your custom event type…">
+                <button type="submit" class="custom-event-submit">Submit Custom Event</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!--                     STEP 3 – PAX                           -->
+    <!-- ========================================================= -->
+    <div id="pax-modal" class="date-modal" style="display:none;">
+        <div class="date-modal-content">
+            <div id="alert-pax" class="modal-alert alert alert-danger d-none"></div>
+
+            <div class="date-modal-message">
+                Great! Now, please tell me the number of guests (pax) for your event.
+            </div>
+
+            <form id="pax-form" autocomplete="off" style="width:100%;">
+                <select id="pax-select" class="pax-select" required>
+                    <option value="" disabled selected>--Select Number of Guests--</option>
+                    <option value="70">70 pax</option>
+                    <option value="80">80 pax</option>
+                    <option value="100">100 pax</option>
+                    <option value="120">120 pax</option>
+                    <option value="150">150 pax</option>
+                    <option value="200">200 pax</option>
+                    <option value="250">250 pax</option>
+                </select>
+                <button type="submit" class="pax-submit">Submit</button>
+            </form>
+
+            <form id="custom-pax-form" autocomplete="off" style="width:100%; margin-top:10px;">
+                <input type="number" class="custom-pax-input" placeholder="Or type custom number" min="1">
+                <button type="submit" class="custom-pax-submit">Submit Custom</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!--                  STEP 4 – LOCATION                         -->
+    <!-- ========================================================= -->
+    <div id="location-modal" class="date-modal" style="display:none;">
+        <div class="date-modal-content">
+            <div id="alert-location" class="modal-alert alert alert-danger d-none"></div>
+            <div class="date-modal-message">Please enter the venue name and upload a floor plan.</div>
+            <form id="location-form" style="width:100%; display:flex; flex-direction:column; gap:10px;" enctype="multipart/form-data">
+                <input type="text" id="venue-input" class="custom-location-input" placeholder="Venue name..." required>
+                <label for="wizard-floorplan">Upload Floor Plan:</label>
+                <input type="file" id="wizard-floorplan" accept="image/*">
+                <img id="floorplan-preview" style="max-width:100%; border:1px solid #ccc; border-radius:8px; display:none;">
+                <button type="submit" class="location-submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!--                    STEP 5 – COLOR                          -->
+    <!-- ========================================================= -->
+     <div id="color-modal" class="date-modal" style="display:none;">
+        <div class="date-modal-content">
+            <div id="alert-color" class="modal-alert alert alert-danger d-none"></div>
+            <div class="date-modal-message">Choose a color motif for your event.</div>
+            <form id="color-form" autocomplete="off" style="width:100%;">
+                <select id="color-select" class="form-select" required>
+                    <option value="" disabled selected>--Select Color--</option>
+                    <option value="Red">Red</option>
+                    <option value="Blue">Blue</option>
+                    <option value="Green">Green</option>
+                    <option value="Yellow">Yellow</option>
+                    <option value="Pink">Pink</option>
+                    <option value="Purple">Purple</option>
+                    <option value="Orange">Orange</option>
+                    <option value="Teal">Teal</option>
+                    <option value="Brown">Brown</option>
+                    <option value="Black">Black</option>
+                    <option value="White">White</option>
+                    <option value="Gray">Gray</option>
+                    <option value="Gold">Gold</option>
+                    <option value="Silver">Silver</option>
+                    <option value="Maroon">Maroon</option>
+                    <option value="Navy">Navy</option>
+                    <option value="Lavender">Lavender</option>
+                    <option value="Magenta">Magenta</option>
+                    <option value="Cyan">Cyan</option>
+                    <option value="Olive">Olive</option>
+                    <option value="Coral">Coral</option>
+                    <option value="Turquoise">Turquoise</option>
+                    <option value="Peach">Peach</option>
+                    <option value="Beige">Beige</option>
+                    <option value="Mint">Mint</option>
+                    <option value="Plum">Plum</option>
+                    <option value="Indigo">Indigo</option>
+                    <option value="Sky Blue">Sky Blue</option>
+                    <option value="Khaki">Khaki</option>
+                    <option value="Charcoal">Charcoal</option>
+                    <option value="Rose">Rose</option>
+                </select>
+                <button type="submit" class="color-submit" style="margin-top:10px;">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!--                 STEP 5 – PACKAGE                           -->
+    <!-- ========================================================= -->
+    <div id="packages-modal" class="date-modal" style="display:none;">
+        <div class="date-modal-content" style="max-width:400px;">
+            <div id="alert-package" class="modal-alert alert alert-danger d-none"></div>
+
+            <div class="date-modal-message" style="margin-bottom:18px;">
+                You selected: <span id="package-summary">Wedding 180 Pax</span>
+            </div>
+
+            <div style="display:flex; justify-content:center; margin-bottom:18px;">
+                <img id="package_img" src="https://i.ibb.co/6b7Qw8d/sample-package.jpg" alt="Package Sample"
+                     style="width:240px; border-radius:12px; box-shadow:0 2px 8px #0002;">
+            </div>
+
+            <div class="date-modal-message" style="margin-bottom:12px;">Which package do you want for this?</div>
+
+            <div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
+                <button type="button" class="package-choice-btn">Package A</button>
+                <button type="button" class="package-choice-btn">Package B</button>
+                <button type="button" class="package-choice-btn">Package C</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!--               STEP 6 – FOOD‑MENU (FINAL)                   -->
+    <!-- ========================================================= -->
+     <div id="foodmenu-modal" class="date-modal" style="display:none;">
+    <div class="date-modal-content" style="max-width:500px; max-height:80vh; overflow-y:auto;">
+      <div id="alert-food" class="modal-alert alert alert-danger d-none"></div>
+      <form id="foodmenu-form" autocomplete="off" style="width:100%;">
+        <div class="date-modal-message">Please select <strong>4 dishes total</strong> + 1 pasta + 1 drink:</div>
+
+        <!-- Beef -->
+        <div class="food-section" data-group="beef">
+          <div class="food-section-label">Beef</div>
+          <div class="food-btn-group" data-limit="4">
+            <button type="button" class="food-btn">Beef Broccoli</button>
+            <button type="button" class="food-btn">Beef Caldereta</button>
+            <button type="button" class="food-btn">Beef Kare‑Kare</button>
+            <button type="button" class="food-btn">Beef Teriyaki</button>
+            <button type="button" class="food-btn">Beef with Gravy Sauce</button>
+            <button type="button" class="food-btn">Garlic Beef</button>
+            <button type="button" class="food-btn">Lengua Pastel</button>
+            <button type="button" class="food-btn">Pot‑Roast Beef</button>
+          </div>
+        </div>
+
+        <!-- Pork -->
+        <div class="food-section" data-group="pork">
+          <div class="food-section-label">Pork</div>
+          <div class="food-btn-group" data-limit="4">
+            <button type="button" class="food-btn">Grilled Liempo</button>
+            <button type="button" class="food-btn">Hawaiian Spareribs</button>
+            <button type="button" class="food-btn">Kare‑Kare Bagnet</button>
+            <button type="button" class="food-btn">Lechon Kawali</button>
+            <button type="button" class="food-btn">Lengua Pastel</button>
+            <button type="button" class="food-btn">Lumpiang Shanghai</button>
+            <button type="button" class="food-btn">Pork BBQ</button>
+            <button type="button" class="food-btn">Pork Caldereta</button>
+            <button type="button" class="food-btn">Pork Hamonado</button>
+            <button type="button" class="food-btn">Pork Menudo</button>
+            <button type="button" class="food-btn">Pork Morcon</button>
+            <button type="button" class="food-btn">Pork Teriyaki</button>
+            <button type="button" class="food-btn">Roast Pork Hawaiian</button>
+            <button type="button" class="food-btn">Roast Pork with Raisin Sauce</button>
+          </div>
+        </div>
+
+        <!-- Chicken -->
+        <div class="food-section" data-group="chicken">
+          <div class="food-section-label">Chicken</div>
+          <div class="food-btn-group" data-limit="4">
+            <button type="button" class="food-btn">Breaded Fried Chicken</button>
+            <button type="button" class="food-btn">Buttered Chicken</button>
+            <button type="button" class="food-btn">Chicken BBQ</button>
+            <button type="button" class="food-btn">Chicken Cordon Bleu</button>
+            <button type="button" class="food-btn">Chicken Lollipop</button>
+            <button type="button" class="food-btn">Chicken Pastel</button>
+            <button type="button" class="food-btn">Chicken Teriyaki</button>
+            <button type="button" class="food-btn">Honey Glazed Chicken</button>
+            <button type="button" class="food-btn">Hongkong Chicken</button>
+            <button type="button" class="food-btn">Orange Chicken with Lemon Sauce</button>
+            <button type="button" class="food-btn">Royal Chicken</button>
+          </div>
+        </div>
+
+        <!-- Seafood -->
+        <div class="food-section" data-group="seafood">
+          <div class="food-section-label">Seafood</div>
+          <div class="food-btn-group" data-limit="4">
+            <button type="button" class="food-btn">Calamares</button>
+            <button type="button" class="food-btn">Fish Fillet with Chili Sauce</button>
+            <button type="button" class="food-btn">Fish Fillet with Tartar Sauce</button>
+            <button type="button" class="food-btn">Fish Tofu</button>
+            <button type="button" class="food-btn">Mixed Seafoods with Vegetables</button>
+            <button type="button" class="food-btn">Squid with Lemon Sauce</button>
+            <button type="button" class="food-btn">Tempura</button>
+          </div>
+        </div>
+
+        <!-- Vegetables -->
+        <div class="food-section" data-group="vegetables">
+          <div class="food-section-label">Vegetables</div>
+          <div class="food-btn-group" data-limit="4">
+            <button type="button" class="food-btn">Buttered Mixed Vegetables</button>
+            <button type="button" class="food-btn">Chopsuey in White Sauce</button>
+            <button type="button" class="food-btn">Chopsuey in Oyster Sauce</button>
+            <button type="button" class="food-btn">Lumpiang Sariwa</button>
+            <button type="button" class="food-btn">Oriental Mixed Vegetables</button>
+            <button type="button" class="food-btn">Stir Fry Vegetables</button>
+          </div>
+        </div>
+
+        <!-- Pasta -->
+        <div class="food-section" data-group="pasta">
+          <div class="food-section-label">Please select 1 pasta:</div>
+          <div class="food-btn-group" data-limit="1">
+            <button type="button" class="food-btn">Baked Macaroni</button>
+            <button type="button" class="food-btn">Fettuccine Alfredo</button>
+            <button type="button" class="food-btn">Lasagna Rolls</button>
+            <button type="button" class="food-btn">Linguine in White or Red Sauce</button>
+            <button type="button" class="food-btn">Pancit Bihon or Canton</button>
+            <button type="button" class="food-btn">Penne in White or Red Sauce</button>
+            <button type="button" class="food-btn">Rigatoni in White or Red Sauce</button>
+            <button type="button" class="food-btn">Spaghetti</button>
+          </div>
+        </div>
+
+        <!-- Drink -->
+        <div class="food-section" data-group="drink">
+          <div class="food-section-label">Please select 1 drink:</div>
+          <div class="food-btn-group" data-limit="1">
+            <button type="button" class="food-btn">Blue Lemonade</button>
+            <button type="button" class="food-btn">Cucumber Lemonade</button>
+            <button type="button" class="food-btn">Four Seasons</button>
+            <button type="button" class="food-btn">Lemon Tea</button>
+            <button type="button" class="food-btn">Orange Juice</button>
+            <button type="button" class="food-btn">Pineapple Juice</button>
+            <button type="button" class="food-btn">Red Tea</button>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:center; margin-top:18px;">
+          <button type="submit" class="foodmenu-submit">
+            <i class="fa fa-check-circle"></i> Submit
+          </button>
+        </div>
+      </form>
+    </div>
+</div><!-- /.bookhere-progress-container -->
+
+<!-- ----------  HIDDEN FINAL FORM  ---------- -->
+<form id="final-booking-form" method="POST" action="{% url 'bookhere_submit' %}" style="display:none;" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="payload" id="booking-payload">
+    <input type="file" name="floorplan-payload" id="floorplan-payload" style="display:none;" accept="image/*">
+</form>
+
+<!-- ============================================================== -->
+<!--                          JAVASCRIPT                             -->
+<!-- ============================================================== -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const datePicker = document.getElementById('date-picker');
+    
+    // Set min and max to today's date
+    const today = new Date().toISOString().split('T')[0];
+    datePicker.setAttribute('min', today);
+    //datePicker.setAttribute('max', today);
+    datePicker.value = today;
+    
+    // Prevent manual input
+    datePicker.addEventListener('keydown', function(e) {
+        e.preventDefault();
+        return false;
+    });
+});
+
+
+function showAlert(modalId, msg){
+    const alertDiv = document.getElementById('alert-'+modalId);
+    if(alertDiv){
+        alertDiv.textContent = msg;
+        alertDiv.classList.remove('d-none');
+    }
+}
+function clearAlert(modalId){
+    const alertDiv = document.getElementById('alert-'+modalId);
+    if(alertDiv){
+        alertDiv.classList.add('d-none');
+        alertDiv.textContent='';
+    }
+}
+
+ class BookDetails {
+    constructor(CustomerName, Schedule, TypeOfEvent, NumberOfPax, Location, ColorMotif, Package, ListOfFood) {
+        this.CustomerName = CustomerName; 
+        this.Schedule = Schedule;
+        this.TypeOfEvent = TypeOfEvent ;
+        this.NumberOfPax  = NumberOfPax;
+        this.Location = Location;
+        this.ColorMotif = ColorMotif;
+        this.Package = Package ;
+        this.ListOfFood = ListOfFood;
+    }
+  }
+
+
+document.addEventListener('DOMContentLoaded', ()=>{
+    const nameModal = document.getElementById('name-modal');
+    const dateModal = document.getElementById('date-modal');
+    const eventModal = document.getElementById('event-modal');
+    const paxModal = document.getElementById('pax-modal');
+    const locationModal = document.getElementById('location-modal');
+    const colorModal = document.getElementById('color-modal');
+    const packagesModal = document.getElementById('packages-modal');
+    const foodModal = document.getElementById('foodmenu-modal');
+    const floorplanInput = document.getElementById('wizard-floorplan');
+    const floorplanPreview = document.getElementById('floorplan-preview');
+    const finalFloorPlan = document.getElementById('floorplan-payload');
+
+    const answers=[null,null,null,null,null,null,null,null]; // [name,date,event,pax,location,color,package,food]
+    const bookDetails = new BookDetails();
+    const baseImg = "{% static 'main/images/' %}";
+
+    function updateStepProgress(){
+        document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('completed',!!answers[i]));
+        document.querySelectorAll('.step-line').forEach((l,i)=>l.classList.toggle('completed',!!answers[i]));
+    }
+
+    
+    /* STEP 0 - Name */
+    document.getElementById('name-form').addEventListener('submit',e=>{
+        e.preventDefault();
+        const val=document.getElementById('celebrant-name').value.trim();
+        if(!val) return showAlert('name','Please enter a name.');
+        clearAlert('name');
+        answers[0]=val;
+        bookDetails.CustomerName = val;
+        nameModal.style.display='none';
+        updateStepProgress();
+    });
+
+    /* STEP 1 – Date */
+    document.getElementById('date-form').addEventListener('submit',e=>{
+        e.preventDefault();
+        const val=document.getElementById('date-picker').value;
+        if(!val){
+            showAlert('date','Please choose a date.');
+            return;
+        }
+        clearAlert('date');
+        answers[1]=val; // correct index for date
+        bookDetails.Schedule = val;
+        dateModal.style.display='none';
+        updateStepProgress();
+    });
+
+    /* STEP 2 – Event Type */
+    document.querySelectorAll('.event-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+            clearAlert('event');
+            answers[2]=btn.textContent.trim();
+            eventModal.style.display='none';
+            bookDetails.TypeOfEvent = btn.textContent.trim();
+            updateStepProgress();
+        });
+    });
+    document.getElementById('custom-event-form').addEventListener('submit',e=>{
+        e.preventDefault();
+        const val=document.querySelector('.custom-event-input').value.trim();
+        if(!val){
+            showAlert('event','Please type a custom event name.');
+            return;
+        }
+        clearAlert('event');
+        answers[2]=val;
+        bookDetails.TypeOfEvent = val;
+              fetch("{% url 'cloudImg' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: `${bookDetails.TypeOfEvent}_${bookDetails.NumberOfPax}`,
+        }).then(response => {
+             document.getElementById('package_img').src = response;
+            console.log(response);
+        })
+        .catch(error => {
+        });
+
+        document.getElementById('package_img').src = 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1749018729/wedding_170pax_wb3mcl.jpg';
+        eventModal.style.display='none';
+        updateStepProgress();
+    });
+
+    /* STEP 3 – Pax */
+    document.getElementById('pax-form').addEventListener('submit',e=>{
+        e.preventDefault();
+        const val=document.getElementById('pax-select').value;
+        if(!val){
+            showAlert('pax','Please select the number of guests.');
+            return;
+        }
+        clearAlert('pax');
+        answers[3]=val;
+        bookDetails.NumberOfPax = val;
+       
+        // fetch("{% url 'cloudImg' %}", {
+        //     method: 'POST',
+        //     headers: {
+        //         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        //     },
+        //     body: `${bookDetails.TypeOfEvent.toLower()}_${bookDetails.NumberOfPax}`,
+        // }).then(response => {
+        //      document.getElementById('package_img').src = response;
+        //     console.log(response);
+        // })
+        // .catch(error => {
+        // });
+
+        document.getElementById('package_img').src = 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1749018729/wedding_170pax_wb3mcl.jpg';
+
+
+        paxModal.style.display='none';
+        updateStepProgress();
+    });
+
+    document.getElementById('custom-pax-form').addEventListener('submit',e=>{
+        e.preventDefault();
+        const val=document.querySelector('.custom-pax-input').value;
+        if(!val){
+            showAlert('pax','Please type a custom number.');
+            return;
+        }
+        clearAlert('pax');
+        answers[3]=val;
+        bookDetails.NumberOfPax = val;
+
+  
+        paxModal.style.display='none';
+        updateStepProgress();
+    });
+
+    /* STEP 4 – Location */
+    floorplanInput.addEventListener('change', ()=>{
+        const file = floorplanInput.files[0];
+        const venue=document.getElementById('venue-input').value.trim();
+        if(file){
+            const reader = new FileReader();
+            reader.onload = e => {
+                floorplanPreview.src = e.target.result;
+                floorplanPreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+         answers[4]={venue: venue, floorplan: file };
+         bookDetails.Location = {venue: venue, floorplan: file };
+    });
+
+    document.getElementById('location-form').addEventListener('submit',e=>{
+        e.preventDefault();
+        const venue=document.getElementById('venue-input').value.trim();
+        const file=floorplanInput.files[0];
+        if(!venue) return showAlert('location','Please enter a venue name.');
+        clearAlert('location');
+        answers[4]={venue: venue, floorplan: file ? file : null};
+        bookDetails.Location ={venue: venue, floorplan: file ? file : null};
+        locationModal.style.display='none';
+        updateStepProgress();
+    });
+
+    /* STEP 5 – Color */
+    document.getElementById('color-form').addEventListener('submit',e=>{
+        e.preventDefault();
+        const val=document.getElementById('color-select').value;
+        if(!val){
+            showAlert('color','Please pick a color.');
+            return;
+        }
+        clearAlert('color');
+        answers[5]=val;
+        bookDetails.ColorMotif =val
+        colorModal.style.display='none';
+        updateStepProgress();
+    });
+
+    /* STEP 6 – Package */
+    document.querySelectorAll('.package-choice-btn').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+            clearAlert('package');
+            answers[6]=btn.textContent.trim();
+            bookDetails.Package=btn.textContent.trim();
+            packagesModal.style.display='none';
+            updateStepProgress();
+        });
+    });
+
+    /* STEP 7 – Food Menu */
+    document.querySelectorAll('.food-btn-group').forEach(group=>{
+        const limit=parseInt(group.dataset.limit,10);
+        group.querySelectorAll('.food-btn').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                btn.classList.toggle('selected');
+                const sel=group.querySelectorAll('.food-btn.selected');
+                if(sel.length>limit) btn.classList.remove('selected');
+            });
+        });
+    });
+
+    const selectedIn = (name) =>{
+        const sec=document.querySelector(`.food-section[data-group="${name}"]`);
+        return sec ? Array.from(sec.querySelectorAll('.food-btn.selected')).map(b=>b.textContent.trim()) : [];
+    };
+
+    document.getElementById('foodmenu-form').addEventListener('submit',e=>{
+        e.preventDefault();
+        const dishGroups = ['beef','pork','chicken','seafood','vegetables'];
+        const dishes = dishGroups.flatMap(selectedIn);
+        const pastaSel = selectedIn('pasta');
+        const drinkSel = selectedIn('drink');
+
+        if(dishes.length !== 4) return showAlert('food','Select exactly 4 dishes total.');
+        if(pastaSel.length !== 1) return showAlert('food','Select exactly 1 pasta.');
+        if(drinkSel.length !== 1) return showAlert('food','Select exactly 1 drink.');
+
+        clearAlert('food');
+        // Assume you have a `File` object stored somewhere from your wizard (answers[4].floorplanFile)
+        const payload = {
+            celebrant_name : answers[0],            // Step 0 - Celebrant's Name
+            date           : answers[1],            // Step 1 - Date of Event
+            event_type     : answers[2],            // Step 2 - Type of Event
+            pax            : answers[3],            // Step 3 - Number of Pax
+            location       : {                      // Step 4 - Venue & Floor Plan
+                venue     : answers[4]?.venue || "",
+            },
+            color_motif    : answers[5],             // Step 5 - Color Motif
+            package        : answers[6],             // Step 6 - Package
+            menu           : {                       // Step 7 - Food Menu
+                dishes : dishes,         
+                pasta  : pastaSel[0],     
+                drink  : drinkSel[0]      
+            }
+        };
+        const formData = new FormData();
+        formData.append("payload", JSON.stringify(payload));
+        if (answers[4] && answers[4].floorplan) {
+        // The key name here must match what you are looking for in Django
+            formData.append("floorplan-payload", answers[4].floorplan);
+        }
+        fetch("{% url 'bookhere_submit' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: formData,
+        }).then(response => {
+             window.location.replace("/my_bookings");
+        })
+        .catch(error => {
+        });
+  
+
+    });
+
+    /* Navigation */
+    function openModalByIdx(idx){
+        if(idx>0 && !answers[idx-1]) return;
+        [nameModal,dateModal,eventModal,paxModal,locationModal,colorModal,packagesModal,foodModal]
+            .forEach(m=>m.style.display='none');
+        if(idx===0) nameModal.style.display='flex';
+        if(idx===1) dateModal.style.display='flex';
+        if(idx===2) eventModal.style.display='flex';
+        if(idx===3) paxModal.style.display='flex';
+        if(idx===4) locationModal.style.display='flex';
+        if(idx===5) colorModal.style.display='flex';
+        if(idx===6) packagesModal.style.display='flex';
+        if(idx===7) foodModal.style.display='flex';
+    }
+
+    document.querySelectorAll('.step-circle').forEach((c,i)=>{
+        c.style.cursor='pointer';
+        c.addEventListener('click',()=>openModalByIdx(i));
+    });
+
+    openModalByIdx(0);
+    updateStepProgress();
+});
+</script>
+
+</body>
+</html>

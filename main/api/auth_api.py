@@ -9,17 +9,31 @@ from django.contrib.auth.decorators import login_required
 @require_http_methods(["POST"])
 def signup(request):
     try:
+        print(f"[SIGNUP] Request received: {request.method}")
+        print(f"[SIGNUP] Request headers: {dict(request.headers)}")
+        print(f"[SIGNUP] Request body: {request.body}")
+        print(f"[SIGNUP] Content-Type: {request.content_type}")
+        
         data = json.loads(request.body)
         firstname = data.get('firstname')
         lastname = data.get('lastname')
         username = data.get('username')
         email = data.get('email')
         password = data.get('password')
+        mobile = data.get('mobile')  # Add mobile field handling
+
+        print(f"[SIGNUP] Data parsed - Username: {username}, Email: {email}, Mobile: {mobile}")
 
         User = get_user_model()
         if User.objects.filter(username=username).exists():
+            print(f"[SIGNUP] Username {username} already exists")
             return JsonResponse({'message': 'Username already exists'}, status=400)
 
+        if User.objects.filter(email=email).exists():
+            print(f"[SIGNUP] Email {email} already exists")
+            return JsonResponse({'message': 'Email already exists'}, status=400)
+
+        print(f"[SIGNUP] Creating user...")
         user = User.objects.create_user(
             username=username,
             email=email,
@@ -27,9 +41,22 @@ def signup(request):
             first_name=firstname,
             last_name=lastname
         )
+        
+        # Set mobile field separately since create_user doesn't handle custom fields
+        if mobile:
+            user.mobile = mobile
+            user.save()
+            
+        print(f"[SIGNUP] User created successfully: {user.id}")
 
         return JsonResponse({'message': 'User registered successfully'}, status=201)
+    except json.JSONDecodeError as e:
+        print(f"[SIGNUP ERROR] JSON Decode Error: {str(e)}")
+        return JsonResponse({'message': 'Invalid JSON format', 'error': str(e)}, status=400)
     except Exception as e:
+        print(f"[SIGNUP ERROR] {str(e)}")
+        import traceback
+        traceback.print_exc()
         return JsonResponse({'message': 'Server error', 'error': str(e)}, status=500)
 
 @csrf_exempt

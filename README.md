@@ -102,10 +102,10 @@ python manage.py seed_admin
 ## 🚀 7. Run the Django Development Server
 
 ```bash
-uvicorn config.asgi:application --reload --port 8001
+uvicorn config.asgi:application --reload --port 8000
 ```
 
-> Visit: http://127.0.0.1:8001
+> Visit: http://127.0.0.1:8000
 
 ---
 

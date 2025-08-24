@@ -24,6 +24,7 @@ class BypassRefererCheckMiddleware(MiddlewareMixin):
             '/forgot-password/verify-otp/',
             '/forgot-password/reset/',
             '/api/posts/',  # Mobile posts API
+            '/signup/',  # Signup API
         ]
         
         # Check for API endpoints with dynamic IDs

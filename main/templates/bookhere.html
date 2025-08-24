@@ -15,109 +15,115 @@
 <body>
 {% include 'navbar.html' %}
 
-<!-- ===============   MAIN WIZARD   =============== -->
-<div class="bookhere-progress-container">
-
-    <!-- ----------  STEP PROGRESS BAR  ---------- -->
-    <div class="step-progress-bar">
-        {% comment %} 7 steps {% endcomment %}
-        {% for s in "01234567" %}
-            <div class="step" data-step="{{ forloop.counter0 }}">
-                <div class="step-icon">
-                    {% if forloop.counter0 == 0 %}<i class="fa-regular fa-calendar"></i>{% endif %}
-                    {% if forloop.counter0 == 1 %}<i class="fa-regular fa-calendar"></i>{% endif %}
-                    {% if forloop.counter0 == 2 %}<i class="fa-regular fa-clipboard"></i>{% endif %}
-                    {% if forloop.counter0 == 3 %}<i class="fa-solid fa-users"></i>{% endif %}
-                    {% if forloop.counter0 == 4 %}<i class="fa-solid fa-location-dot"></i>{% endif %}
-                    {% if forloop.counter0 == 5 %}<i class="fa-solid fa-palette"></i>{% endif %}
-                    {% if forloop.counter0 == 6 %}<i class="fa-solid fa-box"></i>{% endif %}
-                    {% if forloop.counter0 == 7 %}<i class="fa-solid fa-utensils"></i>{% endif %}
+<!-- ===============   PROGRESS BAR AT TOP   =============== -->
+<div class="wizard-progress-header">
+    <div class="container">
+        <div class="step-progress-bar">
+            {% for s in "01234567" %}
+                <div class="step" data-step="{{ forloop.counter0 }}">
+                    <div class="step-icon">
+                        {% if forloop.counter0 == 0 %}<i class="fa-solid fa-user"></i>{% endif %}
+                        {% if forloop.counter0 == 1 %}<i class="fa-regular fa-calendar"></i>{% endif %}
+                        {% if forloop.counter0 == 2 %}<i class="fa-regular fa-clipboard"></i>{% endif %}
+                        {% if forloop.counter0 == 3 %}<i class="fa-solid fa-users"></i>{% endif %}
+                        {% if forloop.counter0 == 4 %}<i class="fa-solid fa-location-dot"></i>{% endif %}
+                        {% if forloop.counter0 == 5 %}<i class="fa-solid fa-palette"></i>{% endif %}
+                        {% if forloop.counter0 == 6 %}<i class="fa-solid fa-box"></i>{% endif %}
+                        {% if forloop.counter0 == 7 %}<i class="fa-solid fa-utensils"></i>{% endif %}
+                    </div>
+                    <div class="step-label">
+                        {% if forloop.counter0 == 0 %}Celebrant{% endif %}
+                        {% if forloop.counter0 == 1 %}Date of Event{% endif %}
+                        {% if forloop.counter0 == 2 %}Type of Event{% endif %}
+                        {% if forloop.counter0 == 3 %}Number of Pax{% endif %}
+                        {% if forloop.counter0 == 4 %}Location{% endif %}
+                        {% if forloop.counter0 == 5 %}Color Motif{% endif %}
+                        {% if forloop.counter0 == 6 %}Packages{% endif %}
+                        {% if forloop.counter0 == 7 %}Food Menu{% endif %}
+                    </div>
                 </div>
-                <div class="step-circle"><span class="step-check"><i class="fa fa-check"></i></span></div>
-                <div class="step-label">
-                    {% if forloop.counter0 == 0 %}Celebrant{% endif %}
-                    {% if forloop.counter0 == 1 %}Date of Event{% endif %}
-                    {% if forloop.counter0 == 2 %}Type of Event{% endif %}
-                    {% if forloop.counter0 == 3 %}Number of Pax{% endif %}
-                    {% if forloop.counter0 == 4 %}Location{% endif %}
-                    {% if forloop.counter0 == 5 %}Color Motif{% endif %}
-                    {% if forloop.counter0 == 6 %}Packages{% endif %}
-                    {% if forloop.counter0 == 7 %}Food Menu{% endif %}
-                </div>
-            </div>
-            {% if not forloop.last %}<div class="step-line"></div>{% endif %}
-        {% endfor %}
+                {% if not forloop.last %}<div class="step-line"></div>{% endif %}
+            {% endfor %}
+        </div>
     </div>
+</div>
 
+<!-- ===============   MAIN WIZARD CONTAINER   =============== -->
+<div class="wizard-container">
+    
     <!-- ========================================================= -->
-    <!--                       STEP 0 – celebrant                  -->
+    <!--                       STEP 0 – CELEBRANT                  -->
     <!-- ========================================================= -->
-    <div id="name-modal" class="date-modal" style="display:none;">
+    <div id="step-0" class="wizard-step" style="display:none;">
         <div class="date-modal-content">
             <div id="alert-name" class="modal-alert alert alert-danger d-none"></div>
-            <div class="date-modal-message">What's the celebrant's name?</div>
+            <div class="date-modal-message">Hey there! I'm Patrice — your go‑to buddy for planning awesome events.
+                So, what's the celebrant's name?</div>
             <form id="name-form" autocomplete="off">
-                <input type="text" id="celebrant-name" class="date-input" required placeholder="Enter full name">
-                <button type="submit" class="date-submit">Submit</button>
+                <div style="display:flex; justify-content:center;">
+                    <input style="width:70%;" type="text" id="celebrant-name" class="date-input" required placeholder="Enter full name">
+                </div>
+                <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+                    <button type="submit" class="date-submit">Next</button>
+                </div>
             </form>
         </div>
     </div>
 
     <!-- ========================================================= -->
-    <!--                       STEP 1 – DATE                       -->
+    <!--                       STEP 1 – DATE                       -->
     <!-- ========================================================= -->
-    <div id="date-modal" class="date-modal" style="display:none;">
+    <div id="step-1" class="wizard-step" style="display:none;">
         <div class="date-modal-content">
             <div id="alert-date" class="modal-alert alert alert-danger d-none"></div>
-
             <div class="date-modal-message">
-                Hey there! I'm Patrice — your go‑to buddy for planning awesome events.
-                So, what date are we looking at for your event?
+                Great, so what date are we looking at for your event?
             </div>
-
             <form id="date-form" autocomplete="off">
-                <input type="date" id="date-picker" class="date-input" required>
-                <button type="submit" class="date-submit">Submit Date</button>
+                <input type="date" id="date-picker" class="date-input" required min="">
+                <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+                    <button type="button" class="back-btn">Back</button>
+                    <button type="submit" class="date-submit">Next</button>
+                </div>
             </form>
         </div>
     </div>
 
     <!-- ========================================================= -->
-    <!--                     STEP 2 – EVENT TYPE                    -->
+    <!--                     STEP 2 – EVENT TYPE                    -->
     <!-- ========================================================= -->
-    <div id="event-modal" class="date-modal" style="display:none;">
+    <div id="step-2" class="wizard-step" style="display:none;">
         <div class="date-modal-content">
             <div id="alert-event" class="modal-alert alert alert-danger d-none"></div>
-
             <div class="date-modal-message">
                 Great! Now, what type of event would you like to plan?
             </div>
-
             <div class="event-btn-group">
                 <button type="button" class="event-btn">Kiddie Party</button>
                 <button type="button" class="event-btn">Birthday Party</button>
                 <button type="button" class="event-btn">Wedding</button>
                 <button type="button" class="event-btn">Christening</button>
             </div>
-
             <form id="custom-event-form" autocomplete="off">
                 <input type="text" class="custom-event-input" placeholder="Or type your custom event type…">
                 <button type="submit" class="custom-event-submit">Submit Custom Event</button>
             </form>
+            <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+                <button type="button" class="back-btn">Back</button>
+                <button type="button" class="next-btn" id="event-next-btn" disabled>Next</button>
+            </div>
         </div>
     </div>
 
     <!-- ========================================================= -->
-    <!--                     STEP 3 – PAX                           -->
+    <!--                     STEP 3 – PAX                           -->
     <!-- ========================================================= -->
-    <div id="pax-modal" class="date-modal" style="display:none;">
+    <div id="step-3" class="wizard-step" style="display:none;">
         <div class="date-modal-content">
             <div id="alert-pax" class="modal-alert alert alert-danger d-none"></div>
-
             <div class="date-modal-message">
                 Great! Now, please tell me the number of guests (pax) for your event.
             </div>
-
             <form id="pax-form" autocomplete="off" style="width:100%;">
                 <select id="pax-select" class="pax-select" required>
                     <option value="" disabled selected>--Select Number of Guests--</option>
@@ -129,9 +135,11 @@
                     <option value="200">200 pax</option>
                     <option value="250">250 pax</option>
                 </select>
-                <button type="submit" class="pax-submit">Submit</button>
+                <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+                    <button type="button" class="back-btn">Back</button>
+                    <button type="submit" class="date-submit">Next</button>
+                </div>
             </form>
-
             <form id="custom-pax-form" autocomplete="off" style="width:100%; margin-top:10px;">
                 <input type="number" class="custom-pax-input" placeholder="Or type custom number" min="1">
                 <button type="submit" class="custom-pax-submit">Submit Custom</button>
@@ -140,562 +148,1047 @@
     </div>
 
     <!-- ========================================================= -->
-    <!--                  STEP 4 – LOCATION                         -->
+    <!--                  STEP 4 – LOCATION                         -->
     <!-- ========================================================= -->
-    <div id="location-modal" class="date-modal" style="display:none;">
+    <div id="step-4" class="wizard-step" style="display:none;">
         <div class="date-modal-content">
             <div id="alert-location" class="modal-alert alert alert-danger d-none"></div>
-            <div class="date-modal-message">Please enter the venue name and upload a floor plan.</div>
-            <form id="location-form" style="width:100%; display:flex; flex-direction:column; gap:10px;" enctype="multipart/form-data">
+            <div class="date-modal-message">Please enter the venue name and select a floor plan.</div>
+            <form id="location-form" style="width:100%; display:flex; flex-direction:column; gap:15px;">
                 <input type="text" id="venue-input" class="custom-location-input" placeholder="Venue name..." required>
-                <label for="wizard-floorplan">Upload Floor Plan:</label>
-                <input type="file" id="wizard-floorplan" accept="image/*">
-                <img id="floorplan-preview" style="max-width:100%; border:1px solid #ccc; border-radius:8px; display:none;">
-                <button type="submit" class="location-submit">Submit</button>
+                
+                <div class="date-modal-message" style="margin-bottom: 10px;">Select a floor plan:</div>
+                
+                <div id="floorplan-selection" style="display: flex; flex-direction: column; gap: 20px; align-items: center;">
+                    <!-- Floor plan images will be populated by JavaScript -->
+                </div>
+                
+                <input type="hidden" id="selected-floorplan" name="selected-floorplan">
+                
+                <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+                    <button type="button" class="back-btn">Back</button>
+                    <button type="submit" class="date-submit">Next</button>
+                </div>
             </form>
         </div>
     </div>
 
     <!-- ========================================================= -->
-    <!--                    STEP 5 – COLOR                          -->
+    <!--                    STEP 5 – COLOR                          -->
     <!-- ========================================================= -->
-     <div id="color-modal" class="date-modal" style="display:none;">
+     <div id="step-5" class="wizard-step" style="display:none;">
         <div class="date-modal-content">
             <div id="alert-color" class="modal-alert alert alert-danger d-none"></div>
             <div class="date-modal-message">Choose a color motif for your event.</div>
-            <form id="color-form" autocomplete="off" style="width:100%;">
-                <select id="color-select" class="form-select" required>
-                    <option value="" disabled selected>--Select Color--</option>
-                    <option value="Red">Red</option>
-                    <option value="Blue">Blue</option>
-                    <option value="Green">Green</option>
-                    <option value="Yellow">Yellow</option>
-                    <option value="Pink">Pink</option>
-                    <option value="Purple">Purple</option>
-                    <option value="Orange">Orange</option>
-                    <option value="Teal">Teal</option>
-                    <option value="Brown">Brown</option>
-                    <option value="Black">Black</option>
-                    <option value="White">White</option>
-                    <option value="Gray">Gray</option>
-                    <option value="Gold">Gold</option>
-                    <option value="Silver">Silver</option>
-                    <option value="Maroon">Maroon</option>
-                    <option value="Navy">Navy</option>
-                    <option value="Lavender">Lavender</option>
-                    <option value="Magenta">Magenta</option>
-                    <option value="Cyan">Cyan</option>
-                    <option value="Olive">Olive</option>
-                    <option value="Coral">Coral</option>
-                    <option value="Turquoise">Turquoise</option>
-                    <option value="Peach">Peach</option>
-                    <option value="Beige">Beige</option>
-                    <option value="Mint">Mint</option>
-                    <option value="Plum">Plum</option>
-                    <option value="Indigo">Indigo</option>
-                    <option value="Sky Blue">Sky Blue</option>
-                    <option value="Khaki">Khaki</option>
-                    <option value="Charcoal">Charcoal</option>
-                    <option value="Rose">Rose</option>
-                </select>
-                <button type="submit" class="color-submit" style="margin-top:10px;">Submit</button>
+            <form id="color-form" autocomplete="off" style="width:100%; display:flex; flex-direction:column; gap:15px;">
+                
+                <!-- Color Dropdown with Preview -->
+                <div class="color-dropdown-container">
+                    <select id="color-select" class="color-select-with-preview">
+                        <option value="" disabled selected>--Select Color--</option>
+                        <option value="Red" data-color="#FF0000">Red</option>
+                        <option value="Blue" data-color="#0000FF">Blue</option>
+                        <option value="Green" data-color="#008000">Green</option>
+                        <option value="Yellow" data-color="#FFFF00">Yellow</option>
+                        <option value="Pink" data-color="#FFC0CB">Pink</option>
+                        <option value="Purple" data-color="#800080">Purple</option>
+                        <option value="Orange" data-color="#FFA500">Orange</option>
+                        <option value="Teal" data-color="#008080">Teal</option>
+                        <option value="Brown" data-color="#A52A2A">Brown</option>
+                        <option value="Black" data-color="#000000">Black</option>
+                        <option value="White" data-color="#FFFFFF">White</option>
+                        <option value="Gray" data-color="#808080">Gray</option>
+                        <option value="Gold" data-color="#FFD700">Gold</option>
+                        <option value="Silver" data-color="#C0C0C0">Silver</option>
+                        <option value="Maroon" data-color="#800000">Maroon</option>
+                        <option value="Navy" data-color="#000080">Navy</option>
+                        <option value="Lavender" data-color="#E6E6FA">Lavender</option>
+                        <option value="Magenta" data-color="#FF00FF">Magenta</option>
+                        <option value="Cyan" data-color="#00FFFF">Cyan</option>
+                        <option value="Olive" data-color="#808000">Olive</option>
+                        <option value="Coral" data-color="#FF7F50">Coral</option>
+                        <option value="Turquoise" data-color="#40E0D0">Turquoise</option>
+                        <option value="Peach" data-color="#FFCBA4">Peach</option>
+                        <option value="Beige" data-color="#F5F5DC">Beige</option>
+                        <option value="Mint" data-color="#98FB98">Mint</option>
+                        <option value="Plum" data-color="#DDA0DD">Plum</option>
+                        <option value="Indigo" data-color="#4B0082">Indigo</option>
+                        <option value="Sky Blue" data-color="#87CEEB">Sky Blue</option>
+                        <option value="Khaki" data-color="#F0E68C">Khaki</option>
+                        <option value="Charcoal" data-color="#36454F">Charcoal</option>
+                        <option value="Rose" data-color="#FF007F">Rose</option>
+                    </select>
+                </div>
+
+                <!-- Divider Text -->
+                <div class="color-divider">
+                    <span>or</span>
+                </div>
+
+                <!-- Custom Color Picker -->
+                <div class="custom-color-container">
+                    <div class="date-modal-message" style="margin: 0; font-size: 14px;">Enter custom color:</div>
+                    <div class="color-input-group">
+                        <input type="color" id="color-picker" class="color-picker-input" value="#AD974F">
+                        <input type="text" id="hex-input" class="hex-input" placeholder="#FFFFFF" maxlength="7">
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+                    <button type="button" class="back-btn">Back</button>
+                    <button type="submit" class="date-submit">Next</button>
+                </div>
             </form>
         </div>
     </div>
 
     <!-- ========================================================= -->
-    <!--                 STEP 5 – PACKAGE                           -->
+    <!--                 STEP 6 – PACKAGE                           -->
     <!-- ========================================================= -->
-    <div id="packages-modal" class="date-modal" style="display:none;">
+    <div id="step-6" class="wizard-step" style="display:none;">
         <div class="date-modal-content" style="max-width:400px;">
             <div id="alert-package" class="modal-alert alert alert-danger d-none"></div>
-
             <div class="date-modal-message" style="margin-bottom:18px;">
-                You selected: <span id="package-summary">Wedding 180 Pax</span>
+                You selected: <span id="package-summary">Wedding 180 Pax</span>
             </div>
-
             <div style="display:flex; justify-content:center; margin-bottom:18px;">
                 <img id="package_img" src="https://i.ibb.co/6b7Qw8d/sample-package.jpg" alt="Package Sample"
                      style="width:240px; border-radius:12px; box-shadow:0 2px 8px #0002;">
             </div>
-
             <div class="date-modal-message" style="margin-bottom:12px;">Which package do you want for this?</div>
-
             <div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
                 <button type="button" class="package-choice-btn">Package A</button>
                 <button type="button" class="package-choice-btn">Package B</button>
                 <button type="button" class="package-choice-btn">Package C</button>
             </div>
+            <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+                <button type="button" class="back-btn">Back</button>
+                <button type="button" class="next-btn" id="package-next-btn" disabled>Next</button>
+            </div>
         </div>
     </div>
 
     <!-- ========================================================= -->
-    <!--               STEP 6 – FOOD‑MENU (FINAL)                   -->
+    <!--                   STEP 7 – FOOD MENU                       -->
     <!-- ========================================================= -->
-     <div id="foodmenu-modal" class="date-modal" style="display:none;">
-    <div class="date-modal-content" style="max-width:500px; max-height:80vh; overflow-y:auto;">
-      <div id="alert-food" class="modal-alert alert alert-danger d-none"></div>
-      <form id="foodmenu-form" autocomplete="off" style="width:100%;">
-        <div class="date-modal-message">Please select <strong>4 dishes total</strong> + 1 pasta + 1 drink:</div>
+    <div id="step-7" class="wizard-step" style="display:none;">
+        <div class="date-modal-content" style="max-width:500px; max-height:80vh; overflow-y:auto;">
+            <div id="alert-food" class="modal-alert alert alert-danger d-none"></div>
+            <form id="food-form" autocomplete="off" style="width:100%;">
+                <div class="date-modal-message">Please select <strong>4 dishes total</strong> + 1 pasta + 1 drink:</div>
 
-        <!-- Beef -->
-        <div class="food-section" data-group="beef">
-          <div class="food-section-label">Beef</div>
-          <div class="food-btn-group" data-limit="4">
-            <button type="button" class="food-btn">Beef Broccoli</button>
-            <button type="button" class="food-btn">Beef Caldereta</button>
-            <button type="button" class="food-btn">Beef Kare‑Kare</button>
-            <button type="button" class="food-btn">Beef Teriyaki</button>
-            <button type="button" class="food-btn">Beef with Gravy Sauce</button>
-            <button type="button" class="food-btn">Garlic Beef</button>
-            <button type="button" class="food-btn">Lengua Pastel</button>
-            <button type="button" class="food-btn">Pot‑Roast Beef</button>
-          </div>
-        </div>
+                <!-- Beef -->
+                <div class="food-section" data-group="beef">
+                    <div class="food-section-label">Beef</div>
+                    <div class="food-btn-group" data-limit="4">
+                        <button type="button" class="food-btn">Beef Broccoli</button>
+                        <button type="button" class="food-btn">Beef Caldereta</button>
+                        <button type="button" class="food-btn">Beef Kare‑Kare</button>
+                        <button type="button" class="food-btn">Beef Teriyaki</button>
+                        <button type="button" class="food-btn">Beef with Gravy Sauce</button>
+                        <button type="button" class="food-btn">Garlic Beef</button>
+                        <button type="button" class="food-btn">Lengua Pastel</button>
+                        <button type="button" class="food-btn">Pot‑Roast Beef</button>
+                    </div>
+                </div>
 
-        <!-- Pork -->
-        <div class="food-section" data-group="pork">
-          <div class="food-section-label">Pork</div>
-          <div class="food-btn-group" data-limit="4">
-            <button type="button" class="food-btn">Grilled Liempo</button>
-            <button type="button" class="food-btn">Hawaiian Spareribs</button>
-            <button type="button" class="food-btn">Kare‑Kare Bagnet</button>
-            <button type="button" class="food-btn">Lechon Kawali</button>
-            <button type="button" class="food-btn">Lengua Pastel</button>
-            <button type="button" class="food-btn">Lumpiang Shanghai</button>
-            <button type="button" class="food-btn">Pork BBQ</button>
-            <button type="button" class="food-btn">Pork Caldereta</button>
-            <button type="button" class="food-btn">Pork Hamonado</button>
-            <button type="button" class="food-btn">Pork Menudo</button>
-            <button type="button" class="food-btn">Pork Morcon</button>
-            <button type="button" class="food-btn">Pork Teriyaki</button>
-            <button type="button" class="food-btn">Roast Pork Hawaiian</button>
-            <button type="button" class="food-btn">Roast Pork with Raisin Sauce</button>
-          </div>
-        </div>
+                <!-- Pork -->
+                <div class="food-section" data-group="pork">
+                    <div class="food-section-label">Pork</div>
+                    <div class="food-btn-group" data-limit="4">
+                        <button type="button" class="food-btn">Grilled Liempo</button>
+                        <button type="button" class="food-btn">Hawaiian Spareribs</button>
+                        <button type="button" class="food-btn">Kare‑Kare Bagnet</button>
+                        <button type="button" class="food-btn">Lechon Kawali</button>
+                        <button type="button" class="food-btn">Lengua Pastel</button>
+                        <button type="button" class="food-btn">Lumpiang Shanghai</button>
+                        <button type="button" class="food-btn">Pork BBQ</button>
+                        <button type="button" class="food-btn">Pork Caldereta</button>
+                        <button type="button" class="food-btn">Pork Hamonado</button>
+                        <button type="button" class="food-btn">Pork Menudo</button>
+                        <button type="button" class="food-btn">Pork Morcon</button>
+                        <button type="button" class="food-btn">Pork Teriyaki</button>
+                        <button type="button" class="food-btn">Roast Pork Hawaiian</button>
+                        <button type="button" class="food-btn">Roast Pork with Raisin Sauce</button>
+                    </div>
+                </div>
 
-        <!-- Chicken -->
-        <div class="food-section" data-group="chicken">
-          <div class="food-section-label">Chicken</div>
-          <div class="food-btn-group" data-limit="4">
-            <button type="button" class="food-btn">Breaded Fried Chicken</button>
-            <button type="button" class="food-btn">Buttered Chicken</button>
-            <button type="button" class="food-btn">Chicken BBQ</button>
-            <button type="button" class="food-btn">Chicken Cordon Bleu</button>
-            <button type="button" class="food-btn">Chicken Lollipop</button>
-            <button type="button" class="food-btn">Chicken Pastel</button>
-            <button type="button" class="food-btn">Chicken Teriyaki</button>
-            <button type="button" class="food-btn">Honey Glazed Chicken</button>
-            <button type="button" class="food-btn">Hongkong Chicken</button>
-            <button type="button" class="food-btn">Orange Chicken with Lemon Sauce</button>
-            <button type="button" class="food-btn">Royal Chicken</button>
-          </div>
-        </div>
+                <!-- Chicken -->
+                <div class="food-section" data-group="chicken">
+                    <div class="food-section-label">Chicken</div>
+                    <div class="food-btn-group" data-limit="4">
+                        <button type="button" class="food-btn">Breaded Fried Chicken</button>
+                        <button type="button" class="food-btn">Buttered Chicken</button>
+                        <button type="button" class="food-btn">Chicken BBQ</button>
+                        <button type="button" class="food-btn">Chicken Cordon Bleu</button>
+                        <button type="button" class="food-btn">Chicken Lollipop</button>
+                        <button type="button" class="food-btn">Chicken Pastel</button>
+                        <button type="button" class="food-btn">Chicken Teriyaki</button>
+                        <button type="button" class="food-btn">Honey Glazed Chicken</button>
+                        <button type="button" class="food-btn">Hongkong Chicken</button>
+                        <button type="button" class="food-btn">Orange Chicken with Lemon Sauce</button>
+                        <button type="button" class="food-btn">Royal Chicken</button>
+                    </div>
+                </div>
 
-        <!-- Seafood -->
-        <div class="food-section" data-group="seafood">
-          <div class="food-section-label">Seafood</div>
-          <div class="food-btn-group" data-limit="4">
-            <button type="button" class="food-btn">Calamares</button>
-            <button type="button" class="food-btn">Fish Fillet with Chili Sauce</button>
-            <button type="button" class="food-btn">Fish Fillet with Tartar Sauce</button>
-            <button type="button" class="food-btn">Fish Tofu</button>
-            <button type="button" class="food-btn">Mixed Seafoods with Vegetables</button>
-            <button type="button" class="food-btn">Squid with Lemon Sauce</button>
-            <button type="button" class="food-btn">Tempura</button>
-          </div>
-        </div>
+                <!-- Seafood -->
+                <div class="food-section" data-group="seafood">
+                    <div class="food-section-label">Seafood</div>
+                    <div class="food-btn-group" data-limit="4">
+                        <button type="button" class="food-btn">Calamares</button>
+                        <button type="button" class="food-btn">Fish Fillet with Chili Sauce</button>
+                        <button type="button" class="food-btn">Fish Fillet with Tartar Sauce</button>
+                        <button type="button" class="food-btn">Fish Tofu</button>
+                        <button type="button" class="food-btn">Mixed Seafoods with Vegetables</button>
+                        <button type="button" class="food-btn">Squid with Lemon Sauce</button>
+                        <button type="button" class="food-btn">Tempura</button>
+                    </div>
+                </div>
 
-        <!-- Vegetables -->
-        <div class="food-section" data-group="vegetables">
-          <div class="food-section-label">Vegetables</div>
-          <div class="food-btn-group" data-limit="4">
-            <button type="button" class="food-btn">Buttered Mixed Vegetables</button>
-            <button type="button" class="food-btn">Chopsuey in White Sauce</button>
-            <button type="button" class="food-btn">Chopsuey in Oyster Sauce</button>
-            <button type="button" class="food-btn">Lumpiang Sariwa</button>
-            <button type="button" class="food-btn">Oriental Mixed Vegetables</button>
-            <button type="button" class="food-btn">Stir Fry Vegetables</button>
-          </div>
-        </div>
+                <!-- Vegetables -->
+                <div class="food-section" data-group="vegetables">
+                    <div class="food-section-label">Vegetables</div>
+                    <div class="food-btn-group" data-limit="4">
+                        <button type="button" class="food-btn">Buttered Mixed Vegetables</button>
+                        <button type="button" class="food-btn">Chopsuey in White Sauce</button>
+                        <button type="button" class="food-btn">Chopsuey in Oyster Sauce</button>
+                        <button type="button" class="food-btn">Lumpiang Sariwa</button>
+                        <button type="button" class="food-btn">Oriental Mixed Vegetables</button>
+                        <button type="button" class="food-btn">Stir Fry Vegetables</button>
+                    </div>
+                </div>
 
-        <!-- Pasta -->
-        <div class="food-section" data-group="pasta">
-          <div class="food-section-label">Please select 1 pasta:</div>
-          <div class="food-btn-group" data-limit="1">
-            <button type="button" class="food-btn">Baked Macaroni</button>
-            <button type="button" class="food-btn">Fettuccine Alfredo</button>
-            <button type="button" class="food-btn">Lasagna Rolls</button>
-            <button type="button" class="food-btn">Linguine in White or Red Sauce</button>
-            <button type="button" class="food-btn">Pancit Bihon or Canton</button>
-            <button type="button" class="food-btn">Penne in White or Red Sauce</button>
-            <button type="button" class="food-btn">Rigatoni in White or Red Sauce</button>
-            <button type="button" class="food-btn">Spaghetti</button>
-          </div>
-        </div>
+                <!-- Pasta -->
+                <div class="food-section" data-group="pasta">
+                    <div class="food-section-label">Please select 1 pasta:</div>
+                    <div class="food-btn-group" data-limit="1">
+                        <button type="button" class="food-btn">Baked Macaroni</button>
+                        <button type="button" class="food-btn">Fettuccine Alfredo</button>
+                        <button type="button" class="food-btn">Lasagna Rolls</button>
+                        <button type="button" class="food-btn">Linguine in White or Red Sauce</button>
+                        <button type="button" class="food-btn">Pancit Bihon or Canton</button>
+                        <button type="button" class="food-btn">Penne in White or Red Sauce</button>
+                        <button type="button" class="food-btn">Rigatoni in White or Red Sauce</button>
+                        <button type="button" class="food-btn">Spaghetti</button>
+                    </div>
+                </div>
 
-        <!-- Drink -->
-        <div class="food-section" data-group="drink">
-          <div class="food-section-label">Please select 1 drink:</div>
-          <div class="food-btn-group" data-limit="1">
-            <button type="button" class="food-btn">Blue Lemonade</button>
-            <button type="button" class="food-btn">Cucumber Lemonade</button>
-            <button type="button" class="food-btn">Four Seasons</button>
-            <button type="button" class="food-btn">Lemon Tea</button>
-            <button type="button" class="food-btn">Orange Juice</button>
-            <button type="button" class="food-btn">Pineapple Juice</button>
-            <button type="button" class="food-btn">Red Tea</button>
-          </div>
-        </div>
+                <!-- Drink -->
+                <div class="food-section" data-group="drink">
+                    <div class="food-section-label">Please select 1 drink:</div>
+                    <div class="food-btn-group" data-limit="1">
+                        <button type="button" class="food-btn">Blue Lemonade</button>
+                        <button type="button" class="food-btn">Cucumber Lemonade</button>
+                        <button type="button" class="food-btn">Four Seasons</button>
+                        <button type="button" class="food-btn">Lemon Tea</button>
+                        <button type="button" class="food-btn">Orange Juice</button>
+                        <button type="button" class="food-btn">Pineapple Juice</button>
+                        <button type="button" class="food-btn">Red Tea</button>
+                    </div>
+                </div>
 
-        <div style="display:flex; justify-content:center; margin-top:18px;">
-          <button type="submit" class="foodmenu-submit">
-            <i class="fa fa-check-circle"></i> Submit
-          </button>
+                <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+                    <button type="button" class="back-btn">Back</button>
+                    <button type="submit" class="date-submit">Complete Booking</button>
+                </div>
+            </form>
         </div>
-      </form>
     </div>
-</div><!-- /.bookhere-progress-container -->
+    
+</div>
 
-<!-- ----------  HIDDEN FINAL FORM  ---------- -->
-<form id="final-booking-form" method="POST" action="{% url 'bookhere_submit' %}" style="display:none;" enctype="multipart/form-data">
+<!-- Hidden form for CSRF token -->
+<form style="display:none;">
     {% csrf_token %}
-    <input type="hidden" name="payload" id="booking-payload">
-    <input type="file" name="floorplan-payload" id="floorplan-payload" style="display:none;" accept="image/*">
 </form>
 
-<!-- ============================================================== -->
-<!--                          JAVASCRIPT                             -->
-<!-- ============================================================== -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+<!-- ===============   WIZARD JAVASCRIPT   =============== -->
 <script>
-
 document.addEventListener('DOMContentLoaded', function() {
+    let currentStep = 0;
+    const totalSteps = 8;
+    
+    // Set minimum date to today for date picker
+    const today = new Date();
+    const todayString = today.getFullYear() + '-' + 
+                       String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                       String(today.getDate()).padStart(2, '0');
+    
     const datePicker = document.getElementById('date-picker');
+    if (datePicker) {
+        datePicker.setAttribute('min', todayString);
+        // Also set the default value to today
+        datePicker.value = todayString;
+        
+        // Add additional validation to prevent manual entry of past dates
+        datePicker.addEventListener('change', function() {
+            if (this.value < todayString) {
+                alert('Please select today\'s date or a future date.');
+                this.value = todayString;
+            }
+        });
+        
+        // Prevent typing/pasting past dates
+        datePicker.addEventListener('blur', function() {
+            if (this.value < todayString) {
+                alert('Please select today\'s date or a future date.');
+                this.value = todayString;
+            }
+        });
+    }
     
-    // Set min and max to today's date
-    const today = new Date().toISOString().split('T')[0];
-    datePicker.setAttribute('min', today);
-    //datePicker.setAttribute('max', today);
-    datePicker.value = today;
+    // Track which steps have been completed
+    let completedSteps = [];
     
-    // Prevent manual input
-    datePicker.addEventListener('keydown', function(e) {
-        e.preventDefault();
-        return false;
+    // Data storage
+    let wizardData = {
+        celebrant: '',
+        date: '',
+        eventType: '',
+        pax: '',
+        location: '',
+        floorplan: null,
+        floorplanName: '',
+        color: '',
+        package: '',
+        menu: '',
+        specialRequests: ''
+    };
+
+    function showAlert(stepId, message) {
+        const alertDiv = document.querySelector(`#alert-${stepId}`);
+        if (alertDiv) {
+            alertDiv.textContent = message;
+            alertDiv.classList.remove('d-none');
+        }
+    }
+
+    function clearAlert(stepId) {
+        const alertDiv = document.querySelector(`#alert-${stepId}`);
+        if (alertDiv) {
+            alertDiv.classList.add('d-none');
+            alertDiv.textContent = '';
+        }
+    }
+
+    // Show the first step
+    showStep(0);
+
+    // Progress bar click handlers - allow navigation to completed steps and current step
+    document.querySelectorAll('.step').forEach((stepEl, index) => {
+        stepEl.addEventListener('click', () => {
+            // Allow navigation to completed steps, current step, or the next step
+            if (index <= currentStep || completedSteps.includes(index)) {
+                showStep(index);
+            }
+        });
     });
-});
 
+    function showStep(stepIndex) {
+        // Hide all steps
+        document.querySelectorAll('.wizard-step').forEach(step => {
+            step.style.display = 'none';
+        });
+        
+        // Show current step
+        const currentStepEl = document.getElementById(`step-${stepIndex}`);
+        if (currentStepEl) {
+            currentStepEl.style.display = 'block';
+        }
 
-function showAlert(modalId, msg){
-    const alertDiv = document.getElementById('alert-'+modalId);
-    if(alertDiv){
-        alertDiv.textContent = msg;
-        alertDiv.classList.remove('d-none');
-    }
-}
-function clearAlert(modalId){
-    const alertDiv = document.getElementById('alert-'+modalId);
-    if(alertDiv){
-        alertDiv.classList.add('d-none');
-        alertDiv.textContent='';
-    }
-}
+        // Load floor plans when showing step 4 (location)
+        if (stepIndex === 3) { // step-4 is index 3
+            loadFloorPlans();
+        }
 
- class BookDetails {
-    constructor(CustomerName, Schedule, TypeOfEvent, NumberOfPax, Location, ColorMotif, Package, ListOfFood) {
-        this.CustomerName = CustomerName; 
-        this.Schedule = Schedule;
-        this.TypeOfEvent = TypeOfEvent ;
-        this.NumberOfPax  = NumberOfPax;
-        this.Location = Location;
-        this.ColorMotif = ColorMotif;
-        this.Package = Package ;
-        this.ListOfFood = ListOfFood;
-    }
-  }
+        // Load package image when showing step 6 (packages)
+        if (stepIndex === 5) { // step-6 is index 5
+            loadPackageImage();
+        }
 
-
-document.addEventListener('DOMContentLoaded', ()=>{
-    const nameModal = document.getElementById('name-modal');
-    const dateModal = document.getElementById('date-modal');
-    const eventModal = document.getElementById('event-modal');
-    const paxModal = document.getElementById('pax-modal');
-    const locationModal = document.getElementById('location-modal');
-    const colorModal = document.getElementById('color-modal');
-    const packagesModal = document.getElementById('packages-modal');
-    const foodModal = document.getElementById('foodmenu-modal');
-    const floorplanInput = document.getElementById('wizard-floorplan');
-    const floorplanPreview = document.getElementById('floorplan-preview');
-    const finalFloorPlan = document.getElementById('floorplan-payload');
-
-    const answers=[null,null,null,null,null,null,null,null]; // [name,date,event,pax,location,color,package,food]
-    const bookDetails = new BookDetails();
-    const baseImg = "{% static 'main/images/' %}";
-
-    function updateStepProgress(){
-        document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('completed',!!answers[i]));
-        document.querySelectorAll('.step-line').forEach((l,i)=>l.classList.toggle('completed',!!answers[i]));
+        currentStep = stepIndex;
+        updateProgressBar();
     }
 
-    
-    /* STEP 0 - Name */
-    document.getElementById('name-form').addEventListener('submit',e=>{
+    function updateProgressBar() {
+        document.querySelectorAll('.step').forEach((stepEl, index) => {
+            stepEl.classList.remove('active', 'completed');
+            
+            if (completedSteps.includes(index)) {
+                stepEl.classList.add('completed');
+            }
+            
+            if (index === currentStep) {
+                stepEl.classList.add('active');
+            }
+        });
+        
+        // Update step lines
+        document.querySelectorAll('.step-line').forEach((line, index) => {
+            line.classList.toggle('completed', completedSteps.includes(index));
+        });
+    }
+
+    function nextStep() {
+        if (currentStep < totalSteps - 1) {
+            // Mark current step as completed
+            if (!completedSteps.includes(currentStep)) {
+                completedSteps.push(currentStep);
+            }
+            showStep(currentStep + 1);
+        }
+    }
+
+    function prevStep() {
+        if (currentStep > 0) {
+            showStep(currentStep - 1);
+        }
+    }
+
+    // Back button handlers
+    document.querySelectorAll('.back-btn').forEach(btn => {
+        btn.addEventListener('click', prevStep);
+    });
+
+    // Step 0: Name form
+    document.getElementById('name-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        const val=document.getElementById('celebrant-name').value.trim();
-        if(!val) return showAlert('name','Please enter a name.');
         clearAlert('name');
-        answers[0]=val;
-        bookDetails.CustomerName = val;
-        nameModal.style.display='none';
-        updateStepProgress();
+        const name = document.getElementById('celebrant-name').value.trim();
+        if (name) {
+            wizardData.celebrant = name;
+            nextStep();
+        } else {
+            showAlert('name', 'Please enter a name.');
+        }
     });
 
-    /* STEP 1 – Date */
-    document.getElementById('date-form').addEventListener('submit',e=>{
+    // Step 1: Date form
+    document.getElementById('date-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        const val=document.getElementById('date-picker').value;
-        if(!val){
-            showAlert('date','Please choose a date.');
-            return;
-        }
         clearAlert('date');
-        answers[1]=val; // correct index for date
-        bookDetails.Schedule = val;
-        dateModal.style.display='none';
-        updateStepProgress();
+        const date = document.getElementById('date-picker').value;
+        if (date) {
+            wizardData.date = date;
+            nextStep();
+        } else {
+            showAlert('date', 'Please select a date.');
+        }
     });
 
-    /* STEP 2 – Event Type */
-    document.querySelectorAll('.event-btn').forEach(btn=>{
-        btn.addEventListener('click',()=>{
-            clearAlert('event');
-            answers[2]=btn.textContent.trim();
-            eventModal.style.display='none';
-            bookDetails.TypeOfEvent = btn.textContent.trim();
-            updateStepProgress();
+    // Step 2: Event type
+    document.querySelectorAll('.event-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.event-btn').forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+            wizardData.eventType = this.textContent;
+            document.getElementById('event-next-btn').disabled = false;
+            
+            // Clear custom input when preset button is selected
+            document.querySelector('.custom-event-input').value = '';
         });
     });
-    document.getElementById('custom-event-form').addEventListener('submit',e=>{
-        e.preventDefault();
-        const val=document.querySelector('.custom-event-input').value.trim();
-        if(!val){
-            showAlert('event','Please type a custom event name.');
-            return;
-        }
-        clearAlert('event');
-        answers[2]=val;
-        bookDetails.TypeOfEvent = val;
-              fetch("{% url 'cloudImg' %}", {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-            },
-            body: `${bookDetails.TypeOfEvent}_${bookDetails.NumberOfPax}`,
-        }).then(response => {
-             document.getElementById('package_img').src = response;
-            console.log(response);
-        })
-        .catch(error => {
-        });
 
-        document.getElementById('package_img').src = 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1749018729/wedding_170pax_wb3mcl.jpg';
-        eventModal.style.display='none';
-        updateStepProgress();
+    // Add input event listener to clear selected buttons when typing
+    document.querySelector('.custom-event-input').addEventListener('input', function() {
+        if (this.value.trim()) {
+            // Clear all selected preset buttons when user types
+            document.querySelectorAll('.event-btn').forEach(b => b.classList.remove('selected'));
+        }
     });
 
-    /* STEP 3 – Pax */
-    document.getElementById('pax-form').addEventListener('submit',e=>{
+    document.getElementById('custom-event-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        const val=document.getElementById('pax-select').value;
-        if(!val){
-            showAlert('pax','Please select the number of guests.');
-            return;
+        const customEvent = document.querySelector('.custom-event-input').value.trim();
+        if (customEvent) {
+            wizardData.eventType = customEvent;
+            document.getElementById('event-next-btn').disabled = false;
+            
+            // Clear selected preset buttons when custom event is submitted
+            document.querySelectorAll('.event-btn').forEach(b => b.classList.remove('selected'));
         }
+    });
+
+    document.getElementById('event-next-btn').addEventListener('click', nextStep);
+
+    // Step 3: Pax with mutual exclusivity
+    document.getElementById('pax-select').addEventListener('change', function() {
+        if (this.value) {
+            // Clear custom input when dropdown is selected
+            document.querySelector('.custom-pax-input').value = '';
+        }
+    });
+
+    // Clear dropdown when custom input is typed
+    document.querySelector('.custom-pax-input').addEventListener('input', function() {
+        if (this.value.trim()) {
+            // Clear dropdown selection when user types
+            document.getElementById('pax-select').value = '';
+        }
+    });
+
+    document.getElementById('pax-form').addEventListener('submit', function(e) {
+        e.preventDefault();
         clearAlert('pax');
-        answers[3]=val;
-        bookDetails.NumberOfPax = val;
-       
-        // fetch("{% url 'cloudImg' %}", {
-        //     method: 'POST',
-        //     headers: {
-        //         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-        //     },
-        //     body: `${bookDetails.TypeOfEvent.toLower()}_${bookDetails.NumberOfPax}`,
-        // }).then(response => {
-        //      document.getElementById('package_img').src = response;
-        //     console.log(response);
-        // })
-        // .catch(error => {
-        // });
-
-        document.getElementById('package_img').src = 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1749018729/wedding_170pax_wb3mcl.jpg';
-
-
-        paxModal.style.display='none';
-        updateStepProgress();
+        const pax = document.getElementById('pax-select').value;
+        if (pax) {
+            wizardData.pax = pax;
+            nextStep();
+        } else {
+            showAlert('pax', 'Please select number of guests.');
+        }
     });
 
-    document.getElementById('custom-pax-form').addEventListener('submit',e=>{
+    document.getElementById('custom-pax-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        const val=document.querySelector('.custom-pax-input').value;
-        if(!val){
-            showAlert('pax','Please type a custom number.');
-            return;
-        }
         clearAlert('pax');
-        answers[3]=val;
-        bookDetails.NumberOfPax = val;
-
-  
-        paxModal.style.display='none';
-        updateStepProgress();
-    });
-
-    /* STEP 4 – Location */
-    floorplanInput.addEventListener('change', ()=>{
-        const file = floorplanInput.files[0];
-        const venue=document.getElementById('venue-input').value.trim();
-        if(file){
-            const reader = new FileReader();
-            reader.onload = e => {
-                floorplanPreview.src = e.target.result;
-                floorplanPreview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
+        const customPax = document.querySelector('.custom-pax-input').value;
+        if (customPax) {
+            wizardData.pax = customPax;
+            nextStep();
+        } else {
+            showAlert('pax', 'Please enter number of guests.');
         }
-         answers[4]={venue: venue, floorplan: file };
-         bookDetails.Location = {venue: venue, floorplan: file };
     });
 
-    document.getElementById('location-form').addEventListener('submit',e=>{
+    // Step 4: Location with Floor Plan Selection
+    document.getElementById('location-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        const venue=document.getElementById('venue-input').value.trim();
-        const file=floorplanInput.files[0];
-        if(!venue) return showAlert('location','Please enter a venue name.');
-        clearAlert('location');
-        answers[4]={venue: venue, floorplan: file ? file : null};
-        bookDetails.Location ={venue: venue, floorplan: file ? file : null};
-        locationModal.style.display='none';
-        updateStepProgress();
-    });
-
-    /* STEP 5 – Color */
-    document.getElementById('color-form').addEventListener('submit',e=>{
-        e.preventDefault();
-        const val=document.getElementById('color-select').value;
-        if(!val){
-            showAlert('color','Please pick a color.');
-            return;
+        const venue = document.getElementById('venue-input').value.trim();
+        const selectedFloorplan = document.getElementById('selected-floorplan').value;
+        
+        if (venue && selectedFloorplan) {
+            wizardData.location = venue;
+            wizardData.floorplan = selectedFloorplan;
+            // floorplanName is already stored when clicking the floor plan option
+            nextStep();
+        } else {
+            showAlert('location', 'Please enter venue name and select a floor plan.');
         }
-        clearAlert('color');
-        answers[5]=val;
-        bookDetails.ColorMotif =val
-        colorModal.style.display='none';
-        updateStepProgress();
     });
 
-    /* STEP 6 – Package */
-    document.querySelectorAll('.package-choice-btn').forEach(btn=>{
-        btn.addEventListener('click',()=>{
-            clearAlert('package');
-            answers[6]=btn.textContent.trim();
-            bookDetails.Package=btn.textContent.trim();
-            packagesModal.style.display='none';
-            updateStepProgress();
+    // Floor plan selection functionality
+    function loadFloorPlans() {
+        const pax = wizardData.pax || 0;
+        const floorplanContainer = document.getElementById('floorplan-selection');
+        
+        // Clear existing content
+        floorplanContainer.innerHTML = '';
+        
+        // Define floor plan options based on pax ranges
+        let floorPlans = [];
+        
+        if (pax <= 50) {
+            floorPlans = [
+                {
+                    name: 'Floor Plan 1',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/50_pax_1_ss3xaa.png'
+                },
+                {
+                    name: 'Floor Plan 2',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/50_pax_2_xyynkf.png'
+                }
+            ];
+        } else if (pax <= 70) {
+            floorPlans = [
+                {
+                    name: 'Floor Plan 1',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/70_pax_1_kia9rg.png'
+                },
+                {
+                    name: 'Floor Plan 2',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/70_pax_2_gqzl3h.png'
+                }
+            ];
+        } else if (pax <= 80) {
+            floorPlans = [
+                {
+                    name: 'Floor Plan 1',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/80_pax_1_dyaebj.png'
+                },
+                {
+                    name: 'Floor Plan 2',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/80_pax_2_phx0yj.png'
+                }
+            ];
+        } else if (pax <= 90) {
+            floorPlans = [
+                {
+                    name: 'Floor Plan 1',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/90_pax_1_ja3dds.png'
+                },
+                {
+                    name: 'Floor Plan 2',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/90_pax_2_rpkuf1.png'
+                }
+            ];
+        } else if (pax <= 100) {
+            floorPlans = [
+                {
+                    name: 'Floor Plan 1',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/100_pax_1_czxiqu.png'
+                },
+                {
+                    name: 'Floor Plan 2',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/100_pax_2_unlui5.png'
+                }
+            ];
+        } else if (pax <= 120) {
+            floorPlans = [
+                {
+                    name: 'Floor Plan 1',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/120_pax_1_pgqcik.png'
+                },
+                {
+                    name: 'Floor Plan 2',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/120_pax_2_icgqtv.png'
+                }
+            ];
+        } else if (pax <= 130) {
+            floorPlans = [
+                {
+                    name: 'Floor Plan 1',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/130_pax_1_yet6qc.png'
+                },
+                {
+                    name: 'Floor Plan 2',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/130_pax_2_w1qzbb.png'
+                }
+            ];
+        } else if (pax <= 150) {
+            floorPlans = [
+                {
+                    name: 'Floor Plan 1',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/150_pax_1_wcucqu.png'
+                },
+                {
+                    name: 'Floor Plan 2',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/150_pax_2_nodcl3.png'
+                }
+            ];
+        } else if (pax <= 160) {
+            floorPlans = [
+                {
+                    name: 'Floor Plan 1',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/160_pax_1_inbm3u.png'
+                },
+                {
+                    name: 'Floor Plan 2',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/160_pax_2_v8qb63.png'
+                }
+            ];
+        } else if (pax <= 170) {
+            floorPlans = [
+                {
+                    name: 'Floor Plan 1',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/170_pax_1_k6rq3r.png'
+                },
+                {
+                    name: 'Floor Plan 2',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/170_pax_2_x9clqv.png'
+                }
+            ];
+        } else if (pax <= 180) {
+            floorPlans = [
+                {
+                    name: 'Floor Plan 1',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/180_pax_1_ajj06i.png'
+                },
+                {
+                    name: 'Floor Plan 2',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/180_pax_2_s0v7hp.png'
+                }
+            ];
+        } else {
+            // For pax <= 200 and pax > 200
+            floorPlans = [
+                {
+                    name: 'Floor Plan 1',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/200_pax_1_amwaj9.png'
+                },
+                {
+                    name: 'Floor Plan 2',
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/200_pax_2_j29h4o.png'
+                }
+            ];
+        }
+        
+        // Create floor plan options
+        floorPlans.forEach((plan, index) => {
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'floorplan-option';
+            optionDiv.dataset.floorplan = plan.url;
+            
+            optionDiv.innerHTML = `
+                <img src="${plan.url}" alt="${plan.name}" class="floorplan-image">
+                <div class="floorplan-label">${plan.name}</div>
+            `;
+            
+            optionDiv.addEventListener('click', function() {
+                // Remove previous selection
+                document.querySelectorAll('.floorplan-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Select this option
+                this.classList.add('selected');
+                
+                // Store both the URL and the plan name
+                document.getElementById('selected-floorplan').value = plan.url;
+                wizardData.floorplanName = plan.name; // Store the display name
+            });
+            
+            floorplanContainer.appendChild(optionDiv);
+        });
+    }
+
+    // Package image loading functionality
+    function loadPackageImage() {
+        const eventType = wizardData.eventType || '';
+        const pax = parseInt(wizardData.pax) || 0;
+        const packageImg = document.getElementById('package_img');
+        
+        // Normalize event type to lowercase and handle special cases
+        let eventTypeLower = eventType.toLowerCase().trim();
+        
+        // Handle various event type variations
+        if (eventTypeLower.includes('birthday') || eventTypeLower.includes('birth')) {
+            eventTypeLower = 'birthday';
+        } else if (eventTypeLower.includes('christening') || eventTypeLower.includes('baptism')) {
+            eventTypeLower = 'christening';
+        } else if (eventTypeLower.includes('kiddie') || eventTypeLower.includes('kids')) {
+            eventTypeLower = 'kiddie';
+        } else if (eventTypeLower.includes('wedding') || eventTypeLower.includes('marry')) {
+            eventTypeLower = 'wedding';
+        } else {
+            // For any other event types, use "others"
+            eventTypeLower = 'others';
+        }
+        
+        let imageFilename = '';
+        
+        // Determine the appropriate image based on event type and pax
+        if (eventTypeLower === 'birthday') {
+            if (pax <= 50) imageFilename = 'birthday_50pax_yjwdwl.jpg';
+            else if (pax <= 70) imageFilename = 'birthday_70pax_vew5ay.jpg';
+            else if (pax <= 80) imageFilename = 'birthday_80pax_vvu9g2.jpg';
+            else if (pax <= 100) imageFilename = 'birthday_100pax_zheug3.jpg';
+            else if (pax <= 120) imageFilename = 'birthday_120pax_r25otc.jpg';
+            else if (pax <= 130) imageFilename = 'birthday_130pax_hz5unq.jpg';
+            else if (pax <= 150) imageFilename = 'birthday_150pax_gtqtim.jpg';
+            else if (pax <= 160) imageFilename = 'birthday_160pax_b3ecp4.jpg';
+            else if (pax <= 170) imageFilename = 'birthday_170pax_jtbtam.jpg';
+            else if (pax <= 180) imageFilename = 'birthday_180_pax_hircrw.jpg';
+            else imageFilename = 'birthday_200pax_gcjprl.jpg'; // For pax > 180
+            
+        } else if (eventTypeLower === 'christening') {
+            if (pax <= 50) imageFilename = 'christening_50pax_nxh9ke.jpg';
+            else if (pax <= 70) imageFilename = 'christening_70pax_cyznmy.jpg';
+            else if (pax <= 80) imageFilename = 'christening_80pax_slf4sl.jpg';
+            else if (pax <= 100) imageFilename = 'christening_100pax_insvxv.jpg';
+            else if (pax <= 120) imageFilename = 'christening_120pax_ua9yie.jpg';
+            else if (pax <= 150) imageFilename = 'christening_150pax_idheaa.jpg';
+            else imageFilename = 'christening_200pax_t3vuye.jpg'; // For pax > 150
+            
+        } else if (eventTypeLower === 'kiddie') {
+            if (pax <= 50) imageFilename = 'kiddie_50pax_dpgjez.jpg';
+            else if (pax <= 70) imageFilename = 'kiddie_70pax_hdawxz.jpg';
+            else if (pax <= 80) imageFilename = 'kiddie_80pax_twgrmz.jpg';
+            else if (pax <= 100) imageFilename = 'kiddie_100pax_z1jsn0.jpg';
+            else if (pax <= 120) imageFilename = 'kiddie_120pax_soflwe.jpg';
+            else if (pax <= 130) imageFilename = 'kiddie_130pax_yeyoka.jpg';
+            else if (pax <= 150) imageFilename = 'kiddie_150pax_m7cdrz.jpg';
+            else if (pax <= 160) imageFilename = 'kiddie_160pax_b5ezdz.jpg';
+            else if (pax <= 170) imageFilename = 'kiddie_170pax_irkxsg.jpg';
+            else if (pax <= 180) imageFilename = 'kiddie_180pax_knwwyp.jpg';
+            else imageFilename = 'kiddie_200pax_kmpgn4.jpg'; // For pax > 180
+            
+        } else if (eventTypeLower === 'wedding') {
+            if (pax <= 50) imageFilename = 'wedding_50pax_akotgi.jpg';
+            else if (pax <= 60) imageFilename = 'wedding_60pax_wjrahh.jpg';
+            else if (pax <= 70) imageFilename = 'wedding_70pax_swgj6f.jpg';
+            else if (pax <= 80) imageFilename = 'wedding_80pax_y7az0i.jpg';
+            else if (pax <= 100) imageFilename = 'wedding_100pax_mtujpw.jpg';
+            else if (pax <= 120) imageFilename = 'wedding_120pax_cnd4mj.jpg';
+            else if (pax <= 130) imageFilename = 'wedding_130pax_eamuys.jpg';
+            else if (pax <= 150) imageFilename = 'wedding_150pax_ftvdmh.jpg';
+            else if (pax <= 160) imageFilename = 'wedding_160pax_twyve5.jpg';
+            else if (pax <= 170) imageFilename = 'wedding_170pax_wb3mcl.jpg';
+            else if (pax <= 180) imageFilename = 'wedding_180pax_aotyby.jpg';
+            else if (pax <= 200) imageFilename = 'wedding_200pax_dsdfrl.jpg';
+            else imageFilename = 'wedding_250pax_haxcqu.jpg'; // For pax > 200
+            
+        } else {
+            // For "others" or any custom event types
+            if (pax <= 100) imageFilename = 'Others_package_akx2zo.jpg';
+            else imageFilename = 'others_package2_zazqff.jpg';
+        }
+        
+        // Construct the full Cloudinary URL
+        const baseUrl = 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1749018729/';
+        const fullImageUrl = baseUrl + imageFilename;
+        
+        // Update the package image
+        if (packageImg) {
+            packageImg.src = fullImageUrl;
+            packageImg.alt = `${eventType} ${pax} Pax Package`;
+        }
+    }
+
+    // Step 5: Color with Enhanced UI
+    function initializeColorPicker() {
+        const colorSelect = document.getElementById('color-select');
+        const colorPicker = document.getElementById('color-picker');
+        const hexInput = document.getElementById('hex-input');
+        
+        // Add color previews to dropdown options
+        function addColorPreviews() {
+            const options = colorSelect.querySelectorAll('option[data-color]');
+            options.forEach(option => {
+                const color = option.dataset.color;
+                option.style.background = `linear-gradient(to right, ${color} 0%, ${color} 20px, transparent 20px)`;
+                option.style.paddingLeft = '30px';
+            });
+        }
+        
+        // Clear hex input when dropdown is selected
+        colorSelect.addEventListener('change', function() {
+            if (this.value) {
+                hexInput.value = '';
+                const selectedOption = this.options[this.selectedIndex];
+                if (selectedOption.dataset.color) {
+                    colorPicker.value = selectedOption.dataset.color;
+                }
+            }
+        });
+        
+        // Clear dropdown when hex input is typed
+        hexInput.addEventListener('input', function() {
+            if (this.value.trim()) {
+                colorSelect.value = '';
+                // Validate and update color picker
+                let hexValue = this.value.trim();
+                if (!hexValue.startsWith('#')) {
+                    hexValue = '#' + hexValue;
+                    this.value = hexValue;
+                }
+                
+                // Validate hex format
+                if (/^#[0-9A-Fa-f]{6}$/.test(hexValue)) {
+                    colorPicker.value = hexValue;
+                } else if (/^#[0-9A-Fa-f]{3}$/.test(hexValue)) {
+                    // Convert 3-digit hex to 6-digit
+                    const expanded = '#' + hexValue[1] + hexValue[1] + hexValue[2] + hexValue[2] + hexValue[3] + hexValue[3];
+                    colorPicker.value = expanded;
+                }
+            }
+        });
+        
+        // Update hex input when color picker changes
+        colorPicker.addEventListener('input', function() {
+            hexInput.value = this.value.toUpperCase();
+            colorSelect.value = '';
+        });
+        
+        // Format hex input on blur
+        hexInput.addEventListener('blur', function() {
+            let value = this.value.trim();
+            if (value && !value.startsWith('#')) {
+                value = '#' + value;
+            }
+            this.value = value.toUpperCase();
+        });
+        
+        addColorPreviews();
+    }
+    
+    document.getElementById('color-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const colorSelect = document.getElementById('color-select');
+        const hexInput = document.getElementById('hex-input');
+        
+        let selectedColor = '';
+        
+        if (colorSelect.value) {
+            selectedColor = colorSelect.value;
+        } else if (hexInput.value.trim()) {
+            selectedColor = hexInput.value.trim();
+        }
+        
+        if (selectedColor) {
+            wizardData.color = selectedColor;
+            updatePackageSummary();
+            nextStep();
+        } else {
+            showAlert('color', 'Please select a color or enter a hex value.');
+        }
+    });
+    
+    // Initialize color picker when step 5 is shown
+    const originalShowStep = showStep;
+    showStep = function(stepIndex) {
+        originalShowStep(stepIndex);
+        if (stepIndex === 4) { // step-5 is index 4
+            setTimeout(initializeColorPicker, 100);
+        }
+    };
+
+    // Step 6: Package
+    document.querySelectorAll('.package-choice-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.package-choice-btn').forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+            wizardData.package = this.textContent;
+            document.getElementById('package-next-btn').disabled = false;
         });
     });
 
-    /* STEP 7 – Food Menu */
-    document.querySelectorAll('.food-btn-group').forEach(group=>{
-        const limit=parseInt(group.dataset.limit,10);
-        group.querySelectorAll('.food-btn').forEach(btn=>{
-            btn.addEventListener('click',()=>{
+    document.getElementById('package-next-btn').addEventListener('click', nextStep);
+
+    // Step 7: Food Menu
+    // Add click handlers for food buttons
+    document.querySelectorAll('.food-btn-group').forEach(group => {
+        const limit = parseInt(group.dataset.limit, 10);
+        group.querySelectorAll('.food-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
                 btn.classList.toggle('selected');
-                const sel=group.querySelectorAll('.food-btn.selected');
-                if(sel.length>limit) btn.classList.remove('selected');
+                const selectedButtons = group.querySelectorAll('.food-btn.selected');
+                if (selectedButtons.length > limit) {
+                    btn.classList.remove('selected');
+                }
             });
         });
     });
 
-    const selectedIn = (name) =>{
-        const sec=document.querySelector(`.food-section[data-group="${name}"]`);
-        return sec ? Array.from(sec.querySelectorAll('.food-btn.selected')).map(b=>b.textContent.trim()) : [];
+    // Helper function to get selected items from a food group
+    const getSelectedFood = (groupName) => {
+        const section = document.querySelector(`.food-section[data-group="${groupName}"]`);
+        return section ? Array.from(section.querySelectorAll('.food-btn.selected')).map(b => b.textContent.trim()) : [];
     };
 
-    document.getElementById('foodmenu-form').addEventListener('submit',e=>{
+    document.getElementById('food-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        const dishGroups = ['beef','pork','chicken','seafood','vegetables'];
-        const dishes = dishGroups.flatMap(selectedIn);
-        const pastaSel = selectedIn('pasta');
-        const drinkSel = selectedIn('drink');
-
-        if(dishes.length !== 4) return showAlert('food','Select exactly 4 dishes total.');
-        if(pastaSel.length !== 1) return showAlert('food','Select exactly 1 pasta.');
-        if(drinkSel.length !== 1) return showAlert('food','Select exactly 1 drink.');
-
         clearAlert('food');
-        // Assume you have a `File` object stored somewhere from your wizard (answers[4].floorplanFile)
-        const payload = {
-            celebrant_name : answers[0],            // Step 0 - Celebrant's Name
-            date           : answers[1],            // Step 1 - Date of Event
-            event_type     : answers[2],            // Step 2 - Type of Event
-            pax            : answers[3],            // Step 3 - Number of Pax
-            location       : {                      // Step 4 - Venue & Floor Plan
-                venue     : answers[4]?.venue || "",
-            },
-            color_motif    : answers[5],             // Step 5 - Color Motif
-            package        : answers[6],             // Step 6 - Package
-            menu           : {                       // Step 7 - Food Menu
-                dishes : dishes,         
-                pasta  : pastaSel[0],     
-                drink  : drinkSel[0]      
-            }
+
+        // Get selected items from each category
+        const dishGroups = ['beef', 'pork', 'chicken', 'seafood', 'vegetables'];
+        const selectedDishes = dishGroups.flatMap(getSelectedFood);
+        const selectedPasta = getSelectedFood('pasta');
+        const selectedDrink = getSelectedFood('drink');
+
+        // Validate selections
+        if (selectedDishes.length !== 4) {
+            showAlert('food', 'Please select exactly 4 dishes total.');
+            return;
+        }
+        if (selectedPasta.length !== 1) {
+            showAlert('food', 'Please select exactly 1 pasta.');
+            return;
+        }
+        if (selectedDrink.length !== 1) {
+            showAlert('food', 'Please select exactly 1 drink.');
+            return;
+        }
+
+        // Store the food selections
+        wizardData.menu = {
+            dishes: selectedDishes,
+            pasta: selectedPasta[0],
+            drink: selectedDrink[0]
         };
+        
+        markStepComplete(7);
+        submitBooking();
+    });
+
+    function updatePackageSummary() {
+        let summary = `${wizardData.eventType} ${wizardData.pax} Pax`;
+        if (wizardData.location && wizardData.floorplanName) {
+            summary += ` - ${wizardData.location} (${wizardData.floorplanName})`;
+        }
+        document.getElementById('package-summary').textContent = summary;
+    }
+
+    // Helper function to extract filename from Cloudinary URL
+    function extractFilename(url) {
+        if (!url) return '';
+        // Extract the filename with extension from the Cloudinary URL
+        // e.g., "https://res.cloudinary.com/.../120_pax_2_icgqtv.png" -> "120_pax_2_icgqtv.png"
+        const parts = url.split('/');
+        return parts[parts.length - 1] || '';
+    }
+
+    function markStepComplete(stepIndex) {
+        if (!completedSteps.includes(stepIndex)) {
+            completedSteps.push(stepIndex);
+        }
+        updateProgressBar();
+    }
+
+    function submitBooking() {
+        // Mark final step as completed
+        markStepComplete(7);
+        
+        // Prepare the payload with all collected data
+        const payload = {
+            celebrant_name: wizardData.celebrant,           // Step 0 - Celebrant's Name
+            date: wizardData.date,                          // Step 1 - Date of Event
+            event_type: wizardData.eventType,               // Step 2 - Type of Event
+            pax: wizardData.pax,                            // Step 3 - Number of Pax
+            location: {                                     // Step 4 - Venue & Floor Plan
+                venue: wizardData.location || "",
+                floorplan_filename: extractFilename(wizardData.floorplan || ""),
+                floorplan_display_name: wizardData.floorplanName || ""
+            },
+            color_motif: wizardData.color,                  // Step 5 - Color Motif
+            package: wizardData.package,                    // Step 6 - Package
+            menu: wizardData.menu                           // Step 7 - Food Menu
+        };
+
+        // Create form data for submission
         const formData = new FormData();
         formData.append("payload", JSON.stringify(payload));
-        if (answers[4] && answers[4].floorplan) {
-        // The key name here must match what you are looking for in Django
-            formData.append("floorplan-payload", answers[4].floorplan);
-        }
+
+        // Submit to backend
         fetch("{% url 'bookhere_submit' %}", {
             method: 'POST',
             headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value || getCookie('csrftoken')
             },
             body: formData,
-        }).then(response => {
-             window.location.replace("/my_bookings");
+        })
+        .then(response => {
+            if (response.ok) {
+                // Redirect to my_bookings page on success
+                window.location.replace("/my_bookings");
+            } else {
+                throw new Error('Booking submission failed');
+            }
         })
         .catch(error => {
+            console.error('Error:', error);
+            alert('There was an error submitting your booking. Please try again.');
         });
-  
-
-    });
-
-    /* Navigation */
-    function openModalByIdx(idx){
-        if(idx>0 && !answers[idx-1]) return;
-        [nameModal,dateModal,eventModal,paxModal,locationModal,colorModal,packagesModal,foodModal]
-            .forEach(m=>m.style.display='none');
-        if(idx===0) nameModal.style.display='flex';
-        if(idx===1) dateModal.style.display='flex';
-        if(idx===2) eventModal.style.display='flex';
-        if(idx===3) paxModal.style.display='flex';
-        if(idx===4) locationModal.style.display='flex';
-        if(idx===5) colorModal.style.display='flex';
-        if(idx===6) packagesModal.style.display='flex';
-        if(idx===7) foodModal.style.display='flex';
     }
 
-    document.querySelectorAll('.step-circle').forEach((c,i)=>{
-        c.style.cursor='pointer';
-        c.addEventListener('click',()=>openModalByIdx(i));
-    });
-
-    openModalByIdx(0);
-    updateStepProgress();
+    // Helper function to get CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 });
+</script>
+
 </script>
 
 </body>

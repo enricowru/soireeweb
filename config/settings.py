@@ -20,7 +20,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 # Hosts
 PROD_HOST = config('PROD_HOST', default='https://nikescateringservices.com').rstrip('/')
-LOCAL_HOST = config('LOCAL_HOST', default='http://localhost:8001').rstrip('/')
+LOCAL_HOST = config('LOCAL_HOST', default='http://localhost:8000').rstrip('/')
 
 
 # Environment (dev/prod)
@@ -82,17 +82,17 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'config.middleware.BypassRefererCheckMiddleware',
     'config.middleware.RedirectToWwwMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -127,27 +127,17 @@ CHANNEL_LAYERS = {
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# Development vs Production Database Configuration
-if ENVIRONMENT == 'dev':
-    # SQLite for development (easier setup)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+# PostgreSQL for both development and production
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('PG_DB'),
+        'USER': config('PG_USER'),
+        'PASSWORD': config('PG_PASS'),
+        'HOST': config('PG_HOST'),
+        'PORT': config('PG_PORT'),
     }
-else:
-    # PostgreSQL for production
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('PG_DB'),
-            'USER': config('PG_USER'),
-            'PASSWORD': config('PG_PASS'),
-            'HOST': config('PG_HOST'),
-            'PORT': config('PG_PORT'),
-        }
-    }
+}
 
 
 # Password validation
@@ -278,7 +268,7 @@ CSRF_COOKIE_SECURE = True
 
 # If needed
 CORS_ALLOW_CREDENTIALS = True
-
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Allow all origins in development
 CORS_ALLOWED_ORIGINS = CSRF_TRUSTED_ORIGINS
 CORS_ALLOW_CREDENTIALS = True
 

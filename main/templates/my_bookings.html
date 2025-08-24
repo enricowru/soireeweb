@@ -9,8 +9,17 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
   <link rel="stylesheet" href="{% static 'css/my_bookings.css' %}">
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+  
+  <style>
+    /* Ensure navbar looks exactly like home page */
+    .navbar {
+      background-color: #161616 !important;
+      background-image: none !important;
+      background: #161616 !important;
+    }
+  </style>
 </head>
 <body>
 {% include 'navbar.html' %}

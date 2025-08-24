@@ -5,69 +5,618 @@ body {
     padding: 0;
 }
 
-.bookhere-progress-container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 40vh;
-    margin-top: 40px;
+/* ============================================
+   WIZARD PROGRESS HEADER (Top Navigation)
+   ============================================ */
+.wizard-progress-header {
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    padding: 20px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.bookhere-progress-bar {
+.step-progress-bar {
     display: flex;
-    gap: 48px;
-    background: none;
-    padding: 0;
-    border-radius: 0;
-    box-shadow: none;
+    gap: 30px;
     justify-content: center;
     align-items: center;
+    max-width: 100vw;
+    margin: 0 auto;
+    padding: 0 20px;
+    flex-wrap: wrap;
 }
 
-.bookhere-step {
-    width: 100px;
-    height: 100px;
-    background: #AD974F;
-    color: #fff;
-    border: none;
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    min-width: 60px;
+}
+
+.step:hover {
+    transform: translateY(-2px);
+}
+
+.step.completed, .step.active {
+    cursor: pointer;
+}
+
+.step.completed:hover .step-icon, .step.active:hover .step-icon {
+    transform: scale(1.05);
+}
+
+.step-icon {
+    width: 50px;
+    height: 50px;
+    background: #ddd;
+    color: #666;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
-    box-shadow: 0 2px 8px rgba(173,151,79,0.18);
-    outline: none;
-    text-align: center;
-    padding: 0 10px;
-    position: relative;
-    user-select: none;
-}
-.bookhere-step:hover {
-    background: #8c7a3a;
-    box-shadow: 0 4px 16px rgba(173,151,79,0.28);
-    transform: scale(1.08);
-}
-.bookhere-step:active, .bookhere-step.selected {
-    background: #7a682f;
-    box-shadow: 0 2px 8px rgba(122,104,47,0.18);
-    transform: scale(0.96);
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
 }
 
+.step.active .step-icon {
+    background: #AD974F !important;
+    color: #fff !important;
+    border: 3px solid #fff;
+}
+
+.step.completed .step-icon {
+    background: #AD974F !important;
+    color: #fff !important;
+    border: 3px solid transparent;
+}
+
+.step.completed .step-icon i,
+.step.active .step-icon i {
+    color: #fff !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-block !important;
+}
+
+.step-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+    color: #666;
+    margin-top: 5px;
+    max-width: 70px;
+    line-height: 1.2;
+}
+
+.step.active .step-label {
+    color: #AD974F;
+    font-weight: 600;
+}
+
+.step.completed .step-label {
+    color: #AD974F;
+    font-weight: 500;
+}
+
+/* Ensure Font Awesome icons are always visible */
+.step.completed .step-icon .fa,
+.step.completed .step-icon .fas,
+.step.completed .step-icon .far,
+.step.completed .step-icon .fa-solid,
+.step.completed .step-icon .fa-regular,
+.step.active .step-icon .fa,
+.step.active .step-icon .fas,
+.step.active .step-icon .far,
+.step.active .step-icon .fa-solid,
+.step.active .step-icon .fa-regular {
+    color: #fff !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-block !important;
+    font-size: 1.1rem !important;
+}
+
+/* Maximum specificity for step icons */
+.wizard-progress-header .step.completed .step-icon,
+.wizard-progress-header .step.active .step-icon {
+    background: #AD974F !important;
+    color: #fff !important;
+}
+
+.wizard-progress-header .step.completed .step-icon i,
+.wizard-progress-header .step.active .step-icon i {
+    color: #fff !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
+}
+
+.step-line {
+    width: 25px;
+    height: 2px;
+    background: #ddd;
+    margin: 0 5px;
+    align-self: center;
+    margin-top: -25px;
+}
+
+.step-line.completed {
+    background: #AD974F !important;
+}
+
+/* ============================================
+   MODAL STYLES (from original)
+   ============================================ */
+.date-modal {
+    position: fixed !important;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.date-modal-content {
+    background: #333;
+    color: #fff;
+    border-radius: 16px;
+    border: 3px solid #AD974F;
+    padding: 28px 32px 24px 32px;
+    min-width: 320px;
+    max-width: 600px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.18);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 80px;
+    overflow-y: auto;
+}
+
+#foodmenu-modal .date-modal-content {
+    max-width: 500px;
+    overflow-y: auto;
+}
+
+.date-modal-message {
+    font-size: 1.08rem;
+    margin-bottom: 18px;
+    line-height: 1.5;
+}
+
+/* Form Inputs */
+.date-input, .step-input {
+    padding: 10px 16px;
+    border-radius: 6px;
+    border: none;
+    font-size: 1rem;
+    background: #222;
+    color: #fff;
+    outline: none;
+    width: 100%;
+}
+
+.date-input:focus, .step-input:focus {
+    border: 2px solid #AD974F;
+    background: #222;
+}
+
+/* Buttons */
+.date-submit, .next-btn, .back-btn {
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin: 5px;
+}
+
+.date-submit:hover, .next-btn:hover {
+    background: #388e3c;
+}
+
+.back-btn {
+    background: #666;
+}
+
+.back-btn:hover {
+    background: #555;
+}
+
+/* ============================================
+   WIZARD CONTAINER & STEPS
+   ============================================ */
+.wizard-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 500px;
+}
+
+.wizard-step {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wizard-step .date-modal-content {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    background: #333;
+    color: #fff;
+    border-radius: 16px;
+    border: 3px solid #AD974F;
+    padding: 28px 32px 24px 32px;
+    min-width: 320px;
+    max-width: 90vw;
+    width: 100%;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.18);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    overflow: hidden;
+    box-sizing: border-box;
+    margin: 0;
+    overflow-y: visible;
+    z-index: auto;
+}
+
+.step-form-container {
+    padding: 40px;
+}
+
+.step-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.step-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.step-subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    line-height: 1.5;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.step-form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 30px;
+}
+
+.step-input {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    transition: border-color 0.3s ease;
+}
+
+.step-input:focus {
+    outline: none;
+    border-color: #AD974F;
+    box-shadow: 0 0 0 3px rgba(173, 151, 79, 0.1);
+}
+
+/* ============================================
+   NAVIGATION BUTTONS
+   ============================================ */
+.step-navigation {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.step-navigation .btn {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #AD974F;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #8c7a3a;
+    transform: translateY(-1px);
+}
+
+.btn-outline-secondary {
+    background: transparent;
+    color: #666;
+    border: 2px solid #ddd;
+}
+
+.btn-outline-secondary:hover {
+    background: #f8f9fa;
+    border-color: #999;
+}
+
+.btn-success {
+    background: #28a745;
+    color: #fff;
+}
+
+.btn-success:hover {
+    background: #218838;
+    transform: translateY(-1px);
+}
+
+/* ============================================
+   EVENT TYPE BUTTONS
+   ============================================ */
+.event-btn-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.event-btn {
+    padding: 20px;
+    border: 2px solid #ddd;
+    background: #fff;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.event-btn:hover {
+    border-color: #AD974F;
+    background: #f9f8f5;
+}
+
+.event-btn.selected {
+    border-color: #AD974F;
+    background: #AD974F;
+    color: #fff;
+}
+
+.custom-event-form {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.custom-event-form .form-control {
+    flex: 1;
+}
+
+.custom-pax-form {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.custom-pax-form .form-control {
+    flex: 1;
+}
+
+/* ============================================
+   PACKAGE SELECTION
+   ============================================ */
+.package-preview-img {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin: 20px 0;
+}
+
+.package-btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.package-choice-btn {
+    padding: 15px 40px;
+    border: 2px solid #ddd;
+    background: #fff;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 200px;
+}
+
+.package-choice-btn:hover {
+    border-color: #AD974F;
+    background: #f9f8f5;
+}
+
+.package-choice-btn.selected {
+    border-color: #AD974F;
+    background: #AD974F;
+    color: #fff;
+}
+
+/* ============================================
+   FOOD MENU SELECTION
+   ============================================ */
+.food-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.food-section-label {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #AD974F;
+}
+
+.food-btn-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.food-btn {
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    background: #fff;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.food-btn:hover {
+    border-color: #AD974F;
+    background: #f9f8f5;
+}
+
+.food-btn.selected {
+    border-color: #AD974F;
+    background: #AD974F;
+    color: #fff;
+}
+
+/* ============================================
+   FLOOR PLAN PREVIEW
+   ============================================ */
+.floor-plan-preview {
+    max-width: 100%;
+    max-height: 300px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 15px;
+    object-fit: contain;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
 @media (max-width: 900px) {
-    .bookhere-progress-bar {
-        flex-direction: column;
-        gap: 24px;
+    .step-progress-bar {
+        flex-wrap: wrap;
+        gap: 20px;
     }
-    .bookhere-step {
-        width: 70px;
-        height: 70px;
-        font-size: 0.95rem;
-        padding: 0 6px;
+    
+    .step-line {
+        display: none;
+    }
+    
+    .step-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1rem;
+    }
+    
+    .step-label {
+        font-size: 0.8rem;
+        max-width: 60px;
+    }
+    
+    .step-form-container {
+        padding: 30px 20px;
+    }
+    
+    .step-title {
+        font-size: 1.6rem;
+    }
+    
+    .step-subtitle {
+        font-size: 1rem;
     }
 }
+
+@media (max-width: 600px) {
+    .wizard-container {
+        margin: 20px auto;
+        padding: 0 10px;
+    }
+    
+    .step-navigation {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .step-navigation .btn {
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    .event-btn-group {
+        grid-template-columns: 1fr;
+    }
+    
+    .food-btn-group {
+        grid-template-columns: 1fr;
+    }
+    
+    .custom-event-form,
+    .custom-pax-form {
+        flex-direction: column;
+    }
+}
+
+/* ============================================
+   ALERT STYLES
+   ============================================ */
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.alert-danger {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+/* ============================================
+   LEGACY STYLES (for compatibility)
+   ============================================ */
 
 .shopee-bookhere-container {
     max-width: 900px;
@@ -205,7 +754,6 @@ body {
     padding: 28px 32px 24px 32px;
     min-width: 320px;
     max-width: 600px;
-    max-height: 90vh;
     box-shadow: 0 4px 32px rgba(0,0,0,0.18);
     display: flex;
     flex-direction: column;
@@ -215,7 +763,6 @@ body {
 }
 #foodmenu-modal .date-modal-content {
     max-width: 500px;
-    max-height: 80vh;
     overflow-y: auto;
 }
 .date-modal-message {
@@ -772,4 +1319,170 @@ body {
 #status-link:hover {
   background-color: white;
   color: #111; 
+}
+
+/* Floor plan selection styling */
+.floorplan-option {
+    cursor: pointer;
+    border: 3px solid transparent;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+}
+
+.floorplan-option:hover {
+    border-color: #AD974F;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.floorplan-option.selected {
+    border-color: #AD974F !important;
+    border-width: 4px !important;
+    box-shadow: 0 0 20px rgba(173, 151, 79, 0.4) !important;
+}
+
+.floorplan-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
+
+.floorplan-label {
+    padding: 10px;
+    text-align: center;
+    font-weight: 600;
+    color: #333;
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+#floorplan-selection {
+    width: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+/* Ensure form elements stay within modal */
+#location-form {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Ensure buttons stay within modal */
+#location-form > div:last-child {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Modern Color Picker Styling */
+.color-dropdown-container {
+    position: relative;
+    width: 100%;
+}
+
+.color-select-with-preview {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    color: #333;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.color-select-with-preview:focus {
+    border-color: #AD974F;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(173, 151, 79, 0.2);
+}
+
+.color-select-with-preview option {
+    padding: 8px 16px;
+    font-size: 16px;
+}
+
+.color-divider {
+    text-align: center;
+    position: relative;
+    margin: 10px 0;
+}
+
+.color-divider span {
+    background: #333;
+    padding: 0 15px;
+    color: #aaa;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.color-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #555;
+    z-index: -1;
+}
+
+.custom-color-container {
+    width: 100%;
+}
+
+.color-input-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.color-picker-input {
+    width: 50px;
+    height: 50px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.color-picker-input:hover {
+    border-color: #AD974F;
+    transform: scale(1.05);
+}
+
+.hex-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    color: #333;
+    font-size: 16px;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+}
+
+.hex-input:focus {
+    border-color: #AD974F;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(173, 151, 79, 0.2);
+}
+
+.hex-input::placeholder {
+    color: #999;
+    font-family: 'Courier New', monospace;
 }
