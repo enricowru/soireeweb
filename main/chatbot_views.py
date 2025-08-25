@@ -551,3 +551,132 @@ def get_first_user_message(chat_history):
         if msg.get('sender') == 'user' and msg.get('text'):
             return msg['text']
     return 'New Chat'
+
+# API endpoints for mobile app
+def api_chatbot_message(request):
+    """API endpoint for mobile app to send messages to chatbot"""
+    if request.method == 'POST':
+        user_message = request.POST.get('message', '').strip()
+        if not user_message:
+            return JsonResponse({'error': 'Message cannot be empty'}, status=400)
+            
+        # Initialize chat history if not exists
+        if not request.session.get('initialized', False):
+            request.session['chat_history'] = [
+                {'sender': 'bot', 'text': "Welcome to Nike's Catering Services! I'm your virtual assistant. How can I help you today? Feel free to ask me anything about our services, packages, pricing, booking, themes, food options, or any other questions you might have about our catering services."}
+            ]
+            request.session['initialized'] = True
+            request.session.modified = True
+
+        chat_history = request.session.get('chat_history', [])
+        chat_history.append({'sender': 'user', 'text': user_message})
+        
+        # Generate bot response using existing logic
+        bot_response = generate_bot_response(user_message, chat_history)
+        chat_history.append({'sender': 'bot', 'text': bot_response})
+        
+        request.session['chat_history'] = chat_history
+        request.session.modified = True
+        
+        return JsonResponse({
+            'success': True,
+            'bot_response': bot_response,
+            'chat_history': chat_history
+        })
+    
+    return JsonResponse({'error': 'Only POST method allowed'}, status=405)
+
+def generate_bot_response(user_message, chat_history):
+    """Generate bot response using existing chatbot logic"""
+    lower_msg = user_message.lower().strip()
+    
+    # Handle restart command
+    if any(keyword in lower_msg for keyword in ['restart', 'start over', 'reset', 'new chat', 'clear']):
+        return "Welcome to Nike's Catering Services! I'm your virtual assistant. How can I help you today? Feel free to ask me anything about our services, packages, pricing, booking, themes, food options, or any other questions you might have about our catering services."
+
+    # Handle help command
+    if any(keyword in lower_msg for keyword in ['help', 'what can you do', 'commands', 'options']):
+        categories = get_faq_categories()
+        category_list = '\n• ' + '\n• '.join([cat.title() for cat in categories])
+        return f"I can help you with information about Nike's Catering Services. Here are the main topics I can assist with:{category_list}\n\nYou can ask me specific questions about any of these areas, or just type your question naturally!"
+
+    # Handle greetings
+    if any(keyword in lower_msg for keyword in ['hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening']):
+        return "Hello! Welcome to Nike's Catering Services. I'm here to help you with any questions about our catering services, packages, pricing, booking, themes, or food options. How can I assist you today?"
+
+    # Try category-only detection first
+    category = detect_category_only_request(user_message)
+    if category:
+        questions = get_faq_questions(category)
+        if questions:
+            question_list = '\n• ' + '\n• '.join(questions.keys())
+            return f"Here are some frequently asked questions about {category.title()}:{question_list}\n\nFeel free to ask me any of these questions or ask something specific about {category}!"
+
+    # Check for referenced categories and try normalization
+    referenced_categories = get_referenced_categories(user_message)
+    best_match = None
+    best_score = 0
+
+    for category in referenced_categories:
+        questions = get_faq_questions(category)
+        normalized = normalize_question_by_category(user_message, category)
+        if normalized and normalized in questions:
+            return questions[normalized]
+        
+        match, score = find_best_faq_match(user_message, questions)
+        if match and score > best_score:
+            best_match = match
+            best_score = score
+
+    if best_match and best_score >= 0.4:
+        for category in referenced_categories:
+            questions = get_faq_questions(category)
+            if best_match in questions:
+                return questions[best_match]
+
+    # Fallback: search all categories
+    all_questions = {}
+    for category in get_faq_categories():
+        all_questions.update(get_faq_questions(category))
+    
+    match, score = find_best_faq_match(user_message, all_questions)
+    if match and score >= 0.5:
+        return all_questions[match]
+
+    # Get suggestions for partial matches
+    suggestions = get_faq_suggestions(user_message)
+    if suggestions:
+        suggestion_list = '\n• ' + '\n• '.join(suggestions[:3])
+        return f"I'm not sure about that specific question, but here are some related topics I can help with:{suggestion_list}\n\nOr feel free to ask me about our packages, pricing, booking process, food options, themes, or any other aspect of our catering services!"
+
+    # Default response
+    return "Thank you for your question! I'd be happy to help you with information about Nike's Catering Services. Could you please be more specific about what you'd like to know? I can help with:\n\n• Packages and pricing\n• Booking process\n• Food and menu options\n• Themes and decorations\n• Payment information\n• Our services\n\nWhat would you like to know more about?"
+
+def api_chatbot_new_session(request):
+    """API endpoint to start a new chatbot session"""
+    request.session.pop('chat_history', None)
+    request.session.pop('initialized', None)
+    request.session.modified = True
+    
+    return JsonResponse({
+        'success': True,
+        'chat_history': [
+            {'sender': 'bot', 'text': "Welcome to Nike's Catering Services! I'm your virtual assistant. How can I help you today? Feel free to ask me anything about our services, packages, pricing, booking, themes, food options, or any other questions you might have about our catering services."}
+        ]
+    })
+
+def api_chatbot_load_session(request, session_id):
+    """API endpoint to load a chatbot session"""
+    try:
+        session = get_object_or_404(ChatSession, id=session_id)
+        request.session['chat_history'] = session.chat_history
+        request.session['initialized'] = True
+        request.session.modified = True
+        
+        return JsonResponse({
+            'success': True,
+            'chat_history': session.chat_history,
+            'title': session.title
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)

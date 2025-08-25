@@ -1,4 +1,5 @@
 from . import chatbot_urls
+from . import chatbot_views
 from django.urls import path, include
 from . import views
 from django.contrib.auth import views as auth_views
@@ -73,10 +74,18 @@ urlpatterns = [
 
     path('event-booking-send/<int:id>', views.send_booking_message, name="event-booking-send"),
     
-    # API Exposing bookin
+    # API Exposing booking
     
     path('api/event-status/<int:id>', views.api_booking_status, name="api-event-status"),
     path('api/my-bookings', views.api_booking_list, name="api-my-booking"),
+    
+    # Chatbot API endpoints for mobile
+    path('api/chatbot/message/', chatbot_views.api_chatbot_message, name='api_chatbot_message'),
+    path('api/chatbot/new-session/', chatbot_views.api_chatbot_new_session, name='api_chatbot_new_session'),
+    path('api/chatbot/load-session/<int:session_id>/', chatbot_views.api_chatbot_load_session, name='api_chatbot_load_session'),
+    path('api/chatbot/sessions/', chatbot_views.list_chat_sessions, name='api_chatbot_sessions'),
+    path('api/chatbot/save/', chatbot_views.save_chat_session, name='api_chatbot_save'),
+    path('api/chatbot/delete/<int:session_id>/', chatbot_views.delete_chat_session, name='api_chatbot_delete'),
     path('event-booking-send/<int:id>', views.send_booking_message, name="event-booking-send"),
 
     # Mobile posts API
