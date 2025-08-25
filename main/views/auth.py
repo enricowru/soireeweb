@@ -92,7 +92,7 @@ def login_view(request):
                 # Admin redirect
                 if user.is_superuser:
                     # request.session['is_moderator'] = False
-                    return redirect('admin_dashboard')
+                    return redirect('/admin/dashboard/')
 
                 # # Moderator redirect
                 # if hasattr(user, 'moderator_profile'):
