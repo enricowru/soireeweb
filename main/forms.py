@@ -50,10 +50,11 @@ class ModeratorEditForm(forms.Form):
 class AdminEditForm(forms.Form):
     # User fields
     username = forms.CharField(max_length=150)  # Make username editable
-    first_name = forms.CharField(max_length=150)
-    last_name = forms.CharField(max_length=150)
+    first_name = forms.CharField(max_length=150, disabled=True)  # Make non-editable
+    last_name = forms.CharField(max_length=150, disabled=True)   # Make non-editable
     email = forms.EmailField()
     mobile = forms.CharField(max_length=11, required=False)
+    password = forms.CharField(max_length=128, required=False, widget=forms.PasswordInput(attrs={'placeholder': 'Leave blank to keep current password'}))
 
     def __init__(self, *args, **kwargs):
         self.user_instance = kwargs.pop('user_instance', None)
@@ -76,6 +77,13 @@ class AdminEditForm(forms.Form):
             raise forms.ValidationError("This username is already taken.")
         return username
 
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        if password and len(password.strip()) > 0:
+            if len(password) < 8:
+                raise forms.ValidationError("Password must be at least 8 characters long.")
+        return password
+
     def save(self):
         if self.user_instance:
             self.user_instance.username = self.cleaned_data['username']
@@ -83,6 +91,12 @@ class AdminEditForm(forms.Form):
             self.user_instance.last_name = self.cleaned_data['last_name']
             self.user_instance.email = self.cleaned_data['email']
             self.user_instance.mobile = self.cleaned_data.get('mobile')
+            
+            # Handle password change if provided
+            password = self.cleaned_data.get('password')
+            if password and password.strip():
+                self.user_instance.set_password(password)
+            
             self.user_instance.save()
         return self.user_instance 
     

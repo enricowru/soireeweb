@@ -250,8 +250,14 @@ def admin_edit(request):
         form = AdminEditForm(request.POST, user_instance=user)
         if form.is_valid():
             try:
+                password_changed = bool(form.cleaned_data.get('password', '').strip())
                 form.save()
-                messages.success(request, 'Admin profile updated successfully.')
+                
+                if password_changed:
+                    messages.success(request, 'Admin profile and password updated successfully.')
+                else:
+                    messages.success(request, 'Admin profile updated successfully.')
+                    
                 return redirect('admin_edit')  # Redirect to same page to refresh
             except Exception as e:
                 messages.error(request, f'Error updating profile: {str(e)}')

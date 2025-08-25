@@ -65,6 +65,14 @@
                         <div class="text-danger small">{{ form.mobile.errors.0 }}</div>
                     {% endif %}
                 </div>
+                <div class="mb-3">
+                    <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <div class="text-danger small">{{ form.password.errors.0 }}</div>
+                    {% endif %}
+                    <div class="form-text">Leave blank to keep current password</div>
+                </div>
 
                 <div class="text-end">
                     <button type="submit" id="saveButton" class="btn btn-secondary" disabled>
@@ -105,7 +113,12 @@ document.addEventListener('DOMContentLoaded', function() {
         let hasChanges = false;
         
         fields.forEach(field => {
-            if (field.value !== initialValues[field.name]) {
+            // Special handling for password field - only consider it changed if it has a value
+            if (field.name === 'password') {
+                if (field.value.trim() !== '') {
+                    hasChanges = true;
+                }
+            } else if (field.value !== initialValues[field.name]) {
                 hasChanges = true;
             }
         });
