@@ -49,12 +49,12 @@ class ModeratorEditForm(forms.Form):
 
 class AdminEditForm(forms.Form):
     # User fields
-    username = forms.CharField(max_length=150)  # Make username editable
-    first_name = forms.CharField(max_length=150, disabled=True)  # Make non-editable
-    last_name = forms.CharField(max_length=150, disabled=True)   # Make non-editable
-    email = forms.EmailField()
-    mobile = forms.CharField(max_length=11, required=False)
-    password = forms.CharField(max_length=128, required=False, widget=forms.PasswordInput(attrs={'placeholder': 'Leave blank to keep current password'}))
+    username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'form-control'}))  # Make username editable
+    first_name = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'readonly': True, 'class': 'form-control'}))  # Make non-editable
+    last_name = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'readonly': True, 'class': 'form-control'}))   # Make non-editable
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    mobile = forms.CharField(max_length=11, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    password = forms.CharField(max_length=128, required=False, widget=forms.PasswordInput(attrs={'placeholder': 'Leave blank to keep current password', 'class': 'form-control'}))
 
     def __init__(self, *args, **kwargs):
         self.user_instance = kwargs.pop('user_instance', None)
