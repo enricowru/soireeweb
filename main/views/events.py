@@ -134,6 +134,19 @@ def api_booking_list(request):
             "status": b.status,
             "event_date": event_date_str,
             "chat_id": b.chat.id if b.chat else None,
+            # Add detailed booking information
+            "celebrant_name": b.celebrant_name,
+            "pax": b.pax,
+            "venue": b.venue,
+            "color_motif": b.color_motif,
+            "package": b.package,
+            "dishes": b.dish_list(),  # This returns a list from the dishes string
+            "pasta": b.pasta,
+            "drink": b.drink,
+            "floorplan": b.floorplan,
+            "floorplan_display_name": b.floorplan_display_name,
+            "created_at": b.created_at.isoformat() if b.created_at else None,
+            "updated_at": b.updated_at.isoformat() if b.updated_at else None,
         })
     return JsonResponse(data, safe=False)
 
