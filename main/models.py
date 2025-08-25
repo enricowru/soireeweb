@@ -550,3 +550,28 @@ class AdminNotification(models.Model):
     def __str__(self):
         return f"{self.title} - {self.created_at.strftime('%Y-%m-%d %H:%M')}"
 
+# ✅ User Notification Model
+class UserNotification(models.Model):
+    NOTIFICATION_TYPES = [
+        ('admin_message', 'Message from Admin'),
+        ('booking_update', 'Booking Update'),
+        ('event_reminder', 'Event Reminder'),
+        ('payment_update', 'Payment Update'),
+    ]
+    
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES, default='admin_message')
+    booking = models.ForeignKey('BookingRequest', on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Target user for the notification
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_notifications', null=True, blank=True)  # Admin who sent the notification
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'user_notifications'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.title} - {self.user.username} - {self.created_at.strftime('%Y-%m-%d %H:%M')}"
+

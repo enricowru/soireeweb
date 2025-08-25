@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.db.models import Q
 from ..forms import EventForm, AdminEditForm
-from ..models import Event, EventHistory, Chat, BookingRequest, EventStatusLog, EventStatusAttachment, BookingRequest, PaymentTransaction, AdminNotification
+from ..models import Event, EventHistory, Chat, BookingRequest, EventStatusLog, EventStatusAttachment, BookingRequest, PaymentTransaction, AdminNotification, UserNotification
 from .auth import admin_required
 from django.contrib.auth import get_user_model
 import json
@@ -91,6 +91,9 @@ def create_event(request):
                 if not created:
                     log.status = EventStatusLog.Status.DONE
                     log.save(update_fields=['status'])
+                
+                # Create user notification for Step 1: Booking Request Approved and Created
+                create_booking_status_notification(booking, log, request.user)
 
                 print(f"Event saved with ID: {event.id}")
                 messages.success(request, "Event created successfully!")
@@ -531,6 +534,9 @@ def mark_step_done(request, id):
 
         log.save()
 
+        # Create user notification for booking status update
+        create_booking_status_notification(booking, log, request.user)
+
         # --- Handle file uploads for ALL steps ---
         for f in request.FILES.getlist('proof'):
             if not f or not f.name:
@@ -734,6 +740,11 @@ def create_message_notification(message, chat=None):
     try:
         from ..models import AdminNotification, BookingRequest
         
+        # Only create admin notification for INCOMING messages (from users to admin)
+        # Do NOT notify admin about their own outgoing messages
+        if message.sender.is_staff:
+            return None  # Don't create admin notification for admin's own messages
+        
         sender_name = message.sender.get_full_name() or message.sender.username
         
         # Try to find if this chat belongs to a booking
@@ -744,7 +755,7 @@ def create_message_notification(message, chat=None):
             except BookingRequest.DoesNotExist:
                 booking_request = None
         
-        # Create notification for new message
+        # Create notification for incoming message from user
         notification = AdminNotification.objects.create(
             title=f"New Message from {sender_name}",
             message=f"{sender_name}: {message.content[:100]}{'...' if len(message.content) > 100 else ''}",
@@ -756,4 +767,196 @@ def create_message_notification(message, chat=None):
         return notification
     except Exception as e:
         print(f"Error creating message notification: {e}")
+        return None
+
+def create_booking_status_notification(booking, status_log, admin_user=None):
+    """Create user notification when booking status is updated"""
+    try:
+        from ..models import UserNotification
+        
+        # Use provided admin user or default to first staff user
+        if not admin_user:
+            admin_user = User.objects.filter(is_staff=True).first()
+        
+        # Define notification messages for each step
+        notification_data = {
+            'CREATED': {
+                'title': 'Booking Request Approved and Created',
+                'message': f'Your booking request for {booking.event_type} on {booking.event_date.strftime("%B %d, %Y")} has been approved and created! Our team will start working on your event.',
+                'type': 'booking_update'
+            },
+            'PAYMENT': {
+                'title': 'Payment Update',
+                'message': None,  # Will be set based on payment status
+                'type': 'payment_update'
+            },
+            'BACKDROP': {
+                'title': 'Backdrop Setup Complete',
+                'message': f'Great news! The backdrop for your {booking.event_type} event has been set up and is ready. Everything is looking beautiful for your special day!',
+                'type': 'booking_update'
+            },
+            'CATERING': {
+                'title': 'Catering/Buffet Update',
+                'message': f'Your catering and buffet setup for the {booking.event_type} event is now in progress. Our culinary team is preparing everything according to your specifications.',
+                'type': 'booking_update'
+            },
+            'LOGISTICS': {
+                'title': 'Lights/Sound/Logistics Update',
+                'message': f'All lights, sound, and logistics for your {booking.event_type} event have been set up and tested. Everything is ready for your special occasion!',
+                'type': 'booking_update'
+            }
+        }
+        
+        # Handle special case for payment notifications
+        if status_log.label == 'PAYMENT':
+            total_paid = sum(float(pt.amount_paid) for pt in status_log.payment_transactions.all())
+            total_due = float(status_log.total_due) if status_log.total_due else 0
+            
+            if status_log.status == 'DONE':
+                notification_data['PAYMENT']['title'] = 'Full Payment Received'
+                notification_data['PAYMENT']['message'] = f'Thank you! We have received your full payment of ₱{total_paid:,.2f} for your {booking.event_type} booking. Your event is now fully confirmed!'
+            elif status_log.status == 'PARTIALLY_PAID':
+                remaining = total_due - total_paid
+                notification_data['PAYMENT']['title'] = 'Partial Payment Received'
+                notification_data['PAYMENT']['message'] = f'We have received your partial payment of ₱{total_paid:,.2f}. Remaining balance: ₱{remaining:,.2f}. Please complete the payment to finalize your booking.'
+        
+        # Get the notification data for this step
+        step_data = notification_data.get(status_log.label)
+        if not step_data or not step_data['message']:
+            return None
+        
+        # Create the user notification
+        notification = UserNotification.objects.create(
+            user=booking.client,
+            sender=admin_user,
+            title=step_data['title'],
+            message=step_data['message'],
+            notification_type=step_data['type'],
+            booking=booking
+        )
+        
+        print(f"Created booking status notification: {notification.title} for user {booking.client.username}")
+        return notification
+        
+    except Exception as e:
+        print(f"Error creating booking status notification: {e}")
+        return None
+
+# ✅ User Notification Functions for Admin
+@admin_required
+def send_notification_to_user_view(request):
+    """Admin view to send notification to a specific user"""
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        title = request.POST.get('title')
+        message = request.POST.get('message')
+        notification_type = request.POST.get('notification_type', 'admin_message')
+        booking_id = request.POST.get('booking_id')
+        
+        try:
+            user = User.objects.get(id=user_id)
+            booking = None
+            if booking_id:
+                booking = BookingRequest.objects.get(id=booking_id)
+            
+            notification = UserNotification.objects.create(
+                user=user,
+                title=title,
+                message=message,
+                notification_type=notification_type,
+                booking=booking,
+                sender=request.user
+            )
+            
+            messages.success(request, f'Notification sent to {user.get_full_name() or user.username}')
+            return JsonResponse({'success': True, 'message': 'Notification sent successfully'})
+            
+        except User.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'User not found'})
+        except BookingRequest.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Booking not found'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    # GET request - show form
+    users = User.objects.filter(is_active=True, is_staff=False)
+    bookings = BookingRequest.objects.all().order_by('-created_at')
+    return render(request, 'custom_admin/send_user_notification.html', {
+        'users': users,
+        'bookings': bookings
+    })
+
+@admin_required
+def send_notification_to_all_users_view(request):
+    """Admin view to send notification to all users"""
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        message = request.POST.get('message')
+        notification_type = request.POST.get('notification_type', 'admin_message')
+        
+        try:
+            users = User.objects.filter(is_active=True, is_staff=False)
+            notifications_created = []
+            
+            for user in users:
+                notification = UserNotification.objects.create(
+                    user=user,
+                    title=title,
+                    message=message,
+                    notification_type=notification_type,
+                    sender=request.user
+                )
+                notifications_created.append(notification)
+            
+            messages.success(request, f'Notification sent to {len(notifications_created)} users')
+            return JsonResponse({'success': True, 'message': f'Notification sent to {len(notifications_created)} users'})
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    # GET request - show form
+    return render(request, 'custom_admin/send_notification_all_users.html')
+
+def create_user_booking_notification(booking_request, title, message, notification_type='booking_update'):
+    """Helper function to create user notifications for booking updates"""
+    try:
+        notification = UserNotification.objects.create(
+            user=booking_request.client,  # Use client instead of user
+            title=title,
+            message=message,
+            notification_type=notification_type,
+            booking=booking_request,
+            sender=None  # System notification
+        )
+        return notification
+    except Exception as e:
+        print(f"Error creating user booking notification: {e}")
+        return None
+
+def create_user_message_notification(message, chat):
+    """Helper function to create user notifications when admin sends a message"""
+    try:
+        # Get the booking request from the chat
+        booking_request = getattr(chat, 'booking_request', None)
+        if not booking_request:
+            return None
+        
+        # Only create notification if the message is from staff/admin
+        if not message.sender.is_staff:
+            return None
+        
+        sender_name = message.sender.get_full_name() or message.sender.username
+        
+        notification = UserNotification.objects.create(
+            user=booking_request.client,  # Use client instead of user
+            title=f"New message from {sender_name}",
+            message=f"{sender_name}: {message.content[:100]}{'...' if len(message.content) > 100 else ''}",
+            notification_type='admin_message',
+            booking=booking_request,
+            sender=message.sender
+        )
+        
+        return notification
+    except Exception as e:
+        print(f"Error creating user message notification: {e}")
         return None

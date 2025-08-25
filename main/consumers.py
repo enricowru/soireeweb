@@ -102,7 +102,7 @@ class EventBookingConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def create_message_notification(self, message, chat):
         try:
-            from .models import AdminNotification, BookingRequest
+            from .models import AdminNotification, UserNotification, BookingRequest
             
             sender_name = message.sender.get_full_name() or message.sender.username
             
@@ -113,16 +113,33 @@ class EventBookingConsumer(AsyncWebsocketConsumer):
             except BookingRequest.DoesNotExist:
                 booking_request = None
             
-            # Create notification for new message
-            notification = AdminNotification.objects.create(
-                title=f"New Message from {sender_name}",
-                message=f"{sender_name}: {message.content[:100]}{'...' if len(message.content) > 100 else ''}",
-                notification_type='message_received',
-                booking=booking_request,
-                user=message.sender
-            )
+            notifications_created = {}
             
-            return notification
+            # Create admin notification ONLY for INCOMING messages (from users to admin)
+            # Do NOT notify admin about their own outgoing messages
+            if not message.sender.is_staff:
+                admin_notification = AdminNotification.objects.create(
+                    title=f"New Message from {sender_name}",
+                    message=f"{sender_name}: {message.content[:100]}{'...' if len(message.content) > 100 else ''}",
+                    notification_type='message_received',
+                    booking=booking_request,
+                    user=message.sender
+                )
+                notifications_created['admin'] = admin_notification
+            
+            # Create user notification if the message is from admin/staff to user
+            if message.sender.is_staff and booking_request:
+                user_notification = UserNotification.objects.create(
+                    user=booking_request.client,
+                    title=f"New message from {sender_name}",
+                    message=f"{sender_name}: {message.content[:100]}{'...' if len(message.content) > 100 else ''}",
+                    notification_type='admin_message',
+                    booking=booking_request,
+                    sender=message.sender
+                )
+                notifications_created['user'] = user_notification
+            
+            return notifications_created
         except Exception as e:
             print(f"Error creating message notification: {e}")
             return None

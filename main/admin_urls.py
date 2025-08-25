@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views.admin import send_notification_to_user_view, send_notification_to_all_users_view
 
 urlpatterns = [
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
@@ -50,6 +51,10 @@ urlpatterns = [
     path('notifications/<int:notification_id>/mark-read/', views.mark_notification_read, name='mark_notification_read'),
     path('notifications/mark-booking-read/', views.mark_booking_notifications_read, name='mark_booking_notifications_read'),
     path('notifications/stream/', views.admin_notifications_stream, name='admin_notifications_stream'),
+    
+    # User Notification Management URLs (Admin sends to users)
+    path('send-notification/user/', send_notification_to_user_view, name='send_notification_to_user'),
+    path('send-notification/all-users/', send_notification_to_all_users_view, name='send_notification_to_all_users'),
     
     # User Management URLs
     # path('users/list/', views.user_list, name='user_list'),

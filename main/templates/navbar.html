@@ -39,7 +39,12 @@
         </li>
         {% if user.is_authenticated %}
             <li><a href="{% url 'my_bookings' %}" class="book-here-btn">My Bookings</a></li>
-            <li><a href="">Notifications</a></li>
+            <li>
+                <a href="#" class="notification-btn" data-bs-toggle="modal" data-bs-target="#userNotificationModal">
+                    <i class="fas fa-bell"></i> Notifications
+                    <span class="notification-badge" id="userNotificationBadge" style="display: none;">0</span>
+                </a>
+            </li>
             <li><a href="{% url 'logout' %}">Logout</a></li>
         {% else %}
             <li><a href="{% url 'login' %}" class="book-here-btn">Login</a></li>

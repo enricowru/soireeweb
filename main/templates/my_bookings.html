@@ -240,5 +240,395 @@ async function submitMessage(e) {
   {% endif %}
 </script>
 
+<!-- User Notification Modal -->
+{% if user.is_authenticated %}
+<div class="modal fade user-notification-modal" id="userNotificationModal" tabindex="-1" aria-labelledby="userNotificationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="userNotificationModalLabel">
+          <i class="fas fa-bell"></i> Notifications
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div id="userNotificationList" style="max-height: 400px; overflow-y: auto; overflow-x: hidden;">
+          <div class="text-center p-4 text-muted">
+            <i class="fas fa-bell-slash mb-2" style="font-size: 2rem;"></i>
+            <p>No new notifications</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn" style="background: #AD974F; color: white;" onclick="markAllUserNotificationsAsRead()">
+          Mark All as Read
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- User Notification Styles -->
+<style>
+.notification-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #AD974F;
+  color: #fff;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 10px;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.user-notification-modal .modal-content {
+  background: #fff;
+  border-radius: 10px;
+  border: none;
+}
+
+.user-notification-modal .modal-header {
+  background: #AD974F;
+  color: #fff;
+  border-radius: 10px 10px 0 0;
+}
+
+.user-notification-item {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.user-notification-item:hover {
+  background: #f8f9fa;
+}
+
+.user-notification-item:last-child {
+  border-bottom: none;
+}
+
+.user-notification-icon {
+  width: 40px;
+  height: 40px;
+  background: #AD974F;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+.user-notification-content {
+  flex-grow: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.user-notification-title {
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 5px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.user-notification-text {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 5px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.4;
+}
+
+.user-notification-time {
+  color: #999;
+  font-size: 12px;
+}
+
+.user-notification-sender {
+  color: #AD974F;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(100%); opacity: 0; }
+}
+
+.user-notification-item:hover {
+  background-color: #f8f9fa !important;
+  transform: translateX(2px);
+}
+
+.toast-notification {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background: #AD974F;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 9999;
+  max-width: 350px;
+  animation: slideIn 0.3s ease-out;
+}
+</style>
+
+<!-- User Notification JavaScript -->
+<script>
+let userNotificationCount = 0;
+let userNotifications = [];
+
+// Initialize user notification system
+document.addEventListener('DOMContentLoaded', function() {
+  loadUserNotifications();
+  setupRealtimeUserNotifications();
+});
+
+function loadUserNotifications() {
+  fetch('/notifications/')
+    .then(response => response.json())
+    .then(data => {
+      userNotifications = data.notifications;
+      updateUserNotificationUI();
+    })
+    .catch(err => console.error('Error loading user notifications:', err));
+}
+
+function updateUserNotificationUI() {
+  const badge = document.getElementById('userNotificationBadge');
+  const list = document.getElementById('userNotificationList');
+  
+  const unreadCount = userNotifications.filter(n => !n.is_read).length;
+  
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
+  
+  if (userNotifications.length === 0) {
+    list.innerHTML = `
+      <div class="text-center p-4 text-muted">
+        <i class="fas fa-bell-slash mb-2" style="font-size: 2rem;"></i>
+        <p>No new notifications</p>
+      </div>
+    `;
+  } else {
+    list.innerHTML = userNotifications.map(notification => {
+      // Determine icon based on notification type
+      let icon = 'fas fa-envelope'; // default for admin message
+      if (notification.notification_type === 'booking_update') {
+        icon = 'fas fa-calendar-check';
+      } else if (notification.notification_type === 'event_reminder') {
+        icon = 'fas fa-clock';
+      } else if (notification.notification_type === 'payment_update') {
+        icon = 'fas fa-credit-card';
+      }
+      
+      return `
+        <div class="user-notification-item d-flex ${notification.is_read ? '' : 'bg-light'}" 
+             data-id="${notification.id}" 
+             data-booking-id="${notification.booking_id || ''}"
+             data-notification-type="${notification.notification_type || 'admin_message'}"
+             onclick="handleUserNotificationClick(this)"
+             style="cursor: pointer; transition: all 0.2s ease;">
+          <div class="user-notification-icon">
+            <i class="${icon}"></i>
+          </div>
+          <div class="user-notification-content">
+            <div class="user-notification-title">${notification.title}</div>
+            <div class="user-notification-text">${notification.message}</div>
+            <div class="user-notification-sender">From: ${notification.sender_name}</div>
+            <div class="user-notification-time">${notification.created_at}</div>
+          </div>
+          ${!notification.is_read ? '<div class="text-primary"><i class="fas fa-circle" style="font-size: 8px;"></i></div>' : ''}
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+function addUserNotification(data) {
+  userNotifications.unshift({
+    id: data.id,
+    title: data.title,
+    message: data.message,
+    created_at: data.created_at,
+    booking_id: data.booking_id,
+    sender_name: data.sender_name,
+    notification_type: data.type === 'booking_update' ? 'booking_update' : (data.type === 'event_reminder' ? 'event_reminder' : (data.type === 'payment_update' ? 'payment_update' : 'admin_message')),
+    is_read: false
+  });
+  updateUserNotificationUI();
+  
+  // Show toast notification
+  showUserToast(data.title, data.message);
+}
+
+function showUserToast(title, message) {
+  // Create toast element
+  const toast = document.createElement('div');
+  toast.className = 'toast-notification';
+  toast.innerHTML = `
+    <div style="font-weight: 600; margin-bottom: 5px;">${title}</div>
+    <div style="font-size: 14px; opacity: 0.9;">${message}</div>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Remove after 5 seconds
+  setTimeout(() => {
+    toast.style.animation = 'slideOut 0.3s ease-in';
+    setTimeout(() => document.body.removeChild(toast), 300);
+  }, 5000);
+}
+
+function markAllUserNotificationsAsRead() {
+  fetch('/notifications/mark-all-read/', {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': getCsrfToken(),
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      userNotifications.forEach(n => n.is_read = true);
+      updateUserNotificationUI();
+    }
+  })
+  .catch(err => console.error('Error marking user notifications as read:', err));
+}
+
+function setupRealtimeUserNotifications() {
+  // Use Server-Sent Events for real-time notifications
+  const eventSource = new EventSource('/notifications/stream/');
+  
+  eventSource.onmessage = function(event) {
+    try {
+      const data = JSON.parse(event.data);
+      if (data.type === 'admin_message' || data.type === 'booking_update' || data.type === 'event_reminder' || data.type === 'payment_update') {
+        addUserNotification(data);
+      }
+    } catch (err) {
+      console.error('Error parsing user notification data:', err);
+    }
+  };
+  
+  eventSource.onerror = function(event) {
+    console.warn('User notification stream error:', event);
+  };
+}
+
+// Handle notification click to navigate to booking or relevant page
+function handleUserNotificationClick(element) {
+  const bookingId = element.getAttribute('data-booking-id');
+  const notificationId = element.getAttribute('data-id');
+  const notificationType = element.getAttribute('data-notification-type');
+  
+  // Mark notification as read immediately
+  markUserNotificationAsReadOnServer(notificationId);
+  markUserNotificationAsRead(notificationId);
+  
+  // Close the modal first
+  const modal = bootstrap.Modal.getInstance(document.getElementById('userNotificationModal'));
+  if (modal) {
+    modal.hide();
+  }
+  
+  // Handle different notification types
+  if (bookingId && bookingId !== 'null' && bookingId !== '') {
+    if (notificationType === 'admin_message') {
+      // We're already on my_bookings page, just highlight the relevant booking
+      const bookingElement = document.querySelector(`[data-booking="${bookingId}"]`);
+      if (bookingElement) {
+        // Click on the booking to open it
+        bookingElement.click();
+      }
+    } else {
+      // Navigate to event status page for booking updates and payment updates
+      window.location.href = `/event-status/${bookingId}/`;
+    }
+  } else {
+    // For general notifications, just close the modal
+    console.log('General notification clicked');
+  }
+}
+
+function markUserNotificationAsRead(notificationId) {
+  // Update the notification visually
+  const notificationElement = document.querySelector(`[data-id="${notificationId}"]`);
+  if (notificationElement) {
+    notificationElement.classList.remove('bg-light');
+    const unreadIndicator = notificationElement.querySelector('.text-primary');
+    if (unreadIndicator) {
+      unreadIndicator.remove();
+    }
+  }
+  
+  // Update the notifications array
+  const notification = userNotifications.find(n => n.id == notificationId);
+  if (notification) {
+    notification.is_read = true;
+  }
+  
+  // Update badge count
+  updateUserNotificationUI();
+}
+
+function markUserNotificationAsReadOnServer(notificationId) {
+  fetch(`/notifications/${notificationId}/mark-read/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCsrfToken()
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      console.log('User notification marked as read on server');
+    }
+  })
+  .catch(err => console.error('Error marking user notification as read:', err));
+}
+
+function getCsrfToken() {
+  return document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+}
+</script>
+{% endif %}
+
 </body>
 </html>

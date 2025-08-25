@@ -1,0 +1,100 @@
+{% extends 'custom_admin/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Send Notification to All Users</h2>
+        </div>
+        <div class="col text-end">
+            <a href="{% url 'send_notification_to_user' %}" class="btn btn-primary">
+                <i class="fas fa-user"></i> Send to Specific User
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Warning:</strong> This notification will be sent to all active users on the platform.
+            </div>
+            
+            <form method="post" id="broadcastForm">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="title" class="form-label">Title *</label>
+                        <input type="text" class="form-control" id="title" name="title" required
+                               placeholder="Enter notification title">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="notification_type" class="form-label">Notification Type</label>
+                        <select class="form-select" id="notification_type" name="notification_type">
+                            <option value="admin_message">Admin Message</option>
+                            <option value="booking_update">Booking Update</option>
+                            <option value="event_reminder">Event Reminder</option>
+                            <option value="payment_update">Payment Update</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="message" class="form-label">Message *</label>
+                    <textarea class="form-control" id="message" name="message" rows="6" required
+                              placeholder="Enter your message for all users..."></textarea>
+                </div>
+
+                <div class="text-end">
+                    <button type="button" class="btn btn-secondary me-2" onclick="history.back()">Cancel</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-broadcast-tower"></i> Send to All Users
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('broadcastForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Confirm before sending to all users
+    if (!confirm('Are you sure you want to send this notification to ALL users? This action cannot be undone.')) {
+        return;
+    }
+    
+    const formData = new FormData(this);
+    
+    fetch(window.location.href, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            this.reset();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while sending the notification.');
+    });
+});
+</script>
+{% endblock %}

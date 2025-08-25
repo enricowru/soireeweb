@@ -1,0 +1,169 @@
+{% extends 'custom_admin/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Send Notification to User</h2>
+        </div>
+        <div class="col text-end">
+            <a href="{% url 'send_notification_to_all_users' %}" class="btn btn-success">
+                <i class="fas fa-broadcast-tower"></i> Send to All Users
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" id="notificationForm">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="user_id" class="form-label">Select User *</label>
+                        <select class="form-select" id="user_id" name="user_id" required>
+                            <option value="">Choose a user...</option>
+                            {% for user in users %}
+                                <option value="{{ user.id }}">
+                                    {{ user.get_full_name|default:user.username }} 
+                                    ({{ user.email }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="notification_type" class="form-label">Notification Type</label>
+                        <select class="form-select" id="notification_type" name="notification_type">
+                            <option value="admin_message">Admin Message</option>
+                            <option value="booking_update">Booking Update</option>
+                            <option value="event_reminder">Event Reminder</option>
+                            <option value="payment_update">Payment Update</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="title" class="form-label">Title *</label>
+                        <input type="text" class="form-control" id="title" name="title" required
+                               placeholder="Enter notification title">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="booking_id" class="form-label">Related Booking (Optional)</label>
+                        <select class="form-select" id="booking_id" name="booking_id">
+                            <option value="">No related booking</option>
+                            {% for booking in bookings %}
+                                <option value="{{ booking.id }}" data-user-id="{{ booking.client.id }}">
+                                    {{ booking.event_type }} - {{ booking.client.get_full_name|default:booking.client.username }}
+                                    ({{ booking.event_date|date:"M d, Y" }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">Only bookings for the selected user will be shown</small>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="message" class="form-label">Message *</label>
+                    <textarea class="form-control" id="message" name="message" rows="4" required
+                              placeholder="Enter your message for the user..."></textarea>
+                </div>
+
+                <div class="text-end">
+                    <button type="button" class="btn btn-secondary me-2" onclick="history.back()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Send Notification
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Store all booking options for filtering
+let allBookingOptions = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+    const userSelect = document.getElementById('user_id');
+    const bookingSelect = document.getElementById('booking_id');
+    
+    // Store all booking options on page load
+    allBookingOptions = Array.from(bookingSelect.options).slice(1); // Exclude the first "No related booking" option
+    
+    // Add event listener for user selection change
+    userSelect.addEventListener('change', function() {
+        filterBookingsByUser(this.value);
+    });
+    
+    // Initial filter (empty selection shows no bookings except default)
+    filterBookingsByUser('');
+});
+
+function filterBookingsByUser(selectedUserId) {
+    const bookingSelect = document.getElementById('booking_id');
+    
+    // Clear current options except the first one
+    bookingSelect.innerHTML = '<option value="">No related booking</option>';
+    
+    if (!selectedUserId) {
+        // If no user selected, don't show any bookings
+        return;
+    }
+    
+    // Filter and add bookings for the selected user
+    allBookingOptions.forEach(option => {
+        if (option.dataset.userId === selectedUserId) {
+            bookingSelect.appendChild(option.cloneNode(true));
+        }
+    });
+    
+    // Update the help text based on available bookings
+    const helpText = bookingSelect.parentElement.querySelector('.text-muted');
+    const userBookings = allBookingOptions.filter(option => option.dataset.userId === selectedUserId);
+    
+    if (userBookings.length === 0) {
+        helpText.className = 'text-warning';
+    } else {
+        helpText.textContent = `Found ${userBookings.length} booking(s) for the selected user`;
+        helpText.className = 'text-success';
+    }
+}
+
+document.getElementById('notificationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch(window.location.href, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Notification sent successfully!');
+            this.reset();
+            // Reset the booking filter after form reset
+            filterBookingsByUser('');
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while sending the notification.');
+    });
+});
+</script>
+{% endblock %}

@@ -5,6 +5,13 @@ from django.contrib.auth import views as auth_views
 from .api import *
 from .views.auth import forgot_password_request, forgot_password_verify_otp, forgot_password_reset
 from .api.auth_api import email_verification_request, email_verification_verify
+from .views.user_notifications import (
+    user_notifications, 
+    mark_all_user_notifications_read, 
+    mark_user_notification_read, 
+    mark_user_booking_notifications_read,
+    user_notifications_stream
+)
 
 
 urlpatterns = [
@@ -76,7 +83,14 @@ urlpatterns = [
     path('api/posts/', get_all_posts, name='api_posts_list'),
     path('api/posts/<int:post_id>/', get_post_detail, name='api_post_detail'),
     path('api/posts/<int:post_id>/like/', toggle_like, name='api_post_like'),
-    path('api/posts/<int:post_id>/comments/', submit_comment, name='api_post_comment')
+    path('api/posts/<int:post_id>/comments/', submit_comment, name='api_post_comment'),
+    
+    # ✅ User Notification API Endpoints
+    path('notifications/', user_notifications, name='user_notifications'),
+    path('notifications/mark-all-read/', mark_all_user_notifications_read, name='mark_all_user_notifications_read'),
+    path('notifications/<int:notification_id>/mark-read/', mark_user_notification_read, name='mark_user_notification_read'),
+    path('notifications/mark-booking-read/', mark_user_booking_notifications_read, name='mark_user_booking_notifications_read'),
+    path('notifications/stream/', user_notifications_stream, name='user_notifications_stream'),
 ]
 
 

@@ -39,10 +39,31 @@ def send_booking_message(request, id):
             is_read=False,
         )
 
-        # Create notification for admin about new message
+        # Create notifications for both admin and user about new message
         try:
             from .admin import create_message_notification
+            from ..models import BookingRequest, UserNotification
+            
+            # Create admin notification (existing functionality)
             create_message_notification(message_obj, chat)
+            
+            # Create user notification if admin/staff sent the message
+            if request.user.is_staff:
+                try:
+                    booking_request = BookingRequest.objects.get(chat=chat)
+                    sender_name = request.user.get_full_name() or request.user.username
+                    
+                    UserNotification.objects.create(
+                        user=booking_request.client,
+                        title=f"New message from {sender_name}",
+                        message=f"{sender_name}: {message_content[:100]}{'...' if len(message_content) > 100 else ''}",
+                        notification_type='admin_message',
+                        booking=booking_request,
+                        sender=request.user
+                    )
+                except BookingRequest.DoesNotExist:
+                    pass  # No booking request associated with this chat
+                    
         except Exception as e:
             print(f"Error creating message notification: {e}")
 
@@ -125,10 +146,31 @@ def send_message(request):
             content=content
         )
         
-        # Create notification for admin about new message
+        # Create notifications for both admin and user about new message
         try:
             from .admin import create_message_notification
+            from ..models import BookingRequest, UserNotification
+            
+            # Create admin notification (existing functionality)
             create_message_notification(message, chat)
+            
+            # Create user notification if admin/staff sent the message
+            if request.user.is_staff:
+                try:
+                    booking_request = BookingRequest.objects.get(chat=chat)
+                    sender_name = request.user.get_full_name() or request.user.username
+                    
+                    UserNotification.objects.create(
+                        user=booking_request.client,
+                        title=f"New message from {sender_name}",
+                        message=f"{sender_name}: {content[:100]}{'...' if len(content) > 100 else ''}",
+                        notification_type='admin_message',
+                        booking=booking_request,
+                        sender=request.user
+                    )
+                except BookingRequest.DoesNotExist:
+                    pass  # No booking request associated with this chat
+                    
         except Exception as e:
             print(f"Error creating message notification: {e}")
         
