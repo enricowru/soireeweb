@@ -57,7 +57,7 @@
         {% if edit and post.images.all %}
             <div id="existing-images-data" data-images='[
                 {% for img in post.images.all %}
-                    {"id": "{{ img.id }}", "url": "{{ img.image.display_url }}"}{% if not forloop.last %},{% endif %}
+                    {"id": "{{ img.id }}", "url": "{{ img.display_url }}"}{% if not forloop.last %},{% endif %}
                 {% endfor %}
             ]'></div>
         {% endif %}
@@ -78,17 +78,19 @@
                 const wrapper = document.createElement('div');
                 wrapper.className = 'position-relative';
                 wrapper.style.width = '200px';
+                wrapper.style.height = '200px';  // Fixed height for consistency
 
                 const image = document.createElement('img');
                 image.src = img.url;
                 image.className = 'rounded border';
                 image.style.width = '100%';
+                image.style.height = '100%';
                 image.style.objectFit = 'cover';
 
                 const removeBtn = document.createElement('button');
                 removeBtn.type = 'button';
-                removeBtn.className = 'btn btn-sm btn-danger position-absolute top-0 end-0';
-                removeBtn.innerText = '✕';
+                removeBtn.className = 'btn btn-sm btn-danger position-absolute top-0 end-0 m-2';
+                removeBtn.innerHTML = '<i class="fas fa-times"></i>';
                 removeBtn.onclick = () => {
                     const input = document.createElement('input');
                     input.type = 'hidden';
@@ -98,7 +100,11 @@
                     wrapper.remove();
                 };
 
-                wrapper.appendChild(image);
+                const imageWrapper = document.createElement('div');
+                imageWrapper.className = 'h-100 w-100 position-relative';
+                imageWrapper.appendChild(image);
+
+                wrapper.appendChild(imageWrapper);
                 wrapper.appendChild(removeBtn);
                 previewContainer.appendChild(wrapper);
             });

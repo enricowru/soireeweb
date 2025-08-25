@@ -84,10 +84,101 @@
         border-radius: 5px;
         text-decoration: none;
         transition: all 0.3s;
+        margin-left: 1rem;
     }
     .logout-btn:hover {
         background-color: #fff;
         color: #222 !important;
+    }
+    .notification-btn {
+        color: #fff !important;
+        padding: 0.5rem;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: all 0.3s;
+        position: relative;
+        border: 1px solid transparent;
+        background: transparent;
+        cursor: pointer;
+    }
+    .notification-btn:hover {
+        color: #AD974F !important;
+        border-color: #AD974F;
+    }
+    .notification-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #AD974F;
+        color: #fff;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 10px;
+        min-width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+    .notification-modal .modal-content {
+        background: #fff;
+        border-radius: 10px;
+        border: none;
+    }
+    .notification-modal .modal-header {
+        background: #AD974F;
+        color: #fff;
+        border-radius: 10px 10px 0 0;
+    }
+    .notification-item {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        transition: background 0.2s;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    .notification-item:hover {
+        background: #f8f9fa;
+    }
+    .notification-item:last-child {
+        border-bottom: none;
+    }
+    .notification-icon {
+        width: 40px;
+        height: 40px;
+        background: #AD974F;
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+    .notification-content {
+        flex-grow: 1;
+        min-width: 0; /* Allows flexbox item to shrink */
+        overflow: hidden;
+    }
+    .notification-title {
+        font-weight: 600;
+        color: #222;
+        margin-bottom: 5px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+    .notification-text {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 5px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        line-height: 1.4;
+    }
+    .notification-time {
+        color: #999;
+        font-size: 12px;
     }
     .alert {
         position: relative;
@@ -197,6 +288,12 @@
       </a>
     </div>
     <div class="d-flex align-items-center">
+      <!-- Notification Button -->
+      <button class="notification-btn" data-bs-toggle="modal" data-bs-target="#notificationModal">
+        <i class="fas fa-bell"></i>
+        <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+      </button>
+      
       <a href="{% url 'logout' %}" class="logout-btn">
         <i class="fas fa-sign-out-alt"></i> Logout
       </a>
@@ -304,6 +401,307 @@ closeChat.addEventListener('click', () => chatSidebar.classList.remove('open'));
   es.onerror = () => console.warn("SSE disconnected…");
 })();
 </script> {% endcomment %}
+
+<!-- Notification Modal -->
+<div class="modal fade notification-modal" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="notificationModalLabel">
+          <i class="fas fa-bell"></i> Notifications
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div id="notificationList" style="max-height: 400px; overflow-y: auto; overflow-x: hidden;">
+          <div class="text-center p-4 text-muted">
+            <i class="fas fa-bell-slash mb-2" style="font-size: 2rem;"></i>
+            <p>No new notifications</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn" style="background: #AD974F; color: white;" onclick="markAllAsRead()">
+          Mark All as Read
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Notification JavaScript -->
+<script>
+let notificationCount = 0;
+let notifications = [];
+
+// Initialize notification system
+document.addEventListener('DOMContentLoaded', function() {
+  loadNotifications();
+  setupRealtimeNotifications();
+});
+
+function loadNotifications() {
+  fetch('/admin/notifications/')
+    .then(response => response.json())
+    .then(data => {
+      notifications = data.notifications;
+      updateNotificationUI();
+    })
+    .catch(err => console.error('Error loading notifications:', err));
+}
+
+function updateNotificationUI() {
+  const badge = document.getElementById('notificationBadge');
+  const list = document.getElementById('notificationList');
+  
+  const unreadCount = notifications.filter(n => !n.is_read).length;
+  
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount;
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
+  
+  if (notifications.length === 0) {
+    list.innerHTML = `
+      <div class="text-center p-4 text-muted">
+        <i class="fas fa-bell-slash mb-2" style="font-size: 2rem;"></i>
+        <p>No new notifications</p>
+      </div>
+    `;
+  } else {
+    list.innerHTML = notifications.map(notification => {
+      // Determine icon based on notification type
+      let icon = 'fas fa-user-plus'; // default for booking
+      if (notification.notification_type === 'message_received') {
+        icon = 'fas fa-comment';
+      } else if (notification.notification_type === 'payment_received') {
+        icon = 'fas fa-credit-card';
+      }
+      
+      return `
+        <div class="notification-item d-flex ${notification.is_read ? '' : 'bg-light'}" 
+             data-id="${notification.id}" 
+             data-booking-id="${notification.booking_id || ''}"
+             data-user-id="${notification.user_id || ''}"
+             data-notification-type="${notification.notification_type || 'new_booking'}"
+             onclick="handleNotificationClick(this)"
+             style="cursor: pointer; transition: all 0.2s ease;">
+          <div class="notification-icon">
+            <i class="${icon}"></i>
+          </div>
+          <div class="notification-content">
+            <div class="notification-title">${notification.title}</div>
+            <div class="notification-text">${notification.message}</div>
+            <div class="notification-time">${notification.created_at}</div>
+          </div>
+          ${!notification.is_read ? '<div class="text-primary"><i class="fas fa-circle" style="font-size: 8px;"></i></div>' : ''}
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+function addNotification(data) {
+  notifications.unshift({
+    id: data.id,
+    title: data.title,
+    message: data.message,
+    created_at: data.created_at,
+    booking_id: data.booking_id,
+    user_id: data.user_id,
+    notification_type: data.type === 'new_message' ? 'message_received' : (data.type === 'payment_received' ? 'payment_received' : 'new_booking'),
+    is_read: false
+  });
+  updateNotificationUI();
+  
+  // Show toast notification
+  showToast(data.title, data.message);
+}
+
+function showToast(title, message) {
+  // Create toast element
+  const toast = document.createElement('div');
+  toast.className = 'toast-notification';
+  toast.style.cssText = `
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: #AD974F;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    max-width: 350px;
+    animation: slideIn 0.3s ease-out;
+  `;
+  
+  toast.innerHTML = `
+    <div style="font-weight: 600; margin-bottom: 5px;">${title}</div>
+    <div style="font-size: 14px; opacity: 0.9;">${message}</div>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Remove after 5 seconds
+  setTimeout(() => {
+    toast.style.animation = 'slideOut 0.3s ease-in';
+    setTimeout(() => document.body.removeChild(toast), 300);
+  }, 5000);
+}
+
+function markAllAsRead() {
+  fetch('/admin/notifications/mark-all-read/', {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '',
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      notifications.forEach(n => n.is_read = true);
+      updateNotificationUI();
+    }
+  })
+  .catch(err => console.error('Error marking notifications as read:', err));
+}
+
+function setupRealtimeNotifications() {
+  // Use Server-Sent Events for real-time notifications
+  const eventSource = new EventSource('/admin/notifications/stream/');
+  
+  eventSource.onmessage = function(event) {
+    try {
+      const data = JSON.parse(event.data);
+      if (data.type === 'new_booking' || data.type === 'new_message' || data.type === 'payment_received') {
+        addNotification(data);
+      }
+    } catch (err) {
+      console.error('Error parsing notification data:', err);
+    }
+  };
+  
+  eventSource.onerror = function(event) {
+    console.warn('Notification stream error:', event);
+  };
+}
+
+// Add CSS animations
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
+  
+  .notification-item:hover {
+    background-color: #f8f9fa !important;
+    transform: translateX(2px);
+  }
+`;
+document.head.appendChild(style);
+
+// Handle notification click to navigate to booking or chat
+function handleNotificationClick(element) {
+  const bookingId = element.getAttribute('data-booking-id');
+  const notificationId = element.getAttribute('data-id');
+  const notificationType = element.getAttribute('data-notification-type');
+  
+  // Mark notification as read immediately
+  markNotificationAsReadOnServer(notificationId);
+  markNotificationAsRead(notificationId);
+  
+  // Close the modal first
+  const modal = bootstrap.Modal.getInstance(document.getElementById('notificationModal'));
+  if (modal) {
+    modal.hide();
+  }
+  
+  // Handle different notification types
+  if (notificationType === 'message_received') {
+    // For message notifications, navigate to chat
+    if (bookingId && bookingId !== 'null' && bookingId !== '') {
+      // Navigate to booking chat
+      window.location.href = `/admin/request-bookings/?booking=${bookingId}`;
+    } else {
+      // For general chat messages, you might want to navigate to a general chat page
+      // For now, we'll just close the modal or navigate to a chat list
+      console.log('Message notification without booking context');
+    }
+  } else if (bookingId && bookingId !== 'null' && bookingId !== '') {
+    // For booking notifications, navigate to booking requests page
+    window.location.href = `/admin/request-bookings/?booking=${bookingId}`;
+  }
+}
+
+function markNotificationAsRead(notificationId) {
+  // Update the notification visually
+  const notificationElement = document.querySelector(`[data-id="${notificationId}"]`);
+  if (notificationElement) {
+    notificationElement.classList.remove('bg-light');
+    const unreadIndicator = notificationElement.querySelector('.text-primary');
+    if (unreadIndicator) {
+      unreadIndicator.remove();
+    }
+  }
+  
+  // Update the notifications array
+  const notification = notifications.find(n => n.id == notificationId);
+  if (notification) {
+    notification.is_read = true;
+  }
+  
+  // Update badge count
+  updateNotificationUI();
+}
+
+function markNotificationAsReadOnServer(notificationId) {
+  fetch(`/admin/notifications/${notificationId}/mark-read/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCsrfToken()
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      console.log('Notification marked as read on server');
+    }
+  })
+  .catch(err => console.error('Error marking notification as read:', err));
+}
+
+function getCsrfToken() {
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+  if (csrfToken) {
+    return csrfToken.value;
+  }
+  // Fallback: get from cookie
+  const name = 'csrftoken';
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+</script>
 
 </body>
 </html>

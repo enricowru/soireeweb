@@ -18,6 +18,9 @@ from django.utils.html import format_html, format_html_join
 # Optional: only import cloudinary in prod
 if settings.ENVIRONMENT == "prod":
     import cloudinary.uploader
+
+# Import notification helper
+from .admin import create_booking_notification
     
 def save_floorplan_with_custom_name(uploaded_file, booking_id):
     """
@@ -49,14 +52,10 @@ def bookhere(request):
 def my_bookings(request):
     user = request.user
 
-    active = (BookingRequest.objects
-              .filter(client=user, status__in=["draft", "confirmed"])
-              .order_by("-created_at"))
-
-    past = (BookingRequest.objects
-            .filter(client=user, status="rejected")
-            .order_by("-created_at"))
-
+    # Get ALL bookings regardless of status
+    all_bookings = (BookingRequest.objects
+                   .filter(client=user)
+                   .order_by("-created_at"))
 
     chats = (
         Chat.objects
@@ -83,8 +82,7 @@ def my_bookings(request):
     booking_meta = f"{event_type} • {booking_date.strftime('%b %d, %Y')} " if booking and booking_date else ""
 
     context = {
-        "active_bookings": active,
-        "past_bookings": past,
+        "all_bookings": all_bookings,
         "first_chat": first_chat,
         "first_messages": first_messages,
         "first_booking": first_booking, 
@@ -101,8 +99,11 @@ def bookhere_submit(request):
 
     # ---------- parse JSON ----------
     raw = request.POST.get("payload") or "{}"
+    print(f"[DEBUG] Raw payload received: {raw}")
+    
     try:
         data = json.loads(raw)
+        print(f"[DEBUG] Parsed data: {data}")
     except json.JSONDecodeError:
         return HttpResponseBadRequest("Bad JSON")
 
@@ -119,27 +120,34 @@ def bookhere_submit(request):
     event_date = _dt.date.fromisoformat(data["date"])
     venue = ""
     floorplan_path = None
+    floorplan_display_name = None
     cloudinary_url = None
     
     if isinstance(data.get("location"), dict):
         venue = data["location"].get("venue", "")
-        floorplan_file = request.FILES.get("floorplan-payload")
         
-        # Always log what we see, even if None
-        print(f"[DEBUG] floorplan_file: {floorplan_file}")
-
-        if floorplan_file:
-            print(f"[DEBUG] Received floorplan file: {floorplan_file.name} ({floorplan_file.size} bytes)")
-            saved_value = save_floorplan_with_custom_name(floorplan_file, chat.id)
-            print(f"[DEBUG] save_floorplan_with_custom_name returned: {saved_value}")
+        print(f"[DEBUG] Location data: {data.get('location')}")
+        
+        # Check if a floorplan was selected (URL from existing Cloudinary images)
+        floorplan_filename = data["location"].get("floorplan_filename", "")
+        floorplan_display_name = data["location"].get("floorplan_display_name", "")
+        
+        print(f"[DEBUG] floorplan_filename from frontend: '{floorplan_filename}'")
+        print(f"[DEBUG] floorplan_display_name from frontend: '{floorplan_display_name}'")
+        
+        if floorplan_filename:
+            # Use the filename directly as sent from frontend
+            floorplan_path = floorplan_filename
+            print(f"[DEBUG] Using floorplan filename: '{floorplan_path}'")
             
-            # Separate the handling for production vs development
-            if settings.ENVIRONMENT == "prod":
-                cloudinary_url = saved_value  # Cloudinary URL
-                floorplan_path = None  # None for FileField when using Cloudinary
-            else:
-                floorplan_path = saved_value  # Local file path
-                cloudinary_url = None
+            # For production, we'll need the full URL for display purposes
+            if settings.ENVIRONMENT == "prod" and floorplan_filename:
+                # Reconstruct the Cloudinary URL from filename
+                cloudinary_url = f"https://res.cloudinary.com/dlha5ojqe/image/upload/v1732438097/event_floorplans/{floorplan_filename}"
+        else:
+            print(f"[DEBUG] No floorplan_filename received")
+            
+        print(f"[DEBUG] Final values - venue: '{venue}', floorplan_path: '{floorplan_path}'")
 
     # ---------- 3) create BookingRequest ----------
     booking = BookingRequest.objects.create(
@@ -151,6 +159,7 @@ def bookhere_submit(request):
         pax=int(data.get("pax", 0)),
         venue=venue,
         floorplan=floorplan_path,
+        floorplan_display_name=floorplan_display_name,
         cloudinary_url=cloudinary_url,
         color_motif=data.get("color_motif", ""),
         package=data.get("package", ""),
@@ -161,6 +170,13 @@ def bookhere_submit(request):
     )
 
     print(f"[DEBUG] Booking {booking.id} created with floorplan={booking.floorplan} cloudinary_url={booking.cloudinary_url}")
+
+    # ---------- 3.5) Create admin notification ----------
+    try:
+        create_booking_notification(booking)
+        print(f"[DEBUG] Notification created for booking {booking.id}")
+    except Exception as e:
+        print(f"[DEBUG] Failed to create notification: {e}")
 
     # ---------- 4) first system message ----------
     msg_html = booking_summary(booking)
@@ -189,38 +205,27 @@ def bookhere_submit(request):
     return redirect("my_bookings")
 
 def booking_summary(booking) -> str:
-    # Compute display URL
-    floorplan_url = None
-    if settings.ENVIRONMENT == "prod":
-        # In production, use the cloudinary_url field
-        floorplan_url = booking.cloudinary_url
-    else:
-        # In development, use the floorplan file field
-        if booking.floorplan:
-            floorplan_url = f"{settings.MEDIA_URL}{booking.floorplan}"
+    # Prepare venue display with floor plan if available
+    venue_display = booking.venue
+    if booking.floorplan_display_name:
+        # Use the user-friendly display name (e.g., "Floor Plan 1")
+        venue_display = f"{booking.venue} ({booking.floorplan_display_name})"
+    elif booking.floorplan:
+        # Fallback to filename if no display name is available (for old records)
+        venue_display = f"{booking.venue} ({booking.floorplan})"
 
     rows = [
         ("Celebrant", booking.celebrant_name),
         ("Date", booking.event_date.strftime("%b %d %Y")),
         ("Type", booking.event_type),
         ("Pax", booking.pax),
-        ("Venue", booking.venue),
+        ("Venue", venue_display),
         ("Color Motif", booking.color_motif),
         ("Package", booking.package),
         ("Pasta", booking.pasta or "—"),
         ("Drink", booking.drink or "—"),
         ("Dishes", ", ".join(booking.dish_list()) or "—"),
     ]
-
-    # Add floorplan image row only if present
-    if floorplan_url:
-        rows.append((
-            "Floor Plan",
-            format_html(
-                '<img src="{}" alt="Floor plan" style="max-width:300px;border:1px solid #ccc;border-radius:4px;">',
-                floorplan_url
-            )
-        ))
 
     return (
         "<strong>New booking received</strong><br>"

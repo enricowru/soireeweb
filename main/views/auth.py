@@ -72,6 +72,17 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
 
             if user is not None:
+                # Check if user is verified
+                if not user.is_verified:
+                    message = 'Please verify your email before logging in. Check your email for verification code.'
+                    print(f"[LOGIN FAILED] User {username} not verified")
+                    # Don't login, but show different message
+                    return render(request, 'login.html', {
+                        'message': message,
+                        'show_verification': True,
+                        'user_email': user.email
+                    })
+                
                 login(request, user)
                 request.session['username'] = username
                 request.session['logged_in'] = True

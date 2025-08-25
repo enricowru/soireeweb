@@ -116,7 +116,7 @@
       {{ client.username|default:"[NO NAME]" }} · {{ booking.event_date|default:"[NO DATE]" }} · {{ booking.event_type|default:"[NO NAME]" }}
     </h4>
     <a href="{% url 'request_bookings' %}" class="btn btn-outline-secondary">
-      <i class="fa fa-arrow-left me-1"></i>Back to Chat
+      <i class="fas fa-arrow-left me-1"></i>Back to Chat
     </a>
   </div>
 
@@ -126,7 +126,7 @@
       <ul class="step-list">
         {% for step in status_steps %}
           <li class="{% if step.is_done %}done{% endif %} {% if forloop.first %}active{% endif %}" data-step="{{ forloop.counter0 }}">
-            <span class="dot">{% if step.is_done %}<i class="fa fa-check"></i>{% endif %}</span>
+            <span class="dot">{% if step.is_done %}<i class="fas fa-check"></i>{% endif %}</span>
             <div>
               <div class="fw-semibold">{{ step.get_label_display }}</div>
               <small class="text-muted">{{ step.description }}</small>
@@ -234,6 +234,26 @@
           </div>
         </div>
       `;
+
+      // Set minimum date to 1 hour from now to prevent past dates
+      setTimeout(() => {
+        const dateInput = document.getElementById('date');
+        if (dateInput) {
+          const now = new Date();
+          now.setHours(now.getHours() + 1); // Add 1 hour
+          const minDateTime = now.toISOString().slice(0, 16);
+          dateInput.setAttribute('min', minDateTime);
+          
+          // Set the value to the booking's event_date if it exists
+          const bookingEventDate = new Date("{{ booking.event_date|date:'c' }}");
+          if (bookingEventDate && !isNaN(bookingEventDate.getTime())) {
+            dateInput.value = bookingEventDate.toISOString().slice(0, 16);
+          } else {
+            // If no booking event date, default to minimum allowed time
+            dateInput.value = minDateTime;
+          }
+        }
+      }, 100);
 
       document.getElementById('submitEventBtn').addEventListener('click', async () => {
         const form = document.getElementById('eventCreationForm');

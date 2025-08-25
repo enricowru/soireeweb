@@ -33,13 +33,13 @@
       <a href="{% url 'bookhere' %}"
          class="btn btn-sm d-flex align-items-center gap-1"
          style="background:var(--gold);color:#fff;border:none;border-radius:6px;">
-        <i class="fa fa-plus small"></i><span class="d-none d-md-inline">Add</span>
+        <i class="fas fa-plus small"></i><span class="d-none d-md-inline">Add</span>
       </a>
     </div>
 
-    <!-- Active / draft -->
+    <!-- All Bookings -->
     <ul class="list-unstyled sidebar-list m-0">
-      {% for bk in active_bookings %}
+      {% for bk in all_bookings %}
         <li class="booking-item{% if forloop.first %} active{% endif %}"
           data-id="{{ bk.chat.id }}"
           data-booking="{{ bk.id }}"
@@ -50,7 +50,7 @@
           <small class="text-muted">{{ bk.get_status_display }}</small>
         </li>
       {% empty %}
-        <li class="text-muted small p-4">No active bookings yet.</li>
+        <li class="text-muted small p-4">No bookings yet.</li>
       {% endfor %}
     </ul>
 
@@ -60,24 +60,6 @@
         data-id="general"
         data-meta="General chat"></li>
     </div>
-
-    <!-- Past -->
-    {% if past_bookings %}
-    <details class="border-top">
-      <summary class="px-3 py-2 small text-muted">Past bookings</summary>
-      <ul class="list-unstyled sidebar-list m-0">
-        {% for bk in past_bookings %}
-        <li class="booking-item"
-            data-id="{{ bk.chat.id }}"
-            data-meta="{{ bk.event_type }} • {{ bk.event_date|date:'M j Y' }}">
-          <div class="text-truncate">
-              {{ bk.event_date|date:"M j Y" }} · {{ bk.event_type }}
-          </div>
-        </li>
-        {% endfor %}
-      </ul>
-    </details>
-    {% endif %}
   </aside>
 
   <!-- ────────── CHAT PANE ────────── -->
@@ -89,7 +71,7 @@
       <!-- status btn -->
      <a id="status-link" class="btn btn-back"
       href="{% url 'event-status' first_booking.id %}">
-      Status <i class="fa fa-arrow-right small"></i>
+      Status <i class="fas fa-arrow-right small"></i>
     </a>
     
 
@@ -111,7 +93,7 @@
       {%csrf_token%}
       {% comment %} <input type="hidden" id="csrf" value="{%csrf_token%}"> {% endcomment %}
       <textarea id="composer-input" placeholder="Type message…"></textarea>
-      <button class="btn" type="submit"  id="send-message"><i class="fa fa-paper-plane"></i></button>
+      <button class="btn" type="submit"  id="send-message"><i class="fas fa-paper-plane"></i></button>
     </form>
   </section>
 
@@ -210,11 +192,31 @@ async function submitMessage(e) {
   document.querySelectorAll(".booking-item").forEach(li => {
       li.addEventListener('click', async () => {
           const chatId = li.dataset.id;
+          const bookingId = li.dataset.booking;
+          const meta = li.dataset.meta;
           currentChatId = chatId;
 
           // Highlight selected chat
           document.querySelectorAll(".booking-item").forEach(li => li.classList.remove("active"));
           li.classList.add("active");
+
+          // Update header metadata and status button
+          const chatMetaElement = document.getElementById('chat-meta');
+          const statusLinkElement = document.getElementById('status-link');
+          
+          if (chatMetaElement && meta) {
+              chatMetaElement.textContent = meta;
+          }
+          
+          if (statusLinkElement) {
+              if (bookingId) {
+                  statusLinkElement.href = `/event-status/${bookingId}/`;
+                  statusLinkElement.style.display = 'block';
+              } else {
+                  // Hide status button for general chat
+                  statusLinkElement.style.display = 'none';
+              }
+          }
 
           // Fetch messages
           const res = await fetch(`/chat/${chatId}/messages-json/`);

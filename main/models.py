@@ -52,6 +52,31 @@ class PasswordResetOTP(models.Model):
     def __str__(self):
         return f"OTP for {self.email} - {self.otp_code}"
 
+# ✅ OTP Model for Email Verification
+class EmailVerificationOTP(models.Model):
+    email = models.EmailField()
+    otp_code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+    
+    def save(self, *args, **kwargs):
+        if not self.otp_code:
+            self.otp_code = ''.join(random.choices(string.digits, k=6))
+        if not self.expires_at:
+            self.expires_at = timezone.now() + timedelta(hours=24)  # OTP expires in 24 hours
+        super().save(*args, **kwargs)
+    
+    def is_valid(self):
+        return not self.is_used and timezone.now() <= self.expires_at
+    
+    class Meta:
+        db_table = 'email_verification_otp'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Email verification OTP for {self.email} - {self.otp_code}"
+
 class Role(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
@@ -135,7 +160,8 @@ class BookingRequest(models.Model):
     event_type   = models.CharField(max_length=60)
     pax          = models.PositiveIntegerField()
     venue        = models.CharField(max_length=255)
-    floorplan    = models.FileField(upload_to='booking_floorplans/', max_length=200, blank=True, null=True)
+    floorplan    = models.CharField(max_length=200, blank=True, null=True, help_text="Floor plan filename (e.g., 120_pax_2_icgqtv.png)")
+    floorplan_display_name = models.CharField(max_length=100, blank=True, null=True, help_text="User-friendly floor plan name (e.g., Floor Plan 1)")
     uploaded_at  = models.DateTimeField(default=timezone.now)
 
     cloudinary_url = models.URLField(blank=True, null=True)  # prod only
@@ -156,11 +182,14 @@ class BookingRequest(models.Model):
     def display_url(self):
         """
         Always return a valid URL for template/admin.
+        For floorplan, we reconstruct the Cloudinary URL from the filename.
         """
-        if settings.ENVIRONMENT == "prod" and self.cloudinary_url:
+        if self.cloudinary_url:
             return self.cloudinary_url
-        if self.image:
-            return self.floorplan.url
+        elif self.floorplan:
+            # Reconstruct Cloudinary URL from filename
+            base_url = "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/"
+            return base_url + self.floorplan
         return ""
     
     def dish_list(self):
@@ -258,7 +287,7 @@ class EventStatusAttachment(models.Model):
         """
         if settings.ENVIRONMENT == "prod" and self.cloudinary_url:
             return self.cloudinary_url
-        if self.image:
+        if self.file:
             return self.file.url
         return ""
     class Meta:
@@ -495,5 +524,29 @@ class Like(models.Model):
 
     class Meta:
         db_table = 'mobile_post_likes'
-        unique_together = ('post', 'user')  
+        unique_together = ('post', 'user')
+
+
+# ✅ Admin Notification Model
+class AdminNotification(models.Model):
+    NOTIFICATION_TYPES = [
+        ('new_booking', 'New Booking Request'),
+        ('payment_received', 'Payment Received'),
+        ('message_received', 'New Message'),
+    ]
+    
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES, default='new_booking')
+    booking = models.ForeignKey('BookingRequest', on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'admin_notifications'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.title} - {self.created_at.strftime('%Y-%m-%d %H:%M')}"
 

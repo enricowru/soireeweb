@@ -12,6 +12,7 @@ class EventForm(forms.ModelForm):
             if date and date < timezone.now():
                 raise forms.ValidationError("Event date cannot be in the past.")
             return date
+
 User = get_user_model()
 
 class ModeratorEditForm(forms.Form):

@@ -39,6 +39,12 @@ def send_booking_message(request, id):
             is_read=False,
         )
 
+        # Create notification for admin about new message
+        try:
+            from .admin import create_message_notification
+            create_message_notification(message_obj, chat)
+        except Exception as e:
+            print(f"Error creating message notification: {e}")
 
         data = {
             "id": message_obj.id,
@@ -118,6 +124,13 @@ def send_message(request):
             sender=request.user,
             content=content
         )
+        
+        # Create notification for admin about new message
+        try:
+            from .admin import create_message_notification
+            create_message_notification(message, chat)
+        except Exception as e:
+            print(f"Error creating message notification: {e}")
         
         # Update chat's updated_at timestamp
         chat.save()  # This will update the updated_at field

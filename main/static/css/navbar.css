@@ -46,10 +46,11 @@
     justify-content: space-evenly;
     align-items: center;
     background-color: #161616;
-    gap: 60px;
+    /* Reduced from 60px */
     position: sticky;
     top: 0;
     z-index: 1000;
+    padding: 8px 0; /* Added smaller padding */
 }
 
 .navbar .logo {
@@ -59,16 +60,16 @@
 }
 
 .navbar .logo img {
-    height: 100px;
+    height: 65px; /* Reduced from 100px */
     width: auto;
-    margin: 0 40px;
+    margin: 0 20px; /* Reduced from 40px */
 }
 
 .nav-links {
     list-style: none;
     display: flex;
     align-items: center;
-    gap: 100px;
+    gap: 30px; /* Reduced from 100px */
     margin: 0;
     padding: 0;
 }
@@ -78,9 +79,9 @@
     color: white;
     font-weight: 600;
     position: relative;
-    padding-bottom: 5px;
+    padding-bottom: 3px; /* Reduced from 5px */
     transition: color 0.3s ease;
-    font-size: 20px;
+    font-size: 16px; /* Reduced from 20px */
 }
 
 .nav-links li a:hover {
@@ -103,8 +104,8 @@
 }
 
 .navbar-profile-img {
-    width: 45px;
-    height: 45px;
+    width: 35px; /* Reduced from 45px */
+    height: 35px; /* Reduced from 45px */
     border-radius: 50%;
     object-fit: cover;
     vertical-align: middle;
@@ -119,7 +120,7 @@
     display: none;
     position: absolute;
     background-color: #fff;
-    min-width: 180px;
+    min-width: 160px; /* Reduced from 180px */
     box-shadow: 0 8px 16px rgba(0,0,0,0.15);
     z-index: 1000;
     top: 100%;
@@ -133,10 +134,10 @@
 
 .dropdown .dropdown-content a {
     color: #161616;
-    padding: 12px 20px;
+    padding: 10px 16px; /* Reduced from 12px 20px */
     text-decoration: none;
     display: block;
-    font-size: 16px;
+    font-size: 14px; /* Reduced from 16px */
     transition: background 0.2s;
     border-radius: 0;
 }

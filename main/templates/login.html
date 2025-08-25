@@ -94,6 +94,54 @@
       <p>Already have an account? <a href="#" id="show-login">Login here</a></p>
     </div>
 
+    <!-- ✅ EMAIL VERIFICATION FORMS -->
+    
+    <!-- Email Verification Request Form -->
+    <div class="login-container" id="email-verification-form" style="display:none;">
+      <h2>Email Verification Required</h2>
+      <p>Please verify your email address to complete registration.</p>
+      <form id="emailVerificationForm" autocomplete="off">
+        <input 
+          type="email" 
+          id="verification-email" 
+          placeholder="Enter your email address" 
+          required 
+          autocomplete="off"
+        />
+        <button type="submit" id="send-verification-btn">Send Verification Code</button>
+      </form>
+      <div id="email-verification-message" class="message-container"></div>
+      <p>Already have a code? <a href="#" id="show-verification-otp">Enter code</a></p>
+      <p><a href="#" id="back-to-login-from-verification">Back to Login</a></p>
+    </div>
+
+    <!-- Email Verification OTP Form -->
+    <div class="login-container" id="email-verification-otp-form" style="display:none;">
+      <h2>Enter Verification Code</h2>
+      <p>Please enter the 6-digit verification code sent to your email.</p>
+      <form id="emailVerificationOtpForm" autocomplete="off">
+        <input 
+          type="email" 
+          id="verification-otp-email" 
+          placeholder="Enter your email address" 
+          required 
+          autocomplete="off"
+        />
+        <input 
+          type="text" 
+          id="verification-otp" 
+          placeholder="Enter 6-digit verification code" 
+          maxlength="6" 
+          required 
+          autocomplete="off"
+        />
+        <button type="submit" id="verify-email-btn">Verify Email</button>
+      </form>
+      <div id="email-verification-otp-message" class="message-container"></div>
+      <p><a href="#" id="resend-verification-code">Resend verification code</a></p>
+      <p><a href="#" id="back-to-login-from-otp">Back to Login</a></p>
+    </div>
+
     <!-- ✅ FORGOT PASSWORD FORMS -->
     
     <!-- Email Request Form -->
@@ -156,6 +204,16 @@
 
   <script>
      const BASE_URL = "{{ BASE_URL }}";
+    
+    // Check if we need to show email verification form
+    {% if show_verification %}
+      // Auto-show email verification form for unverified users
+      window.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('verification-email').value = "{{ user_email }}";
+        document.getElementById('verification-otp-email').value = "{{ user_email }}";
+        showForm('email-verification-form');
+      });
+    {% endif %}
     // Toggle between login and register
     document.getElementById('show-register').onclick = function (e) {
       e.preventDefault();
@@ -164,6 +222,27 @@
     document.getElementById('show-login').onclick = function (e) {
       e.preventDefault();
       showForm('login-form');
+    };
+
+    // ✅ EMAIL VERIFICATION NAVIGATION
+    document.getElementById('show-verification-otp').onclick = function (e) {
+      e.preventDefault();
+      showForm('email-verification-otp-form');
+    };
+
+    document.getElementById('back-to-login-from-verification').onclick = function (e) {
+      e.preventDefault();
+      showForm('login-form');
+    };
+
+    document.getElementById('back-to-login-from-otp').onclick = function (e) {
+      e.preventDefault();
+      showForm('login-form');
+    };
+
+    document.getElementById('resend-verification-code').onclick = function (e) {
+      e.preventDefault();
+      showForm('email-verification-form');
     };
 
     // ✅ FORGOT PASSWORD NAVIGATION
@@ -197,7 +276,7 @@
 
     // Helper function to show forms
     function showForm(formId) {
-      const forms = ['login-form', 'register-form', 'forgot-email-form', 'forgot-otp-form', 'forgot-reset-form'];
+      const forms = ['login-form', 'register-form', 'email-verification-form', 'email-verification-otp-form', 'forgot-email-form', 'forgot-otp-form', 'forgot-reset-form'];
       forms.forEach(id => {
         document.getElementById(id).style.display = 'none';
       });
@@ -468,15 +547,130 @@
         const result = await res.json();
 
         if (res.status === 201) {
-          alert("✅ Registration successful!");
-          document.getElementById('registerForm').reset();
-          document.getElementById('show-login').click();
+          if (result.needs_verification) {
+            alert("✅ " + result.message);
+            document.getElementById('registerForm').reset();
+            // Pre-fill email for verification
+            document.getElementById('verification-email').value = email;
+            document.getElementById('verification-otp-email').value = email;
+            showForm('email-verification-otp-form');
+          } else {
+            alert("✅ Registration successful!");
+            document.getElementById('registerForm').reset();
+            document.getElementById('show-login').click();
+          }
         } else {
           alert("❌ " + (result.message || "Registration failed."));
         }
       } catch (err) {
         console.error("Network error:", err);
         alert("❌ Registration failed due to server/network error.");
+      }
+    });
+
+    // ✅ EMAIL VERIFICATION REQUEST FORM
+    document.getElementById('emailVerificationForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('verification-email').value.trim();
+      const submitBtn = document.getElementById('send-verification-btn');
+      
+      if (!email) {
+        showMessage('email-verification-message', 'Please enter your email address.', true);
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+
+      try {
+        const formData = new FormData();
+        formData.append('email', email);
+
+        const res = await fetch(`${BASE_URL}/email-verification/request/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+          },
+          body: JSON.stringify({ email })
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          showMessage('email-verification-message', result.message, false);
+          
+          // Pre-fill email for OTP form
+          document.getElementById('verification-otp-email').value = email;
+          
+          // Show OTP form after 2 seconds
+          setTimeout(() => {
+            showForm('email-verification-otp-form');
+          }, 2000);
+        } else {
+          showMessage('email-verification-message', result.message, true);
+        }
+      } catch (err) {
+        console.error("Network error:", err);
+        showMessage('email-verification-message', 'Failed to send verification code. Please try again.', true);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Verification Code';
+      }
+    });
+
+    // ✅ EMAIL VERIFICATION OTP FORM
+    document.getElementById('emailVerificationOtpForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('verification-otp-email').value.trim();
+      const otpCode = document.getElementById('verification-otp').value.trim();
+      const submitBtn = document.getElementById('verify-email-btn');
+      
+      if (!email) {
+        showMessage('email-verification-otp-message', 'Please enter your email address.', true);
+        return;
+      }
+      
+      if (!otpCode || otpCode.length !== 6) {
+        showMessage('email-verification-otp-message', 'Please enter a valid 6-digit verification code.', true);
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Verifying...';
+
+      try {
+        const res = await fetch(`${BASE_URL}/email-verification/verify/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+          },
+          body: JSON.stringify({ email, otp: otpCode })
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          showMessage('email-verification-otp-message', result.message, false);
+          
+          // Clear form and redirect to login after success
+          document.getElementById('emailVerificationOtpForm').reset();
+          
+          setTimeout(() => {
+            showForm('login-form');
+          }, 2000);
+        } else {
+          showMessage('email-verification-otp-message', result.message, true);
+        }
+      } catch (err) {
+        console.error("Network error:", err);
+        showMessage('email-verification-otp-message', 'Verification failed. Please try again.', true);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Verify Email';
       }
     });
   </script>

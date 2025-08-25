@@ -42,6 +42,14 @@ urlpatterns = [
     path("request-bookings/status/<int:id>", views.booking_requests_status, name = "booking_request_status"),
     
     path("request-bookings/status/<int:id>/mark-as-done", views.mark_step_done, name ="mark_step_done"),
+    
+    # Notification Management URLs
+    path('notifications/', views.admin_notifications, name='admin_notifications'),
+    path('notifications/mark-all-read/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
+    path('notifications/<int:notification_id>/mark-read/', views.mark_notification_read, name='mark_notification_read'),
+    path('notifications/mark-booking-read/', views.mark_booking_notifications_read, name='mark_booking_notifications_read'),
+    path('notifications/stream/', views.admin_notifications_stream, name='admin_notifications_stream'),
+    
     # User Management URLs
     # path('users/list/', views.user_list, name='user_list'),
     # path('users/create/', views.user_create, name='user_create'),

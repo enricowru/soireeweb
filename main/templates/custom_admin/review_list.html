@@ -18,19 +18,17 @@
                     <thead>
                         <tr>
                             <th>User</th>
-                            <th>Event</th>
                             <th>Rating</th>
                             <th>Comment</th>
                             <th>Date</th>
                             <th>Status</th>
-                            <th>Date Posted</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for review in reviews %}
                         <tr>
                             <td>{{ review.user.get_full_name|default:review.user.username }}</td>
-                            <td>{{ review.event.title }}</td>
                             <td>
                                 {% for i in "12345" %}
                                     {% if forloop.counter <= review.rating %}

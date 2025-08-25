@@ -50,6 +50,9 @@ class EventBookingConsumer(AsyncWebsocketConsumer):
 
                 message = await self.create_message(chat, sender, message_text)
 
+                # Create notification for the new message
+                await self.create_message_notification(message, chat)
+
                 # Prepare payload to broadcast
                 payload = {
                     "type": "chat_message",  # event type for consumers
@@ -95,3 +98,31 @@ class EventBookingConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def create_message(self, chat, sender, content):
         return Message.objects.create(chat=chat, sender=sender, content=content, is_read=False)
+
+    @sync_to_async
+    def create_message_notification(self, message, chat):
+        try:
+            from .models import AdminNotification, BookingRequest
+            
+            sender_name = message.sender.get_full_name() or message.sender.username
+            
+            # Try to find if this chat belongs to a booking
+            booking_request = None
+            try:
+                booking_request = BookingRequest.objects.get(chat=chat)
+            except BookingRequest.DoesNotExist:
+                booking_request = None
+            
+            # Create notification for new message
+            notification = AdminNotification.objects.create(
+                title=f"New Message from {sender_name}",
+                message=f"{sender_name}: {message.content[:100]}{'...' if len(message.content) > 100 else ''}",
+                notification_type='message_received',
+                booking=booking_request,
+                user=message.sender
+            )
+            
+            return notification
+        except Exception as e:
+            print(f"Error creating message notification: {e}")
+            return None

@@ -5,9 +5,20 @@
 <style>
 .chat-wrap {
   display: flex;
-  height: calc(100vh - 10vh);
+  height: calc(100vh - 60px);
   overflow: hidden;
   position: relative;
+}
+
+/* Prevent page scrolling when auto-selecting items */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Ensure the main container stays in place */
+.container-fluid, .row {
+  position: relative;
+  overflow: hidden;
 }
 
 /* Sidebar */
@@ -171,8 +182,19 @@
 
 .booking-item.active {
   border-left: 4px solid #AD974F;
-  background: #3B3B3AFF;
+  background: linear-gradient(135deg, #AD974F, #8c7a3e);
+  color: white;
   box-shadow: 0 4px 16px rgba(173, 151, 79, 0.4);
+  transform: translateX(3px);
+}
+
+.booking-item.active .fw-semibold {
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.booking-item.active small {
+  color: rgba(255, 255, 255, 0.9);
 }
 }
 </style>
@@ -191,6 +213,7 @@
     {% for booking in bookings %}
       <li class="booking-item{% if forloop.first %} active{% endif %}"
           data-id="{{ booking.chat.id }}"
+          data-booking-id="{{ booking.id }}"
           data-meta="{{ booking.client.get_full_name }} – {{ booking.event_type }} • {{ booking.event_date|date:'M j, Y' }}"
           style="padding: 0.75rem 1rem; margin: 0.5rem; border-radius: 0.5rem; background: #2E2E2EFF; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); cursor: pointer; transition: box-shadow 0.2s ease;">
         <div class="fw-semibold text-truncate">{{ booking.client.get_full_name }}</div>
@@ -382,6 +405,95 @@ document.getElementById('viewStatusBtn').addEventListener('click', function () {
     window.location.href = `/admin/request-bookings/status/${id}`;
   }
 });
+
+// Auto-select booking if booking ID is provided in URL
+{% if selected_booking_id %}
+document.addEventListener('DOMContentLoaded', function() {
+  const targetBookingId = '{{ selected_booking_id }}';
+  
+  // Find the booking item that matches the selected booking ID
+  const bookingItems = document.querySelectorAll('.booking-item');
+  
+  bookingItems.forEach(item => {
+    const bookingId = item.getAttribute('data-booking-id');
+    
+    if (bookingId === targetBookingId) {
+      // Remove active class from all items
+      bookingItems.forEach(x => x.classList.remove('active'));
+      
+      // Add active class to the target item
+      item.classList.add('active');
+      
+      // Simulate click to load the chat
+      setTimeout(() => {
+        item.click();
+        
+        // Prevent any page scrolling during auto-selection
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        
+        // Only scroll within the sidebar container, not the whole page
+        const sidebar = document.querySelector('.chat-sidebar');
+        if (sidebar) {
+          const itemTop = item.offsetTop;
+          const sidebarHeight = sidebar.clientHeight;
+          const sidebarScrollTop = sidebar.scrollTop;
+          
+          // Only scroll if item is not visible within sidebar
+          if (itemTop < sidebarScrollTop || itemTop > sidebarScrollTop + sidebarHeight - item.offsetHeight) {
+            sidebar.scrollTo({
+              top: itemTop - sidebarHeight / 2 + item.offsetHeight / 2,
+              behavior: 'smooth'
+            });
+          }
+        }
+        
+        // Restore original overflow
+        setTimeout(() => {
+          document.body.style.overflow = originalOverflow;
+        }, 100);
+        
+        // Mark notifications as read for this booking
+        markBookingNotificationsAsRead(targetBookingId);
+      }, 100);
+    }
+  });
+});
+
+function markBookingNotificationsAsRead(bookingId) {
+  fetch('/admin/notifications/mark-booking-read/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCsrfToken()
+    },
+    body: JSON.stringify({ booking_id: bookingId })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      console.log('Booking notifications marked as read');
+    }
+  })
+  .catch(err => console.error('Error marking booking notifications as read:', err));
+}
+
+function getCsrfToken() {
+  const name = 'csrftoken';
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+{% endif %}
 </script>
 
 {% endblock %}

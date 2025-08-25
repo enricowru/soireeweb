@@ -93,11 +93,17 @@ def mobile_post_edit(request, post_id):
             form.save()
 
             # Delete images marked for removal
-            for image in post.images.all():
-                if f'remove_image_{image.id}' in request.POST:
-                    if image.image:
-                        image.image.delete(save=False)
-                    image.delete()
+            remove_image_ids = request.POST.getlist('remove_images[]')
+            for image in post.images.filter(id__in=remove_image_ids):
+                if image.image:
+                    image.image.delete(save=False)
+                if settings.ENVIRONMENT == "prod" and image.cloudinary_url:
+                    try:
+                        public_id = image.cloudinary_url.split('/')[-1].split('.')[0]
+                        cloudinary.uploader.destroy(public_id)
+                    except Exception:
+                        pass  # Continue even if Cloudinary deletion fails
+                image.delete()
 
             # Save new uploaded images
             for idx, img in enumerate(valid_images, start=1):

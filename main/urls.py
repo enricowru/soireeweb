@@ -4,6 +4,7 @@ from . import views
 from django.contrib.auth import views as auth_views
 from .api import *
 from .views.auth import forgot_password_request, forgot_password_verify_otp, forgot_password_reset
+from .api.auth_api import email_verification_request, email_verification_verify
 
 
 urlpatterns = [
@@ -22,6 +23,10 @@ urlpatterns = [
     path('forgot-password/request/', forgot_password_request, name='forgot_password_request'),
     path('forgot-password/verify-otp/', forgot_password_verify_otp, name='forgot_password_verify_otp'),
     path('forgot-password/reset/', forgot_password_reset, name='forgot_password_reset'),
+
+    # ✅ Email Verification Routes
+    path('email-verification/request/', email_verification_request, name='email_verification_request'),
+    path('email-verification/verify/', email_verification_verify, name='email_verification_verify'),
 
 
     # API endpoint for mobile review submission

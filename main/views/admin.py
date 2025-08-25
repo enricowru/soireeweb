@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.db.models import Q
 from ..forms import EventForm, AdminEditForm
-from ..models import Event, EventHistory, Chat, BookingRequest, EventStatusLog, EventStatusAttachment, BookingRequest, PaymentTransaction
+from ..models import Event, EventHistory, Chat, BookingRequest, EventStatusLog, EventStatusAttachment, BookingRequest, PaymentTransaction, AdminNotification
 from .auth import admin_required
 from django.contrib.auth import get_user_model
 import json
@@ -22,6 +22,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.timezone import now
 from django.conf import settings
 import cloudinary.uploader
+import time
 
 User = get_user_model()
 
@@ -384,8 +385,10 @@ def admin_booking_list(request):
 @admin_required
 def booking_requests(request):
     bookings = BookingRequest.objects.select_related("chat").all().order_by("-created_at")
+    selected_booking_id = request.GET.get('booking')  # Get booking ID from URL parameter
     return render(request, "custom_admin/booking_request_chat.html", {
-        "bookings": bookings
+        "bookings": bookings,
+        "selected_booking_id": selected_booking_id
     })
   
 @admin_required
@@ -594,3 +597,182 @@ def mark_step_done(request, id):
         return HttpResponseBadRequest("Missing label or file")
     except ValueError:
         return HttpResponseBadRequest("Invalid numeric value for amount or total_due")
+
+
+# ✅ Admin Notification API Endpoints
+@admin_required
+def admin_notifications(request):
+    """Get all admin notifications"""
+    notifications = AdminNotification.objects.all()[:50]  # Latest 50 notifications
+    
+    notifications_data = []
+    for notification in notifications:
+        notifications_data.append({
+            'id': notification.id,
+            'title': notification.title,
+            'message': notification.message,
+            'notification_type': notification.notification_type,
+            'is_read': notification.is_read,
+            'created_at': notification.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'booking_id': notification.booking.id if notification.booking else None,
+            'user_id': notification.user.id if notification.user else None,
+            'user_name': notification.user.get_full_name() if notification.user else None,
+        })
+    
+    return JsonResponse({
+        'success': True,
+        'notifications': notifications_data
+    })
+
+
+@admin_required
+@csrf_exempt
+@require_POST
+def mark_all_notifications_read(request):
+    """Mark all notifications as read"""
+    AdminNotification.objects.filter(is_read=False).update(is_read=True)
+    return JsonResponse({'success': True})
+
+@admin_required
+@csrf_exempt
+@require_POST
+def mark_notification_read(request, notification_id):
+    """Mark a specific notification as read"""
+    try:
+        notification = AdminNotification.objects.get(id=notification_id)
+        notification.is_read = True
+        notification.save()
+        return JsonResponse({'success': True})
+    except AdminNotification.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Notification not found'})
+
+@admin_required
+@csrf_exempt
+@require_POST
+def mark_booking_notifications_read(request):
+    """Mark all notifications for a specific booking as read"""
+    try:
+        import json
+        data = json.loads(request.body)
+        booking_id = data.get('booking_id')
+        
+        if not booking_id:
+            return JsonResponse({'success': False, 'error': 'Booking ID required'})
+        
+        # Mark all notifications for this booking as read
+        updated_count = AdminNotification.objects.filter(
+            booking_id=booking_id,
+            is_read=False
+        ).update(is_read=True)
+        
+        return JsonResponse({
+            'success': True,
+            'updated_count': updated_count
+        })
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+@admin_required
+def admin_notifications_stream(request):
+    """Server-Sent Events stream for real-time notifications"""
+    def event_stream():
+        # Send initial connection message
+        yield f"data: {json.dumps({'type': 'connected', 'message': 'Notification stream connected'})}\n\n"
+        
+        # Keep connection alive and send notifications
+        last_notification_id = 0
+        while True:
+            try:
+                # Check for new notifications
+                new_notifications = AdminNotification.objects.filter(
+                    id__gt=last_notification_id,
+                    is_read=False
+                ).order_by('id')
+                
+                for notification in new_notifications:
+                    # Determine notification type for frontend
+                    notification_type = 'new_booking'  # default
+                    if notification.notification_type == 'message_received':
+                        notification_type = 'new_message'
+                    elif notification.notification_type == 'payment_received':
+                        notification_type = 'payment_received'
+                    
+                    data = {
+                        'type': notification_type,
+                        'id': notification.id,
+                        'title': notification.title,
+                        'message': notification.message,
+                        'created_at': notification.created_at.strftime('%b %d, %Y %H:%M'),
+                        'booking_id': notification.booking.id if notification.booking else None,
+                        'user_id': notification.user.id if notification.user else None,
+                        'chat_id': None  # We'll add this if needed for direct chat navigation
+                    }
+                    yield f"data: {json.dumps(data)}\n\n"
+                    last_notification_id = notification.id
+                
+                time.sleep(2)  # Check every 2 seconds
+                
+            except Exception as e:
+                yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
+                break
+    
+    response = StreamingHttpResponse(
+        event_stream(),
+        content_type='text/event-stream'
+    )
+    response['Cache-Control'] = 'no-cache'
+    response['Connection'] = 'keep-alive'
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
+def create_booking_notification(booking_request):
+    """Helper function to create notification when new booking is submitted"""
+    try:
+        user_name = booking_request.client.get_full_name() or booking_request.client.username
+        
+        notification = AdminNotification.objects.create(
+            title="New Booking Request",
+            message=f"New booking request from {user_name} for {booking_request.event_type}",
+            notification_type='new_booking',
+            booking=booking_request,
+            user=booking_request.client
+        )
+        
+        return notification
+    except Exception as e:
+        print(f"Error creating notification: {e}")
+        return None
+
+
+def create_message_notification(message, chat=None):
+    """Helper function to create notification when new message is received"""
+    try:
+        from ..models import AdminNotification, BookingRequest
+        
+        sender_name = message.sender.get_full_name() or message.sender.username
+        
+        # Try to find if this chat belongs to a booking
+        booking_request = None
+        if chat:
+            try:
+                booking_request = BookingRequest.objects.get(chat=chat)
+            except BookingRequest.DoesNotExist:
+                booking_request = None
+        
+        # Create notification for new message
+        notification = AdminNotification.objects.create(
+            title=f"New Message from {sender_name}",
+            message=f"{sender_name}: {message.content[:100]}{'...' if len(message.content) > 100 else ''}",
+            notification_type='message_received',
+            booking=booking_request,
+            user=message.sender
+        )
+        
+        return notification
+    except Exception as e:
+        print(f"Error creating message notification: {e}")
+        return None
