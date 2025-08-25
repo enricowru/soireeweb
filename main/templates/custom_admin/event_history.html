@@ -27,7 +27,6 @@
                             <th>Description</th>
                             <th>Created At</th>
                             <th>Removed At</th>
-                            <th>Removed By</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -38,11 +37,10 @@
                             <td>{{ event.description }}</td>
                             <td>{{ event.created_at }}</td>
                             <td>{{ event.deleted_at }}</td>
-                            <td>{{ event.deleted_by.username }}</td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center py-4">
+                            <td colspan="5" class="text-center py-4">
                                 <i class="fas fa-info-circle"></i> No removed events found
                             </td>
                         </tr>

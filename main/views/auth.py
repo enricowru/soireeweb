@@ -74,7 +74,7 @@ def login_view(request):
             if user is not None:
                 # Check if user is verified
                 if not user.is_verified:
-                    message = 'Please verify your email before logging in. Check your email for verification code.'
+                    
                     print(f"[LOGIN FAILED] User {username} not verified")
                     # Don't login, but show different message
                     return render(request, 'login.html', {
@@ -119,8 +119,12 @@ def logout_view(request):
     return redirect('login')
 
 def is_admin(request):
-    username = request.session.get('username')
-    return username == 'admin'
+    # Check if user is authenticated and is either superuser or has username 'admin'
+    if not request.user.is_authenticated:
+        return False
+    
+    # Check if user is superuser OR has username 'admin'
+    return request.user.is_superuser or request.user.username == 'admin'
 
 def admin_required(view_func):
     def wrapper(request, *args, **kwargs):

@@ -23,8 +23,31 @@ class MessageAdmin(admin.ModelAdmin):
         return obj.content[:50] + '...' if len(obj.content) > 50 else obj.content
     content_preview.short_description = 'Content'
 
+# Custom User Admin
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('username', 'email', 'first_name', 'last_name', 'mobile', 'is_verified', 'is_active', 'date_joined')
+    list_filter = ('is_verified', 'is_active', 'is_staff', 'is_superuser', 'date_joined')
+    search_fields = ('username', 'email', 'first_name', 'last_name', 'mobile')
+    readonly_fields = ('date_joined', 'last_login', 'created_at')
+    
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'mobile', 'profile_picture')}),
+        ('Permissions', {
+            'fields': ('is_active', 'is_staff', 'is_superuser', 'is_verified', 'groups', 'user_permissions'),
+        }),
+        ('Important dates', {'fields': ('last_login', 'date_joined', 'created_at')}),
+    )
+    
+    # Customize how mobile number is displayed
+    def get_mobile_display(self, obj):
+        if obj.mobile:
+            return obj.mobile
+        return '-'
+    get_mobile_display.short_description = 'Phone Number'
+
 # Register other models
-admin.site.register(User)
 # admin.site.register(Moderator)
 admin.site.register(Event)
 admin.site.register(EventHistory)

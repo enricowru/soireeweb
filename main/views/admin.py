@@ -116,8 +116,8 @@ def delete_event(request, event_id):
             title=event.title,
             description=event.description,
             date=event.date,
-            access_code=event.access_code,
-            checkin_code=event.checkin_code,
+            access_code=getattr(event, 'access_code', None),
+            checkin_code=getattr(event, 'checkin_code', None),
             created_at=event.created_at,
             deleted_by=request.user
         )
@@ -192,7 +192,7 @@ def view_all_users(request):
             "firstname": u.first_name,
             "lastname":  u.last_name,
             "email":     u.email,
-            "mobile":    getattr(getattr(u, "profile", None), "mobile", ""),
+            "mobile":    u.mobile or "",  # mobile is directly on User model
         }
         for u in qs
     ]
@@ -273,26 +273,7 @@ def event_edit(request, event_id):
         form = EventForm(request.POST, instance=event)
 
         if form.is_valid():
-            updated_event = form.save(commit=False)
-
-            guest_list_raw = request.POST.get('guest_list')
-
-            # ✅ Only update guests if guest_list is valid JSON (not empty string or malformed)
-            try:
-                if guest_list_raw and guest_list_raw.strip() not in ['', '[]']:
-                    guests = json.loads(guest_list_raw)
-                    for guest in guests:
-                        guest.setdefault('checked_in', False)
-                    updated_event.participants = guests
-                else:
-                    # Leave guests untouched
-                    updated_event.participants = event.participants
-            except json.JSONDecodeError:
-                # ✅ Don't block update — just skip updating participants
-                messages.warning(request, "Guest list was ignored due to invalid format.")
-                updated_event.participants = event.participants
-
-            updated_event.save()
+            updated_event = form.save()
             messages.success(request, 'Event updated successfully.')
             return redirect(reverse('event_edit', args=[event.pk]))
         else:
