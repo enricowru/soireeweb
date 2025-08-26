@@ -217,7 +217,6 @@ document.addEventListener('DOMContentLoaded', function() {
         messageForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
-            
             fetch('/chat/send-message/', {
                 method: 'POST',
                 body: formData,
@@ -228,22 +227,47 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    const messagesContainer = document.getElementById('chat-messages');
-                    const messageHtml = `
-                        <div class="message message-sent">
-                            <div class="message-content">
-                                <div class="message-text">${data.message.content}</div>
-                                <div class="message-time">${data.message.timestamp}</div>
-                            </div>
-                        </div>
-                    `;
-                    messagesContainer.insertAdjacentHTML('beforeend', messageHtml);
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    // Do not append message here; rely on websocket for realtime update
                     this.reset();
                 }
             });
         });
     }
+
+    // --- WebSocket for realtime chat ---
+        // IDs are provided in the HTML below, outside this script block
+        const chatId = document.getElementById('chat-id') ? JSON.parse(document.getElementById('chat-id').textContent) : null;
+        const userId = JSON.parse(document.getElementById('user-id').textContent);
+    if (chatId && userId) {
+        // Use ws:// or wss:// depending on protocol
+        const wsScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const wsPath = `${wsScheme}://${window.location.host}/ws/chat/${chatId}/`;
+        const chatSocket = new WebSocket(wsPath);
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            // Expect data to have: id, sender, content, timestamp
+            if (!data || !data.id) return;
+            // Prevent duplicate message (if already in DOM)
+            if (document.getElementById('msg-' + data.id)) return;
+
+            const messagesContainer = document.getElementById('chat-messages');
+            const isSent = (data.sender_id === userId);
+            const messageHtml = `
+                <div class="message ${isSent ? 'message-sent' : 'message-received'}" id="msg-${data.id}">
+                    ${!isSent ? `<div class=\"message-avatar\">${data.sender_avatar ? `<img src=\"${data.sender_avatar}\" alt=\"${data.sender_username}\">` : '<i class=\"fas fa-user\"></i>'}</div>` : ''}
+                    <div class="message-content">
+                        <div class="message-text">${data.content}</div>
+                        <div class="message-time">${data.timestamp}</div>
+                    </div>
+                </div>
+            `;
+            messagesContainer.insertAdjacentHTML('beforeend', messageHtml);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        };
+    }
+    {% if active_chat %}<script type="application/json" id="chat-id">{{ active_chat.id|json_script:"chat-id" }}</script>{% endif %}
+    <script type="application/json" id="user-id">{{ request.user.id|json_script:"user-id" }}</script>
 });
 </script>
 {% endblock %}
