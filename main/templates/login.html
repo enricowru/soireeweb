@@ -89,7 +89,7 @@
           </div>
         </div>
 
-        <button type="submit">Register</button>
+        <button type="submit" id="register-btn">Register</button>
       </form>
       <p>Already have an account? <a href="#" id="show-login">Login here</a></p>
     </div>
@@ -521,6 +521,7 @@
       const email = document.getElementById('reg-email').value.trim();
       const password = document.getElementById('reg-password1').value;
       const password2 = document.getElementById('reg-password2').value;
+      const submitBtn = document.getElementById('register-btn');
 
       if (username.length < 6 || username.length > 12) {
         alert("❌ Username must be 6 to 12 characters long.");
@@ -536,6 +537,10 @@
         alert("❌ Passwords do not match!");
         return;
       }
+
+      // Enable loading state
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
 
       try {
         const res = await fetch(`${BASE_URL}/signup/`, {
@@ -565,6 +570,10 @@
       } catch (err) {
         console.error("Network error:", err);
         alert("❌ Registration failed due to server/network error.");
+      } finally {
+        // Reset button state
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Register';
       }
     });
 

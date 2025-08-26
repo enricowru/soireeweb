@@ -260,3 +260,25 @@ color: #fff;
 .register-col input[type="tel"] {
     width: 100%;
 }
+
+/* Button Loading State */
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Spinner animation for loading buttons */
+.fa-spinner {
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes fa-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
