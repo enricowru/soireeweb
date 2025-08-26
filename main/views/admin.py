@@ -947,10 +947,10 @@ def create_user_message_notification(message, chat):
         # Get the current user from the caller if provided
         frame = inspect.currentframe().f_back
         current_user = frame.f_locals.get('current_user', None)
-        # Only create admin notification for INCOMING messages (from users to admin)
+        # Only create admin notification for INCOMING messages (from other users)
         # Do NOT notify admin about their own outgoing messages
-        if message.sender.is_staff or (current_user and message.sender == current_user):
-            return None  # Don't create admin notification for admin's own messages
+        if current_user and message.sender == current_user:
+            return None  # Don't create admin notification for the logged-in user's own messages
         sender_name = message.sender.get_full_name() or message.sender.username
         # Try to find if this chat belongs to a booking
         booking_request = None
