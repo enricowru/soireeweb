@@ -33,7 +33,7 @@ def event_status(request, id):
 
     attachments = {}
     for a in EventStatusAttachment.objects.filter(booking=booking):
-        attachments.setdefault(a.status_log.label, []).append(a.file.url)
+        attachments.setdefault(a.status_log.label, []).append(a.display_url)
 
     step_objs = []
     step_json = []
