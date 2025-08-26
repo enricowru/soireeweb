@@ -940,34 +940,29 @@ def create_user_booking_notification(booking_request, title, message, notificati
         return None
 
 def create_user_message_notification(message, chat):
-    """Helper function to create notification when new message is received"""
+    """Helper function to create user notifications when admin sends a message"""
     try:
-        from ..models import AdminNotification, BookingRequest
-        import inspect
-        # Get the current user from the caller if provided
-        frame = inspect.currentframe().f_back
-        current_user = frame.f_locals.get('current_user', None)
-        # Only create admin notification for INCOMING messages (from other users)
-        # Do NOT notify admin about their own outgoing messages
-        if current_user and message.sender == current_user:
-            return None  # Don't create admin notification for the logged-in user's own messages
+        # Get the booking request from the chat
+        booking_request = getattr(chat, 'booking_request', None)
+        if not booking_request:
+            return None
+        
+        # Only create notification if the message is from staff/admin
+        if not message.sender.is_staff:
+            return None
+        
         sender_name = message.sender.get_full_name() or message.sender.username
-        # Try to find if this chat belongs to a booking
-        booking_request = None
-        if chat:
-            try:
-                booking_request = BookingRequest.objects.get(chat=chat)
-            except BookingRequest.DoesNotExist:
-                booking_request = None
-        # Create notification for incoming message from user
-        notification = AdminNotification.objects.create(
-            title=f"New Message from {sender_name}",
+        
+        notification = UserNotification.objects.create(
+            user=booking_request.client,  # Use client instead of user
+            title=f"New message from {sender_name}",
             message=f"{sender_name}: {message.content[:100]}{'...' if len(message.content) > 100 else ''}",
-            notification_type='message_received',
+            notification_type='admin_message',
             booking=booking_request,
-            user=message.sender
+            sender=message.sender
         )
+        
         return notification
     except Exception as e:
-        print(f"Error creating message notification: {e}")
+        print(f"Error creating user message notification: {e}")
         return None
