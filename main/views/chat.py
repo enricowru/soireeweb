@@ -45,7 +45,7 @@ def send_booking_message(request, id):
             from ..models import BookingRequest, UserNotification
             
             # Create admin notification (existing functionality)
-            create_message_notification(message_obj, chat)
+            create_message_notification(message_obj, chat, current_user=request.user)
             
             # Create user notification if admin/staff sent the message
             if request.user.is_staff:
@@ -152,7 +152,7 @@ def send_message(request):
             from ..models import BookingRequest, UserNotification
             
             # Create admin notification (existing functionality)
-            create_message_notification(message, chat)
+            create_message_notification(message, chat, current_user=request.user)
             
             # Create user notification if admin/staff sent the message
             if request.user.is_staff:
