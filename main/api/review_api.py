@@ -1,6 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.db.models import Avg, Count
+from django.contrib.auth import get_user_model
 from ..models import Review, BookingRequest, Event
 import json
 from django.views.decorators.http import require_http_methods
@@ -36,17 +37,28 @@ def update_profile(request):
     
     try:
         # Handle multipart form data
+        username = request.POST.get('username', '').strip()
         first_name = request.POST.get('first_name', '').strip()
         last_name = request.POST.get('last_name', '').strip()
         email = request.POST.get('email', '').strip()
         mobile = request.POST.get('mobile', '').strip()
-        
+
         # Validate required fields
         if not first_name or not last_name or not email:
             return JsonResponse({
                 'error': 'First name, last name, and email are required'
             }, status=400)
-        
+
+        # Validate username if provided and ensure uniqueness
+        if username:
+            # If user is changing username, make sure it's not taken by another user
+            if username != user.username:
+                User = get_user_model()
+                if User.objects.filter(username=username).exists():
+                    return JsonResponse({'error': 'Username already exists'}, status=400)
+                # optionally enforce length/format rules here
+                user.username = username
+
         # Update user fields
         user.first_name = first_name
         user.last_name = last_name
