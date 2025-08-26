@@ -799,8 +799,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/180_pax_2_s0v7hp.png'
                 }
             ];
-        } else {
-            // For pax <= 200 and pax > 200
+        } else if (pax > 180) {
+            // For pax > 180
             floorPlans = [
                 {
                     name: 'Floor Plan 1',
@@ -808,7 +808,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 {
                     name: 'Floor Plan 2',
-                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/200_pax_2_j29h4o.png'
+                    url: 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034560/24_j29h4o.png'
                 }
             ];
         }
