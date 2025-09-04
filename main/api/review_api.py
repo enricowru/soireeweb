@@ -147,7 +147,7 @@ def list_mobile_reviews(request):
     for r in qs:
         data.append({
             'user': r.user.get_full_name() if r.user else 'Guest',
-            'avatar': None,
+            'avatar': r.user.profile_picture if r.user and r.user.profile_picture else None,
             'rating': r.rating,
             'comment': r.comment,
             'created_at': r.created_at.isoformat(),
