@@ -416,7 +416,6 @@
     </div>
   </section>
 
-  {% if top_reviews %}
   <!-- REVIEWS -->
   <section id="reviews">
     <div class="reviews-content">
@@ -426,6 +425,7 @@
         <h2 class="rbold">clients</h2>
         <p>Real stories from satisfied clients who trusted us to make their events unforgettable.</p>
 
+        {% if top_reviews %}
         <div class="reviews-nav">
           <button class="rprev">❮</button>
           <div class="rdots">
@@ -435,10 +435,16 @@
           </div>
           <button class="rnext">❯</button>
         </div>
+        {% else %}
+        <div class="no-reviews-message">
+          <p class="text-muted">No featured reviews yet. Check back soon!</p>
+        </div>
+        {% endif %}
       </div>
 
       <!-- RIGHT SIDE -->
       <div class="reviews-right">
+        {% if top_reviews %}
         <div class="review-slider">
           <div class="review-track">
             {% for review in top_reviews %}
@@ -461,10 +467,18 @@
             {% endfor %}
           </div>
         </div>
+        {% else %}
+        <div class="no-reviews-placeholder">
+          <div class="placeholder-content">
+            <i class="fas fa-star" style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"></i>
+            <h4>No Featured Reviews Yet</h4>
+            <p class="text-muted">Featured reviews will appear here once our admin team bookmarks them.</p>
+          </div>
+        </div>
+        {% endif %}
       </div>
     </div>
   </section>
-  {% endif %}
 
 
   <!-- ABOUT US -->
@@ -876,55 +890,52 @@
       const dots = document.querySelectorAll('.rdot');
       const prev = document.querySelector('.rprev');
       const next = document.querySelector('.rnext');
-      let index = 0;
+      
+      // Only initialize slider if there are reviews
+      if (track && reviews.length > 0 && dots.length > 0 && prev && next) {
+        let index = 0;
 
-     function updateSlider() {
-        const activeReview = document.querySelector('.review-card.active');
+        function updateSlider() {
+          const reviewWidth = reviews[0].offsetWidth;
+          track.style.transform = `translateX(-${index * reviewWidth}px)`;
 
-        if (!activeReview) {
-            console.warn("No active review found, skipping updateSlider()");
-            return;
+          // Update active dot
+          dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
         }
 
-        const rect = activeReview.getBoundingClientRect();
-
-        slider.style.width = rect.width + "px";
-        slider.style.left = rect.left + "px";
-    }
-
-
-      next.addEventListener('click', () => {
-        index = (index + 1) % reviews.length;
-        updateSlider();
-      });
-
-      prev.addEventListener('click', () => {
-        index = (index - 1 + reviews.length) % reviews.length;
-        updateSlider();
-      });
-
-      dots.forEach((dot, i) => {
-        dot.addEventListener('click', () => {
-          index = i;
+        next.addEventListener('click', () => {
+          index = (index + 1) % reviews.length;
           updateSlider();
         });
-      });
 
-      // Initialize stars
-      document.querySelectorAll('.star-rating').forEach(container => {
-        const rating = parseInt(container.getAttribute('data-rating'));
-        container.innerHTML = '';
-        for (let i = 1; i <= 5; i++) {
-          const star = document.createElement('span');
-          star.textContent = i <= rating ? '★' : '☆';
-          container.appendChild(star);
-        }
-      });
+        prev.addEventListener('click', () => {
+          index = (index - 1 + reviews.length) % reviews.length;
+          updateSlider();
+        });
 
-      // Recalculate on window resize
-      window.addEventListener('resize', updateSlider);
+        dots.forEach((dot, i) => {
+          dot.addEventListener('click', () => {
+            index = i;
+            updateSlider();
+          });
+        });
 
-      updateSlider();
+        // Initialize stars
+        document.querySelectorAll('.star-rating').forEach(container => {
+          const rating = parseInt(container.getAttribute('data-rating'));
+          container.innerHTML = '';
+          for (let i = 1; i <= 5; i++) {
+            const star = document.createElement('span');
+            star.textContent = i <= rating ? '★' : '☆';
+            container.appendChild(star);
+          }
+        });
+
+        // Recalculate on window resize
+        window.addEventListener('resize', updateSlider);
+
+        updateSlider();
+      }
     });
   </script>
 
@@ -1169,6 +1180,22 @@
   z-index: 9999;
   max-width: 350px;
   animation: slideIn 0.3s ease-out;
+}
+
+.no-reviews-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  text-align: center;
+}
+
+.placeholder-content {
+  max-width: 300px;
+}
+
+.no-reviews-message {
+  margin-top: 20px;
 }
 </style>
 
