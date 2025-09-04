@@ -885,7 +885,8 @@ def send_notification_to_user_view(request):
             return JsonResponse({'success': False, 'error': str(e)})
     
     # GET request - show form
-    users = User.objects.filter(is_active=True, is_staff=False)
+    # Order users alphabetically - first by first_name, then last_name, then username as fallback
+    users = User.objects.filter(is_active=True, is_staff=False).order_by('first_name', 'last_name', 'username')
     bookings = BookingRequest.objects.all().order_by('-created_at')
     return render(request, 'custom_admin/send_user_notification.html', {
         'users': users,
