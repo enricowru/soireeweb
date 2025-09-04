@@ -2,6 +2,8 @@ from django import forms
 from .models import Event, MobilePost, Comment
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.core.validators import RegexValidator
+import re
 
 class EventForm(forms.ModelForm):
     class Meta:
@@ -15,13 +17,100 @@ class EventForm(forms.ModelForm):
 
 User = get_user_model()
 
+class UserRegistrationForm(forms.Form):
+    """Form for user registration with proper validation"""
+    first_name = forms.CharField(max_length=150, required=True)
+    last_name = forms.CharField(max_length=150, required=True)
+    username = forms.CharField(max_length=150, required=True)
+    email = forms.EmailField(required=True)
+    password = forms.CharField(min_length=8, required=True)
+    mobile = forms.CharField(
+        max_length=11,
+        required=False,
+        validators=[RegexValidator(
+            regex=r'^09\d{9}$', 
+            message='Mobile number must be 11 digits and start with 09'
+        )]
+    )
+    
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError("Username already exists")
+        return username
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Email already exists")
+        return email
+    
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        
+        # Validate password strength (same as admin form)
+        if len(password) < 8:
+            raise forms.ValidationError("Password must be at least 8 characters long.")
+        
+        # Check for at least one digit, one uppercase, one lowercase
+        if not re.search(r'[0-9]', password):
+            raise forms.ValidationError("Password must contain at least one number.")
+        if not re.search(r'[A-Z]', password):
+            raise forms.ValidationError("Password must contain at least one uppercase letter.")
+        if not re.search(r'[a-z]', password):
+            raise forms.ValidationError("Password must contain at least one lowercase letter.")
+        
+        return password
+
+class UserProfileEditForm(forms.Form):
+    """Form for editing user profile with proper validation"""
+    username = forms.CharField(max_length=150, required=False)
+    first_name = forms.CharField(max_length=150, required=True)
+    last_name = forms.CharField(max_length=150, required=True)
+    email = forms.EmailField(required=True)
+    mobile = forms.CharField(
+        max_length=11,
+        required=False,
+        validators=[RegexValidator(
+            regex=r'^09\d{9}$', 
+            message='Mobile number must be 11 digits and start with 09'
+        )]
+    )
+    
+    def __init__(self, *args, **kwargs):
+        self.user_instance = kwargs.pop('user_instance', None)
+        super().__init__(*args, **kwargs)
+    
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if username and self.user_instance:
+            # Check if username is unique (excluding current user)
+            if User.objects.filter(username=username).exclude(pk=self.user_instance.pk).exists():
+                raise forms.ValidationError("Username already exists")
+        return username
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email and self.user_instance:
+            # Check if email is unique (excluding current user)
+            if User.objects.filter(email=email).exclude(pk=self.user_instance.pk).exists():
+                raise forms.ValidationError("Email already exists")
+        return email
+
 class ModeratorEditForm(forms.Form):
     # User fields
     username = forms.CharField(max_length=150, disabled=True) # Username should not be changed
     first_name = forms.CharField(max_length=150)
     last_name = forms.CharField(max_length=150)
     email = forms.EmailField()
-    mobile = forms.CharField(max_length=11, required=False) # Assuming mobile is optional
+    mobile = forms.CharField(
+        max_length=11, 
+        required=False,
+        validators=[RegexValidator(
+            regex=r'^09\d{9}$', 
+            message='Mobile number must be 11 digits and start with 09'
+        )]
+    )
 
     def __init__(self, *args, **kwargs):
         # Accept user instance
@@ -35,6 +124,14 @@ class ModeratorEditForm(forms.Form):
             self.fields['last_name'].initial = self.user_instance.last_name
             self.fields['email'].initial = self.user_instance.email
             self.fields['mobile'].initial = self.user_instance.mobile
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email and self.user_instance:
+            # Check if email is unique (excluding current user)
+            if User.objects.filter(email=email).exclude(pk=self.user_instance.pk).exists():
+                raise forms.ValidationError("Email already exists")
+        return email
 
     def save(self):
         # Save data to user instance
@@ -51,7 +148,15 @@ class AdminEditForm(forms.Form):
     # User fields
     username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'form-control'}))
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
-    mobile = forms.CharField(max_length=11, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    mobile = forms.CharField(
+        max_length=11, 
+        required=False, 
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        validators=[RegexValidator(
+            regex=r'^09\d{9}$', 
+            message='Mobile number must be 11 digits and start with 09'
+        )]
+    )
     
     # Password fields
     current_password = forms.CharField(
@@ -82,12 +187,17 @@ class AdminEditForm(forms.Form):
     def clean_username(self):
         username = self.cleaned_data['username']
         # Check if username is unique (excluding current user)
-        from django.contrib.auth import get_user_model
-        User = get_user_model()
-        
         if User.objects.filter(username=username).exclude(pk=self.user_instance.pk if self.user_instance else None).exists():
             raise forms.ValidationError("This username is already taken.")
         return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email and self.user_instance:
+            # Check if email is unique (excluding current user)
+            if User.objects.filter(email=email).exclude(pk=self.user_instance.pk).exists():
+                raise forms.ValidationError("This email is already taken.")
+        return email
 
     def clean(self):
         cleaned_data = super().clean()

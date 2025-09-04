@@ -37,33 +37,42 @@ def update_profile(request):
     
     try:
         # Handle multipart form data
-        username = request.POST.get('username', '').strip()
-        first_name = request.POST.get('first_name', '').strip()
-        last_name = request.POST.get('last_name', '').strip()
-        email = request.POST.get('email', '').strip()
-        mobile = request.POST.get('mobile', '').strip()
-
-        # Validate required fields
-        if not first_name or not last_name or not email:
-            return JsonResponse({
-                'error': 'First name, last name, and email are required'
-            }, status=400)
-
-        # Validate username if provided and ensure uniqueness
-        if username:
-            # If user is changing username, make sure it's not taken by another user
-            if username != user.username:
-                User = get_user_model()
-                if User.objects.filter(username=username).exists():
-                    return JsonResponse({'error': 'Username already exists'}, status=400)
-                # optionally enforce length/format rules here
-                user.username = username
-
-        # Update user fields
-        user.first_name = first_name
-        user.last_name = last_name
-        user.email = email
-        user.mobile = mobile if mobile else None
+        form_data = {
+            'username': request.POST.get('username', '').strip(),
+            'first_name': request.POST.get('first_name', '').strip(),
+            'last_name': request.POST.get('last_name', '').strip(),
+            'email': request.POST.get('email', '').strip(),
+            'mobile': request.POST.get('mobile', '').strip()
+        }
+        
+        # Remove empty values
+        form_data = {k: v for k, v in form_data.items() if v}
+        
+        # Use form for validation
+        from ..forms import UserProfileEditForm
+        form = UserProfileEditForm(form_data, user_instance=user)
+        
+        if not form.is_valid():
+            # Return validation errors
+            errors = {}
+            for field, error_list in form.errors.items():
+                errors[field] = error_list[0]  # Get first error for each field
+            
+            return JsonResponse({'error': 'Validation failed', 'errors': errors}, status=400)
+        
+        # Get validated data and update user
+        validated_data = form.cleaned_data
+        
+        if validated_data.get('username'):
+            user.username = validated_data['username']
+        if validated_data.get('first_name'):
+            user.first_name = validated_data['first_name']
+        if validated_data.get('last_name'):
+            user.last_name = validated_data['last_name']
+        if validated_data.get('email'):
+            user.email = validated_data['email']
+        if 'mobile' in validated_data:
+            user.mobile = validated_data['mobile'] if validated_data['mobile'] else None
         
         # Handle profile picture upload
         if 'profile_picture' in request.FILES:

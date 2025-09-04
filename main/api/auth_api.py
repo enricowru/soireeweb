@@ -7,6 +7,7 @@ from django.conf import settings
 import json
 from django.contrib.auth.decorators import login_required
 from ..models import EmailVerificationOTP
+from ..forms import UserRegistrationForm
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -18,25 +19,32 @@ def signup(request):
         print(f"[SIGNUP] Content-Type: {request.content_type}")
         
         data = json.loads(request.body)
-        firstname = data.get('firstname')
-        lastname = data.get('lastname')
-        username = data.get('username')
-        email = data.get('email')
-        password = data.get('password')
-        mobile = data.get('mobile')  # Add mobile field handling
+        
+        # Use form for validation
+        form = UserRegistrationForm(data)
+        
+        if not form.is_valid():
+            # Return validation errors
+            errors = {}
+            for field, error_list in form.errors.items():
+                errors[field] = error_list[0]  # Get first error for each field
+            
+            print(f"[SIGNUP] Validation errors: {errors}")
+            return JsonResponse({'message': 'Validation failed', 'errors': errors}, status=400)
+        
+        # Get validated data
+        validated_data = form.cleaned_data
+        firstname = validated_data['first_name']
+        lastname = validated_data['last_name']
+        username = validated_data['username']
+        email = validated_data['email']
+        password = validated_data['password']
+        mobile = validated_data.get('mobile')
 
-        print(f"[SIGNUP] Data parsed - Username: {username}, Email: {email}, Mobile: {mobile}")
-
-        User = get_user_model()
-        if User.objects.filter(username=username).exists():
-            print(f"[SIGNUP] Username {username} already exists")
-            return JsonResponse({'message': 'Username already exists'}, status=400)
-
-        if User.objects.filter(email=email).exists():
-            print(f"[SIGNUP] Email {email} already exists")
-            return JsonResponse({'message': 'Email already exists'}, status=400)
+        print(f"[SIGNUP] Data validated - Username: {username}, Email: {email}, Mobile: {mobile}")
 
         print(f"[SIGNUP] Creating user...")
+        User = get_user_model()
         user = User.objects.create_user(
             username=username,
             email=email,
@@ -110,37 +118,68 @@ def update_profile(request):
     user = getattr(request, 'user', None)
     if not user or not user.is_authenticated:
         return JsonResponse({'error': 'Auth required'}, status=401)
+    
     try:
         body = json.loads(request.body or '{}')
     except Exception:
         body = {}
-    first_name = body.get('first_name')
-    last_name = body.get('last_name')
-    email = body.get('email')
-    phone = body.get('phone') or body.get('phone_number')
-    password = body.get('password')
+    
+    # Prepare data for form validation
+    form_data = {
+        'first_name': body.get('first_name'),
+        'last_name': body.get('last_name'),
+        'email': body.get('email'),
+        'mobile': body.get('phone') or body.get('phone_number') or body.get('mobile'),
+        'username': body.get('username')
+    }
+    
+    # Remove None values
+    form_data = {k: v for k, v in form_data.items() if v is not None}
+    
+    # Use form for validation
+    from ..forms import UserProfileEditForm
+    form = UserProfileEditForm(form_data, user_instance=user)
+    
+    if not form.is_valid():
+        # Return validation errors
+        errors = {}
+        for field, error_list in form.errors.items():
+            errors[field] = error_list[0]  # Get first error for each field
+        
+        return JsonResponse({'error': 'Validation failed', 'errors': errors}, status=400)
+    
+    # Get validated data and update user
+    validated_data = form.cleaned_data
     dirty = False
-    if isinstance(first_name, str):
-        user.first_name = first_name.strip()
+    
+    if validated_data.get('first_name'):
+        user.first_name = validated_data['first_name'].strip()
         dirty = True
-    if isinstance(last_name, str):
-        user.last_name = last_name.strip()
+    if validated_data.get('last_name'):
+        user.last_name = validated_data['last_name'].strip()
         dirty = True
-    if isinstance(email, str):
-        user.email = email.strip()
+    if validated_data.get('email'):
+        user.email = validated_data['email'].strip()
         dirty = True
-    # Attempt to store phone if user model has field
-    if phone is not None and hasattr(user, 'phone'):
-        try:
-            setattr(user, 'phone', str(phone).strip())
-            dirty = True
-        except Exception:
-            pass
+    if validated_data.get('username'):
+        user.username = validated_data['username'].strip()
+        dirty = True
+    
+    # Handle mobile field
+    mobile = validated_data.get('mobile')
+    if mobile is not None and hasattr(user, 'mobile'):
+        user.mobile = mobile.strip() if mobile else None
+        dirty = True
+    
+    # Handle password separately (not part of profile form)
+    password = body.get('password')
     if password:
         user.set_password(password)
         dirty = True
+    
     if dirty:
         user.save()
+    
     return JsonResponse({'updated': dirty})
 
 
