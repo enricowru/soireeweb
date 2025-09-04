@@ -202,6 +202,10 @@
                   <p><strong>Pasta:</strong> ${createdStep.booking_details.pasta}</p>
                 </div>
               </div>
+              <!-- Undo button for CREATED step -->
+              <div class="mt-3 text-center">
+                <button type="button" class="btn btn-warning undo-step-btn" data-label="CREATED">Undo</button>
+              </div>
             </div>
           </div>
         </div>
@@ -278,6 +282,34 @@
         else alert('Failed to create event.');
       });
     }
+    
+    // Add undo button handler for CREATED step
+    const createdUndoBtn = contentBox.querySelector('.undo-step-btn[data-label="CREATED"]');
+    if (createdUndoBtn) {
+      createdUndoBtn.addEventListener('click', async () => {
+        if (!confirm('Are you sure you want to undo the event creation? This will revert the status back to pending.')) {
+          return;
+        }
+
+        const response = await fetch(`/admin/request-bookings/status/{{ booking.id }}/undo-step`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+          },
+          body: JSON.stringify({
+            label: 'CREATED'
+          })
+        });
+
+        if (response.ok) {
+          window.location.reload();
+        } else {
+          alert('Failed to undo step.');
+        }
+      });
+    }
+    
     return;
   }
 
@@ -296,16 +328,18 @@
   if (step.uploadable && steps[idx].classList.contains('active')) {
     const isDone = steps[idx].classList.contains('done');
     
-    if (!isDone) {
-      // Show form for steps that are not done yet
-      contentHTML += `<form class="upload-form" enctype="multipart/form-data">`;
-
-      if (isPaymentStep) {
-        const paymentLog = eventData.event_logs?.find(log => log.label === 'PAYMENT');
-        const totalDueRaw = paymentLog ? parseFloat(paymentLog.total_due) : null;
-        const payments = eventData.payment_transactions || [];
-        const totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.amount_paid) || 0), 0);
-        const remainingBalance = totalDueRaw !== null ? totalDueRaw - totalPaid : null;
+    // Special handling for payment step - always show form if not fully paid
+    if (isPaymentStep) {
+      const paymentLog = eventData.event_logs?.find(log => log.label === 'PAYMENT');
+      const totalDueRaw = paymentLog ? parseFloat(paymentLog.total_due) : null;
+      const payments = eventData.payment_transactions || [];
+      const totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.amount_paid) || 0), 0);
+      const remainingBalance = totalDueRaw !== null ? totalDueRaw - totalPaid : null;
+      const isFullyPaid = totalDueRaw !== null && totalPaid >= totalDueRaw;
+      
+      // Show payment form if not fully paid
+      if (!isFullyPaid) {
+        contentHTML += `<form class="upload-form" enctype="multipart/form-data">`;
 
         if (totalDueRaw == null) {
           contentHTML += `
@@ -324,18 +358,36 @@
               <input type="number" class="form-control form-control-sm" name="amount_paid" min="0" max="${remainingBalance.toFixed(2)}" step="0.01" required>
             </div>`;
         }
-      }
 
-      contentHTML += `
-        <div class="mb-2"><input type="file" class="form-control form-control-sm" name="proof" multiple accept="image/*"></div>
-        <button type="button" class="btn btn-sm btn-success mark-done-btn">${isPaymentStep ? 'Submit Payment' : 'Save'}</button>
-      </form>`;
+        contentHTML += `
+          <div class="mb-2"><input type="file" class="form-control form-control-sm" name="proof" multiple accept="image/*"></div>
+          <button type="button" class="btn btn-sm btn-success mark-done-btn">Submit Payment</button>
+        </form>`;
+      }
+      
+      // Show undo button if there are ANY existing payments (partial or fully paid)
+      if (totalPaid > 0) {
+        contentHTML += `
+          <div class="mt-3">
+            <button type="button" class="btn btn-sm btn-warning undo-step-btn">Undo Last Payment</button>
+          </div>`;
+      }
     } else {
-      // Show undo button for steps that are done
-      contentHTML += `
-        <div class="mt-3">
-          <button type="button" class="btn btn-sm btn-warning undo-step-btn">Undo</button>
-        </div>`;
+      // For non-payment steps
+      if (!isDone) {
+        // Show form for steps that are not done yet
+        contentHTML += `<form class="upload-form" enctype="multipart/form-data">`;
+        contentHTML += `
+          <div class="mb-2"><input type="file" class="form-control form-control-sm" name="proof" multiple accept="image/*"></div>
+          <button type="button" class="btn btn-sm btn-success mark-done-btn">Save</button>
+        </form>`;
+      } else {
+        // Show undo button for steps that are done
+        contentHTML += `
+          <div class="mt-3">
+            <button type="button" class="btn btn-sm btn-warning undo-step-btn">Undo</button>
+          </div>`;
+      }
     }
   }
 
