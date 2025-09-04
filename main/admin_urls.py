@@ -38,6 +38,7 @@ urlpatterns = [
     path('load-chats/', views.admin_booking_list, name="load-chats"),
     path('reviews/', views.review_list, name='review_list'),
     path('reviews/<int:review_id>/', views.review_detail, name='review_detail'),
+    path('reviews/<int:review_id>/bookmark/', views.review_bookmark_toggle, name='review_bookmark_toggle'),
     path('reviews/<int:review_id>/approve/', views.review_approve, name='review_approve'),
     path('reviews/<int:review_id>/delete/', views.review_delete, name='review_delete'),
     path("bookings/stream/", views.booking_notifications, name="booking_stream"),

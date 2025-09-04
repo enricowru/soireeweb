@@ -416,7 +416,7 @@
     </div>
   </section>
 
-  {% if top_reviews %}
+  {% if bookmarked_reviews %}
   <!-- REVIEWS -->
   <section id="reviews">
     <div class="reviews-content">
@@ -429,7 +429,7 @@
         <div class="reviews-nav">
           <button class="rprev">❮</button>
           <div class="rdots">
-            {% for review in top_reviews %}
+            {% for review in bookmarked_reviews %}
               <span class="rdot {% if forloop.first %}active{% endif %}"></span>
             {% endfor %}
           </div>
@@ -441,7 +441,7 @@
       <div class="reviews-right">
         <div class="review-slider">
           <div class="review-track">
-            {% for review in top_reviews %}
+            {% for review in bookmarked_reviews %}
             <div class="review">
               <div class="review-header">
                 <img src="{% static 'images/quotation.png' %}" alt="Quote Icon" class="quote-icon">

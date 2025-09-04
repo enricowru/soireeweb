@@ -41,20 +41,20 @@ def home(request):
             # Debug log each user
             print(f"Loaded user: {entry}")
 
-    # Get top reviews (available for all users)
-    top_reviews = (
-        Review.objects.filter(is_approved=True)
-        .order_by('-rating', '-created_at')[:3]
+    # Get bookmarked reviews for homepage display (available for all users)
+    bookmarked_reviews = (
+        Review.objects.filter(is_approved=True, is_bookmarked=True)
+        .order_by('-rating', '-created_at')
     )
 
-    print(f"Top reviews count: {top_reviews.count()}")
-    for r in top_reviews:
-        print(f"Review by {r.user}: {r.rating} stars, created at {r.created_at}")
+    print(f"Bookmarked reviews count: {bookmarked_reviews.count()}")
+    for r in bookmarked_reviews:
+        print(f"Bookmarked review by {r.user}: {r.rating} stars, created at {r.created_at}")
 
     return render(request, 'main.html', {
         'logged_in': request.user.is_authenticated,
         'user_list': user_list,
-        'top_reviews': top_reviews
+        'bookmarked_reviews': bookmarked_reviews
     })
 
     

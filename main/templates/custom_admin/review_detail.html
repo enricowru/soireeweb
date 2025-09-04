@@ -66,6 +66,10 @@
 
             <div class="mt-4">
                 <div class="btn-group" role="group">
+                    <a href="{% url 'review_bookmark_toggle' review.id %}" class="btn {% if review.is_bookmarked %}btn-success{% else %}btn-warning{% endif %}">
+                        <i class="fa{% if review.is_bookmarked %}s{% else %}r{% endif %} fa-bookmark"></i> 
+                        {% if review.is_bookmarked %}Bookmarked{% else %}Bookmark{% endif %}
+                    </a>
                     {% if not review.is_approved %}
                         <a href="{% url 'review_approve' review.id %}" class="btn btn-success">
                             <i class="fas fa-check"></i> Approve Review

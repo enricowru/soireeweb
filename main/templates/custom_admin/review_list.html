@@ -22,6 +22,7 @@
                             <th>Comment</th>
                             <th>Date</th>
                             <th>Status</th>
+                            <th>Bookmark</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -45,6 +46,17 @@
                                     <span class="badge bg-success">Approved</span>
                                 {% else %}
                                     <span class="badge bg-warning">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if review.is_bookmarked %}
+                                    <span class="badge bg-primary">
+                                        <i class="fas fa-bookmark"></i> Bookmarked
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-light text-dark">
+                                        <i class="far fa-bookmark"></i> Not Bookmarked
+                                    </span>
                                 {% endif %}
                             </td>
                             <td>
@@ -80,18 +92,21 @@
 
 <!-- Review Detail Modal -->
 <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="reviewModalLabel">Review Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <div id="reviewContent">
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <div id="reviewContent" style="word-wrap: break-word; overflow-wrap: break-word;">
                     <!-- Review content will be loaded here -->
                 </div>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-warning" id="bookmarkBtn" onclick="toggleBookmark()">
+                    <i class="fas fa-bookmark"></i> <span id="bookmarkText">Bookmark</span>
+                </button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
@@ -99,7 +114,10 @@
 </div>
 
 <script>
+let currentReviewId = null;
+
 function viewReview(reviewId) {
+    currentReviewId = reviewId;
     fetch(`/admin/reviews/${reviewId}/`, {
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
@@ -114,7 +132,7 @@ function viewReview(reviewId) {
             data.images.forEach(image => {
                 imagesHtml += `
                     <div class="col-md-4 mb-2">
-                        <img src="${image}" class="img-fluid rounded" style="max-height: 200px; cursor: pointer;" onclick="openImageModal('${image}')">
+                        <img src="${image}" class="img-fluid rounded" style="max-height: 200px; cursor: pointer; max-width: 100%;" onclick="openImageModal('${image}')">
                     </div>
                 `;
             });
@@ -144,12 +162,15 @@ function viewReview(reviewId) {
             </div>
             <div class="mt-3">
                 <h6>Comment:</h6>
-                <div class="border p-3 rounded bg-light">
+                <div class="border p-3 rounded bg-light" style="word-wrap: break-word; overflow-wrap: break-word; white-space: pre-wrap; max-width: 100%;">
                     ${data.comment.replace(/\n/g, '<br>')}
                 </div>
             </div>
             ${imagesHtml}
         `;
+        
+        // Update bookmark button state
+        updateBookmarkButton(data.is_bookmarked);
         
         const modal = new bootstrap.Modal(document.getElementById('reviewModal'));
         modal.show();
@@ -160,18 +181,60 @@ function viewReview(reviewId) {
     });
 }
 
+function updateBookmarkButton(isBookmarked) {
+    const bookmarkBtn = document.getElementById('bookmarkBtn');
+    const bookmarkText = document.getElementById('bookmarkText');
+    
+    if (isBookmarked) {
+        bookmarkBtn.className = 'btn btn-success';
+        bookmarkText.textContent = 'Bookmarked';
+        bookmarkBtn.innerHTML = '<i class="fas fa-bookmark"></i> <span id="bookmarkText">Bookmarked</span>';
+    } else {
+        bookmarkBtn.className = 'btn btn-warning';
+        bookmarkText.textContent = 'Bookmark';
+        bookmarkBtn.innerHTML = '<i class="far fa-bookmark"></i> <span id="bookmarkText">Bookmark</span>';
+    }
+}
+
+function toggleBookmark() {
+    if (!currentReviewId) return;
+    
+    fetch(`/admin/reviews/${currentReviewId}/bookmark/`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateBookmarkButton(data.is_bookmarked);
+            // Update the table row if needed
+            location.reload(); // Simple reload to update the table
+        } else {
+            alert('Error updating bookmark: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating bookmark');
+    });
+}
+
 function openImageModal(imageUrl) {
     const imageModal = document.createElement('div');
     imageModal.className = 'modal fade';
     imageModal.innerHTML = `
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Review Image</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body text-center">
-                    <img src="${imageUrl}" class="img-fluid" style="max-width: 100%;">
+                <div class="modal-body text-center p-2">
+                    <img src="${imageUrl}" class="img-fluid" style="max-width: 100%; max-height: 80vh; object-fit: contain;">
                 </div>
             </div>
         </div>

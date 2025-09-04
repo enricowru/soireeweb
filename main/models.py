@@ -394,6 +394,7 @@ class Review(models.Model):
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_approved = models.BooleanField(default=False)
+    is_bookmarked = models.BooleanField(default=False)  # New field for homepage display
     # Support up to 3 Cloudinary image URLs
     image1 = models.URLField(blank=True, null=True)
     image2 = models.URLField(blank=True, null=True)

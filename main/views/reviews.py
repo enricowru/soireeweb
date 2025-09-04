@@ -21,10 +21,33 @@ def review_detail(request, review_id):
             'comment': review.comment,
             'created_at': review.created_at.strftime('%B %d, %Y at %I:%M %p'),
             'is_approved': review.is_approved,
+            'is_bookmarked': review.is_bookmarked,
             'images': review.get_images()
         }
         return JsonResponse(data)
     return render(request, 'custom_admin/review_detail.html', {'review': review})
+
+@admin_required
+def review_bookmark_toggle(request, review_id):
+    """Toggle bookmark status of a review"""
+    if request.method == 'POST':
+        review = get_object_or_404(Review, id=review_id)
+        review.is_bookmarked = not review.is_bookmarked
+        review.save()
+        
+        action = "bookmarked" if review.is_bookmarked else "unbookmarked"
+        messages.success(request, f'Review {action} successfully.')
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True, 
+                'is_bookmarked': review.is_bookmarked,
+                'message': f'Review {action} successfully.'
+            })
+        
+        return redirect('review_list')
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 @admin_required
 def review_approve(request, review_id):
