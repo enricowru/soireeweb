@@ -110,6 +110,56 @@
       margin-bottom: 0.5rem;
     }
 
+    /* Custom modal styles */
+    .modal-content {
+      border: none;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-header {
+      border-bottom: 1px solid #e9ecef;
+      background: #f8f9fa;
+    }
+
+    .modal-footer {
+      border-top: 1px solid #e9ecef;
+      background: #f8f9fa;
+    }
+
+    .bg-opacity-20 {
+      background-color: rgba(var(--bs-warning-rgb), 0.2) !important;
+    }
+
+    .bg-danger.bg-opacity-20 {
+      background-color: rgba(var(--bs-danger-rgb), 0.2) !important;
+    }
+
+    .list-unstyled li {
+      padding: 0.25rem 0;
+    }
+
+    .alert.small {
+      font-size: 0.875rem;
+    }
+
+    /* Animation for modal icons */
+    .modal .fa-check-circle,
+    .modal .fa-undo {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
   </style>
   <div class="page-header border-bottom px-4 py-3 d-flex justify-content-between align-items-center">
     <h4 class="fw-semibold mb-0">
@@ -272,6 +322,10 @@
           return;
         }
 
+        // Show confirmation modal for creating event
+        const confirmed = await showStepConfirmationModal('CREATED', 'Create Event', false);
+        if (!confirmed) return;
+
         const response = await fetch('/admin/event/create/', {
           method: 'POST',
           body: formData,
@@ -287,9 +341,8 @@
     const createdUndoBtn = contentBox.querySelector('.undo-step-btn[data-label="CREATED"]');
     if (createdUndoBtn) {
       createdUndoBtn.addEventListener('click', async () => {
-        if (!confirm('Are you sure you want to undo the event creation? This will revert the status back to pending.')) {
-          return;
-        }
+        const confirmed = await showUndoConfirmationModal('CREATED', 'Created Event');
+        if (!confirmed) return;
 
         const response = await fetch(`/admin/request-bookings/status/{{ booking.id }}/undo-step`, {
           method: 'POST',
@@ -408,6 +461,12 @@
         if (!isValidImage(file)) return alert('Only JPEG, PNG, GIF allowed.');
       }
 
+      // Show confirmation modal before proceeding
+      const hasImages = files.length > 0;
+      const confirmed = await showStepConfirmationModal(step.label, step.title, hasImages);
+      
+      if (!confirmed) return;
+
       const formData = new FormData(form);
       formData.append('label', step.label);
 
@@ -425,9 +484,8 @@
   const undoBtn = contentBox.querySelector('.undo-step-btn');
   if (undoBtn) {
     undoBtn.addEventListener('click', async () => {
-      if (!confirm('Are you sure you want to undo this step? This will revert the status back to pending.')) {
-        return;
-      }
+      const confirmed = await showUndoConfirmationModal(step.label, step.title);
+      if (!confirmed) return;
 
       const response = await fetch(`/admin/request-bookings/status/{{ booking.id }}/undo-step`, {
         method: 'POST',
@@ -456,6 +514,196 @@
         renderStep(idx);
       });
     });
+
+    // Function to show step confirmation modal
+    function showStepConfirmationModal(stepLabel, stepTitle, hasImages) {
+      return new Promise((resolve) => {
+        // Remove any existing modal
+        const existingModal = document.getElementById('stepConfirmationModal');
+        if (existingModal) {
+          existingModal.remove();
+        }
+
+        // Create modal HTML
+        const modalHTML = `
+          <div class="modal fade" id="stepConfirmationModal" tabindex="-1" aria-labelledby="stepConfirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="stepConfirmationModalLabel">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    Confirm Step Completion
+                  </h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="d-flex align-items-start">
+                    <div class="flex-shrink-0">
+                      <div class="rounded-circle bg-warning bg-opacity-20 p-3 me-3">
+                        <i class="fas fa-check-circle text-warning fs-4"></i>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1">
+                      <h6 class="mb-2">Mark "${stepTitle}" as Complete?</h6>
+                      <p class="mb-2 text-muted">
+                        You are about to mark this step as completed. This action will:
+                      </p>
+                      <ul class="list-unstyled mb-3">
+                        <li class="mb-1">
+                          <i class="fas fa-check text-success me-2"></i>
+                          Update the booking status
+                        </li>
+                        <li class="mb-1">
+                          <i class="fas fa-bell text-info me-2"></i>
+                          Send a notification to the client
+                        </li>
+                        ${hasImages ? `
+                        <li class="mb-1">
+                          <i class="fas fa-image text-primary me-2"></i>
+                          Upload and save the attached images
+                        </li>
+                        ` : `
+                        <li class="mb-1">
+                          <i class="fas fa-info-circle text-muted me-2"></i>
+                          No images will be uploaded for this step
+                        </li>
+                        `}
+                      </ul>
+                      <div class="alert alert-info small mb-0">
+                        <i class="fas fa-info-circle me-1"></i>
+                        <strong>Note:</strong> You can undo this action later if needed.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancel
+                  </button>
+                  <button type="button" class="btn btn-success" id="confirmStepBtn">
+                    <i class="fas fa-check me-1"></i>Confirm & Complete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Add modal to DOM
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
+        const modal = new bootstrap.Modal(document.getElementById('stepConfirmationModal'));
+        const confirmBtn = document.getElementById('confirmStepBtn');
+        
+        confirmBtn.addEventListener('click', () => {
+          modal.hide();
+          resolve(true);
+        });
+
+        // Handle modal dismiss
+        document.getElementById('stepConfirmationModal').addEventListener('hidden.bs.modal', () => {
+          resolve(false);
+          document.getElementById('stepConfirmationModal').remove();
+        });
+
+        modal.show();
+      });
+    }
+
+    // Function to show undo confirmation modal
+    function showUndoConfirmationModal(stepLabel, stepTitle) {
+      return new Promise((resolve) => {
+        // Remove any existing modal
+        const existingModal = document.getElementById('undoConfirmationModal');
+        if (existingModal) {
+          existingModal.remove();
+        }
+
+        // Create modal HTML
+        const modalHTML = `
+          <div class="modal fade" id="undoConfirmationModal" tabindex="-1" aria-labelledby="undoConfirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="undoConfirmationModalLabel">
+                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>
+                    Confirm Step Undo
+                  </h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="d-flex align-items-start">
+                    <div class="flex-shrink-0">
+                      <div class="rounded-circle bg-danger bg-opacity-20 p-3 me-3">
+                        <i class="fas fa-undo text-danger fs-4"></i>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1">
+                      <h6 class="mb-2">Undo "${stepTitle}" Step?</h6>
+                      <p class="mb-2 text-muted">
+                        You are about to undo this completed step. This action will:
+                      </p>
+                      <ul class="list-unstyled mb-3">
+                        <li class="mb-1">
+                          <i class="fas fa-arrow-left text-warning me-2"></i>
+                          Revert the step status back to pending
+                        </li>
+                        <li class="mb-1">
+                          <i class="fas fa-bell text-info me-2"></i>
+                          Send a revert notification to the client
+                        </li>
+                        ${stepLabel === 'PAYMENT' ? `
+                        <li class="mb-1">
+                          <i class="fas fa-money-bill text-danger me-2"></i>
+                          Remove the latest payment transaction
+                        </li>
+                        ` : `
+                        <li class="mb-1">
+                          <i class="fas fa-info-circle text-muted me-2"></i>
+                          Reset step completion status
+                        </li>
+                        `}
+                      </ul>
+                      <div class="alert alert-warning small mb-0">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        <strong>Warning:</strong> ${stepLabel === 'PAYMENT' ? 'This will remove the most recent payment entry.' : 'This action will reset the step progress.'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancel
+                  </button>
+                  <button type="button" class="btn btn-danger" id="confirmUndoBtn">
+                    <i class="fas fa-undo me-1"></i>Confirm Undo
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Add modal to DOM
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
+        const modal = new bootstrap.Modal(document.getElementById('undoConfirmationModal'));
+        const confirmBtn = document.getElementById('confirmUndoBtn');
+        
+        confirmBtn.addEventListener('click', () => {
+          modal.hide();
+          resolve(true);
+        });
+
+        // Handle modal dismiss
+        document.getElementById('undoConfirmationModal').addEventListener('hidden.bs.modal', () => {
+          resolve(false);
+          document.getElementById('undoConfirmationModal').remove();
+        });
+
+        modal.show();
+      });
+    }
 
     renderStep(0);
   </script>

@@ -228,13 +228,7 @@ def booking_summary(booking) -> str:
     ]
 
     return (
-        "<strong>New booking received</strong><br>"
-        "<dl class='mb-0'>"
-        + format_html_join(
-            "", "<dt class='fw-semibold mb-0'>{}</dt><dd class='mb-1'>{}</dd>", rows
-        )
-        + "</dl>"
-        + "<p>Please enter your name, contact information, and the names of the expected attendees. Thank you.</p>"
+        "Booking request received. Please wait for the admin to reply."
     )
 
 
