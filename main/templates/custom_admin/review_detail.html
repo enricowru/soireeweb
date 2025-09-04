@@ -66,10 +66,10 @@
 
             <div class="mt-4">
                 <div class="btn-group" role="group">
-                    <a href="{% url 'review_bookmark_toggle' review.id %}" class="btn {% if review.is_bookmarked %}btn-success{% else %}btn-warning{% endif %}">
-                        <i class="fa{% if review.is_bookmarked %}s{% else %}r{% endif %} fa-bookmark"></i> 
+                    <button type="button" id="bookmarkBtn" class="btn {% if review.is_bookmarked %}btn-warning{% else %}btn-outline-warning{% endif %}" onclick="toggleBookmark({{ review.id }})">
+                        <i class="{% if review.is_bookmarked %}fas{% else %}far{% endif %} fa-bookmark"></i> 
                         {% if review.is_bookmarked %}Bookmarked{% else %}Bookmark{% endif %}
-                    </a>
+                    </button>
                     {% if not review.is_approved %}
                         <a href="{% url 'review_approve' review.id %}" class="btn btn-success">
                             <i class="fas fa-check"></i> Approve Review
@@ -88,6 +88,61 @@
 </div>
 
 <script>
+function toggleBookmark(reviewId) {
+    fetch(`/admin/reviews/${reviewId}/bookmark/`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const bookmarkBtn = document.getElementById('bookmarkBtn');
+            if (data.is_bookmarked) {
+                bookmarkBtn.className = 'btn btn-warning';
+                bookmarkBtn.innerHTML = '<i class="fas fa-bookmark"></i> Bookmarked';
+            } else {
+                bookmarkBtn.className = 'btn btn-outline-warning';
+                bookmarkBtn.innerHTML = '<i class="far fa-bookmark"></i> Bookmark';
+            }
+            
+            // Show a toast or temporary message
+            showToast(data.message, 'success');
+        } else {
+            showToast('Error updating bookmark', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Error updating bookmark', 'error');
+    });
+}
+
+function showToast(message, type) {
+    const toastHtml = `
+        <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', toastHtml);
+    const toastElement = document.body.lastElementChild;
+    const toast = new bootstrap.Toast(toastElement);
+    toast.show();
+    
+    // Remove the toast element after it's hidden
+    toastElement.addEventListener('hidden.bs.toast', () => {
+        toastElement.remove();
+    });
+}
+
 function openImageModal(imageUrl) {
     const imageModal = document.createElement('div');
     imageModal.className = 'modal fade';

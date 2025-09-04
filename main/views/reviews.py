@@ -35,16 +35,15 @@ def review_bookmark_toggle(request, review_id):
         review.is_bookmarked = not review.is_bookmarked
         review.save()
         
-        action = "bookmarked" if review.is_bookmarked else "unbookmarked"
-        messages.success(request, f'Review {action} successfully.')
-        
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return JsonResponse({
-                'success': True, 
+                'success': True,
                 'is_bookmarked': review.is_bookmarked,
-                'message': f'Review {action} successfully.'
+                'message': 'Bookmarked' if review.is_bookmarked else 'Bookmark removed'
             })
         
+        action = 'bookmarked' if review.is_bookmarked else 'removed from bookmarks'
+        messages.success(request, f'Review {action} successfully.')
         return redirect('review_list')
     
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
