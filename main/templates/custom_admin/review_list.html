@@ -52,9 +52,11 @@
                                 <button type="button" class="btn btn-info btn-sm me-1" onclick="viewReview({{ review.id }})">
                                     <i class="fas fa-eye"></i> View
                                 </button>
+                                {% if review.is_approved %}
                                 <button type="button" class="btn {% if review.is_bookmarked %}btn-warning{% else %}btn-outline-warning{% endif %} btn-sm me-1" onclick="toggleBookmarkDirect({{ review.id }}, this)">
                                     <i class="{% if review.is_bookmarked %}fas{% else %}far{% endif %} fa-bookmark"></i>
                                 </button>
+                                {% endif %}
                                 {% if not review.is_approved %}
                                     <a href="{% url 'review_approve' review.id %}" class="btn btn-success btn-sm me-1">
                                         <i class="fas fa-check"></i> Approve
@@ -163,12 +165,19 @@ function viewReview(reviewId) {
         
         // Update bookmark button
         const bookmarkBtn = document.getElementById('bookmarkBtn');
-        if (data.is_bookmarked) {
-            bookmarkBtn.className = 'btn btn-warning me-auto';
-            bookmarkBtn.innerHTML = '<i class="fas fa-bookmark"></i> Bookmarked';
+        if (data.is_approved) {
+            // Show bookmark button only for approved reviews
+            bookmarkBtn.style.display = 'inline-block';
+            if (data.is_bookmarked) {
+                bookmarkBtn.className = 'btn btn-warning me-auto';
+                bookmarkBtn.innerHTML = '<i class="fas fa-bookmark"></i> Bookmarked';
+            } else {
+                bookmarkBtn.className = 'btn btn-outline-warning me-auto';
+                bookmarkBtn.innerHTML = '<i class="far fa-bookmark"></i> Bookmark';
+            }
         } else {
-            bookmarkBtn.className = 'btn btn-outline-warning me-auto';
-            bookmarkBtn.innerHTML = '<i class="far fa-bookmark"></i> Bookmark';
+            // Hide bookmark button for non-approved reviews
+            bookmarkBtn.style.display = 'none';
         }
         
         const modal = new bootstrap.Modal(document.getElementById('reviewModal'));

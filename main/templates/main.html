@@ -457,7 +457,6 @@
                 {{ review.comment }}
               </p>
               <div class="review-user">
-                <img src="{% static 'images/user.png' %}" alt="User Photo" class="user-photo">
                 <div class="review-details">
                   <h3>{{ review.user.first_name }} {{ review.user.last_name }}</h3>
                   <p>{{ review.created_at|date:"F j, Y" }}</p>

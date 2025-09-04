@@ -40,6 +40,16 @@ def review_bookmark_toggle(request, review_id):
     if request.method == 'POST':
         review = get_object_or_404(Review, id=review_id)
         
+        # Only allow bookmarking of approved reviews
+        if not review.is_approved:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Only approved reviews can be bookmarked'
+                })
+            messages.error(request, 'Only approved reviews can be bookmarked.')
+            return redirect('review_list')
+        
         # Check if we're trying to bookmark and already have 10 bookmarked
         if not review.is_bookmarked:
             current_bookmarked_count = Review.objects.filter(is_bookmarked=True).count()
