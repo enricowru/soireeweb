@@ -48,6 +48,7 @@ urlpatterns = [
     path("request-bookings/status/<int:id>", views.booking_requests_status, name = "booking_request_status"),
     
     path("request-bookings/status/<int:id>/mark-as-done", views.mark_step_done, name ="mark_step_done"),
+    path("request-bookings/status/<int:id>/undo-step", views.undo_step, name ="undo_step"),
     
     # Notification Management URLs
     path('notifications/', views.admin_notifications, name='admin_notifications'),

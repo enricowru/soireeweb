@@ -153,6 +153,11 @@
     const bookingDate = new Date("{{ booking.event_date|date:'M d, Y' }}");
     const dateString = bookingDate.toISOString().slice(0,16);
 
+    // CSRF token helper
+    function getCsrfToken() {
+      return "{{ csrf_token }}";
+    }
+
     function isValidImage(file) {
       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
       return file && allowedTypes.includes(file.type);
@@ -287,45 +292,56 @@
   let contentHTML = `<h6 class="mb-3">${step.title}</h6>`;
   contentHTML += htmlDoc.body.innerHTML || '';
 
-  // Only show form if step is uploadable & active & not done
-  if (!steps[idx].classList.contains('done') && step.uploadable && steps[idx].classList.contains('active')) {
-    contentHTML += `<form class="upload-form" enctype="multipart/form-data">`;
+  // Show form if step is uploadable & active
+  if (step.uploadable && steps[idx].classList.contains('active')) {
+    const isDone = steps[idx].classList.contains('done');
+    
+    if (!isDone) {
+      // Show form for steps that are not done yet
+      contentHTML += `<form class="upload-form" enctype="multipart/form-data">`;
 
-    if (isPaymentStep) {
-      const paymentLog = eventData.event_logs?.find(log => log.label === 'PAYMENT');
-      const totalDueRaw = paymentLog ? parseFloat(paymentLog.total_due) : null;
-      const payments = eventData.payment_transactions || [];
-      const totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.amount_paid) || 0), 0);
-      const remainingBalance = totalDueRaw !== null ? totalDueRaw - totalPaid : null;
+      if (isPaymentStep) {
+        const paymentLog = eventData.event_logs?.find(log => log.label === 'PAYMENT');
+        const totalDueRaw = paymentLog ? parseFloat(paymentLog.total_due) : null;
+        const payments = eventData.payment_transactions || [];
+        const totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.amount_paid) || 0), 0);
+        const remainingBalance = totalDueRaw !== null ? totalDueRaw - totalPaid : null;
 
-      if (totalDueRaw == null) {
-        contentHTML += `
-          <div class="mb-2"><label>Total Amount Due</label>
-            <input type="number" class="form-control form-control-sm" name="total_due" min="0" step="0.01" required>
-          </div>
-          <div class="mb-2"><label>Amount Paying Now</label>
-            <input type="number" class="form-control form-control-sm" name="amount_paid" min="0" step="0.01" required>
-          </div>`;
-      } else {
-        contentHTML += `
-          <div class="mb-2"><label>Remaining Balance</label>
-            <input type="text" class="form-control form-control-sm" value="${remainingBalance.toFixed(2)}" readonly>
-          </div>
-          <div class="mb-2"><label>Amount Paying Now</label>
-            <input type="number" class="form-control form-control-sm" name="amount_paid" min="0" max="${remainingBalance.toFixed(2)}" step="0.01" required>
-          </div>`;
+        if (totalDueRaw == null) {
+          contentHTML += `
+            <div class="mb-2"><label>Total Amount Due</label>
+              <input type="number" class="form-control form-control-sm" name="total_due" min="0" step="0.01" required>
+            </div>
+            <div class="mb-2"><label>Amount Paying Now</label>
+              <input type="number" class="form-control form-control-sm" name="amount_paid" min="0" step="0.01" required>
+            </div>`;
+        } else {
+          contentHTML += `
+            <div class="mb-2"><label>Remaining Balance</label>
+              <input type="text" class="form-control form-control-sm" value="${remainingBalance.toFixed(2)}" readonly>
+            </div>
+            <div class="mb-2"><label>Amount Paying Now</label>
+              <input type="number" class="form-control form-control-sm" name="amount_paid" min="0" max="${remainingBalance.toFixed(2)}" step="0.01" required>
+            </div>`;
+        }
       }
-    }
 
-    contentHTML += `
-      <div class="mb-2"><input type="file" class="form-control form-control-sm" name="proof" multiple accept="image/*"></div>
-      <button type="button" class="btn btn-sm btn-success mark-done-btn">${isPaymentStep ? 'Submit Payment' : 'Attach & Mark Done'}</button>
-    </form>`;
+      contentHTML += `
+        <div class="mb-2"><input type="file" class="form-control form-control-sm" name="proof" multiple accept="image/*"></div>
+        <button type="button" class="btn btn-sm btn-success mark-done-btn">${isPaymentStep ? 'Submit Payment' : 'Save'}</button>
+      </form>`;
+    } else {
+      // Show undo button for steps that are done
+      contentHTML += `
+        <div class="mt-3">
+          <button type="button" class="btn btn-sm btn-warning undo-step-btn">Undo</button>
+        </div>`;
+    }
   }
 
   contentBox.innerHTML = contentHTML;
 
-  // Attach handler
+  // Attach handler for Save/Submit button
   const doneBtn = contentBox.querySelector('.mark-done-btn');
   if (doneBtn) {
     doneBtn.addEventListener('click', async () => {
@@ -335,7 +351,7 @@
       const fileInput = form.querySelector('input[type="file"]');
       const files = fileInput?.files || [];
 
-      if (files.length === 0) alert('Select at least one image.');
+      // Only validate files if they are uploaded
       for (let file of files) {
         if (!isValidImage(file)) return alert('Only JPEG, PNG, GIF allowed.');
       }
@@ -350,6 +366,33 @@
 
       if (response.ok) window.location.reload();
       else alert('Submission failed.');
+    });
+  }
+
+  // Attach handler for Undo button
+  const undoBtn = contentBox.querySelector('.undo-step-btn');
+  if (undoBtn) {
+    undoBtn.addEventListener('click', async () => {
+      if (!confirm('Are you sure you want to undo this step? This will revert the status back to pending.')) {
+        return;
+      }
+
+      const response = await fetch(`/admin/request-bookings/status/{{ booking.id }}/undo-step`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+          label: step.label
+        })
+      });
+
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        alert('Failed to undo step.');
+      }
     });
   }
 }

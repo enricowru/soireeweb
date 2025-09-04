@@ -544,7 +544,7 @@ def mark_step_done(request, id):
         # Create user notification for booking status update
         create_booking_status_notification(booking, log, request.user)
 
-        # --- Handle file uploads for ALL steps ---
+        # --- Handle file uploads for ALL steps (optional now) ---
         for f in request.FILES.getlist('proof'):
             if not f or not f.name:
                 continue  # skip empty files
@@ -591,6 +591,62 @@ def mark_step_done(request, id):
         return HttpResponseBadRequest("Missing label or file")
     except ValueError:
         return HttpResponseBadRequest("Invalid numeric value for amount or total_due")
+
+
+@csrf_exempt
+@admin_required
+@require_POST
+def undo_step(request, id):
+    """
+    Undo a completed step by reverting its status to PENDING
+    and optionally removing associated data
+    """
+    try:
+        import json
+        data = json.loads(request.body)
+        label = data.get('label')
+        
+        if not label:
+            return JsonResponse({'success': False, 'error': 'Missing label'})
+        
+        booking = get_object_or_404(BookingRequest, id=id)
+        
+        # Get the EventStatusLog for this step
+        try:
+            log = EventStatusLog.objects.get(booking=booking, label=label)
+        except EventStatusLog.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Step not found'})
+        
+        # Handle PAYMENT step differently - remove the latest payment transaction
+        if label == EventStatusLog.Label.PAYMENT:
+            # Get the latest payment transaction and remove it
+            latest_payment = log.payment_transactions.order_by('-payment_date').first()
+            if latest_payment:
+                latest_payment.delete()
+            
+            # Recalculate status based on remaining payments
+            total_paid = sum(pt.amount_paid for pt in log.payment_transactions.all())
+            if log.total_due is not None and total_paid >= log.total_due:
+                log.status = EventStatusLog.Status.DONE
+            elif total_paid > 0:
+                log.status = EventStatusLog.Status.PARTIALLY_PAID
+            else:
+                log.status = EventStatusLog.Status.PENDING
+        else:
+            # For non-payment steps, just set status back to PENDING
+            log.status = EventStatusLog.Status.PENDING
+        
+        log.save()
+        
+        # Create user notification about the undo action
+        create_booking_status_notification(booking, log, request.user, is_undo=True)
+        
+        return JsonResponse({'success': True})
+        
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 
 
 # ✅ Admin Notification API Endpoints
@@ -776,7 +832,7 @@ def create_message_notification(message, chat=None):
         print(f"Error creating message notification: {e}")
         return None
 
-def create_booking_status_notification(booking, status_log, admin_user=None):
+def create_booking_status_notification(booking, status_log, admin_user=None, is_undo=False):
     """Create user notification when booking status is updated"""
     try:
         from ..models import UserNotification
@@ -786,33 +842,62 @@ def create_booking_status_notification(booking, status_log, admin_user=None):
             admin_user = User.objects.filter(is_staff=True).first()
         
         # Define notification messages for each step
-        notification_data = {
-            'CREATED': {
-                'title': 'Booking Request Approved and Created',
-                'message': f'Your booking request for {booking.event_type} on {booking.event_date.strftime("%B %d, %Y")} has been approved and created! Our team will start working on your event.',
-                'type': 'booking_update'
-            },
-            'PAYMENT': {
-                'title': 'Payment Update',
-                'message': None,  # Will be set based on payment status
-                'type': 'payment_update'
-            },
-            'BACKDROP': {
-                'title': 'Backdrop Setup Complete',
-                'message': f'Great news! The backdrop for your {booking.event_type} event has been set up and is ready. Everything is looking beautiful for your special day!',
-                'type': 'booking_update'
-            },
-            'CATERING': {
-                'title': 'Catering/Buffet Update',
-                'message': f'Your catering and buffet setup for the {booking.event_type} event is now in progress. Our culinary team is preparing everything according to your specifications.',
-                'type': 'booking_update'
-            },
-            'LOGISTICS': {
-                'title': 'Lights/Sound/Logistics Update',
-                'message': f'All lights, sound, and logistics for your {booking.event_type} event have been set up and tested. Everything is ready for your special occasion!',
-                'type': 'booking_update'
+        if is_undo:
+            notification_data = {
+                'CREATED': {
+                    'title': 'Booking Status Reverted',
+                    'message': f'Your booking for {booking.event_type} on {booking.event_date.strftime("%B %d, %Y")} status has been reverted to pending. Our team will review and update you soon.',
+                    'type': 'booking_update'
+                },
+                'PAYMENT': {
+                    'title': 'Payment Status Reverted',
+                    'message': f'The payment status for your {booking.event_type} booking has been reverted. Please contact us for more information.',
+                    'type': 'payment_update'
+                },
+                'BACKDROP': {
+                    'title': 'Backdrop Status Reverted',
+                    'message': f'The backdrop status for your {booking.event_type} event has been reverted to pending. We will update you on the progress.',
+                    'type': 'booking_update'
+                },
+                'CATERING': {
+                    'title': 'Catering Status Reverted',
+                    'message': f'The catering status for your {booking.event_type} event has been reverted to pending. We will update you on the progress.',
+                    'type': 'booking_update'
+                },
+                'LOGISTICS': {
+                    'title': 'Logistics Status Reverted',
+                    'message': f'The logistics status for your {booking.event_type} event has been reverted to pending. We will update you on the progress.',
+                    'type': 'booking_update'
+                }
             }
-        }
+        else:
+            notification_data = {
+                'CREATED': {
+                    'title': 'Booking Request Approved and Created',
+                    'message': f'Your booking request for {booking.event_type} on {booking.event_date.strftime("%B %d, %Y")} has been approved and created! Our team will start working on your event.',
+                    'type': 'booking_update'
+                },
+                'PAYMENT': {
+                    'title': 'Payment Update',
+                    'message': None,  # Will be set based on payment status
+                    'type': 'payment_update'
+                },
+                'BACKDROP': {
+                    'title': 'Backdrop Setup Complete',
+                    'message': f'Great news! The backdrop for your {booking.event_type} event has been set up and is ready. Everything is looking beautiful for your special day!',
+                    'type': 'booking_update'
+                },
+                'CATERING': {
+                    'title': 'Catering/Buffet Update',
+                    'message': f'Your catering and buffet setup for the {booking.event_type} event is now in progress. Our culinary team is preparing everything according to your specifications.',
+                    'type': 'booking_update'
+                },
+                'LOGISTICS': {
+                    'title': 'Lights/Sound/Logistics Update',
+                    'message': f'All lights, sound, and logistics for your {booking.event_type} event have been set up and tested. Everything is ready for your special occasion!',
+                    'type': 'booking_update'
+                }
+            }
         
         # Handle special case for payment notifications
         if status_log.label == 'PAYMENT':
