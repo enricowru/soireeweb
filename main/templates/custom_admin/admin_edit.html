@@ -83,7 +83,15 @@
                     {% if form.password.errors %}
                         <div class="text-danger small">{{ form.password.errors.0 }}</div>
                     {% endif %}
-                    <div class="form-text">Leave blank to keep current password</div>
+                    <div class="form-text">
+                        Password must be at least 8 characters with uppercase, lowercase, and number
+                    </div>
+                    <div id="passwordStrength" class="mt-2" style="display: none;">
+                        <div class="progress" style="height: 5px;">
+                            <div id="strengthBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <small id="strengthText" class="text-muted"></small>
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label for="{{ form.confirm_password.id_for_label }}" class="form-label">Confirm New Password</label>
@@ -92,6 +100,9 @@
                         <div class="text-danger small">{{ form.confirm_password.errors.0 }}</div>
                     {% endif %}
                     <div class="form-text">Re-enter new password to confirm</div>
+                    <div id="passwordMatch" class="mt-1" style="display: none;">
+                        <small id="matchText"></small>
+                    </div>
                 </div>
 
                 <div class="text-end">
@@ -130,6 +141,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('adminEditForm');
     const saveButton = document.getElementById('saveButton');
     const fields = form.querySelectorAll('input, textarea, select');
+    const passwordField = document.getElementById('id_password');
+    const confirmPasswordField = document.getElementById('id_confirm_password');
+    const currentPasswordField = document.getElementById('id_current_password');
     
     // Store initial values
     const initialValues = {};
@@ -137,8 +151,112 @@ document.addEventListener('DOMContentLoaded', function() {
         initialValues[field.name] = field.value;
     });
     
+    // Password strength checker
+    function checkPasswordStrength(password) {
+        const strengthDiv = document.getElementById('passwordStrength');
+        const strengthBar = document.getElementById('strengthBar');
+        const strengthText = document.getElementById('strengthText');
+        
+        if (!password) {
+            strengthDiv.style.display = 'none';
+            return { score: 0, isValid: false };
+        }
+        
+        strengthDiv.style.display = 'block';
+        
+        let score = 0;
+        let feedback = [];
+        
+        // Length check
+        if (password.length >= 8) score += 25;
+        else feedback.push('at least 8 characters');
+        
+        // Uppercase check
+        if (/[A-Z]/.test(password)) score += 25;
+        else feedback.push('uppercase letter');
+        
+        // Lowercase check
+        if (/[a-z]/.test(password)) score += 25;
+        else feedback.push('lowercase letter');
+        
+        // Number check
+        if (/[0-9]/.test(password)) score += 25;
+        else feedback.push('number');
+        
+        // Update progress bar
+        strengthBar.style.width = score + '%';
+        
+        if (score < 50) {
+            strengthBar.className = 'progress-bar bg-danger';
+            strengthText.className = 'text-danger';
+            strengthText.textContent = 'Weak - Missing: ' + feedback.join(', ');
+        } else if (score < 100) {
+            strengthBar.className = 'progress-bar bg-warning';
+            strengthText.className = 'text-warning';
+            strengthText.textContent = 'Fair - Missing: ' + feedback.join(', ');
+        } else {
+            strengthBar.className = 'progress-bar bg-success';
+            strengthText.className = 'text-success';
+            strengthText.textContent = 'Strong password';
+        }
+        
+        return { score, isValid: score === 100 };
+    }
+    
+    // Password match checker
+    function checkPasswordMatch() {
+        const matchDiv = document.getElementById('passwordMatch');
+        const matchText = document.getElementById('matchText');
+        const password = passwordField.value;
+        const confirmPassword = confirmPasswordField.value;
+        
+        if (!password && !confirmPassword) {
+            matchDiv.style.display = 'none';
+            return true;
+        }
+        
+        if (!confirmPassword) {
+            matchDiv.style.display = 'none';
+            return false;
+        }
+        
+        matchDiv.style.display = 'block';
+        
+        if (password === confirmPassword) {
+            matchText.className = 'text-success';
+            matchText.textContent = '✓ Passwords match';
+            return true;
+        } else {
+            matchText.className = 'text-danger';
+            matchText.textContent = '✗ Passwords do not match';
+            return false;
+        }
+    }
+    
+    // Form validation
+    function validateForm() {
+        const hasCurrentPassword = currentPasswordField.value.trim() !== '';
+        const hasNewPassword = passwordField.value.trim() !== '';
+        const hasConfirmPassword = confirmPasswordField.value.trim() !== '';
+        
+        // If any password field has content, all must be valid
+        if (hasCurrentPassword || hasNewPassword || hasConfirmPassword) {
+            if (!hasCurrentPassword) return false;
+            if (!hasNewPassword) return false;
+            if (!hasConfirmPassword) return false;
+            
+            const passwordStrength = checkPasswordStrength(passwordField.value);
+            if (!passwordStrength.isValid) return false;
+            
+            if (!checkPasswordMatch()) return false;
+        }
+        
+        return true;
+    }
+    
     function checkForChanges() {
         let hasChanges = false;
+        let isValid = validateForm();
         
         fields.forEach(field => {
             // Skip readonly fields from change detection
@@ -156,10 +274,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        if (hasChanges) {
+        if (hasChanges && isValid) {
             saveButton.disabled = false;
             saveButton.className = 'btn btn-gold';
             saveButton.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+        } else if (hasChanges && !isValid) {
+            saveButton.disabled = true;
+            saveButton.className = 'btn btn-warning';
+            saveButton.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Invalid Input';
         } else {
             saveButton.disabled = true;
             saveButton.className = 'btn btn-secondary';
@@ -167,10 +289,31 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Add event listeners
+    passwordField.addEventListener('input', function() {
+        checkPasswordStrength(this.value);
+        checkPasswordMatch();
+        checkForChanges();
+    });
+    
+    confirmPasswordField.addEventListener('input', function() {
+        checkPasswordMatch();
+        checkForChanges();
+    });
+    
     // Add event listeners to all form fields
     fields.forEach(field => {
         field.addEventListener('input', checkForChanges);
         field.addEventListener('change', checkForChanges);
+    });
+    
+    // Prevent form submission if validation fails
+    form.addEventListener('submit', function(e) {
+        if (!validateForm()) {
+            e.preventDefault();
+            alert('Please fix the validation errors before submitting.');
+            return false;
+        }
     });
     
     // Initial check

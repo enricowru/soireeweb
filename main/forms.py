@@ -104,9 +104,18 @@ class AdminEditForm(forms.Form):
             if self.user_instance and not self.user_instance.check_password(current_password):
                 raise forms.ValidationError("Current password is incorrect.")
             
-            # Validate new password length
+            # Validate new password strength
             if len(new_password) < 8:
                 raise forms.ValidationError("New password must be at least 8 characters long.")
+            
+            # Check for at least one digit, one uppercase, one lowercase
+            import re
+            if not re.search(r'[0-9]', new_password):
+                raise forms.ValidationError("New password must contain at least one number.")
+            if not re.search(r'[A-Z]', new_password):
+                raise forms.ValidationError("New password must contain at least one uppercase letter.")
+            if not re.search(r'[a-z]', new_password):
+                raise forms.ValidationError("New password must contain at least one lowercase letter.")
             
             # Check if new password and confirm password match
             if not confirm_password:
@@ -118,6 +127,11 @@ class AdminEditForm(forms.Form):
         # If confirm password is provided but new password is not
         elif confirm_password and confirm_password.strip():
             raise forms.ValidationError("Please enter a new password to confirm.")
+        
+        # If current password is provided without new password
+        elif current_password and current_password.strip():
+            if not new_password or not new_password.strip():
+                raise forms.ValidationError("Please enter a new password.")
         
         return cleaned_data
 
