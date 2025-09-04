@@ -254,6 +254,9 @@ def admin_edit(request):
                 form.save()
                 
                 if password_changed:
+                    # Re-authenticate user after password change
+                    from django.contrib.auth import update_session_auth_hash
+                    update_session_auth_hash(request, user)
                     messages.success(request, 'Admin profile and password updated successfully.')
                 else:
                     messages.success(request, 'Admin profile updated successfully.')
@@ -262,10 +265,8 @@ def admin_edit(request):
             except Exception as e:
                 messages.error(request, f'Error updating profile: {str(e)}')
         else:
-            # Add form errors to messages
-            for field, errors in form.errors.items():
-                for error in errors:
-                    messages.error(request, f'{field.title()}: {error}')
+            # Form errors will be displayed via form.non_field_errors in template
+            pass
     else:
         form = AdminEditForm(user_instance=user)
 
