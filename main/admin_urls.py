@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from .views.admin import send_notification_to_user_view, send_notification_to_all_users_view
+from .views import reviews as reviews_views
 
 urlpatterns = [
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
@@ -36,11 +37,12 @@ urlpatterns = [
     # path('reviews/create/', views.review_create, name='review_create'),
     # path('reviews/<int:review_id>/edit/', views.review_edit, name='review_edit'),
     path('load-chats/', views.admin_booking_list, name="load-chats"),
-    path('reviews/', views.review_list, name='review_list'),
-    path('reviews/<int:review_id>/', views.review_detail, name='review_detail'),
-    path('reviews/<int:review_id>/bookmark/', views.review_bookmark_toggle, name='review_bookmark_toggle'),
-    path('reviews/<int:review_id>/approve/', views.review_approve, name='review_approve'),
-    path('reviews/<int:review_id>/delete/', views.review_delete, name='review_delete'),
+    path('reviews/', reviews_views.review_list, name='review_list'),
+    path('reviews/<int:review_id>/', reviews_views.review_detail, name='review_detail'),
+    path('reviews/<int:review_id>/bookmark/', reviews_views.review_bookmark_toggle, name='review_bookmark_toggle'),
+    path('bookmark-count/', reviews_views.bookmark_count, name='bookmark_count'),
+    path('reviews/<int:review_id>/approve/', reviews_views.review_approve, name='review_approve'),
+    path('reviews/<int:review_id>/delete/', reviews_views.review_delete, name='review_delete'),
     path("bookings/stream/", views.booking_notifications, name="booking_stream"),
     path("request-bookings/", views.booking_requests, name = "request_bookings"),
     path("request-bookings/status/<int:id>", views.booking_requests_status, name = "booking_request_status"),

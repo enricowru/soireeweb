@@ -5,7 +5,14 @@ from .auth import admin_required
 from ..models import Review
 
 @admin_required
+def bookmark_count(request):
+    """Get current number of bookmarked reviews"""
+    count = Review.objects.filter(is_bookmarked=True).count()
+    return JsonResponse({'count': count})
+
+@admin_required
 def review_list(request):
+    """List all reviews for admin management"""
     reviews = Review.objects.all()
     return render(request, 'custom_admin/review_list.html', {'reviews': reviews})
 
@@ -32,6 +39,19 @@ def review_bookmark_toggle(request, review_id):
     """Toggle bookmark status of a review"""
     if request.method == 'POST':
         review = get_object_or_404(Review, id=review_id)
+        
+        # Check if we're trying to bookmark and already have 10 bookmarked
+        if not review.is_bookmarked:
+            current_bookmarked_count = Review.objects.filter(is_bookmarked=True).count()
+            if current_bookmarked_count >= 10:
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'success': False,
+                        'error': 'Maximum of 10 reviews can be bookmarked for the homepage'
+                    })
+                messages.error(request, 'Maximum of 10 reviews can be bookmarked for the homepage.')
+                return redirect('review_list')
+        
         review.is_bookmarked = not review.is_bookmarked
         review.save()
         
