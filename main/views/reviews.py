@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.http import JsonResponse
 from .auth import admin_required
 from ..models import Review
 
@@ -7,6 +8,23 @@ from ..models import Review
 def review_list(request):
     reviews = Review.objects.all()
     return render(request, 'custom_admin/review_list.html', {'reviews': reviews})
+
+@admin_required
+def review_detail(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # Return JSON response for AJAX requests
+        data = {
+            'id': review.id,
+            'user': review.user.get_full_name() or review.user.username,
+            'rating': review.rating,
+            'comment': review.comment,
+            'created_at': review.created_at.strftime('%B %d, %Y at %I:%M %p'),
+            'is_approved': review.is_approved,
+            'images': review.get_images()
+        }
+        return JsonResponse(data)
+    return render(request, 'custom_admin/review_detail.html', {'review': review})
 
 @admin_required
 def review_approve(request, review_id):
