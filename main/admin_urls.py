@@ -9,6 +9,7 @@ urlpatterns = [
 
     # Event Management
     path('event/history/', views.event_history, name='event_history'),
+    path('event/history/export-csv/', views.export_event_history_csv, name='export_event_history_csv'),
     path('event/create/', views.create_event, name='create_event'),
     path('event/<int:event_id>/', views.event_detail, name='event_detail'),
     path('event/<int:event_id>/edit/', views.event_edit, name='event_edit'),
@@ -23,9 +24,9 @@ urlpatterns = [
     # path('moderator/<int:moderator_id>/delete/', views.delete_moderator, name='delete_moderator'),
     
     path('users/', views.view_all_users, name='view_all_users'),
+    path('users/export-csv/', views.export_users_csv, name='export_users_csv'),
     
     # Post Management
-    # Mobile Posts CRUD (ADMIN only)
     path('mobile-posts/', views.mobile_post_list, name='mobile_post_list'),
     path('mobile-posts/create/', views.mobile_post_create, name='mobile_post_create'),
     path('mobile-posts/<int:post_id>/', views.mobile_post_detail, name='mobile_post_detail'),

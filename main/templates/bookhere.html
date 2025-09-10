@@ -275,7 +275,7 @@
         <div class="date-modal-content" style="max-width:500px; max-height:80vh; overflow-y:auto;">
             <div id="alert-food" class="modal-alert alert alert-danger d-none"></div>
             <form id="food-form" autocomplete="off" style="width:100%;">
-                <div class="date-modal-message">Please select <strong>4 dishes total</strong> + 1 pasta + 1 drink:</div>
+                <div class="date-modal-message" id="food-menu-message">Please select <strong>4 dishes total</strong> + 1 pasta + 1 drink:</div>
 
                 <!-- Beef -->
                 <div class="food-section" data-group="beef">
@@ -1038,23 +1038,99 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.package-choice-btn').forEach(b => b.classList.remove('selected'));
             this.classList.add('selected');
-            wizardData.package = this.textContent;
+            
+            // If package is changing, reset food selections
+            const newPackage = this.textContent.trim();
+            if (wizardData.package !== newPackage) {
+                // Clear all selected food items
+                document.querySelectorAll('.food-btn.selected').forEach(foodBtn => {
+                    foodBtn.classList.remove('selected');
+                });
+            }
+            
+            wizardData.package = newPackage;
             document.getElementById('package-next-btn').disabled = false;
+            
+            // Update food menu message with new package requirements
+            updateFoodMenuMessage();
         });
     });
 
     document.getElementById('package-next-btn').addEventListener('click', nextStep);
+    
+    // Update showStep to handle food menu message
+    const originalShowStep2 = showStep;
+    showStep = function(stepIndex) {
+        originalShowStep2(stepIndex);
+        if (stepIndex === 4) { // step-5 is index 4
+            setTimeout(initializeColorPicker, 100);
+        }
+        if (stepIndex === 6) { // step-7 is index 6 (food menu)
+            updateFoodMenuMessage();
+        }
+    };
+    
+    // Helper function to update food menu message based on package
+    function updateFoodMenuMessage() {
+        console.log('updateFoodMenuMessage called, wizardData.package:', wizardData.package);
+        
+        const getRequiredDishCount = () => {
+            switch (wizardData.package) {
+                case 'Package A': return 3;
+                case 'Package B': return 4;
+                case 'Package C': return 5;
+                default: return 4; // Default fallback
+            }
+        };
+        
+        const requiredDishes = getRequiredDishCount();
+        console.log('Required dishes:', requiredDishes);
+        
+        const messageElement = document.getElementById('food-menu-message');
+        if (messageElement) {
+            messageElement.innerHTML = `Please select <strong>${requiredDishes} dishes total</strong> + 1 pasta + 1 drink:`;
+            console.log('Message updated successfully');
+        } else {
+            console.log('Message element not found');
+        }
+    }
 
     // Step 7: Food Menu
-    // Add click handlers for food buttons
+    // Add click handlers for food buttons with dynamic limits
     document.querySelectorAll('.food-btn-group').forEach(group => {
         const limit = parseInt(group.dataset.limit, 10);
         group.querySelectorAll('.food-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                btn.classList.toggle('selected');
-                const selectedButtons = group.querySelectorAll('.food-btn.selected');
-                if (selectedButtons.length > limit) {
+                const section = btn.closest('.food-section');
+                const groupType = section.dataset.group;
+                
+                if (btn.classList.contains('selected')) {
                     btn.classList.remove('selected');
+                } else {
+                    if (groupType === 'pasta' || groupType === 'drink') {
+                        // For pasta and drink, follow the original limit (1 each)
+                        const selectedButtons = group.querySelectorAll('.food-btn.selected');
+                        if (selectedButtons.length >= limit) {
+                            selectedButtons[0].classList.remove('selected');
+                        }
+                        btn.classList.add('selected');
+                    } else {
+                        // For dishes, check total across all dish groups
+                        const getRequiredDishCount = () => {
+                            switch (wizardData.package) {
+                                case 'Package A': return 3;
+                                case 'Package B': return 4;
+                                case 'Package C': return 5;
+                            }
+                        };
+                        
+                        const allDishesSelected = document.querySelectorAll('.food-section:not([data-group="pasta"]):not([data-group="drink"]) .food-btn.selected');
+                        const requiredDishes = getRequiredDishCount();
+                        
+                        if (allDishesSelected.length < requiredDishes) {
+                            btn.classList.add('selected');
+                        }
+                    }
                 }
             });
         });
@@ -1070,6 +1146,17 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         clearAlert('food');
 
+        // Get required dish count based on package
+        const getRequiredDishCount = () => {
+            switch (wizardData.package) {
+                case 'Package A': return 3;
+                case 'Package B': return 4;
+                case 'Package C': return 5;
+            }
+        };
+        
+        const requiredDishes = getRequiredDishCount();
+
         // Get selected items from each category
         const dishGroups = ['beef', 'pork', 'chicken', 'seafood', 'vegetables'];
         const selectedDishes = dishGroups.flatMap(getSelectedFood);
@@ -1077,8 +1164,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedDrink = getSelectedFood('drink');
 
         // Validate selections
-        if (selectedDishes.length !== 4) {
-            showAlert('food', 'Please select exactly 4 dishes total.');
+        if (selectedDishes.length !== requiredDishes) {
+            showAlert('food', `Please select exactly ${requiredDishes} dishes total.`);
             return;
         }
         if (selectedPasta.length !== 1) {

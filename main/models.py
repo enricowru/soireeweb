@@ -131,6 +131,11 @@ class Message(models.Model):
         db_table = 'messages'
         ordering = ['timestamp']
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Update the chat's updated_at field whenever a message is saved
+        self.chat.save(update_fields=['updated_at'])
+
     def __str__(self):
         return f"{self.sender.username}: {self.content[:50]}"
 

@@ -39,6 +39,9 @@ def send_booking_message(request, id):
             is_read=False,
         )
 
+        # Update chat's updated_at field to reflect new message
+        chat.save(update_fields=['updated_at'])
+
         # Create notifications for both admin and user about new message
         try:
             from .admin import create_message_notification
@@ -145,6 +148,9 @@ def send_message(request):
             sender=request.user,
             content=content
         )
+        
+        # Update chat's updated_at field to reflect new message
+        chat.save(update_fields=['updated_at'])
         
         # Create notifications for both admin and user about new message
         try:

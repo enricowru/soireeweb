@@ -97,7 +97,10 @@ class EventBookingConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def create_message(self, chat, sender, content):
-        return Message.objects.create(chat=chat, sender=sender, content=content, is_read=False)
+        message = Message.objects.create(chat=chat, sender=sender, content=content, is_read=False)
+        # Update chat's updated_at field to reflect new message
+        chat.save(update_fields=['updated_at'])
+        return message
 
     @sync_to_async
     def create_message_notification(self, message, chat):

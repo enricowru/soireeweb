@@ -7,7 +7,7 @@ from ..models import Event, EventHistory, Chat, BookingRequest, EventStatusLog, 
 from .auth import admin_required
 from django.contrib.auth import get_user_model
 import json
-from django.http import StreamingHttpResponse, JsonResponse
+from django.http import StreamingHttpResponse, JsonResponse, HttpResponse
 from main.sse import booking_events  
 from asgiref.sync import async_to_sync
 from django.utils.timezone import localtime, now
@@ -23,13 +23,24 @@ from django.utils.timezone import now
 from django.conf import settings
 import cloudinary.uploader
 import time
+import csv
 
 User = get_user_model()
 
 @admin_required
 def admin_dashboard(request):
     events = Event.objects.all().order_by('-date')
-    return render(request, 'custom_admin/dashboard.html', {'events': events})
+    total_bookings = BookingRequest.objects.count()
+    total_users = User.objects.count()
+    total_requests = events.count()
+    pending_bookings = BookingRequest.objects.filter(status='draft').count()
+    return render(request, 'custom_admin/dashboard.html', {
+        'events': events,
+        'total_bookings': total_bookings,
+        'total_users': total_users,
+        'total_requests': total_requests,
+        'pending_bookings': pending_bookings,
+    })
 
 @admin_required
 def event_detail(request, event_id):
@@ -201,6 +212,69 @@ def view_all_users(request):
     ]
 
     return render(request, "custom_admin/all_users.html", {"users": users})
+
+
+@admin_required
+def export_users_csv(request):
+    """Export all users to CSV"""
+    # Get the same queryset as the view_all_users function
+    qs = (
+        User.objects
+        .exclude(Q(username__iexact="admin"))
+        .order_by("username")
+    )
+    
+    # Create the HttpResponse object with CSV header
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="all_users.csv"'
+    
+    # Create CSV writer
+    writer = csv.writer(response)
+    
+    # Write the header row
+    writer.writerow(['Username', 'First Name', 'Last Name', 'Email', 'Mobile'])
+    
+    # Write data rows
+    for user in qs:
+        writer.writerow([
+            user.username,
+            user.first_name,
+            user.last_name,
+            user.email,
+            user.mobile or ""
+        ])
+    
+    return response
+
+
+@admin_required
+def export_event_history_csv(request):
+    """Export event history to CSV"""
+    # Get the same queryset as the event_history function
+    history = EventHistory.objects.all().order_by('-deleted_at')
+    
+    # Create the HttpResponse object with CSV header
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="event_history.csv"'
+    
+    # Create CSV writer
+    writer = csv.writer(response)
+    
+    # Write the header row
+    writer.writerow(['Title', 'Date', 'Description', 'Created At', 'Removed At'])
+    
+    # Write data rows
+    for event in history:
+        writer.writerow([
+            event.title,
+            event.date.strftime('%Y-%m-%d') if event.date else '',
+            event.description,
+            event.created_at.strftime('%Y-%m-%d %H:%M:%S') if event.created_at else '',
+            event.deleted_at.strftime('%Y-%m-%d %H:%M:%S') if event.deleted_at else ''
+        ])
+    
+    return response
+
 
 # @admin_required
 # def delete_moderator(request, moderator_id):
@@ -375,7 +449,7 @@ def admin_booking_list(request):
 
 @admin_required
 def booking_requests(request):
-    bookings = BookingRequest.objects.select_related("chat").all().order_by("-created_at")
+    bookings = BookingRequest.objects.select_related("chat").all().order_by("-chat__updated_at")
     selected_booking_id = request.GET.get('booking')  # Get booking ID from URL parameter
     return render(request, "custom_admin/booking_request_chat.html", {
         "bookings": bookings,
@@ -653,7 +727,8 @@ def undo_step(request, id):
 @admin_required
 def admin_notifications(request):
     """Get all admin notifications"""
-    notifications = AdminNotification.objects.all()[:50]  # Latest 50 notifications
+    # Exclude notifications where the sender username is 'admin' (do not show admin's own messages)
+    notifications = AdminNotification.objects.exclude(user__username='admin')[:50]  # Latest 50 notifications
     
     notifications_data = []
     for notification in notifications:

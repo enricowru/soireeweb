@@ -188,6 +188,9 @@ def bookhere_submit(request):
         is_read=False,
     )
 
+    # Update chat's updated_at field to reflect new message
+    chat.save(update_fields=['updated_at'])
+
     # ---------- 5) push via WebSocket ----------
     ws_payload = {
         "type": "booking_message",
