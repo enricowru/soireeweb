@@ -691,6 +691,25 @@ def undo_step(request, id):
         except EventStatusLog.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Step not found'})
         
+        # Delete all attachments associated with this step
+        attachments_to_delete = EventStatusAttachment.objects.filter(
+            booking=booking,
+            status_log=log
+        )
+        
+        # Delete the attachment files and records
+        for attachment in attachments_to_delete:
+            # Delete the actual file if it exists locally
+            if attachment.file:
+                try:
+                    attachment.file.delete(save=False)
+                except Exception as e:
+                    print(f"Error deleting file {attachment.file}: {e}")
+            
+            # Note: For Cloudinary URLs, you might want to delete from Cloudinary too
+            # but for now we'll just delete the database record
+            attachment.delete()
+        
         # Handle PAYMENT step differently - remove the latest payment transaction
         if label == EventStatusLog.Label.PAYMENT:
             # Get the latest payment transaction and remove it
@@ -1128,3 +1147,26 @@ def create_user_message_notification(message, chat):
     except Exception as e:
         print(f"Error creating user message notification: {e}")
         return None
+
+@admin_required
+def booking_details_api(request, booking_id):
+    """API endpoint to get booking details for the modal"""
+    try:
+        booking = get_object_or_404(BookingRequest, id=booking_id)
+        
+        data = {
+            'event_type': booking.event_type,
+            'event_date': booking.event_date.strftime('%B %d, %Y') if booking.event_date else '',
+            'celebrant_name': booking.celebrant_name or '',
+            'pax': booking.pax,
+            'venue': booking.venue,
+            'color_motif': booking.color_motif,
+            'package': booking.package,
+            'dishes': booking.dishes,
+            'pasta': booking.pasta,
+            'drink': booking.drink,
+        }
+        
+        return JsonResponse(data)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

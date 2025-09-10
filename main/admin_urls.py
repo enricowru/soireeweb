@@ -62,6 +62,9 @@ urlpatterns = [
     path('send-notification/user/', send_notification_to_user_view, name='send_notification_to_user'),
     path('send-notification/all-users/', send_notification_to_all_users_view, name='send_notification_to_all_users'),
     
+    # Booking Details API
+    path('api/booking/<int:booking_id>/details/', views.booking_details_api, name='booking_details_api'),
+    
     # User Management URLs
     # path('users/list/', views.user_list, name='user_list'),
     # path('users/create/', views.user_create, name='user_create'),
