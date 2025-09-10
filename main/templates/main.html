@@ -88,9 +88,6 @@
             <span class="dot"></span>
             <span class="dot"></span>
             <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
           </div>
           <button class="next">❯</button>
         </div>
@@ -587,43 +584,77 @@
 
   <!-- SLIDER ON MENU -->
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const track = document.querySelector('.review-track');
-    const reviews = document.querySelectorAll('.review');
-    const dots = document.querySelectorAll('.rdot');
-    const prev = document.querySelector('.rprev');
-    const next = document.querySelector('.rnext');
-    let index = 0;
+    document.addEventListener('DOMContentLoaded', () => {
+      const track = document.querySelector('.carousel-track');
+      const slides = Array.from(track.children);
+      const next = document.querySelector('.next');
+      const prev = document.querySelector('.prev');
+      const dots = document.querySelectorAll('.dot'); // exactly 5 dots
+      const menuRight = document.querySelector('.menu-right');
 
-    function updateSlider() {
-      const reviewWidth = reviews[0].offsetWidth;
-      track.style.transform = `translateX(-${index * reviewWidth}px)`;
+      function getCardWidth() {
+        const rect = slides[0].getBoundingClientRect();
+        const mr = parseFloat(getComputedStyle(slides[0]).marginRight || '0');
+        return rect.width + mr;
+      }
+      let index = 0;
 
-      // Update active dot
-      dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
-    }
+      function getVisibleCount() {
+        const containerWidth = menuRight.getBoundingClientRect().width;
+        return Math.max(1, Math.floor(containerWidth / getCardWidth()));
+      }
 
-    next.addEventListener('click', () => {
-      index = (index + 1) % reviews.length;
-      updateSlider();
-    });
+      function getMaxIndex() {
+        const cardW = getCardWidth();
+        const maxTranslate = Math.max(0, track.scrollWidth - menuRight.clientWidth);
+        return Math.max(0, Math.floor(maxTranslate / cardW));
+      }
 
-    prev.addEventListener('click', () => {
-      index = (index - 1 + reviews.length) % reviews.length;
-      updateSlider();
-    });
+      function clampIndex() {
+        // Keep index within 0..(dots.length-1) so we only have 5 positions
+        if (index < 0) index = 0;
+        if (index > dots.length - 1) index = dots.length - 1;
+      }
 
-    dots.forEach((dot, i) => {
-      dot.addEventListener('click', () => {
-        index = i;
-        updateSlider();
+      function updateButtons() {
+        // Always enabled for continuous loop UX
+        prev.disabled = false;
+        next.disabled = false;
+      }
+
+      function updateCarousel() {
+        clampIndex();
+        const cardW = getCardWidth();
+        const maxTranslate = Math.max(0, track.scrollWidth - menuRight.clientWidth);
+        const desired = index * cardW;
+        const tx = Math.min(desired, maxTranslate);
+        track.style.transform = `translateX(-${tx}px)`;
+        // Exactly 5 dots – highlight the current step only
+        dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+        updateButtons();
+      }
+
+      next.addEventListener('click', () => {
+        index = (index + 1) % dots.length; // loop after 5 steps
+        updateCarousel();
       });
-    });
 
-    // Init
-    updateSlider();
-  });
-</script>
+      prev.addEventListener('click', () => {
+        index = (index - 1 + dots.length) % dots.length; // loop within 5 steps
+        updateCarousel();
+      });
+
+      dots.forEach((dot, i) => {
+        dot.addEventListener('click', () => {
+          index = i;
+          updateCarousel();
+        });
+      });
+
+      window.addEventListener('resize', updateCarousel);
+      updateCarousel();
+    });
+  </script>
 
   <!-- FOR PACKAGES -->
   <script>
