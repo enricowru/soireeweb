@@ -78,6 +78,7 @@ urlpatterns = [
     
     path('api/event-status/<int:id>', views.api_booking_status, name="api-event-status"),
     path('api/my-bookings', views.api_booking_list, name="api-my-booking"),
+    path('api/booking/<int:booking_id>/details/', views.user_booking_details_api, name='user_booking_details_api'),
     
     # Chatbot API endpoints for mobile
     path('api/chatbot/message/', chatbot_views.api_chatbot_message, name='api_chatbot_message'),

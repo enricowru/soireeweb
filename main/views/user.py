@@ -1,5 +1,5 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponseBadRequest, HttpResponseServerError
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseBadRequest, HttpResponseServerError, JsonResponse
 import json, asyncio
 from .auth import login_required
 from ..models import BookingRequest, Chat, Message, User
@@ -301,3 +301,35 @@ def get_cloud_image_by_name(name) -> str:
     currentId = cloud_img_public_ids.get(name.lower().strip(), [])
 
     return cloudinary.utils.cloudinary_url('wedding_170pax_wb3mcl', secure=True)[0]
+
+@login_required
+def user_booking_details_api(request, booking_id):
+    """API endpoint to get booking details for the user's own bookings"""
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+        
+    try:
+        # Ensure user can only access their own bookings - use 'client' field not 'user'
+        booking = get_object_or_404(BookingRequest, id=booking_id, client=request.user)
+        
+        data = {
+            'event_type': booking.event_type or '',
+            'event_date': booking.event_date.strftime('%B %d, %Y') if booking.event_date else '',
+            'celebrant_name': booking.celebrant_name or '',
+            'pax': str(booking.pax) if booking.pax else '',
+            'venue': booking.venue or '',
+            'color_motif': booking.color_motif or '',
+            'package': booking.package or '',
+            'dishes': booking.dishes or '',
+            'pasta': booking.pasta or '',
+            'drink': booking.drink or '',
+        }
+        
+        return JsonResponse(data)
+    except BookingRequest.DoesNotExist:
+        return JsonResponse({'error': 'Booking not found or access denied'}, status=404)
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        print(f"Error in user_booking_details_api: {error_details}")
+        return JsonResponse({'error': str(e), 'details': error_details}, status=500)

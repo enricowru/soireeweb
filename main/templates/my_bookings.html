@@ -68,6 +68,14 @@
     {% if first_chat and first_booking %}
       <span id="chat-meta" class="flex-grow-1">{{ booking_meta }}</span>
 
+      <!-- View Request btn -->
+      <button id="viewRequestBtn" class="btn btn-outline-light btn-sm" 
+              data-booking-id="{{ first_booking.id }}" 
+              title="View Request Details"
+              style="border-color: white; color: white;">
+        <i class="fas fa-eye me-1" style="color: white;"></i> View Request
+      </button>
+
       <!-- status btn -->
      <a id="status-link" class="btn btn-back"
       href="{% url 'event-status' first_booking.id %}">
@@ -629,6 +637,88 @@ function getCsrfToken() {
 }
 </script>
 {% endif %}
+
+<!-- Booking Details Modal -->
+<div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-labelledby="bookingDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="bookingDetailsModalLabel">Request Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <dl class="row">
+          <dt class="col-sm-3">Event Type</dt>
+          <dd class="col-sm-9" id="modal-event-type">-</dd>
+          <dt class="col-sm-3">Date</dt>
+          <dd class="col-sm-9" id="modal-event-date">-</dd>
+          <dt class="col-sm-3">Celebrant</dt>
+          <dd class="col-sm-9" id="modal-celebrant">-</dd>
+          <dt class="col-sm-3">Pax</dt>
+          <dd class="col-sm-9" id="modal-pax">-</dd>
+          <dt class="col-sm-3">Venue</dt>
+          <dd class="col-sm-9" id="modal-venue">-</dd>
+          <dt class="col-sm-3">Blue</dt>
+          <dd class="col-sm-9" id="modal-color-motif">-</dd>
+          <dt class="col-sm-3">Package</dt>
+          <dd class="col-sm-9" id="modal-package">-</dd>
+          <dt class="col-sm-3">Dishes</dt>
+          <dd class="col-sm-9" id="modal-dishes">-</dd>
+          <dt class="col-sm-3">Pasta</dt>
+          <dd class="col-sm-9" id="modal-pasta">-</dd>
+          <dt class="col-sm-3">Drink</dt>
+          <dd class="col-sm-9" id="modal-drink">-</dd>
+        </dl>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// View Request button functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const viewRequestBtn = document.getElementById('viewRequestBtn');
+  
+  if (viewRequestBtn) {
+    viewRequestBtn.addEventListener('click', async function () {
+      const bookingId = this.dataset.bookingId;
+      if (bookingId) {
+        try {
+          // Fetch booking details from the API
+          const response = await fetch(`/api/booking/${bookingId}/details/`);
+          if (response.ok) {
+            const booking = await response.json();
+            
+            // Populate modal with booking details
+            document.getElementById('modal-event-type').textContent = booking.event_type || '-';
+            document.getElementById('modal-event-date').textContent = booking.event_date || '-';
+            document.getElementById('modal-celebrant').textContent = booking.celebrant_name || '-';
+            document.getElementById('modal-pax').textContent = booking.pax || '-';
+            document.getElementById('modal-venue').textContent = booking.venue || '-';
+            document.getElementById('modal-color-motif').textContent = booking.color_motif || '-';
+            document.getElementById('modal-package').textContent = booking.package || '-';
+            document.getElementById('modal-dishes').textContent = booking.dishes || '-';
+            document.getElementById('modal-pasta').textContent = booking.pasta || '-';
+            document.getElementById('modal-drink').textContent = booking.drink || '-';
+            
+            // Show the modal
+            const modal = new bootstrap.Modal(document.getElementById('bookingDetailsModal'));
+            modal.show();
+          } else {
+            alert('Failed to load booking details');
+          }
+        } catch (error) {
+          console.error('Error fetching booking details:', error);
+          alert('Error loading booking details');
+        }
+      }
+    });
+  }
+});
+</script>
 
 </body>
 </html>
