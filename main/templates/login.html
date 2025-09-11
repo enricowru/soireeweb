@@ -79,6 +79,15 @@
               <input type="password" id="reg-password1" name="password" autocomplete="new-password" required minlength="8" maxlength="16">
               <i class="fa-solid fa-eye-slash toggle-password" toggle="#reg-password1"></i>
             </div>
+            <div id="password-requirements" class="password-requirements" style="display: none;">
+              <h4>Password Requirements:</h4>
+              <ul>
+                <li id="req-length">At least 8 characters long</li>
+                <li id="req-uppercase">At least one uppercase letter (A-Z)</li>
+                <li id="req-lowercase">At least one lowercase letter (a-z)</li>
+                <li id="req-number">At least one number (0-9)</li>
+              </ul>
+            </div>
           </div>
           <div class="register-col">
             <label for="reg-password2">Confirm Password:</label>
@@ -510,9 +519,150 @@
       }
     });
 
+    // Helper functions for validation
+    function showFieldError(fieldId, message) {
+      const field = document.getElementById(fieldId);
+      let errorDiv = field.nextElementSibling;
+      if (!errorDiv || !errorDiv.classList.contains('field-error')) {
+        errorDiv = document.createElement('div');
+        errorDiv.classList.add('field-error');
+        field.parentNode.insertBefore(errorDiv, field.nextSibling);
+      }
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      field.classList.add('error');
+    }
+
+    function clearFieldError(fieldId) {
+      const field = document.getElementById(fieldId);
+      const errorDiv = field.nextElementSibling;
+      if (errorDiv && errorDiv.classList.contains('field-error')) {
+        errorDiv.style.display = 'none';
+      }
+      field.classList.remove('error');
+    }
+
+    function clearAllErrors() {
+      const errorDivs = document.querySelectorAll('.field-error');
+      errorDivs.forEach(div => div.style.display = 'none');
+      const errorFields = document.querySelectorAll('.error');
+      errorFields.forEach(field => field.classList.remove('error'));
+    }
+
+    function validatePassword(password) {
+      const requirements = [
+        { regex: /.{8,}/, message: "At least 8 characters long" },
+        { regex: /[A-Z]/, message: "At least one uppercase letter" },
+        { regex: /[a-z]/, message: "At least one lowercase letter" },
+        { regex: /[0-9]/, message: "At least one number" }
+      ];
+      
+      const failed = requirements.filter(req => !req.regex.test(password));
+      return failed.map(req => req.message);
+    }
+
+    function validateMobile(mobile) {
+      const phoneRegex = /^09\d{9}$/;
+      if (!phoneRegex.test(mobile)) {
+        return "Mobile number must be 11 digits and start with 09";
+      }
+      return null;
+    }
+
+    // Add real-time password validation with visual feedback
+    document.getElementById('reg-password1').addEventListener('input', function(e) {
+      const password = e.target.value;
+      const requirementsDiv = document.getElementById('password-requirements');
+      
+      if (password.length > 0) {
+        requirementsDiv.style.display = 'block';
+        
+        // Check each requirement
+        const lengthReq = document.getElementById('req-length');
+        const uppercaseReq = document.getElementById('req-uppercase');
+        const lowercaseReq = document.getElementById('req-lowercase');
+        const numberReq = document.getElementById('req-number');
+        
+        // Length check
+        if (password.length >= 8) {
+          lengthReq.classList.add('valid');
+        } else {
+          lengthReq.classList.remove('valid');
+        }
+        
+        // Uppercase check
+        if (/[A-Z]/.test(password)) {
+          uppercaseReq.classList.add('valid');
+        } else {
+          uppercaseReq.classList.remove('valid');
+        }
+        
+        // Lowercase check
+        if (/[a-z]/.test(password)) {
+          lowercaseReq.classList.add('valid');
+        } else {
+          lowercaseReq.classList.remove('valid');
+        }
+        
+        // Number check
+        if (/[0-9]/.test(password)) {
+          numberReq.classList.add('valid');
+        } else {
+          numberReq.classList.remove('valid');
+        }
+      } else {
+        requirementsDiv.style.display = 'none';
+      }
+    });
+
+    document.getElementById('reg-password1').addEventListener('focus', function(e) {
+      const password = e.target.value;
+      if (password.length > 0) {
+        document.getElementById('password-requirements').style.display = 'block';
+      }
+    });
+
+    document.getElementById('reg-password1').addEventListener('blur', function(e) {
+      const password = e.target.value;
+      const passwordErrors = validatePassword(password);
+      
+      if (password.length === 0) {
+        document.getElementById('password-requirements').style.display = 'none';
+      }
+      
+      if (passwordErrors.length > 0 && password.length > 0) {
+        showFieldError('reg-password1', passwordErrors.join(', '));
+      } else {
+        clearFieldError('reg-password1');
+      }
+    });
+
+    document.getElementById('reg-password2').addEventListener('input', function(e) {
+      const password = document.getElementById('reg-password1').value;
+      const confirmPassword = e.target.value;
+      
+      if (confirmPassword && password !== confirmPassword) {
+        showFieldError('reg-password2', 'Passwords do not match');
+      } else {
+        clearFieldError('reg-password2');
+      }
+    });
+
+    document.getElementById('reg-mobile').addEventListener('input', function(e) {
+      const mobile = e.target.value;
+      const mobileError = validateMobile(mobile);
+      
+      if (mobile && mobileError) {
+        showFieldError('reg-mobile', mobileError);
+      } else {
+        clearFieldError('reg-mobile');
+      }
+    });
+
      // Validate and submit register form
     document.getElementById('registerForm').addEventListener('submit', async function (e) {
       e.preventDefault();
+      clearAllErrors();
 
       const firstname = document.getElementById('reg-firstname').value.trim();
       const lastname = document.getElementById('reg-lastname').value.trim();
@@ -523,18 +673,48 @@
       const password2 = document.getElementById('reg-password2').value;
       const submitBtn = document.getElementById('register-btn');
 
-      if (username.length < 6 || username.length > 12) {
-        alert("❌ Username must be 6 to 12 characters long.");
-        return;
-      }
+      let hasErrors = false;
 
-      if (password.length < 8 || password.length > 16) {
-        alert("❌ Password must be 8 to 16 characters long.");
-        return;
+      // Validate required fields
+      if (!firstname) {
+        showFieldError('reg-firstname', 'First name is required');
+        hasErrors = true;
       }
-
+      if (!lastname) {
+        showFieldError('reg-lastname', 'Last name is required');
+        hasErrors = true;
+      }
+      if (!username) {
+        showFieldError('reg-username', 'Username is required');
+        hasErrors = true;
+      } else if (username.length < 6 || username.length > 12) {
+        showFieldError('reg-username', 'Username must be 6 to 12 characters long');
+        hasErrors = true;
+      }
+      if (!email) {
+        showFieldError('reg-email', 'Email is required');
+        hasErrors = true;
+      }
+      if (!password) {
+        showFieldError('reg-password1', 'Password is required');
+        hasErrors = true;
+      } else {
+        const passwordErrors = validatePassword(password);
+        if (passwordErrors.length > 0) {
+          showFieldError('reg-password1', passwordErrors.join(', '));
+          hasErrors = true;
+        }
+      }
       if (password !== password2) {
-        alert("❌ Passwords do not match!");
+        showFieldError('reg-password2', 'Passwords do not match');
+        hasErrors = true;
+      }
+      if (mobile && validateMobile(mobile)) {
+        showFieldError('reg-mobile', validateMobile(mobile));
+        hasErrors = true;
+      }
+
+      if (hasErrors) {
         return;
       }
 
@@ -546,7 +726,14 @@
         const res = await fetch(`${BASE_URL}/signup/`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ firstname, lastname, username, mobile, email, password })
+          body: JSON.stringify({ 
+            first_name: firstname, 
+            last_name: lastname, 
+            username, 
+            mobile, 
+            email, 
+            password 
+          })
         });
 
         const result = await res.json();
@@ -555,6 +742,7 @@
           if (result.needs_verification) {
             alert("✅ " + result.message);
             document.getElementById('registerForm').reset();
+            clearAllErrors();
             // Pre-fill email for verification
             document.getElementById('verification-email').value = email;
             document.getElementById('verification-otp-email').value = email;
@@ -562,10 +750,29 @@
           } else {
             alert("✅ Registration successful!");
             document.getElementById('registerForm').reset();
+            clearAllErrors();
             document.getElementById('show-login').click();
           }
         } else {
-          alert("❌ " + (result.message || "Registration failed."));
+          // Handle server validation errors
+          if (result.errors) {
+            for (const [field, message] of Object.entries(result.errors)) {
+              const fieldMap = {
+                'first_name': 'reg-firstname',
+                'last_name': 'reg-lastname',
+                'username': 'reg-username',
+                'email': 'reg-email',
+                'password': 'reg-password1',
+                'mobile': 'reg-mobile'
+              };
+              const fieldId = fieldMap[field];
+              if (fieldId) {
+                showFieldError(fieldId, message);
+              }
+            }
+          } else {
+            alert("❌ " + (result.message || "Registration failed."));
+          }
         }
       } catch (err) {
         console.error("Network error:", err);

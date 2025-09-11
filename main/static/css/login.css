@@ -325,3 +325,59 @@ button:disabled {
         transform: rotate(360deg);
     }
 }
+
+/* Error validation styles */
+.field-error {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    margin: 3px 0 10px 0;
+    text-align: left;
+    display: none;
+    line-height: 1.4;
+}
+
+input.error {
+    border-color: #ff6b6b !important;
+    box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+}
+
+.password-requirements {
+    background: rgba(45, 45, 45, 0.95);
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 8px 0;
+    font-size: 0.85rem;
+    text-align: left;
+}
+
+.password-requirements h4 {
+    margin: 0 0 8px 0;
+    color: #AD974F;
+    font-size: 0.9rem;
+}
+
+.password-requirements ul {
+    margin: 0;
+    padding-left: 16px;
+    list-style: none;
+}
+
+.password-requirements li {
+    margin: 4px 0;
+    position: relative;
+    padding-left: 20px;
+}
+
+.password-requirements li::before {
+    content: "✗";
+    position: absolute;
+    left: 0;
+    color: #ff6b6b;
+    font-weight: bold;
+}
+
+.password-requirements li.valid::before {
+    content: "✓";
+    color: #51cf66;
+}

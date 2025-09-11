@@ -234,6 +234,14 @@ color: #AD974F;
 font-size: 0.98em;
 text-decoration: underline;
 }
+.error-message {
+  color: #ECD8D8FF;
+  background-color: #F14646D5;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
 
 .forgot-remember a:hover {
 color: #fff;
@@ -261,6 +269,41 @@ color: #fff;
     width: 100%;
 }
 
+/* ✅ FORGOT PASSWORD STYLES */
+.message-container {
+    margin-bottom: 15px;
+}
+
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* OTP Input Styling */
+#forgot-otp {
+    text-align: center;
+    font-size: 18px;
+    letter-spacing: 5px;
+    font-weight: bold;
+}
+
 /* Button Loading State */
 button:disabled {
     opacity: 0.6;
@@ -281,4 +324,60 @@ button:disabled {
     100% {
         transform: rotate(360deg);
     }
+}
+
+/* Error validation styles */
+.field-error {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    margin: 3px 0 10px 0;
+    text-align: left;
+    display: none;
+    line-height: 1.4;
+}
+
+input.error {
+    border-color: #ff6b6b !important;
+    box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+}
+
+.password-requirements {
+    background: rgba(45, 45, 45, 0.95);
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 8px 0;
+    font-size: 0.85rem;
+    text-align: left;
+}
+
+.password-requirements h4 {
+    margin: 0 0 8px 0;
+    color: #AD974F;
+    font-size: 0.9rem;
+}
+
+.password-requirements ul {
+    margin: 0;
+    padding-left: 16px;
+    list-style: none;
+}
+
+.password-requirements li {
+    margin: 4px 0;
+    position: relative;
+    padding-left: 20px;
+}
+
+.password-requirements li::before {
+    content: "✗";
+    position: absolute;
+    left: 0;
+    color: #ff6b6b;
+    font-weight: bold;
+}
+
+.password-requirements li.valid::before {
+    content: "✓";
+    color: #51cf66;
 }
