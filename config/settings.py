@@ -175,7 +175,7 @@ USE_TZ = True
 DEEPAI_API_KEY = 'c6ea7310-add9-441d-9a53-019f2f12da1f'  # Replace with your actual DeepAI API key
 
 # OpenAI API Configuration
-OPENAI_API_KEY = config('OPENAI_API_KEY'),
+OPENAI_API_KEY = config('OPENAI_API_KEY')
 
 ASGI_APPLICATION = "config.asgi.application"
 
