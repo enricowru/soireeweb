@@ -174,6 +174,9 @@ USE_TZ = True
 # DeepAI API Configuration
 DEEPAI_API_KEY = 'c6ea7310-add9-441d-9a53-019f2f12da1f'  # Replace with your actual DeepAI API key
 
+# OpenAI API Configuration
+OPENAI_API_KEY = config('OPENAI_API_KEY'),
+
 ASGI_APPLICATION = "config.asgi.application"
 
 # Static files (CSS, JavaScript, Images)
@@ -244,17 +247,17 @@ LOGOUT_REDIRECT_URL = '/login/'
 
 
 
+# Configure Cloudinary for both development and production
+cloudinary.config( 
+    cloud_name = config('CLOUDINARY_CLOUD_NAME'), 
+    api_key = config('CLOUDINARY_API_KEY'), 
+    api_secret = config('CLOUDINARY_API_SECRET'), # Click 'View API Keys' above to copy your API secret
+    secure=True
+)
+
 if ENVIRONMENT == 'prod':
     DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
     # MEDIA_URL = f"/"  # optional: Cloudinary will auto-handle
-  
-    cloudinary.config( 
-        cloud_name = config('CLOUDINARY_CLOUD_NAME'), 
-        api_key = config('CLOUDINARY_API_KEY'), 
-        api_secret = config('CLOUDINARY_API_SECRET'), # Click 'View API Keys' above to copy your API secret
-        secure=True
-    )
-    
     # MEDIA_URL = f"https://res.cloudinary.com/{config('CLOUDINARY_CLOUD_NAME')}/"
 else:
     MEDIA_ROOT = os.path.join(BASE_DIR, "media")
