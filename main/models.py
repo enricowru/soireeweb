@@ -165,14 +165,18 @@ class BookingRequest(models.Model):
     event_type   = models.CharField(max_length=60)
     pax          = models.PositiveIntegerField()
     venue        = models.CharField(max_length=255)
-    floorplan    = models.CharField(max_length=200, blank=True, null=True, help_text="Floor plan filename (e.g., 120_pax_2_icgqtv.png)")
-    floorplan_display_name = models.CharField(max_length=100, blank=True, null=True, help_text="User-friendly floor plan name (e.g., Floor Plan 1)")
+    floorplan    = models.TextField(blank=True, null=True, help_text="Floor plan filename (e.g., 120_pax_2_icgqtv.png) or AI estimations for custom layouts")
+    floorplan_display_name = models.TextField(blank=True, null=True, help_text="User-friendly floor plan name or AI estimation text (can be long for AI-generated content)")
     uploaded_at  = models.DateTimeField(default=timezone.now)
 
     cloudinary_url = models.URLField(blank=True, null=True)  # prod only
 
     color_motif    = models.CharField(max_length=255)  
     package      = models.CharField(max_length=40)
+
+    # -- Theme fields --
+    theme_name   = models.CharField(max_length=100, blank=True, null=True, help_text="Name of the selected theme")
+    theme_urls   = models.JSONField(blank=True, null=True, help_text="All image URLs for the selected theme")
 
     # -- Menu (stored as plain strings) --
     dishes       = models.TextField(help_text="Comma-separated list of dishes")
@@ -188,11 +192,12 @@ class BookingRequest(models.Model):
         """
         Always return a valid URL for template/admin.
         For floorplan, we reconstruct the Cloudinary URL from the filename.
+        For AI-generated floorplans, return empty string since there's no image.
         """
         if self.cloudinary_url:
             return self.cloudinary_url
-        elif self.floorplan:
-            # Reconstruct Cloudinary URL from filename
+        elif self.floorplan and self.floorplan_display_name != "AI Generated Floor Plan":
+            # Only reconstruct URL if it's not an AI-generated floorplan
             base_url = "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1756034565/"
             return base_url + self.floorplan
         return ""

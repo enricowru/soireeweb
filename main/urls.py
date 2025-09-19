@@ -6,6 +6,9 @@ from django.contrib.auth import views as auth_views
 from .api import *
 from .views.auth import forgot_password_request, forgot_password_verify_otp, forgot_password_reset
 from .api.auth_api import email_verification_request, email_verification_verify
+from .api.themes_api import api_themes_by_event_type, api_all_themes
+from .api.custom_theme_api import generate_custom_theme
+from .ai_views import analyze_uploaded_floorplan, estimate_from_room_dimensions
 from .views.user_notifications import (
     user_notifications, 
     mark_all_user_notifications_read, 
@@ -80,6 +83,10 @@ urlpatterns = [
     path('api/my-bookings', views.api_booking_list, name="api-my-booking"),
     path('api/booking/<int:booking_id>/details/', views.user_booking_details_api, name='user_booking_details_api'),
     
+    # AI Floorplan Analysis API
+    path('api/ai/analyze-floorplan/', analyze_uploaded_floorplan, name='api_analyze_floorplan'),
+    path('api/ai/estimate-dimensions/', estimate_from_room_dimensions, name='api_estimate_dimensions'),
+    
     # Chatbot API endpoints for mobile
     path('api/chatbot/message/', chatbot_views.api_chatbot_message, name='api_chatbot_message'),
     path('api/chatbot/new-session/', chatbot_views.api_chatbot_new_session, name='api_chatbot_new_session'),
@@ -101,6 +108,11 @@ urlpatterns = [
     path('notifications/<int:notification_id>/mark-read/', mark_user_notification_read, name='mark_user_notification_read'),
     path('notifications/mark-booking-read/', mark_user_booking_notifications_read, name='mark_user_booking_notifications_read'),
     path('notifications/stream/', user_notifications_stream, name='user_notifications_stream'),
+    
+    # ✅ Theme API Endpoints
+    path('api/themes/', api_themes_by_event_type, name='api_themes_by_event_type'),
+    path('api/themes/all/', api_all_themes, name='api_all_themes'),
+    path('api/generate-custom-theme/', generate_custom_theme, name='generate_custom_theme'),
 ]
 
 

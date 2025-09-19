@@ -11,6 +11,767 @@
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
     <link rel="stylesheet" href="{% static 'css/bookhere.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+    /* Color Swatch Grid Styles */
+    .color-swatch-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+        justify-items: center;
+        margin: 14px 0;
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .color-swatch {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        padding: 4px;
+        border-radius: 12px;
+        border: 2px solid transparent;
+    }
+    
+    .color-swatch:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .color-swatch.selected {
+        border: 2px solid #B8860B;
+        background-color: rgba(184, 134, 11, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+        position: relative;
+    }
+
+    /* Multi-color selection order numbers */
+    .color-swatch.selected::after {
+        content: attr(data-order);
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #B8860B;
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+        border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* Color Selection Preview Styles */
+    .color-preview-container {
+        margin: 20px 0;
+        padding: 20px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .preview-title {
+        text-align: center;
+        font-size: 16px;
+        font-weight: 600;
+        color: #B8860B;
+        margin-bottom: 15px;
+    }
+
+    .color-stack-preview {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        height: 120px;
+        width: 200px;
+        margin: 0 auto;
+    }
+
+    .color-layer {
+        position: absolute;
+        transition: all 0.3s ease;
+    }
+
+    .layer-number {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #B8860B;
+        color: white;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: bold;
+        border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        z-index: 10;
+    }
+
+    .layer-color {
+        width: 80px;
+        height: 80px;
+        border-radius: 12px;
+        border: 3px solid white;
+        background-size: cover;
+        background-position: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    /* Stacked positioning for the layers */
+    .color-layer:nth-child(1) {
+        z-index: 3;
+        top: 0;
+        left: 0;
+    }
+
+    .color-layer:nth-child(2) {
+        z-index: 2;
+        top: 20px;
+        left: 40px;
+    }
+
+    .color-layer:nth-child(3) {
+        z-index: 1;
+        top: 40px;
+        left: 80px;
+    }
+
+    .swatch-image {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        object-fit: cover;
+        margin-bottom: 2px;
+        transition: all 0.3s ease;
+    }
+    
+    .color-swatch:hover .swatch-image {
+        transform: scale(1.05);
+    }
+    
+    .swatch-label {
+        font-size: 12px;
+        font-weight: 500;
+        text-align: center;
+        color: #b0adad;
+        line-height: 1.2;
+        min-height: 30px;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .color-swatch-grid {
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+        }
+        
+        .swatch-image {
+            width: 45px;
+            height: 45px;
+        }
+        
+        .swatch-label {
+            font-size: 11px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .color-swatch-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        
+        .swatch-image {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .swatch-label {
+            font-size: 10px;
+            min-height: 25px;
+        }
+    }
+    
+    /* Food Menu Grid Styles */
+    .food-grid-container {
+        margin: 20px 0;
+    }
+    
+    .food-section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 12px;
+        padding-left: 4px;
+    }
+    
+    .food-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    
+    .food-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        padding: 8px;
+        border-radius: 12px;
+        border: 2px solid transparent;
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .food-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .food-item.selected {
+        border: 2px solid #B8860B;
+        background-color: rgba(184, 134, 11, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+    }
+    
+    .food-image {
+        width: 70px;
+        height: 70px;
+        border-radius: 10px;
+        object-fit: cover;
+        margin-bottom: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .food-item:hover .food-image {
+        transform: scale(1.05);
+    }
+    
+    .food-label {
+        font-size: 13px;
+        font-weight: 500;
+        text-align: center;
+        color: #fff;
+        line-height: 1.3;
+        min-height: 35px;
+        display: flex;
+        align-items: center;
+        max-width: 100%;
+    }
+    
+    .food-item.selected .food-label {
+        color: #B8860B;
+        font-weight: 600;
+    }
+    
+    /* Responsive Food Grid */
+    @media (max-width: 768px) {
+        .food-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .food-image {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .food-label {
+            font-size: 12px;
+            min-height: 32px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .food-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        
+        .food-image {
+            width: 55px;
+            height: 55px;
+        }
+        
+        .food-label {
+            font-size: 11px;
+            min-height: 30px;
+        }
+    }
+
+    /* Theme Selection Styles */
+    /* Theme Selection Grid Styles - exactly matching food menu design */
+    .theme-grid-container {
+        margin: 20px 0;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .theme-section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 12px;
+        padding-left: 4px;
+    }
+    
+    .theme-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+    
+    .theme-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        padding: 15px;
+        border-radius: 12px;
+        border: 2px solid transparent;
+        background: rgba(255, 255, 255, 0.05);
+        width: 100%;
+    }
+    
+    .theme-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .theme-item.selected {
+        border: 2px solid #B8860B;
+        background-color: rgba(184, 134, 11, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+    }
+    
+    .theme-images {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        width: 100%;
+        max-width: 600px;
+        margin-bottom: 12px;
+    }
+    
+    .theme-preview {
+        width: 100%;
+        height: 120px;
+        border-radius: 10px;
+        object-fit: cover;
+        transition: all 0.3s ease;
+        aspect-ratio: 16 / 9;
+    }
+    
+    .theme-item:hover .theme-preview {
+        transform: scale(1.05);
+    }
+    
+    .theme-label {
+        font-size: 16px;
+        font-weight: 600;
+        text-align: center;
+        color: #fff;
+        line-height: 1.3;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .theme-item.selected .theme-label {
+        color: #B8860B;
+        font-weight: 600;
+    }
+
+    /* Responsive Theme Grid */
+    @media (max-width: 768px) {
+        .theme-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        .theme-preview {
+            height: 100px;
+        }
+        
+        .theme-label {
+            font-size: 15px;
+        }
+        
+        .theme-name {
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+        
+        .theme-images {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        
+        .theme-image {
+            height: 75px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .theme-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        
+        .theme-preview {
+            height: 80px;
+        }
+        
+        .theme-label {
+            font-size: 14px;
+        }
+        
+        .theme-images {
+            gap: 8px;
+        }
+    }
+    
+    /* Custom Floorplan Options Styles */
+    .ai-estimations-btn {
+        background: #B8860B !important;
+        border: none !important;
+        color: white !important;
+        padding: 12px 24px !important;
+        border-radius: 8px !important;
+        cursor: pointer !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .ai-estimations-btn:hover {
+        background: #9d7209 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3) !important;
+    }
+    
+    .custom-option {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        width: 100%;
+        text-align: center;
+    }
+    
+    .custom-option h4 {
+        margin: 0 0 15px 0;
+    }
+    
+    .ai-generated-option {
+        border: 2px solid #28a745 !important;
+        background: rgba(40, 167, 69, 0.1) !important;
+    }
+    
+    .ai-generated-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+    }
+    
+    #ai-estimations {
+        max-height: 300px;
+        overflow-y: auto;
+        text-align: left;
+    }
+    
+    #custom-floorplan-options input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        border: 2px dashed #B8860B;
+        border-radius: 8px;
+        background: rgba(184, 134, 11, 0.05);
+        color: #fff;
+    }
+    
+    #custom-floorplan-options input[type="number"] {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+    }
+    
+    #custom-floorplan-options input[type="number"]:focus {
+        border-color: #B8860B;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.3);
+    }
+
+    /* Modern Upload Area Styles */
+    .upload-container {
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .upload-area {
+        position: relative;
+        border: 2px dashed #B8860B;
+        border-radius: 12px;
+        background: rgba(184, 134, 11, 0.03);
+        padding: 40px 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .upload-area:hover {
+        border-color: #9d7209;
+        background: rgba(184, 134, 11, 0.08);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(184, 134, 11, 0.15);
+    }
+
+    .upload-area.dragover {
+        border-color: #9d7209;
+        background: rgba(184, 134, 11, 0.12);
+        border-style: solid;
+        transform: scale(1.02);
+    }
+
+    .file-input {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+    }
+
+    .upload-content {
+        pointer-events: none;
+        width: 100%;
+    }
+
+    .upload-icon {
+        font-size: 48px;
+        color: #B8860B;
+        margin-bottom: 20px;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+    }
+
+    .upload-area:hover .upload-icon {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    .upload-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #B8860B;
+        margin: 0 0 8px 0;
+    }
+
+    .upload-subtitle {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0 0 15px 0;
+    }
+
+    .upload-link {
+        color: #B8860B;
+        text-decoration: underline;
+        font-weight: 500;
+    }
+
+    .upload-formats {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.5);
+        font-style: italic;
+    }
+
+    /* Image Preview Styles */
+    .image-preview {
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .preview-container {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.1);
+        border: 2px solid #B8860B;
+        box-shadow: 0 4px 15px rgba(184, 134, 11, 0.2);
+    }
+
+    .preview-img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        display: block;
+        transition: all 0.3s ease;
+    }
+
+    .preview-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .preview-container:hover .preview-overlay {
+        opacity: 1;
+    }
+
+    .preview-container:hover .preview-img {
+        transform: scale(1.05);
+    }
+
+    .preview-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .preview-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+
+    .change-btn {
+        background: #B8860B;
+        color: white;
+    }
+
+    .change-btn:hover {
+        background: #9d7209;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(184, 134, 11, 0.4);
+    }
+
+    .remove-btn {
+        background: #dc3545;
+        color: white;
+    }
+
+    .remove-btn:hover {
+        background: #c82333;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+    }
+
+    .image-info {
+        padding: 15px;
+        background: rgba(184, 134, 11, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.8);
+        border-top: 1px solid rgba(184, 134, 11, 0.2);
+    }
+
+    #image-name {
+        font-weight: 500;
+        color: #B8860B;
+        max-width: 60%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #image-size {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Loading animation for upload */
+    .upload-area.uploading {
+        border-color: #28a745;
+        background: rgba(40, 167, 69, 0.1);
+    }
+
+    .upload-area.uploading .upload-icon {
+        animation: pulse 1.5s ease-in-out infinite;
+        color: #28a745;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); opacity: 0.8; }
+        50% { transform: scale(1.1); opacity: 1; }
+        100% { transform: scale(1); opacity: 0.8; }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .upload-area {
+            padding: 30px 15px;
+            min-height: 150px;
+        }
+        
+        .upload-icon {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+        
+        .upload-title {
+            font-size: 16px;
+        }
+        
+        .preview-img {
+            height: 200px;
+        }
+        
+        .preview-actions {
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .preview-btn {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+    }
+    </style>
 </head>
 <body>
 {% include 'navbar.html' %}
@@ -19,27 +780,31 @@
 <div class="wizard-progress-header">
     <div class="container">
         <div class="step-progress-bar">
-            {% for s in "01234567" %}
+            {% for s in "0123456789" %}
                 <div class="step" data-step="{{ forloop.counter0 }}">
                     <div class="step-icon">
                         {% if forloop.counter0 == 0 %}<i class="fa-solid fa-user"></i>{% endif %}
                         {% if forloop.counter0 == 1 %}<i class="fa-regular fa-calendar"></i>{% endif %}
                         {% if forloop.counter0 == 2 %}<i class="fa-regular fa-clipboard"></i>{% endif %}
-                        {% if forloop.counter0 == 3 %}<i class="fa-solid fa-users"></i>{% endif %}
-                        {% if forloop.counter0 == 4 %}<i class="fa-solid fa-location-dot"></i>{% endif %}
-                        {% if forloop.counter0 == 5 %}<i class="fa-solid fa-palette"></i>{% endif %}
-                        {% if forloop.counter0 == 6 %}<i class="fa-solid fa-box"></i>{% endif %}
-                        {% if forloop.counter0 == 7 %}<i class="fa-solid fa-utensils"></i>{% endif %}
+                        {% if forloop.counter0 == 3 %}<i class="fa-solid fa-palette"></i>{% endif %}
+                        {% if forloop.counter0 == 4 %}<i class="fa-solid fa-users"></i>{% endif %}
+                        {% if forloop.counter0 == 5 %}<i class="fa-solid fa-image"></i>{% endif %}
+                        {% if forloop.counter0 == 6 %}<i class="fa-solid fa-location-dot"></i>{% endif %}
+                        {% if forloop.counter0 == 7 %}<i class="fa-solid fa-box"></i>{% endif %}
+                        {% if forloop.counter0 == 8 %}<i class="fa-solid fa-utensils"></i>{% endif %}
+                        {% if forloop.counter0 == 9 %}<i class="fa-solid fa-check-circle"></i>{% endif %}
                     </div>
                     <div class="step-label">
                         {% if forloop.counter0 == 0 %}Celebrant{% endif %}
                         {% if forloop.counter0 == 1 %}Date of Event{% endif %}
                         {% if forloop.counter0 == 2 %}Type of Event{% endif %}
-                        {% if forloop.counter0 == 3 %}Number of Pax{% endif %}
-                        {% if forloop.counter0 == 4 %}Location{% endif %}
-                        {% if forloop.counter0 == 5 %}Color Motif{% endif %}
-                        {% if forloop.counter0 == 6 %}Packages{% endif %}
-                        {% if forloop.counter0 == 7 %}Food Menu{% endif %}
+                        {% if forloop.counter0 == 3 %}Color Motif{% endif %}
+                        {% if forloop.counter0 == 4 %}Number of Pax{% endif %}
+                        {% if forloop.counter0 == 5 %}Theme{% endif %}
+                        {% if forloop.counter0 == 6 %}Location{% endif %}
+                        {% if forloop.counter0 == 7 %}Packages{% endif %}
+                        {% if forloop.counter0 == 8 %}Food Menu{% endif %}
+                        {% if forloop.counter0 == 9 %}Summary{% endif %}
                     </div>
                 </div>
                 {% if not forloop.last %}<div class="step-line"></div>{% endif %}
@@ -116,9 +881,133 @@
     </div>
 
     <!-- ========================================================= -->
-    <!--                     STEP 3 – PAX                           -->
+    <!--                    STEP 3 – COLOR                          -->
     <!-- ========================================================= -->
-    <div id="step-3" class="wizard-step" style="display:none;">
+     <div id="step-3" class="wizard-step" style="display:none;">
+        <div class="date-modal-content">
+            <div id="alert-color" class="modal-alert alert alert-danger d-none"></div>
+            <div class="date-modal-message">Choose 1 to 3 colors for your event motif (in order of preference).</div>
+            <form id="color-form" autocomplete="off" style="width:100%; display:flex; flex-direction:column; gap:20px;">
+                
+                <!-- Color Swatch Grid -->
+                <div class="color-swatch-grid">
+                    <div class="color-swatch" data-color="Orange">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770591/orange_beq6g2.jpg" alt="Orange" class="swatch-image">
+                        <div class="swatch-label">Orange</div>
+                    </div>
+                    <div class="color-swatch" data-color="Red">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770587/red_ddg0wx.jpg" alt="Red" class="swatch-image">
+                        <div class="swatch-label">Red</div>
+                    </div>
+                    <div class="color-swatch" data-color="Royal Blue">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770577/royalblue_bhz1ow.jpg" alt="Royal Blue" class="swatch-image">
+                        <div class="swatch-label">Royal Blue</div>
+                    </div>
+                    <div class="color-swatch" data-color="Rust Red">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770507/rustred_q2fgz8.jpg" alt="Rust Red" class="swatch-image">
+                        <div class="swatch-label">Rust Red</div>
+                    </div>
+                    <div class="color-swatch" data-color="Yellow">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770509/yellow_v2d7ma.jpg" alt="Yellow" class="swatch-image">
+                        <div class="swatch-label">Yellow</div>
+                    </div>
+                    <div class="color-swatch" data-color="Dark Green">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770513/darkgreen_zunnwu.jpg" alt="Dark Green" class="swatch-image">
+                        <div class="swatch-label">Dark Green</div>
+                    </div>
+                    <div class="color-swatch" data-color="Gray">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770517/gray_b9dlwb.jpg" alt="Gray" class="swatch-image">
+                        <div class="swatch-label">Gray</div>
+                    </div>
+                    <div class="color-swatch" data-color="Lake Blue">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770521/lakeblue_zsjili.jpg" alt="Lake Blue" class="swatch-image">
+                        <div class="swatch-label">Lake Blue</div>
+                    </div>
+                    <div class="color-swatch" data-color="Brown">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770525/brown_kg72gb.jpg" alt="Brown" class="swatch-image">
+                        <div class="swatch-label">Brown</div>
+                    </div>
+                    <div class="color-swatch" data-color="Champagne">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770529/champagne_rwkvv5.jpg" alt="Champagne" class="swatch-image">
+                        <div class="swatch-label">Champagne</div>
+                    </div>
+                    <div class="color-swatch" data-color="Pink">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770533/pink_b9wuoq.jpg" alt="Pink" class="swatch-image">
+                        <div class="swatch-label">Pink</div>
+                    </div>
+                    <div class="color-swatch" data-color="Light Pink">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770537/lightpink_jb3gqb.jpg" alt="Light Pink" class="swatch-image">
+                        <div class="swatch-label">Light Pink</div>
+                    </div>
+                    <div class="color-swatch" data-color="Off White">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770541/offwhite_qu62zb.jpg" alt="Off White" class="swatch-image">
+                        <div class="swatch-label">Off White</div>
+                    </div>
+                    <div class="color-swatch" data-color="Gold">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770545/gold_cpuahs.jpg" alt="Gold" class="swatch-image">
+                        <div class="swatch-label">Gold</div>
+                    </div>
+                    <div class="color-swatch" data-color="Purple">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770549/purple_nsrd84.jpg" alt="Purple" class="swatch-image">
+                        <div class="swatch-label">Purple</div>
+                    </div>
+                    <div class="color-swatch" data-color="White">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770553/white_aupuke.jpg" alt="White" class="swatch-image">
+                        <div class="swatch-label">White</div>
+                    </div>
+                    <div class="color-swatch" data-color="Sky Blue">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770557/skyblue_i6mdz7.jpg" alt="Sky Blue" class="swatch-image">
+                        <div class="swatch-label">Sky Blue</div>
+                    </div>
+                    <div class="color-swatch" data-color="Dark Yellow">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770561/darkyellow_d0pxgh.jpg" alt="Dark Yellow" class="swatch-image">
+                        <div class="swatch-label">Dark Yellow</div>
+                    </div>
+                    <div class="color-swatch" data-color="Olive Green">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770565/olivegreen_ijgrtv.jpg" alt="Olive Green" class="swatch-image">
+                        <div class="swatch-label">Olive Green</div>
+                    </div>
+                    <div class="color-swatch" data-color="Mint">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770569/mint_h8nbh0.jpg" alt="Mint" class="swatch-image">
+                        <div class="swatch-label">Mint</div>
+                    </div>
+                    <div class="color-swatch" data-color="Skin Pink">
+                        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770573/skinpink_ibuunv.jpg" alt="Skin Pink" class="swatch-image">
+                        <div class="swatch-label">Skin Pink</div>
+                    </div>
+                </div>
+
+                <!-- Color Selection Preview -->
+                <div id="color-selection-preview" class="color-preview-container" style="display:none;">
+                    <div class="preview-title">Your Selected Colors</div>
+                    <div class="color-stack-preview">
+                        <div class="color-layer" id="color-layer-1">
+                            <div class="layer-color"></div>
+                            <div class="layer-number">1</div>
+                        </div>
+                        <div class="color-layer" id="color-layer-2">
+                            <div class="layer-color"></div>
+                            <div class="layer-number">2</div>
+                        </div>
+                        <div class="color-layer" id="color-layer-3">
+                            <div class="layer-color"></div>
+                            <div class="layer-number">3</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+                    <button type="button" class="back-btn">Back</button>
+                    <button type="submit" class="date-submit">Next</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!--                     STEP 4 – PAX                           -->
+    <!-- ========================================================= -->
+    <div id="step-4" class="wizard-step" style="display:none;">
         <div class="date-modal-content">
             <div id="alert-pax" class="modal-alert alert alert-danger d-none"></div>
             <div class="date-modal-message">
@@ -148,92 +1037,132 @@
     </div>
 
     <!-- ========================================================= -->
-    <!--                  STEP 4 – LOCATION                         -->
+    <!--                    STEP 5 – THEME                          -->
     <!-- ========================================================= -->
-    <div id="step-4" class="wizard-step" style="display:none;">
+    <div id="step-5" class="wizard-step" style="display:none;">
+        <div class="date-modal-content">
+            <div id="alert-theme" class="modal-alert alert alert-danger d-none"></div>
+            <div class="date-modal-message">Perfect! Now let's choose a theme for your <span id="theme-event-type">event</span>.</div>
+            
+            <form id="theme-form" style="width:100%; display:flex; flex-direction:column; gap:15px;">
+                <!-- Theme Grid Container -->
+                <div id="theme-grids-container">
+                    <!-- Grid will be dynamically generated by JavaScript -->
+                </div>
+                
+                <input type="hidden" id="selected-theme-name" name="selected-theme-name">
+                <input type="hidden" id="selected-theme-urls" name="selected-theme-urls">
+                
+                <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+                    <button type="button" class="back-btn">Back</button>
+                    <button type="submit" class="date-submit">Next</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!--                  STEP 6 – LOCATION                         -->
+    <!-- ========================================================= -->
+    <div id="step-6" class="wizard-step" style="display:none;">
         <div class="date-modal-content">
             <div id="alert-location" class="modal-alert alert alert-danger d-none"></div>
             <div class="date-modal-message">Please enter the venue name and select a floor plan.</div>
             <form id="location-form" style="width:100%; display:flex; flex-direction:column; gap:15px;">
                 <input type="text" id="venue-input" class="custom-location-input" placeholder="Venue name..." required>
                 
-                <div class="date-modal-message" style="margin-bottom: 10px;">Select a floor plan:</div>
+                <button type="button" id="select-floorplan-btn" class="date-submit" style="margin: 10px 0;" disabled>Select Floorplan</button>
                 
-                <div id="floorplan-selection" style="display: flex; flex-direction: column; gap: 20px; align-items: center;">
+                <div class="date-modal-message" id="floorplan-instruction" style="margin-bottom: 10px; display: none;">Select a floor plan:</div>
+                
+                <div id="floorplan-selection" style="display: none; flex-direction: column; gap: 20px; align-items: center;">
                     <!-- Floor plan images will be populated by JavaScript -->
                 </div>
                 
-                <input type="hidden" id="selected-floorplan" name="selected-floorplan">
-                
-                <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
-                    <button type="button" class="back-btn">Back</button>
-                    <button type="submit" class="date-submit">Next</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ========================================================= -->
-    <!--                    STEP 5 – COLOR                          -->
-    <!-- ========================================================= -->
-     <div id="step-5" class="wizard-step" style="display:none;">
-        <div class="date-modal-content">
-            <div id="alert-color" class="modal-alert alert alert-danger d-none"></div>
-            <div class="date-modal-message">Choose a color motif for your event.</div>
-            <form id="color-form" autocomplete="off" style="width:100%; display:flex; flex-direction:column; gap:15px;">
-                
-                <!-- Color Dropdown with Preview -->
-                <div class="color-dropdown-container">
-                    <select id="color-select" class="color-select-with-preview">
-                        <option value="" disabled selected>--Select Color--</option>
-                        <option value="Red" data-color="#FF0000">Red</option>
-                        <option value="Blue" data-color="#0000FF">Blue</option>
-                        <option value="Green" data-color="#008000">Green</option>
-                        <option value="Yellow" data-color="#FFFF00">Yellow</option>
-                        <option value="Pink" data-color="#FFC0CB">Pink</option>
-                        <option value="Purple" data-color="#800080">Purple</option>
-                        <option value="Orange" data-color="#FFA500">Orange</option>
-                        <option value="Teal" data-color="#008080">Teal</option>
-                        <option value="Brown" data-color="#A52A2A">Brown</option>
-                        <option value="Black" data-color="#000000">Black</option>
-                        <option value="White" data-color="#FFFFFF">White</option>
-                        <option value="Gray" data-color="#808080">Gray</option>
-                        <option value="Gold" data-color="#FFD700">Gold</option>
-                        <option value="Silver" data-color="#C0C0C0">Silver</option>
-                        <option value="Maroon" data-color="#800000">Maroon</option>
-                        <option value="Navy" data-color="#000080">Navy</option>
-                        <option value="Lavender" data-color="#E6E6FA">Lavender</option>
-                        <option value="Magenta" data-color="#FF00FF">Magenta</option>
-                        <option value="Cyan" data-color="#00FFFF">Cyan</option>
-                        <option value="Olive" data-color="#808000">Olive</option>
-                        <option value="Coral" data-color="#FF7F50">Coral</option>
-                        <option value="Turquoise" data-color="#40E0D0">Turquoise</option>
-                        <option value="Peach" data-color="#FFCBA4">Peach</option>
-                        <option value="Beige" data-color="#F5F5DC">Beige</option>
-                        <option value="Mint" data-color="#98FB98">Mint</option>
-                        <option value="Plum" data-color="#DDA0DD">Plum</option>
-                        <option value="Indigo" data-color="#4B0082">Indigo</option>
-                        <option value="Sky Blue" data-color="#87CEEB">Sky Blue</option>
-                        <option value="Khaki" data-color="#F0E68C">Khaki</option>
-                        <option value="Charcoal" data-color="#36454F">Charcoal</option>
-                        <option value="Rose" data-color="#FF007F">Rose</option>
-                    </select>
-                </div>
-
-                <!-- Divider Text -->
-                <div class="color-divider">
-                    <span>or</span>
-                </div>
-
-                <!-- Custom Color Picker -->
-                <div class="custom-color-container">
-                    <div class="date-modal-message" style="margin: 0; font-size: 14px;">Enter custom color:</div>
-                    <div class="color-input-group">
-                        <input type="color" id="color-picker" class="color-picker-input" value="#AD974F">
-                        <input type="text" id="hex-input" class="hex-input" placeholder="#FFFFFF" maxlength="7">
+                <!-- Custom Floorplan Options -->
+                <div id="custom-floorplan-options" style="display: none; flex-direction: column; gap: 20px; align-items: center; max-width: 600px; margin: 0 auto;">
+                    <div class="date-modal-message">Choose your option:</div>
+                    
+                    <!-- Option 1: Upload Floorplan Image -->
+                    <div class="custom-option">
+                        <h4 style="margin-bottom: 10px; color: #B8860B;">Upload Floorplan Image</h4>
+                        
+                        <!-- Modern Upload Area -->
+                        <div class="upload-container">
+                            <div class="upload-area" id="upload-area">
+                                <div class="upload-content">
+                                    <div class="upload-icon">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                    </div>
+                                    <div class="upload-text">
+                                        <p class="upload-title">Drop your floorplan image here</p>
+                                        <p class="upload-subtitle">or <span class="upload-link">browse files</span></p>
+                                    </div>
+                                    <div class="upload-formats">
+                                        <span>Supports: JPG, PNG, GIF (max 10MB)</span>
+                                    </div>
+                                </div>
+                                <input type="file" id="floorplan-upload" accept="image/*" class="file-input">
+                            </div>
+                            
+                            <!-- Image Preview -->
+                            <div class="image-preview" id="image-preview" style="display: none;">
+                                <div class="preview-container">
+                                    <img id="preview-image" src="" alt="Floorplan preview" class="preview-img">
+                                    <div class="preview-overlay">
+                                        <div class="preview-actions">
+                                            <button type="button" class="preview-btn change-btn" id="change-image-btn">
+                                                <i class="fas fa-edit"></i>
+                                                Change
+                                            </button>
+                                            <button type="button" class="preview-btn remove-btn" id="remove-image-btn">
+                                                <i class="fas fa-trash"></i>
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="image-info">
+                                    <span id="image-name"></span>
+                                    <span id="image-size"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" id="analyze-image-btn" class="date-submit" style="display: none; margin-top: 15px;">Analyze Image</button>
                     </div>
+                    
+                    <!-- OR Separator -->
+                    <div style="text-align: center; margin: 10px 0; color: #666;">OR</div>
+                    
+                    <!-- Option 2: Enter Room Dimensions -->
+                    <div class="custom-option">
+                        <h4 style="margin-bottom: 10px; color: #B8860B;">Enter Room Dimensions</h4>
+                        <div style="display: flex; gap: 10px; justify-content: center; align-items: center; margin-bottom: 10px;">
+                            <input type="number" id="room-length" placeholder="Length (m)" style="width: 100px; padding: 8px; border: 1px solid #ddd; border-radius: 5px;" step="0.1" min="1">
+                            <span style="color: #666;">×</span>
+                            <input type="number" id="room-width" placeholder="Width (m)" style="width: 100px; padding: 8px; border: 1px solid #ddd; border-radius: 5px;" step="0.1" min="1">
+                        </div>
+                        <button type="button" id="analyze-dimensions-btn" class="date-submit">Generate Estimations</button>
+                    </div>
+                    
+                    <!-- AI Analysis Results -->
+                    <div id="ai-results" style="display: none; width: 100%; margin-top: 20px;">
+                        <h4 style="color: #B8860B; margin-bottom: 10px;">AI Estimations:</h4>
+                        <div id="ai-estimations" style="background: #f8f9fa; padding: 15px; border-radius: 8px; color:#242424 white-space: pre-line; font-family: monospace; font-size: 14px; border: 1px solid #e9ecef;"></div>
+            
+                    </div>
+                    
+                    <!-- Loading indicator -->
+                    <div id="ai-loading" style="display: none; text-align: center; color: #666;">
+                        <i class="fas fa-spinner fa-spin"></i> Analyzing...
+                    </div>
+                    
                 </div>
-
+                
+                <input type="hidden" id="selected-floorplan" name="selected-floorplan">
+                <input type="hidden" id="ai-estimations-data" name="ai-estimations-data">
+                
                 <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
                     <button type="button" class="back-btn">Back</button>
                     <button type="submit" class="date-submit">Next</button>
@@ -243,9 +1172,9 @@
     </div>
 
     <!-- ========================================================= -->
-    <!--                 STEP 6 – PACKAGE                           -->
+    <!--                 STEP 7 – PACKAGE                           -->
     <!-- ========================================================= -->
-    <div id="step-6" class="wizard-step" style="display:none;">
+    <div id="step-7" class="wizard-step" style="display:none;">
         <div class="date-modal-content" style="max-width:400px;">
             <div id="alert-package" class="modal-alert alert alert-danger d-none"></div>
             <div class="date-modal-message" style="margin-bottom:18px;">
@@ -269,129 +1198,44 @@
     </div>
 
     <!-- ========================================================= -->
-    <!--                   STEP 7 – FOOD MENU                       -->
+    <!--                   STEP 8 – FOOD MENU                       -->
     <!-- ========================================================= -->
-    <div id="step-7" class="wizard-step" style="display:none;">
-        <div class="date-modal-content" style="max-width:500px; max-height:80vh; overflow-y:auto;">
+    <div id="step-8" class="wizard-step" style="display:none;">
+        <div class="date-modal-content" style="max-width:800px; max-height:80vh; overflow-y:auto;">
             <div id="alert-food" class="modal-alert alert alert-danger d-none"></div>
             <form id="food-form" autocomplete="off" style="width:100%;">
                 <div class="date-modal-message" id="food-menu-message">Please select <strong>4 dishes total</strong> + 1 pasta + 1 drink:</div>
-
-                <!-- Beef -->
-                <div class="food-section" data-group="beef">
-                    <div class="food-section-label">Beef</div>
-                    <div class="food-btn-group" data-limit="4">
-                        <button type="button" class="food-btn">Beef Broccoli</button>
-                        <button type="button" class="food-btn">Beef Caldereta</button>
-                        <button type="button" class="food-btn">Beef Kare‑Kare</button>
-                        <button type="button" class="food-btn">Beef Teriyaki</button>
-                        <button type="button" class="food-btn">Beef with Gravy Sauce</button>
-                        <button type="button" class="food-btn">Garlic Beef</button>
-                        <button type="button" class="food-btn">Lengua Pastel</button>
-                        <button type="button" class="food-btn">Pot‑Roast Beef</button>
-                    </div>
-                </div>
-
-                <!-- Pork -->
-                <div class="food-section" data-group="pork">
-                    <div class="food-section-label">Pork</div>
-                    <div class="food-btn-group" data-limit="4">
-                        <button type="button" class="food-btn">Grilled Liempo</button>
-                        <button type="button" class="food-btn">Hawaiian Spareribs</button>
-                        <button type="button" class="food-btn">Kare‑Kare Bagnet</button>
-                        <button type="button" class="food-btn">Lechon Kawali</button>
-                        <button type="button" class="food-btn">Lengua Pastel</button>
-                        <button type="button" class="food-btn">Lumpiang Shanghai</button>
-                        <button type="button" class="food-btn">Pork BBQ</button>
-                        <button type="button" class="food-btn">Pork Caldereta</button>
-                        <button type="button" class="food-btn">Pork Hamonado</button>
-                        <button type="button" class="food-btn">Pork Menudo</button>
-                        <button type="button" class="food-btn">Pork Morcon</button>
-                        <button type="button" class="food-btn">Pork Teriyaki</button>
-                        <button type="button" class="food-btn">Roast Pork Hawaiian</button>
-                        <button type="button" class="food-btn">Roast Pork with Raisin Sauce</button>
-                    </div>
-                </div>
-
-                <!-- Chicken -->
-                <div class="food-section" data-group="chicken">
-                    <div class="food-section-label">Chicken</div>
-                    <div class="food-btn-group" data-limit="4">
-                        <button type="button" class="food-btn">Breaded Fried Chicken</button>
-                        <button type="button" class="food-btn">Buttered Chicken</button>
-                        <button type="button" class="food-btn">Chicken BBQ</button>
-                        <button type="button" class="food-btn">Chicken Cordon Bleu</button>
-                        <button type="button" class="food-btn">Chicken Lollipop</button>
-                        <button type="button" class="food-btn">Chicken Pastel</button>
-                        <button type="button" class="food-btn">Chicken Teriyaki</button>
-                        <button type="button" class="food-btn">Honey Glazed Chicken</button>
-                        <button type="button" class="food-btn">Hongkong Chicken</button>
-                        <button type="button" class="food-btn">Orange Chicken with Lemon Sauce</button>
-                        <button type="button" class="food-btn">Royal Chicken</button>
-                    </div>
-                </div>
-
-                <!-- Seafood -->
-                <div class="food-section" data-group="seafood">
-                    <div class="food-section-label">Seafood</div>
-                    <div class="food-btn-group" data-limit="4">
-                        <button type="button" class="food-btn">Calamares</button>
-                        <button type="button" class="food-btn">Fish Fillet with Chili Sauce</button>
-                        <button type="button" class="food-btn">Fish Fillet with Tartar Sauce</button>
-                        <button type="button" class="food-btn">Fish Tofu</button>
-                        <button type="button" class="food-btn">Mixed Seafoods with Vegetables</button>
-                        <button type="button" class="food-btn">Squid with Lemon Sauce</button>
-                        <button type="button" class="food-btn">Tempura</button>
-                    </div>
-                </div>
-
-                <!-- Vegetables -->
-                <div class="food-section" data-group="vegetables">
-                    <div class="food-section-label">Vegetables</div>
-                    <div class="food-btn-group" data-limit="4">
-                        <button type="button" class="food-btn">Buttered Mixed Vegetables</button>
-                        <button type="button" class="food-btn">Chopsuey in White Sauce</button>
-                        <button type="button" class="food-btn">Chopsuey in Oyster Sauce</button>
-                        <button type="button" class="food-btn">Lumpiang Sariwa</button>
-                        <button type="button" class="food-btn">Oriental Mixed Vegetables</button>
-                        <button type="button" class="food-btn">Stir Fry Vegetables</button>
-                    </div>
-                </div>
-
-                <!-- Pasta -->
-                <div class="food-section" data-group="pasta">
-                    <div class="food-section-label">Please select 1 pasta:</div>
-                    <div class="food-btn-group" data-limit="1">
-                        <button type="button" class="food-btn">Baked Macaroni</button>
-                        <button type="button" class="food-btn">Fettuccine Alfredo</button>
-                        <button type="button" class="food-btn">Lasagna Rolls</button>
-                        <button type="button" class="food-btn">Linguine in White or Red Sauce</button>
-                        <button type="button" class="food-btn">Pancit Bihon or Canton</button>
-                        <button type="button" class="food-btn">Penne in White or Red Sauce</button>
-                        <button type="button" class="food-btn">Rigatoni in White or Red Sauce</button>
-                        <button type="button" class="food-btn">Spaghetti</button>
-                    </div>
-                </div>
-
-                <!-- Drink -->
-                <div class="food-section" data-group="drink">
-                    <div class="food-section-label">Please select 1 drink:</div>
-                    <div class="food-btn-group" data-limit="1">
-                        <button type="button" class="food-btn">Blue Lemonade</button>
-                        <button type="button" class="food-btn">Cucumber Lemonade</button>
-                        <button type="button" class="food-btn">Four Seasons</button>
-                        <button type="button" class="food-btn">Lemon Tea</button>
-                        <button type="button" class="food-btn">Orange Juice</button>
-                        <button type="button" class="food-btn">Pineapple Juice</button>
-                        <button type="button" class="food-btn">Red Tea</button>
-                    </div>
+                
+                <!-- Food Grids Container -->
+                <div id="food-grids-container">
+                    <!-- Grids will be dynamically generated by JavaScript -->
                 </div>
 
                 <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
                     <button type="button" class="back-btn">Back</button>
-                    <button type="submit" class="date-submit">Complete Booking</button>
+                    <button type="submit" class="date-submit">Review Booking</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!--                 STEP 9 – BOOKING SUMMARY                 -->
+    <!-- ========================================================= -->
+    <div id="step-9" class="wizard-step" style="display:none;">
+        <div class="date-modal-content" style="max-width:900px; max-height:80vh; overflow-y:auto;">
+            <div class="date-modal-message" style="text-align:center; margin-bottom:20px; font-size:1.2rem;">
+                <strong>Booking Summary</strong>
+            </div>
+            
+            <div id="booking-summary-content" style="display:grid; gap:20px;">
+                <!-- Summary content will be generated by JavaScript -->
+            </div>
+
+            <div style="display:flex; justify-content:center; gap:15px; margin-top:30px;">
+                <button type="button" class="back-btn" id="summary-back-btn">Back to Food Menu</button>
+                <button type="button" class="date-submit" id="confirm-booking-btn">Confirm Booking</button>
+            </div>
         </div>
     </div>
     
@@ -406,7 +1250,153 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let currentStep = 0;
-    const totalSteps = 8;
+    const totalSteps = 10;
+    
+    // Food menu data with Cloudinary URLs
+    const foodMenuData = {
+        beef: [
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782677/beefwithgravysauce_qyrcsv.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782677/beefbroccolli_c3hbve.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782677/beefkarekare_n317oe.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782676/lenguapastel_ofenul.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782676/potroastbeef_tfekkp.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782676/beefcaldereta_ellvq7.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782675/garlicbeef_othv0q.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782675/beefteriyaki_yhszrn.jpg'
+        ],
+        pork: [
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783626/hawaiianspareribs_ouwkwg.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783626/lenguapastel_kodvks.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783625/lechonkawali_v3v04s.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783624/karekarebagnet_paezmf.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783623/roastporkraisinsauce_zcyjjj.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783623/porkteriyaki_iyrgu2.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783623/grilledliempo_fdq0kp.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783623/roastporkhawaiian_hbkpf1.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783622/porkmorcon_p5sdud.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783622/porkhamonado_noxvzn.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783622/porkcaldereta_lddwze.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783622/porkmenudo_mimd9h.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783621/porkbbq_hrudyt.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783621/lumpiangshanghai_p4ralv.jpg'
+        ],
+        chicken: [
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784429/chickenpastel_mgfrq5.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784418/chickenbbq_lkpnac.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784417/orangechicken_jo3vc3.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784416/chickenlollipop_z9dwso.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784415/butteredchicken_hgsxnr.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784415/chickencordonbleu_y9qjjw.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784415/honeyglazedchicken_d4evdv.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784414/breadedfriedchicken_agzutr.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784414/hongkongchicken_ymcmk3.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784413/royalchicken_tmd2ja.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784413/chickenteriyaki_azw467.jpg'
+        ],
+        seafood: [
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784686/squidlemonsauce_o5rhz6.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784680/fishwithchilisauce_gd0icq.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784678/miexedseafoodsvegetables_puvtvi.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784678/fishtartarsauce_ln7vfb.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784677/fishtofu_rsofxm.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784677/tempura_g0w6dz.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784676/calamares_hhy97q.jpg'
+        ],
+        pasta: [
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785111/pancit_pnh4ho.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785111/fettucinealfredo_ytvr6y.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785110/linguine_g4nteu.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785110/lasagnarolls_b0esab.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785109/bakedmac_dlltkg.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785109/rigatoni_wko7vk.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785109/spaghetti_gzwqbu.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785107/penne_twzzq9.jpg'
+        ],
+        drinks: [
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785373/pineapplejuice_svj2xb.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785364/orangejuice_jtybgq.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785363/lemontea_k3bvj4.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785362/fourseasons_yocljk.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785362/bluelemonade_pwthcl.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785362/cucumberlemonade_fciacg.jpg',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785360/redtea_atzt39.jpg'
+        ]
+    };
+    
+    // Hardcoded food names mapping
+    const foodNames = {
+        // Beef dishes
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782677/beefwithgravysauce_qyrcsv.jpg': 'Beef with Gravy Sauce',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782677/beefbroccolli_c3hbve.jpg': 'Beef Brocolli',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782677/beefkarekare_n317oe.jpg': 'Beef Kare-Kare',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782676/lenguapastel_ofenul.jpg': 'Lengua Pastel',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782676/potroastbeef_tfekkp.jpg': 'Pot Roast Beef',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782676/beefcaldereta_ellvq7.jpg': 'Beef Caldereta',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782675/garlicbeef_othv0q.jpg': 'Garlic Beef',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782675/beefteriyaki_yhszrn.jpg': 'Beef Teriyaki',
+        
+        // Pork dishes
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783626/hawaiianspareribs_ouwkwg.jpg': 'Hawaiian Spare Ribs',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783626/lenguapastel_kodvks.jpg': 'Lengua Pastel',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783625/lechonkawali_v3v04s.jpg': 'Lechon Kawali',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783624/karekarebagnet_paezmf.jpg': 'Kare-Kare Bagnet',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783623/roastporkraisinsauce_zcyjjj.jpg': 'Roast Pork Raisin Sauce',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783623/porkteriyaki_iyrgu2.jpg': 'Pork Teriyaki',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783623/grilledliempo_fdq0kp.jpg': 'Grilled Liempo',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783623/roastporkhawaiian_hbkpf1.jpg': 'Roast Pork Hawaiian',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783622/porkmorcon_p5sdud.jpg': 'Pork Morcon',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783622/porkhamonado_noxvzn.jpg': 'Pork Hamonado',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783622/porkcaldereta_lddwze.jpg': 'Pork Caldereta',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783622/porkmenudo_mimd9h.jpg': 'Pork Menudo',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783621/porkbbq_hrudyt.jpg': 'Pork BBQ',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783621/lumpiangshanghai_p4ralv.jpg': 'Lumpiang Shanghai',
+        
+        // Chicken dishes
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784429/chickenpastel_mgfrq5.jpg': 'Chicken Pastel',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784418/chickenbbq_lkpnac.jpg': 'Chicken BBQ',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784417/orangechicken_jo3vc3.jpg': 'Orange Chicken',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784416/chickenlollipop_z9dwso.jpg': 'Chicken Lollipop',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784415/butteredchicken_hgsxnr.jpg': 'Buttered Chicken',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784415/chickencordonbleu_y9qjjw.jpg': 'Chicken Cordon Bleu',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784415/honeyglazedchicken_d4evdv.jpg': 'Honey Glazed Chicken',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784414/breadedfriedchicken_agzutr.jpg': 'Breaded Fried Chicken',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784414/hongkongchicken_ymcmk3.jpg': 'Hong Kong Chicken',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784413/royalchicken_tmd2ja.jpg': 'Royal Chicken',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784413/chickenteriyaki_azw467.jpg': 'Chicken Teriyaki',
+        
+        // Seafood dishes
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784686/squidlemonsauce_o5rhz6.jpg': 'Squid Lemon Sauce',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784680/fishwithchilisauce_gd0icq.jpg': 'Fish with Chili Sauce',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784678/miexedseafoodsvegetables_puvtvi.jpg': 'Mixed Seafoods & Vegetables',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784678/fishtartarsauce_ln7vfb.jpg': 'Fish Tartar Sauce',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784677/fishtofu_rsofxm.jpg': 'Fish Tofu',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784677/tempura_g0w6dz.jpg': 'Tempura',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784676/calamares_hhy97q.jpg': 'Calamares',
+        
+        // Pasta dishes
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785111/pancit_pnh4ho.jpg': 'Pancit',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785111/fettucinealfredo_ytvr6y.jpg': 'Fettuccine Alfredo',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785110/linguine_g4nteu.jpg': 'Linguine',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785110/lasagnarolls_b0esab.jpg': 'Lasagna Rolls',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785109/bakedmac_dlltkg.jpg': 'Baked Mac',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785109/rigatoni_wko7vk.jpg': 'Rigatoni',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785109/spaghetti_gzwqbu.jpg': 'Spaghetti',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785107/penne_twzzq9.jpg': 'Penne',
+        
+        // Drinks
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785373/pineapplejuice_svj2xb.jpg': 'Pineapple Juice',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785364/orangejuice_jtybgq.jpg': 'Orange Juice',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785363/lemontea_k3bvj4.jpg': 'Lemon Tea',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785362/fourseasons_yocljk.jpg': 'Four Seasons',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785362/bluelemonade_pwthcl.jpg': 'Blue Lemonade',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785362/cucumberlemonade_fciacg.jpg': 'Cucumber Lemonade',
+        'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785360/redtea_atzt39.jpg': 'Red Tea'
+    };
+    
+    // Function to get food name from URL
+    function getFoodName(url) {
+        return foodNames[url] || 'Unknown Food';
+    }
     
     // Set minimum date to today for date picker
     const today = new Date();
@@ -449,9 +1439,14 @@ document.addEventListener('DOMContentLoaded', function() {
         location: '',
         floorplan: null,
         floorplanName: '',
-        color: '',
+        uploadedFloorplanUrl: null,
+        uploadedFloorplanFilename: null,
+        aiEstimations: null,
+        roomLength: null,
+        roomWidth: null,
+        colors: [],
         package: '',
-        menu: '',
+        menu: [],
         specialRequests: ''
     };
 
@@ -496,13 +1491,19 @@ document.addEventListener('DOMContentLoaded', function() {
             currentStepEl.style.display = 'block';
         }
 
-        // Load floor plans when showing step 4 (location)
-        if (stepIndex === 3) { // step-4 is index 3
-            loadFloorPlans();
+        // Load themes when showing step 5 (theme)
+        if (stepIndex === 5) { // step-5 is theme
+            loadThemes();
         }
 
-        // Load package image when showing step 6 (packages)
-        if (stepIndex === 5) { // step-6 is index 5
+        // Load floor plans when showing step 6 (location) 
+        if (stepIndex === 6) { // step-6 is location (formerly step-5)
+            // Don't auto-load floorplans anymore - they load when Select Floorplan button is clicked
+            setupLocationStep();
+        }
+
+        // Load package image when showing step 7 (packages)
+        if (stepIndex === 7) { // step-7 is packages (formerly step-6)
             loadPackageImage();
         }
 
@@ -611,7 +1612,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('event-next-btn').addEventListener('click', nextStep);
 
-    // Step 3: Pax with mutual exclusivity
+    // Step 4: Pax with mutual exclusivity
     document.getElementById('pax-select').addEventListener('change', function() {
         if (this.value) {
             // Clear custom input when dropdown is selected
@@ -651,26 +1652,464 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Step 4: Location with Floor Plan Selection
+    // Step 5: Theme Selection
+    document.getElementById('theme-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        clearAlert('theme');
+        const selectedThemeName = document.getElementById('selected-theme-name').value;
+        const selectedThemeUrls = document.getElementById('selected-theme-urls').value;
+        
+        if (selectedThemeName && selectedThemeUrls) {
+            wizardData.theme_name = selectedThemeName;
+            wizardData.theme_urls = JSON.parse(selectedThemeUrls);
+            nextStep();
+        } else {
+            showAlert('theme', 'Please select a theme for your event.');
+        }
+    });
+
+    // Step 6: Location with Floor Plan Selection
     document.getElementById('location-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const venue = document.getElementById('venue-input').value.trim();
         const selectedFloorplan = document.getElementById('selected-floorplan').value;
+        const floorplanVisible = document.getElementById('floorplan-selection').style.display !== 'none';
         
-        if (venue && selectedFloorplan) {
+        // Check for alternative inputs (uploaded image or dimensions)
+        const hasUploadedImage = wizardData.uploadedFloorplanUrl || 
+                                (document.getElementById('image-preview') && 
+                                 document.getElementById('image-preview').style.display !== 'none');
+        
+        const roomLength = document.getElementById('room-length');
+        const roomWidth = document.getElementById('room-width');
+        const hasDimensions = roomLength && roomWidth && 
+                              roomLength.value.trim() && roomWidth.value.trim();
+        
+        // Validation logic:
+        // 1. Venue is always required
+        // 2. If floorplan selection is visible, floorplan is required UNLESS there's an uploaded image or dimensions
+        // 3. If no floorplan selection visible, no additional validation needed (AI estimations mode)
+        
+        const hasValidSelection = !floorplanVisible || selectedFloorplan || hasUploadedImage || hasDimensions;
+        
+        if (venue && hasValidSelection) {
             wizardData.location = venue;
-            wizardData.floorplan = selectedFloorplan;
+            if (selectedFloorplan) {
+                wizardData.floorplan = selectedFloorplan;
+            }
+            
+            // Save room dimensions if they were entered
+            if (hasDimensions) {
+                wizardData.roomLength = parseFloat(roomLength.value);
+                wizardData.roomWidth = parseFloat(roomWidth.value);
+            }
+            
             // floorplanName is already stored when clicking the floor plan option
             nextStep();
-        } else {
-            showAlert('location', 'Please enter venue name and select a floor plan.');
+        } else if (!venue) {
+            showAlert('location', 'Please enter venue name.');
+        } else if (floorplanVisible && !selectedFloorplan && !hasUploadedImage && !hasDimensions) {
+            showAlert('location', 'Please select a floor plan, upload an image, or enter room dimensions.');
         }
     });
 
+    // Dimension input handlers - clear upload state when typing dimensions
+    const roomLengthInput = document.getElementById('room-length');
+    const roomWidthInput = document.getElementById('room-width');
+    
+    if (roomLengthInput) {
+        roomLengthInput.addEventListener('input', function() {
+            if (this.value.trim()) {
+                clearUploadState();
+            }
+        });
+    }
+    
+    if (roomWidthInput) {
+        roomWidthInput.addEventListener('input', function() {
+            if (this.value.trim()) {
+                clearUploadState();
+            }
+        });
+    }
+
+    // Setup location step functionality
+    function setupLocationStep() {
+        const venueInput = document.getElementById('venue-input');
+        const selectFloorplanBtn = document.getElementById('select-floorplan-btn');
+        const floorplanSelection = document.getElementById('floorplan-selection');
+        const floorplanInstruction = document.getElementById('floorplan-instruction');
+        
+        // Restore venue name if previously entered
+        if (wizardData.location) {
+            venueInput.value = wizardData.location;
+        }
+        
+        // Reset state when entering location step
+        selectFloorplanBtn.disabled = !venueInput.value.trim();
+        floorplanSelection.style.display = 'none';
+        floorplanInstruction.style.display = 'none';
+        
+        // Restore previous selections if they exist
+        restoreLocationStepData();
+        
+        // Enable/disable Select Floorplan button based on venue input
+        venueInput.addEventListener('input', function() {
+            const hasVenue = this.value.trim().length > 0;
+            selectFloorplanBtn.disabled = !hasVenue;
+            
+            // If venue is cleared, hide floorplan selection
+            if (!hasVenue) {
+                floorplanSelection.style.display = 'none';
+                floorplanInstruction.style.display = 'none';
+                document.getElementById('selected-floorplan').value = '';
+            }
+        });
+        
+        // Show floorplan selection when button is clicked
+        selectFloorplanBtn.addEventListener('click', function() {
+            if (venueInput.value.trim()) {
+                // Hide any AI estimations UI first
+                document.getElementById('custom-floorplan-options').style.display = 'none';
+                
+                const idealSqm = getIdealSqmRange(wizardData.pax || 0);
+                floorplanInstruction.innerHTML = `Select a floor plan:<br><small style="font-size: 16px;">Ideal sqm.: ${idealSqm}</small>`;
+                floorplanInstruction.style.display = 'block';
+                floorplanSelection.style.display = 'flex';
+                loadFloorPlans();
+            }
+        });
+    }
+
+    // Restore location step data when returning from later steps
+    function restoreLocationStepData() {
+        const venueInput = document.getElementById('venue-input');
+        const selectFloorplanBtn = document.getElementById('select-floorplan-btn');
+        const floorplanSelection = document.getElementById('floorplan-selection');
+        const floorplanInstruction = document.getElementById('floorplan-instruction');
+        const customOptions = document.getElementById('custom-floorplan-options');
+        
+        // First, hide both UIs to ensure clean state
+        floorplanSelection.style.display = 'none';
+        floorplanInstruction.style.display = 'none';
+        customOptions.style.display = 'none';
+        
+        // Enable the button if venue is filled
+        if (venueInput.value.trim()) {
+            selectFloorplanBtn.disabled = false;
+            
+            // EITHER/OR Logic: Determine which UI to show based on previous selection
+            
+            // CASE 1: AI Estimations were completed (final AI results exist)
+            if (wizardData.aiEstimations) {
+                // Show ONLY AI estimations UI, keep floorplan selection hidden
+                restoreAIEstimations();
+                return; // Exit early - don't show floorplan selection
+            }
+            
+            // CASE 1.5: User uploaded image or entered dimensions but no AI results yet
+            if (wizardData.uploadedFloorplanUrl || (wizardData.roomLength && wizardData.roomWidth)) {
+                // Show custom options UI for continuing the AI process
+                customOptions.style.display = 'flex';
+                
+                if (wizardData.uploadedFloorplanUrl) {
+                    restoreUploadedImagePreview();
+                } else if (wizardData.roomLength && wizardData.roomWidth) {
+                    restoreDimensionInputs();
+                }
+                return; // Exit early - don't show floorplan selection
+            }
+            
+            // CASE 2: Regular floorplan was selected from the 2 images
+            if (wizardData.floorplan && wizardData.floorplan !== 'ai-generated') {
+                // Show ONLY floorplan selection, keep AI UI hidden
+                const idealSqm = getIdealSqmRange(wizardData.pax || 0);
+                floorplanInstruction.innerHTML = `Select a floor plan:<br><small style="font-size: 16px;">Ideal sqm.: ${idealSqm}</small>`;
+                floorplanInstruction.style.display = 'block';
+                floorplanSelection.style.display = 'flex';
+                loadFloorPlansAndRestore();
+                return; // Exit early - don't show AI UI
+            }
+            
+            // CASE 3: No previous selection - show default (floorplan selection only)
+            const idealSqm = getIdealSqmRange(wizardData.pax || 0);
+            floorplanInstruction.innerHTML = `Select a floor plan:<br><small style="font-size: 16px;">Ideal sqm.: ${idealSqm}</small>`;
+            floorplanInstruction.style.display = 'block';
+            floorplanSelection.style.display = 'flex';
+            loadFloorPlans();
+        }
+    }
+
+    // Restore uploaded image preview and AI analysis button
+    function restoreUploadedImage() {
+        const uploadArea = document.getElementById('upload-area');
+        const imagePreview = document.getElementById('image-preview');
+        const previewImage = document.getElementById('preview-image');
+        const imageName = document.getElementById('image-name');
+        const imageSize = document.getElementById('image-size');
+        const analyzeBtn = document.getElementById('analyze-image-btn');
+        const customOptions = document.getElementById('custom-floorplan-options');
+        
+        if (uploadArea && imagePreview && wizardData.uploadedFloorplanUrl) {
+            // Show custom options
+            customOptions.style.display = 'flex';
+            
+            // Hide upload area and show preview
+            uploadArea.style.display = 'none';
+            imagePreview.style.display = 'block';
+            
+            // Set preview image
+            previewImage.src = wizardData.uploadedFloorplanUrl;
+            imageName.textContent = wizardData.uploadedFloorplanFilename || 'Uploaded Image';
+            imageSize.textContent = ''; // Size info not stored
+            
+            // Show analyze button only if no AI analysis has been done yet
+            if (!wizardData.aiEstimations) {
+                analyzeBtn.style.display = 'inline-block';
+            } else {
+                analyzeBtn.style.display = 'none';
+                // Show AI results
+                document.getElementById('ai-results').style.display = 'block';
+                document.getElementById('ai-estimations').textContent = wizardData.aiEstimations;
+            }
+        }
+    }
+
+    // Load floorplans and restore previous selection
+    function loadFloorPlansAndRestore() {
+        // HIDE AI estimations UI completely when showing floorplan selection
+        const customOptions = document.getElementById('custom-floorplan-options');
+        customOptions.style.display = 'none';
+        
+        loadFloorPlans().then(() => {
+            // After floorplans are loaded, highlight the previously selected one
+            if (wizardData.floorplan) {
+                const floorplanOptions = document.querySelectorAll('.floorplan-option');
+                floorplanOptions.forEach(option => {
+                    if (option.dataset.floorplan === wizardData.floorplan) {
+                        option.classList.add('selected');
+                        // Update hidden input
+                        document.getElementById('selected-floorplan').value = wizardData.floorplan;
+                    }
+                });
+            }
+        });
+    }
+
+    // Restore AI estimations display (handles both uploaded images and dimensions)
+    function restoreAIEstimations() {
+        const customOptions = document.getElementById('custom-floorplan-options');
+        const floorplanContainer = document.getElementById('floorplan-selection');
+        const floorplanInstruction = document.getElementById('floorplan-instruction');
+        
+        // HIDE floorplan selection UI completely when showing AI estimations
+        floorplanContainer.style.display = 'none';
+        floorplanInstruction.style.display = 'none';
+        
+        if (wizardData.aiEstimations) {
+            // Check if this was from an uploaded image
+            if (wizardData.uploadedFloorplanUrl && wizardData.uploadedFloorplanFilename) {
+                // Show custom options with uploaded image preview
+                customOptions.style.display = 'flex';
+                restoreUploadedImagePreview();
+            } else {
+                // This was from dimensions - show custom options with dimensions
+                customOptions.style.display = 'flex';
+                restoreDimensionInputs();
+            }
+            
+            // In both cases, show the AI results and hide the use button
+            const aiResults = document.getElementById('ai-results');
+            const aiEstimations = document.getElementById('ai-estimations');
+            aiResults.style.display = 'block';
+            aiEstimations.textContent = wizardData.aiEstimations;
+            
+            // Hide the use button since estimations are already selected
+            const useBtn = document.getElementById('use-ai-estimations-btn');
+            if (useBtn) {
+                useBtn.style.display = 'none';
+            }
+            
+            // Show AI selection in the main container
+            floorplanContainer.innerHTML = `
+                <div class="floorplan-option selected ai-generated-option">
+                    <div class="ai-generated-content">
+                        <i class="fas fa-robot" style="font-size: 48px; color: #B8860B; margin-bottom: 10px;"></i>
+                        <div class="floorplan-label">AI Custom Estimations</div>
+                        <div style="font-size: 12px; color: #666; text-align: center;">Custom estimations generated</div>
+                    </div>
+                </div>
+            `;
+            
+            // Set the hidden input
+            document.getElementById('selected-floorplan').value = 'ai-generated';
+        }
+    }
+    
+    // Restore uploaded image preview
+    function restoreUploadedImagePreview() {
+        const uploadArea = document.getElementById('upload-area');
+        const imagePreview = document.getElementById('image-preview');
+        const previewImage = document.getElementById('preview-image');
+        const imageName = document.getElementById('image-name');
+        const imageSize = document.getElementById('image-size');
+        const analyzeBtn = document.getElementById('analyze-image-btn');
+        
+        if (uploadArea && imagePreview && wizardData.uploadedFloorplanUrl) {
+            // Hide upload area and show preview
+            uploadArea.style.display = 'none';
+            imagePreview.style.display = 'block';
+            
+            // Set preview image
+            previewImage.src = wizardData.uploadedFloorplanUrl;
+            imageName.textContent = wizardData.uploadedFloorplanFilename || 'Uploaded Image';
+            imageSize.textContent = ''; // Size info not stored
+            
+            // Show analyze button if no AI results yet
+            if (analyzeBtn && !wizardData.aiEstimations) {
+                analyzeBtn.style.display = 'inline-block';
+            }
+        }
+    }
+    
+    // Restore dimension inputs
+    function restoreDimensionInputs() {
+        if (wizardData.roomLength && wizardData.roomWidth) {
+            const roomLength = document.getElementById('room-length');
+            const roomWidth = document.getElementById('room-width');
+            const analyzeBtn = document.getElementById('analyze-dimensions-btn');
+            
+            if (roomLength && roomWidth) {
+                roomLength.value = wizardData.roomLength;
+                roomWidth.value = wizardData.roomWidth;
+                
+                // Show analyze button if no AI results yet
+                if (analyzeBtn && !wizardData.aiEstimations) {
+                    analyzeBtn.style.display = 'inline-block';
+                }
+            }
+        }
+    }
+
+    // Clear AI-related state when floorplan is selected
+    function clearAIState() {
+        // Clear wizardData AI fields
+        wizardData.uploadedFloorplanUrl = null;
+        wizardData.uploadedFloorplanFilename = null;
+        wizardData.aiEstimations = null;
+        wizardData.roomLength = null;
+        wizardData.roomWidth = null;
+        
+        // Clear AI UI elements
+        const customOptions = document.getElementById('custom-floorplan-options');
+        if (customOptions) {
+            customOptions.style.display = 'none';
+        }
+        
+        // Reset upload UI completely
+        const uploadArea = document.getElementById('upload-area');
+        const imagePreview = document.getElementById('image-preview');
+        const floorplanInput = document.getElementById('floorplan-input');
+        if (uploadArea && imagePreview) {
+            uploadArea.style.display = 'flex';
+            imagePreview.style.display = 'none';
+            document.getElementById('preview-image').src = '';
+            document.getElementById('image-name').textContent = '';
+            document.getElementById('image-size').textContent = '';
+        }
+        if (floorplanInput) {
+            floorplanInput.value = '';
+        }
+        
+        // Clear dimension inputs completely
+        const roomLength = document.getElementById('room-length');
+        const roomWidth = document.getElementById('room-width');
+        if (roomLength) roomLength.value = '';
+        if (roomWidth) roomWidth.value = '';
+        
+        // Hide and clear AI results
+        const aiResults = document.getElementById('ai-results');
+        const aiEstimations = document.getElementById('ai-estimations');
+        if (aiResults) {
+            aiResults.style.display = 'none';
+        }
+        if (aiEstimations) {
+            aiEstimations.innerHTML = '';
+        }
+        
+        console.log('Cleared all AI state: uploaded images, dimensions, and results');
+    }
+    
+    // Clear floorplan-related state when AI is used
+    function clearFloorplanState() {
+        // Clear wizardData floorplan field (but keep floorplanName as it now contains AI estimations)
+        wizardData.floorplan = null;
+        
+        // Clear floorplan UI selection
+        const selectedInput = document.getElementById('selected-floorplan');
+        // Don't clear this as it's set to 'ai-generated' for AI estimations
+    }
+
+    // Clear dimension inputs when image is uploaded
+    function clearDimensionState() {
+        // Clear wizardData dimension fields
+        wizardData.roomLength = null;
+        wizardData.roomWidth = null;
+        
+        // Clear dimension input UI
+        const roomLength = document.getElementById('room-length');
+        const roomWidth = document.getElementById('room-width');
+        if (roomLength) roomLength.value = '';
+        if (roomWidth) roomWidth.value = '';
+        
+        console.log('Cleared dimension state');
+    }
+
+    // Clear upload state when dimensions are entered
+    function clearUploadState() {
+        // Clear wizardData upload fields
+        wizardData.uploadedFloorplanUrl = null;
+        wizardData.uploadedFloorplanFilename = null;
+        
+        // Reset upload UI
+        const uploadArea = document.getElementById('upload-area');
+        const imagePreview = document.getElementById('image-preview');
+        const floorplanInput = document.getElementById('floorplan-input');
+        if (uploadArea && imagePreview) {
+            uploadArea.style.display = 'flex';
+            imagePreview.style.display = 'none';
+            document.getElementById('preview-image').src = '';
+            document.getElementById('image-name').textContent = '';
+            document.getElementById('image-size').textContent = '';
+        }
+        if (floorplanInput) {
+            floorplanInput.value = '';
+        }
+        
+        console.log('Cleared upload state');
+    }
+
+    // Get ideal square meter range based on pax count
+    function getIdealSqmRange(pax) {
+        if (pax <= 70) return "90-110sqm";
+        if (pax <= 80) return "105-130sqm";
+        if (pax <= 100) return "130-160sqm";
+        if (pax <= 120) return "155-190sqm";
+        if (pax <= 150) return "195-240sqm";
+        if (pax <= 200) return "260-320sqm";
+        if (pax <= 250) return "325-400sqm";
+        return "400+sqm"; // For pax > 250
+    }
+
     // Floor plan selection functionality
     function loadFloorPlans() {
+        return new Promise((resolve) => {
         const pax = wizardData.pax || 0;
         const floorplanContainer = document.getElementById('floorplan-selection');
+        
+        // HIDE AI estimations UI when showing floorplan selection
+        const customOptions = document.getElementById('custom-floorplan-options');
+        customOptions.style.display = 'none';
         
         // Clear existing content
         floorplanContainer.innerHTML = '';
@@ -813,6 +2252,9 @@ document.addEventListener('DOMContentLoaded', function() {
             ];
         }
         
+        // Get the ideal sqm range for current pax
+        const idealSqm = getIdealSqmRange(pax);
+        
         // Create floor plan options
         floorPlans.forEach((plan, index) => {
             const optionDiv = document.createElement('div');
@@ -836,10 +2278,522 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Store both the URL and the plan name
                 document.getElementById('selected-floorplan').value = plan.url;
                 wizardData.floorplanName = plan.name; // Store the display name
+                
+                // CLEAR AI STATE - when floorplan is selected, clear all AI data
+                clearAIState();
             });
             
             floorplanContainer.appendChild(optionDiv);
         });
+        
+        // Add "Make AI Estimations" button
+        const aiButton = document.createElement('button');
+        aiButton.type = 'button';
+        aiButton.className = 'date-submit ai-estimations-btn';
+        aiButton.textContent = 'Make AI Estimations';
+        aiButton.style.cssText = 'margin-top: 20px; width: 200px;';
+        
+        aiButton.addEventListener('click', function() {
+            // Show the custom options UI
+            showCustomFloorplanOptions();
+        });
+        
+        floorplanContainer.appendChild(aiButton);
+        
+        // Resolve the promise after DOM elements are created
+        setTimeout(resolve, 0);
+        });
+    }
+
+    // Custom Floorplan Options Functions
+    function showCustomFloorplanOptions() {
+        document.getElementById('floorplan-selection').style.display = 'none';
+        document.getElementById('floorplan-instruction').style.display = 'none'; // Hide the instruction
+        document.getElementById('custom-floorplan-options').style.display = 'flex';
+        
+        // CLEAR FLOORPLAN STATE - when switching to AI estimations, clear floorplan selection
+        clearFloorplanState();
+        
+        // Reset the custom options
+        document.getElementById('floorplan-upload').value = '';
+        document.getElementById('room-length').value = '';
+        document.getElementById('room-width').value = '';
+        document.getElementById('ai-results').style.display = 'none';
+        document.getElementById('analyze-image-btn').style.display = 'none';
+        
+        // Reset modern upload UI
+        const uploadArea = document.getElementById('upload-area');
+        const imagePreview = document.getElementById('image-preview');
+        if (uploadArea && imagePreview) {
+            uploadArea.style.display = 'flex';
+            imagePreview.style.display = 'none';
+            document.getElementById('preview-image').src = '';
+            document.getElementById('image-name').textContent = '';
+            document.getElementById('image-size').textContent = '';
+        }
+        
+        // Add event listeners
+        setupCustomFloorplanEvents();
+    }
+    
+    function setupCustomFloorplanEvents() {
+        // Modern upload area elements
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('floorplan-upload');
+        const imagePreview = document.getElementById('image-preview');
+        const previewImage = document.getElementById('preview-image');
+        const imageName = document.getElementById('image-name');
+        const imageSize = document.getElementById('image-size');
+        const changeBtn = document.getElementById('change-image-btn');
+        const removeBtn = document.getElementById('remove-image-btn');
+
+        // Check if required elements exist before adding event listeners
+        if (!uploadArea || !fileInput) {
+            console.warn('Required floorplan upload elements not found');
+            return;
+        }
+
+        // Drag and drop events
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelection(files[0]);
+            }
+        });
+
+        // Click to upload
+        uploadArea.addEventListener('click', function(e) {
+            if (e.target === uploadArea || e.target.closest('.upload-content')) {
+                fileInput.click();
+            }
+        });
+
+        // File input change event
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFileSelection(file);
+            }
+        });
+
+        // Change image button
+        if (changeBtn) {
+            changeBtn.addEventListener('click', function() {
+                fileInput.click();
+            });
+        }
+
+        // Remove image button
+        if (removeBtn) {
+            removeBtn.addEventListener('click', function() {
+                removeImage();
+            });
+        }
+
+        function handleFileSelection(file) {
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(file.type)) {
+                alert('Please select a valid image file (JPG, PNG, or GIF).');
+                return;
+            }
+
+            // Validate file size (10MB max)
+            const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+            if (file.size > maxSize) {
+                alert('File size must be less than 10MB.');
+                return;
+            }
+
+            // Show loading state
+            uploadArea.classList.add('uploading');
+
+            // Clear dimension state when image is uploaded
+            clearDimensionState();
+            
+            // Create file reader to preview image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Update preview
+                previewImage.src = e.target.result;
+                imageName.textContent = file.name;
+                imageSize.textContent = formatFileSize(file.size);
+                
+                // Hide upload area and show preview
+                uploadArea.style.display = 'none';
+                imagePreview.style.display = 'block';
+                
+                // Show analyze button
+                document.getElementById('analyze-image-btn').style.display = 'inline-block';
+                
+                // Remove loading state
+                uploadArea.classList.remove('uploading');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeImage() {
+            // Clear file input
+            fileInput.value = '';
+            
+            // Hide preview and show upload area
+            imagePreview.style.display = 'none';
+            uploadArea.style.display = 'flex';
+            
+            // Hide analyze button
+            document.getElementById('analyze-image-btn').style.display = 'none';
+            
+            // Clear preview data
+            previewImage.src = '';
+            imageName.textContent = '';
+            imageSize.textContent = '';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Analyze uploaded image
+        document.getElementById('analyze-image-btn').addEventListener('click', function() {
+            const fileInput = document.getElementById('floorplan-upload');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select an image file first.');
+                return;
+            }
+            
+            analyzeUploadedImage(file);
+        });
+        
+        // Analyze room dimensions
+        document.getElementById('analyze-dimensions-btn').addEventListener('click', function() {
+            const length = parseFloat(document.getElementById('room-length').value);
+            const width = parseFloat(document.getElementById('room-width').value);
+            
+            if (!length || !width || length <= 0 || width <= 0) {
+                alert('Please enter valid room dimensions.');
+                return;
+            }
+            
+            // Clear upload state when dimensions are analyzed
+            clearUploadState();
+            
+            analyzeRoomDimensions(length, width);
+        });
+        
+        // Use AI estimations
+        document.getElementById('use-ai-estimations-btn').addEventListener('click', function() {
+            const estimations = document.getElementById('ai-estimations').textContent;
+            
+            // Store the AI estimations
+            document.getElementById('ai-estimations-data').value = estimations;
+            document.getElementById('selected-floorplan').value = 'ai-generated';
+            wizardData.floorplanName = estimations; // Store the actual AI estimation text
+            wizardData.aiEstimations = estimations;
+            
+            // CLEAR FLOORPLAN STATE - when AI is used, clear regular floorplan selection
+            clearFloorplanState();
+            
+            // Hide custom options and show success message
+            document.getElementById('custom-floorplan-options').style.display = 'none';
+            document.getElementById('floorplan-selection').style.display = 'flex';
+            
+            // Update the display to show selection
+            const floorplanContainer = document.getElementById('floorplan-selection');
+            floorplanContainer.innerHTML = `
+                <div class="floorplan-option selected ai-generated-option">
+                    <div class="ai-generated-content">
+                        <i class="fas fa-robot" style="font-size: 48px; color: #B8860B; margin-bottom: 10px;"></i>
+                        <div class="floorplan-label">AI Custom Estimations</div>
+                        <div style="font-size: 12px; color: #666; text-align: center;">Custom estimations generated</div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        // Back to floorplan selection
+        document.getElementById('back-to-floorplans-btn').addEventListener('click', function() {
+            document.getElementById('custom-floorplan-options').style.display = 'none';
+            document.getElementById('floorplan-selection').style.display = 'flex';
+            
+            // Show the instruction again
+            const idealSqm = getIdealSqmRange(wizardData.pax || 0);
+            const floorplanInstruction = document.getElementById('floorplan-instruction');
+            floorplanInstruction.innerHTML = `Select a floor plan:<br><small style="font-size: 16px;">Ideal sqm.: ${idealSqm}</small>`;
+            floorplanInstruction.style.display = 'block';
+            
+            // Deselect the Others option
+            document.querySelectorAll('.floorplan-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+        });
+    }
+    
+    function analyzeUploadedImage(file) {
+        const loadingDiv = document.getElementById('ai-loading');
+        const resultsDiv = document.getElementById('ai-results');
+        
+        loadingDiv.style.display = 'block';
+        resultsDiv.style.display = 'none';
+        
+        const formData = new FormData();
+        formData.append('floorplan_image', file);
+        formData.append('event_type', wizardData.eventType || 'wedding');
+        formData.append('pax', wizardData.pax || 100);
+        
+        fetch('/api/ai/analyze-floorplan/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            loadingDiv.style.display = 'none';
+            
+            if (data.success) {
+                document.getElementById('ai-estimations').textContent = data.estimations;
+                resultsDiv.style.display = 'block';
+                
+                // Store the Cloudinary URL and filename for later database saving
+                wizardData.uploadedFloorplanUrl = data.cloudinary_url;
+                wizardData.uploadedFloorplanFilename = data.filename;
+                
+                // Store the AI estimation result to floorplanName for booking summary display
+                wizardData.floorplanName = data.estimations;
+                wizardData.aiEstimations = data.estimations;
+                
+                // CLEAR FLOORPLAN STATE - when AI analysis succeeds, clear floorplan selection
+                clearFloorplanState();
+            } else {
+                alert('Error analyzing image: ' + data.error);
+            }
+        })
+        .catch(error => {
+            loadingDiv.style.display = 'none';
+            alert('Error analyzing image: ' + error.message);
+        });
+    }
+    
+    function analyzeRoomDimensions(length, width) {
+        const loadingDiv = document.getElementById('ai-loading');
+        const resultsDiv = document.getElementById('ai-results');
+        
+        loadingDiv.style.display = 'block';
+        resultsDiv.style.display = 'none';
+        
+        const eventType = wizardData.eventType || 'wedding';
+        const pax = wizardData.pax || 100;
+        
+        fetch('/api/ai/estimate-dimensions/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                length: length,
+                width: width,
+                event_type: eventType,
+                pax: pax
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            loadingDiv.style.display = 'none';
+            
+            if (data.success) {
+                document.getElementById('ai-estimations').textContent = data.estimations;
+                resultsDiv.style.display = 'block';
+                
+                // Store the AI estimation result to floorplanName for booking summary display
+                wizardData.floorplanName = data.estimations;
+                wizardData.aiEstimations = data.estimations;
+                
+                // CLEAR FLOORPLAN STATE - when AI analysis succeeds, clear floorplan selection
+                clearFloorplanState();
+            } else {
+                alert('Error generating estimations: ' + data.error);
+            }
+        })
+        .catch(error => {
+            loadingDiv.style.display = 'none';
+            alert('Error generating estimations: ' + error.message);
+        });
+    }
+
+    // Theme loading functionality
+    function loadThemes() {
+        const eventType = wizardData.eventType || '';
+        const themeContainer = document.getElementById('theme-grids-container');
+        const eventTypeSpan = document.getElementById('theme-event-type');
+        
+        // Update event type in the message
+        if (eventTypeSpan) {
+            eventTypeSpan.textContent = eventType.toLowerCase() + ' event';
+        }
+        
+        // MUTUAL EXCLUSIVITY LOGIC: Check what type of theme was previously selected
+        // Show EITHER preset themes OR custom generated theme, never both
+        
+        // Case 1: Custom theme was generated - show only the generated theme
+        if (wizardData.isCustomTheme && wizardData.customThemeImage) {
+            console.log('Restoring custom generated theme');
+            showGeneratedTheme(wizardData.theme_name, wizardData.customThemeImage, '');
+            return; // Exit early - don't load preset themes
+        }
+        
+        // Case 2: Preset theme was selected OR no theme selected yet - show preset themes
+        console.log('Loading preset themes');
+        
+        // Clear existing content
+        themeContainer.innerHTML = '<div style="text-align: center; color: #666;">Loading themes...</div>';
+        
+        // Fetch themes for this event type
+        fetch(`/api/themes/?event_type=${encodeURIComponent(eventType)}`)
+            .then(response => response.json())
+            .then(data => {
+                themeContainer.innerHTML = '';
+                
+                if (data.themes && data.themes.length > 0) {
+                    // Create theme grid container (similar to food-grid-container)
+                    const sectionDiv = document.createElement('div');
+                    sectionDiv.className = 'theme-grid-container';
+                    
+                    const titleDiv = document.createElement('div');
+                    titleDiv.className = 'theme-section-title';
+                    titleDiv.textContent = 'Available Themes';
+                    sectionDiv.appendChild(titleDiv);
+                    
+                    const gridDiv = document.createElement('div');
+                    gridDiv.className = 'theme-grid';
+                    
+                    data.themes.forEach(theme => {
+                        const themeItem = document.createElement('div');
+                        themeItem.className = 'theme-item';
+                        themeItem.setAttribute('data-name', theme.name);
+                        themeItem.setAttribute('data-images', JSON.stringify(theme.images));
+                        
+                        // Create container for all 3 images
+                        const themeImagesContainer = document.createElement('div');
+                        themeImagesContainer.className = 'theme-images';
+                        
+                        // Add all 3 images
+                        theme.images.slice(0, 3).forEach(imageUrl => {
+                            const img = document.createElement('img');
+                            img.src = imageUrl;
+                            img.className = 'theme-preview';
+                            img.alt = theme.name;
+                            img.onerror = function() {
+                                this.style.display = 'none';
+                            };
+                            themeImagesContainer.appendChild(img);
+                        });
+                        
+                        const label = document.createElement('div');
+                        label.className = 'theme-label';
+                        label.textContent = theme.name;
+                        
+                        themeItem.appendChild(label);
+                        themeItem.appendChild(themeImagesContainer);
+                        gridDiv.appendChild(themeItem);
+                        
+                        // Add click handler
+                        themeItem.addEventListener('click', function() {
+                            selectTheme(theme.name, theme.images, this);
+                        });
+                    });
+                    
+                    sectionDiv.appendChild(gridDiv);
+                    themeContainer.appendChild(sectionDiv);
+                    
+                    // Add "Generate Theme" button
+                    const generateThemeBtn = document.createElement('button');
+                    generateThemeBtn.type = 'button';
+                    generateThemeBtn.className = 'date-submit generate-theme-btn';
+                    generateThemeBtn.textContent = 'Generate Custom Theme';
+                    generateThemeBtn.style.cssText = 'margin-top: 20px; width: 250px; display: block; margin-left: auto; margin-right: auto;';
+                    
+                    generateThemeBtn.addEventListener('click', function() {
+                        showCustomThemeGenerator();
+                    });
+                    
+                    themeContainer.appendChild(generateThemeBtn);
+                    
+                    // Restore previously selected preset theme if any (only if not custom theme)
+                    if (!wizardData.isCustomTheme) {
+                        const previouslySelectedTheme = document.getElementById('selected-theme-name').value;
+                        if (previouslySelectedTheme && previouslySelectedTheme !== 'Custom Generated Theme') {
+                            const themeItemToSelect = document.querySelector(`[data-name="${previouslySelectedTheme}"]`);
+                            if (themeItemToSelect) {
+                                themeItemToSelect.classList.add('selected');
+                            }
+                        }
+                    }
+                } else {
+                    themeContainer.innerHTML = '<div style="text-align: center; color: #666;">No themes available for this event type.</div>';
+                    
+                    // Still add Generate Theme button even if no predefined themes
+                    const generateThemeBtn = document.createElement('button');
+                    generateThemeBtn.type = 'button';
+                    generateThemeBtn.className = 'date-submit generate-theme-btn';
+                    generateThemeBtn.textContent = 'Generate Custom Theme';
+                    generateThemeBtn.style.cssText = 'margin-top: 20px; width: 250px; display: block; margin-left: auto; margin-right: auto;';
+                    
+                    generateThemeBtn.addEventListener('click', function() {
+                        showCustomThemeGenerator();
+                    });
+                    
+                    themeContainer.appendChild(generateThemeBtn);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading themes:', error);
+                themeContainer.innerHTML = '<div style="text-align: center; color: #d32f2f;">Error loading themes. Please try again.</div>';
+            });
+    }
+
+    function selectTheme(themeName, themeImages, themeItemElement) {
+        // CLEAR CUSTOM THEME DATA - Mutual exclusivity
+        clearCustomThemeData();
+        
+        // Remove selection from all theme items
+        document.querySelectorAll('.theme-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+        
+        // Select this theme item
+        themeItemElement.classList.add('selected');
+        
+        // Store theme data
+        document.getElementById('selected-theme-name').value = themeName;
+        document.getElementById('selected-theme-urls').value = JSON.stringify(themeImages);
+        
+        // Store in wizardData to indicate this is a preset theme
+        wizardData.theme_name = themeName;
+        wizardData.theme_urls = themeImages;
+        wizardData.isCustomTheme = false; // Mark as preset theme
     }
 
     // Package image loading functionality
@@ -935,101 +2889,464 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Step 5: Color with Enhanced UI
-    function initializeColorPicker() {
-        const colorSelect = document.getElementById('color-select');
-        const colorPicker = document.getElementById('color-picker');
-        const hexInput = document.getElementById('hex-input');
+    // Step 3: Color Swatch Selection (Multi-select)
+    let colorSwatchesInitialized = false;
+    function initializeColorSwatches() {
+        if (colorSwatchesInitialized) return;
         
-        // Add color previews to dropdown options
-        function addColorPreviews() {
-            const options = colorSelect.querySelectorAll('option[data-color]');
-            options.forEach(option => {
-                const color = option.dataset.color;
-                option.style.background = `linear-gradient(to right, ${color} 0%, ${color} 20px, transparent 20px)`;
-                option.style.paddingLeft = '30px';
-            });
-        }
+        const colorSwatches = document.querySelectorAll('.color-swatch');
+        const previewContainer = document.getElementById('color-selection-preview');
         
-        // Clear hex input when dropdown is selected
-        colorSelect.addEventListener('change', function() {
-            if (this.value) {
-                hexInput.value = '';
-                const selectedOption = this.options[this.selectedIndex];
-                if (selectedOption.dataset.color) {
-                    colorPicker.value = selectedOption.dataset.color;
-                }
-            }
+        colorSwatches.forEach(swatch => {
+            // Remove any existing event listeners by cloning the element
+            const newSwatch = swatch.cloneNode(true);
+            swatch.parentNode.replaceChild(newSwatch, swatch);
         });
         
-        // Clear dropdown when hex input is typed
-        hexInput.addEventListener('input', function() {
-            if (this.value.trim()) {
-                colorSelect.value = '';
-                // Validate and update color picker
-                let hexValue = this.value.trim();
-                if (!hexValue.startsWith('#')) {
-                    hexValue = '#' + hexValue;
-                    this.value = hexValue;
+        // Re-select the swatches after cloning
+        const freshColorSwatches = document.querySelectorAll('.color-swatch');
+        
+        freshColorSwatches.forEach(swatch => {
+            swatch.addEventListener('click', function() {
+                const selectedColor = this.dataset.color;
+                
+                // If already selected, remove it
+                if (this.classList.contains('selected')) {
+                    const currentOrder = parseInt(this.dataset.order);
+                    this.classList.remove('selected');
+                    this.removeAttribute('data-order');
+                    
+                    // Remove from wizardData.colors
+                    wizardData.colors = wizardData.colors.filter(color => color !== selectedColor);
+                    
+                    // Update order numbers for remaining selections
+                    freshColorSwatches.forEach(s => {
+                        if (s.classList.contains('selected')) {
+                            const order = parseInt(s.dataset.order);
+                            if (order > currentOrder) {
+                                s.dataset.order = order - 1;
+                            }
+                        }
+                    });
+                } else {
+                    // Check if we already have 3 colors selected
+                    if (wizardData.colors.length >= 3) {
+                        showAlert('color', 'You can only select up to 3 colors.');
+                        return;
+                    }
+                    
+                    // Add new selection
+                    this.classList.add('selected');
+                    const order = wizardData.colors.length + 1;
+                    this.dataset.order = order;
+                    wizardData.colors.push(selectedColor);
                 }
                 
-                // Validate hex format
-                if (/^#[0-9A-Fa-f]{6}$/.test(hexValue)) {
-                    colorPicker.value = hexValue;
-                } else if (/^#[0-9A-Fa-f]{3}$/.test(hexValue)) {
-                    // Convert 3-digit hex to 6-digit
-                    const expanded = '#' + hexValue[1] + hexValue[1] + hexValue[2] + hexValue[2] + hexValue[3] + hexValue[3];
-                    colorPicker.value = expanded;
+                updateColorPreview();
+                console.log('Colors selected:', wizardData.colors);
+            });
+        });
+        
+        colorSwatchesInitialized = true;
+    }
+    
+    // Update the color stack preview
+    function updateColorPreview() {
+        const previewContainer = document.getElementById('color-selection-preview');
+        
+        if (wizardData.colors.length === 0) {
+            previewContainer.style.display = 'none';
+            return;
+        }
+        
+        previewContainer.style.display = 'block';
+        
+        // Get color images for preview
+        wizardData.colors.forEach((colorName, index) => {
+            const layerId = `color-layer-${index + 1}`;
+            const layerElement = document.getElementById(layerId);
+            const colorDiv = layerElement.querySelector('.layer-color');
+            
+            // Find the corresponding swatch image
+            const swatch = document.querySelector(`[data-color="${colorName}"]`);
+            if (swatch) {
+                const image = swatch.querySelector('.swatch-image');
+                if (image) {
+                    colorDiv.style.backgroundImage = `url('${image.src}')`;
                 }
             }
         });
         
-        // Update hex input when color picker changes
-        colorPicker.addEventListener('input', function() {
-            hexInput.value = this.value.toUpperCase();
-            colorSelect.value = '';
-        });
-        
-        // Format hex input on blur
-        hexInput.addEventListener('blur', function() {
-            let value = this.value.trim();
-            if (value && !value.startsWith('#')) {
-                value = '#' + value;
+        // Show/hide layers based on selection count and clear unused layers
+        for (let i = 0; i < 3; i++) {
+            const layerId = `color-layer-${i + 1}`;
+            const layerElement = document.getElementById(layerId);
+            
+            if (i < wizardData.colors.length) {
+                layerElement.style.display = 'block';
+            } else {
+                layerElement.style.display = 'none';
+                const colorDiv = layerElement.querySelector('.layer-color');
+                colorDiv.style.backgroundImage = 'none';
+                colorDiv.style.backgroundColor = 'transparent';
             }
-            this.value = value.toUpperCase();
-        });
-        
-        addColorPreviews();
+        }
     }
     
     document.getElementById('color-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        const colorSelect = document.getElementById('color-select');
-        const hexInput = document.getElementById('hex-input');
         
-        let selectedColor = '';
-        
-        if (colorSelect.value) {
-            selectedColor = colorSelect.value;
-        } else if (hexInput.value.trim()) {
-            selectedColor = hexInput.value.trim();
+        if (wizardData.colors.length < 1 || wizardData.colors.length > 3) {
+            showAlert('color', 'Please select 1 to 3 colors for your event motif.');
+            return;
         }
         
-        if (selectedColor) {
-            wizardData.color = selectedColor;
-            updatePackageSummary();
-            nextStep();
-        } else {
-            showAlert('color', 'Please select a color or enter a hex value.');
-        }
+        updatePackageSummary();
+        nextStep();
     });
     
-    // Initialize color picker when step 5 is shown
+    // Initialize food grids
+    function initializeFoodGrids() {
+        const container = document.getElementById('food-grids-container');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        // Create food sections
+        const sections = [
+            { key: 'beef', title: 'Beef', multiSelect: true },
+            { key: 'pork', title: 'Pork', multiSelect: true },
+            { key: 'chicken', title: 'Chicken', multiSelect: true },
+            { key: 'seafood', title: 'Seafood', multiSelect: true },
+            { key: 'pasta', title: 'Pasta (Select 1)', multiSelect: false },
+            { key: 'drinks', title: 'Drinks (Select 1)', multiSelect: false }
+        ];
+        
+        sections.forEach(section => {
+            const sectionDiv = document.createElement('div');
+            sectionDiv.className = 'food-grid-container';
+            
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'food-section-title';
+            titleDiv.textContent = section.title;
+            sectionDiv.appendChild(titleDiv);
+            
+            const gridDiv = document.createElement('div');
+            gridDiv.className = 'food-grid';
+            gridDiv.setAttribute('data-section', section.key);
+            gridDiv.setAttribute('data-multi-select', section.multiSelect);
+            
+            foodMenuData[section.key].forEach((url, index) => {
+                const foodItem = document.createElement('div');
+                foodItem.className = 'food-item';
+                foodItem.setAttribute('data-name', getFoodName(url));
+                foodItem.setAttribute('data-url', url);
+                
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = 'food-image';
+                img.alt = getFoodName(url);
+                
+                const label = document.createElement('div');
+                label.className = 'food-label';
+                label.textContent = getFoodName(url);
+                
+                foodItem.appendChild(img);
+                foodItem.appendChild(label);
+                gridDiv.appendChild(foodItem);
+                
+                // Add click handler
+                foodItem.addEventListener('click', function() {
+                    handleFoodItemClick(this, section.key, section.multiSelect);
+                });
+            });
+            
+            sectionDiv.appendChild(gridDiv);
+            container.appendChild(sectionDiv);
+        });
+    }
+    
+    // Handle food item selection
+    function handleFoodItemClick(foodItem, sectionKey, multiSelect) {
+        const isSelected = foodItem.classList.contains('selected');
+        const foodName = foodItem.getAttribute('data-name');
+        
+        if (multiSelect) {
+            // Multi-select behavior for dishes
+            if (isSelected) {
+                foodItem.classList.remove('selected');
+                // Remove from wizardData.menu
+                const index = wizardData.menu.indexOf(foodName);
+                if (index > -1) {
+                    wizardData.menu.splice(index, 1);
+                }
+            } else {
+                // Check dish limit based on package
+                const requiredDishes = getRequiredDishCount();
+                const currentDishCount = wizardData.menu.filter(item => 
+                    !item.includes('Pancit') && !item.includes('Fettuccine') && 
+                    !item.includes('Lasagna') && !item.includes('Linguine') && 
+                    !item.includes('Baked Mac') && !item.includes('Rigatoni') && 
+                    !item.includes('Spaghetti') && !item.includes('Penne') &&
+                    !item.includes('Lemonade') && !item.includes('Juice') && 
+                    !item.includes('Tea') && !item.includes('Seasons')
+                ).length;
+                
+                if (currentDishCount >= requiredDishes) {
+                    showAlert('food', `You can only select ${requiredDishes} dishes total.`);
+                    return;
+                }
+                
+                foodItem.classList.add('selected');
+                wizardData.menu.push(foodName);
+            }
+        } else {
+            // Single-select behavior for pasta and drinks
+            const grid = foodItem.parentElement;
+            grid.querySelectorAll('.food-item').forEach(item => item.classList.remove('selected'));
+            
+            if (!isSelected) {
+                foodItem.classList.add('selected');
+                // Update wizardData.menu appropriately
+                if (sectionKey === 'pasta') {
+                    // Remove any existing pasta
+                    wizardData.menu = wizardData.menu.filter(item => 
+                        !item.includes('Pancit') && !item.includes('Fettuccine') && 
+                        !item.includes('Lasagna') && !item.includes('Linguine') && 
+                        !item.includes('Baked Mac') && !item.includes('Rigatoni') && 
+                        !item.includes('Spaghetti') && !item.includes('Penne')
+                    );
+                    wizardData.menu.push(foodName);
+                } else if (sectionKey === 'drinks') {
+                    // Remove any existing drink
+                    wizardData.menu = wizardData.menu.filter(item => 
+                        !item.includes('Lemonade') && !item.includes('Juice') && 
+                        !item.includes('Tea') && !item.includes('Seasons')
+                    );
+                    wizardData.menu.push(foodName);
+                }
+            }
+        }
+        
+        console.log('Updated menu:', wizardData.menu);
+    }
+
+    // Show booking summary
+    function showBookingSummary() {
+        const summaryContainer = document.getElementById('booking-summary-content');
+        if (!summaryContainer) return;
+
+        // Debug floorplan data
+        console.log('Summary Debug - floorplanName:', wizardData.floorplanName);
+        console.log('Summary Debug - floorplan:', wizardData.floorplan);
+        console.log('Summary Debug - aiEstimations:', wizardData.aiEstimations);
+        console.log('Summary Debug - uploadedFloorplanUrl:', wizardData.uploadedFloorplanUrl);
+
+        // Clear previous content
+        summaryContainer.innerHTML = '';
+
+        // Create summary sections
+        const sections = [
+            {
+                title: 'Event Details',
+                items: [
+                    { label: 'Celebrant Name', value: wizardData.celebrant },
+                    { label: 'Event Date', value: wizardData.date },
+                    { label: 'Event Type', value: wizardData.eventType },
+                    { label: 'Number of Guests', value: `${wizardData.pax} Pax` },
+                    { label: 'Color Motif', value: wizardData.colors.join(' → '), showColorPreview: true }
+                ]
+            },
+            {
+                title: 'Theme & Venue',
+                items: [
+                    { label: 'Theme', value: wizardData.theme_name },
+                    { label: 'Venue', value: wizardData.location },
+                    { label: 'Floor Plan', value: wizardData.floorplanName || 
+                        (wizardData.aiEstimations || '') ||
+                        (wizardData.floorplan && wizardData.floorplan !== 'ai-generated' ? 'Selected Floor Plan' : '') ||
+                        'Not Selected' },
+                    { label: 'Package', value: wizardData.package }
+                ]
+            },
+            {
+                title: 'Food Menu',
+                items: [],
+                showFoodImages: true
+            }
+        ];
+
+        sections.forEach(section => {
+            const sectionDiv = document.createElement('div');
+            sectionDiv.style.cssText = 'background: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px solid #ddd;';
+            
+            const titleDiv = document.createElement('h3');
+            titleDiv.textContent = section.title;
+            titleDiv.style.cssText = 'margin: 0 0 15px 0; color: #333; font-size: 1.1rem; border-bottom: 2px solid #AD974F; padding-bottom: 5px;';
+            sectionDiv.appendChild(titleDiv);
+
+            if (section.showFoodImages && wizardData.menu && wizardData.menu.length > 0) {
+                // Show selected food items with images
+                const foodGrid = document.createElement('div');
+                foodGrid.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;';
+                
+                wizardData.menu.forEach(foodName => {
+                    // Find the URL for this food item from the foodNames mapping
+                    const foodUrl = Object.keys(foodNames).find(url => foodNames[url] === foodName);
+                    
+                    const foodItem = document.createElement('div');
+                    foodItem.style.cssText = 'display: flex; flex-direction: column; align-items: center; padding: 10px; background: white; border-radius: 8px; border: 1px solid #ddd;';
+                    
+                    if (foodUrl) {
+                        const img = document.createElement('img');
+                        img.src = foodUrl;
+                        img.alt = foodName;
+                        img.style.cssText = 'width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;';
+                        img.onerror = function() {
+                            this.style.display = 'none';
+                        };
+                        foodItem.appendChild(img);
+                    }
+                    
+                    const label = document.createElement('div');
+                    label.textContent = foodName;
+                    label.style.cssText = 'text-align: center; font-size: 0.9rem; color: #333; font-weight: 500; line-height: 1.2;';
+                    foodItem.appendChild(label);
+                    
+                    foodGrid.appendChild(foodItem);
+                });
+                
+                sectionDiv.appendChild(foodGrid);
+            } else {
+                // Regular items
+                section.items.forEach(item => {
+                    if (item.value) {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.style.cssText = 'margin: 8px 0; display: flex; justify-content: space-between; align-items: center;';
+                        
+                        const labelSpan = document.createElement('span');
+                        labelSpan.textContent = item.label + ':';
+                        labelSpan.style.cssText = 'font-weight: 600; color: #555;';
+                        
+                        if (item.showColorPreview && wizardData.colors && wizardData.colors.length > 0) {
+                            // Create color preview container
+                            const colorContainer = document.createElement('div');
+                            colorContainer.style.cssText = 'display: flex; align-items: center; gap: 10px;';
+                            
+                            // Add text value
+                            const valueSpan = document.createElement('span');
+                            valueSpan.textContent = item.value;
+                            valueSpan.style.cssText = 'color: #333; font-size: 0.9rem;';
+                            colorContainer.appendChild(valueSpan);
+                            
+                            // Add color swatches
+                            const swatchContainer = document.createElement('div');
+                            swatchContainer.style.cssText = 'display: flex; gap: 3px;';
+                            
+                            wizardData.colors.forEach((colorName, index) => {
+                                const swatch = document.querySelector(`[data-color="${colorName}"]`);
+                                if (swatch) {
+                                    const image = swatch.querySelector('.swatch-image');
+                                    if (image) {
+                                        const colorPreview = document.createElement('div');
+                                        colorPreview.style.cssText = `
+                                            width: 25px; 
+                                            height: 25px; 
+                                            border-radius: 4px; 
+                                            background-image: url('${image.src}'); 
+                                            background-size: cover; 
+                                            background-position: center;
+                                            border: 1px solid #ccc;
+                                            position: relative;
+                                        `;
+                                        
+                                        // Add order number
+                                        const orderNum = document.createElement('div');
+                                        orderNum.textContent = index + 1;
+                                        orderNum.style.cssText = `
+                                            position: absolute;
+                                            bottom: -2px;
+                                            right: -2px;
+                                            background: #B8860B;
+                                            color: white;
+                                            width: 12px;
+                                            height: 12px;
+                                            border-radius: 50%;
+                                            font-size: 8px;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                        `;
+                                        colorPreview.appendChild(orderNum);
+                                        swatchContainer.appendChild(colorPreview);
+                                    }
+                                }
+                            });
+                            
+                            colorContainer.appendChild(swatchContainer);
+                            itemDiv.appendChild(colorContainer);
+                        } else {
+                            const valueSpan = document.createElement('span');
+                            valueSpan.textContent = item.value;
+                            valueSpan.style.cssText = 'color: #333; text-align: right; max-width: 60%; word-break: break-word;';
+                            itemDiv.appendChild(valueSpan);
+                        }
+                        
+                        itemDiv.insertBefore(labelSpan, itemDiv.firstChild);
+                        sectionDiv.appendChild(itemDiv);
+                    }
+                });
+            }
+
+            summaryContainer.appendChild(sectionDiv);
+        });
+
+        // Add theme images if available
+        if (wizardData.theme_urls && wizardData.theme_urls.length > 0) {
+            const themeImagesDiv = document.createElement('div');
+            themeImagesDiv.style.cssText = 'background: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px solid #ddd;';
+            
+            const themeTitle = document.createElement('h3');
+            themeTitle.textContent = 'Theme Images';
+            themeTitle.style.cssText = 'margin: 0 0 15px 0; color: #333; font-size: 1.1rem; border-bottom: 2px solid #AD974F; padding-bottom: 5px;';
+            themeImagesDiv.appendChild(themeTitle);
+
+            const imagesContainer = document.createElement('div');
+            imagesContainer.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;';
+            
+            wizardData.theme_urls.slice(0, 3).forEach(imageUrl => {
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.style.cssText = 'width: 100%; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;';
+                img.alt = wizardData.theme_name;
+                imagesContainer.appendChild(img);
+            });
+
+            themeImagesDiv.appendChild(imagesContainer);
+            summaryContainer.appendChild(themeImagesDiv);
+        }
+    }
+    
+    // Helper function to get required dish count
+    function getRequiredDishCount() {
+        switch (wizardData.package) {
+            case 'Package A': return 3;
+            case 'Package B': return 4;
+            case 'Package C': return 5;
+            default: return 4;
+        }
+    }
+
+    // Initialize color swatches when step 3 is shown
     const originalShowStep = showStep;
     showStep = function(stepIndex) {
         originalShowStep(stepIndex);
-        if (stepIndex === 4) { // step-5 is index 4
-            setTimeout(initializeColorPicker, 100);
+        if (stepIndex === 2) { // step-3 is index 2
+            setTimeout(initializeColorSwatches, 100);
+        }
+        if (stepIndex === 8) { // step-8 is index 8 (food menu)
+            updateFoodMenuMessage();
+            setTimeout(initializeFoodGrids, 100);
         }
     };
 
@@ -1057,18 +3374,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.getElementById('package-next-btn').addEventListener('click', nextStep);
+
+    // Summary step event listeners
+    document.getElementById('summary-back-btn').addEventListener('click', function() {
+        showStep(8); // Go back to food menu
+    });
+
+    document.getElementById('confirm-booking-btn').addEventListener('click', function() {
+        markStepComplete(9);
+        submitBooking();
+    });
     
-    // Update showStep to handle food menu message
-    const originalShowStep2 = showStep;
-    showStep = function(stepIndex) {
-        originalShowStep2(stepIndex);
-        if (stepIndex === 4) { // step-5 is index 4
-            setTimeout(initializeColorPicker, 100);
-        }
-        if (stepIndex === 6) { // step-7 is index 6 (food menu)
-            updateFoodMenuMessage();
-        }
-    };
+
     
     // Helper function to update food menu message based on package
     function updateFoodMenuMessage() {
@@ -1105,6 +3422,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const groupType = section.dataset.group;
                 
                 if (btn.classList.contains('selected')) {
+                    // Always allow deselection
                     btn.classList.remove('selected');
                 } else {
                     if (groupType === 'pasta' || groupType === 'drink') {
@@ -1121,6 +3439,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 case 'Package A': return 3;
                                 case 'Package B': return 4;
                                 case 'Package C': return 5;
+                                default: return 4; // Add default case
                             }
                         };
                         
@@ -1129,6 +3448,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         if (allDishesSelected.length < requiredDishes) {
                             btn.classList.add('selected');
+                        } else {
+                            // Optional: Show a message when limit is reached
+                            console.log(`Maximum ${requiredDishes} dishes already selected`);
                         }
                     }
                 }
@@ -1136,62 +3458,73 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Helper function to get selected items from a food group
-    const getSelectedFood = (groupName) => {
-        const section = document.querySelector(`.food-section[data-group="${groupName}"]`);
-        return section ? Array.from(section.querySelectorAll('.food-btn.selected')).map(b => b.textContent.trim()) : [];
-    };
+
 
     document.getElementById('food-form').addEventListener('submit', function(e) {
         e.preventDefault();
         clearAlert('food');
 
-        // Get required dish count based on package
-        const getRequiredDishCount = () => {
-            switch (wizardData.package) {
-                case 'Package A': return 3;
-                case 'Package B': return 4;
-                case 'Package C': return 5;
-            }
-        };
-        
         const requiredDishes = getRequiredDishCount();
 
-        // Get selected items from each category
-        const dishGroups = ['beef', 'pork', 'chicken', 'seafood', 'vegetables'];
-        const selectedDishes = dishGroups.flatMap(getSelectedFood);
-        const selectedPasta = getSelectedFood('pasta');
-        const selectedDrink = getSelectedFood('drink');
+        // Get selected items from wizardData.menu (already updated by handleFoodItemClick)
+        const selectedItems = wizardData.menu || [];
+        
+        // Count dishes, pasta, and drinks from the array
+        let dishCount = 0;
+        let pastaCount = 0;
+        let drinkCount = 0;
+        
+        selectedItems.forEach(item => {
+            // Check if it's pasta
+            if (item.includes('Pancit') || item.includes('Fettuccine') || 
+                item.includes('Lasagna') || item.includes('Linguine') || 
+                item.includes('Baked Mac') || item.includes('Rigatoni') || 
+                item.includes('Spaghetti') || item.includes('Penne')) {
+                pastaCount++;
+            }
+            // Check if it's drink
+            else if (item.includes('Lemonade') || item.includes('Juice') || 
+                     item.includes('Tea') || item.includes('Seasons')) {
+                drinkCount++;
+            }
+            // Otherwise it's a dish
+            else {
+                dishCount++;
+            }
+        });
 
         // Validate selections
-        if (selectedDishes.length !== requiredDishes) {
+        if (dishCount !== requiredDishes) {
             showAlert('food', `Please select exactly ${requiredDishes} dishes total.`);
             return;
         }
-        if (selectedPasta.length !== 1) {
+        if (pastaCount !== 1) {
             showAlert('food', 'Please select exactly 1 pasta.');
             return;
         }
-        if (selectedDrink.length !== 1) {
+        if (drinkCount !== 1) {
             showAlert('food', 'Please select exactly 1 drink.');
             return;
         }
 
-        // Store the food selections
-        wizardData.menu = {
-            dishes: selectedDishes,
-            pasta: selectedPasta[0],
-            drink: selectedDrink[0]
-        };
-        
-        markStepComplete(7);
-        submitBooking();
+        // Store the food selections (already stored by handleFoodItemClick)
+        markStepComplete(8);
+        showBookingSummary();
+        showStep(9);
     });
 
     function updatePackageSummary() {
         let summary = `${wizardData.eventType} ${wizardData.pax} Pax`;
-        if (wizardData.location && wizardData.floorplanName) {
-            summary += ` - ${wizardData.location} (${wizardData.floorplanName})`;
+        if (wizardData.location) {
+            if (wizardData.floorplanName && wizardData.aiEstimations) {
+                // For AI estimations, show a shortened version in summary
+                summary += ` - ${wizardData.location} (AI Custom Estimations)`;
+            } else if (wizardData.floorplanName) {
+                // For regular floorplan selections, show the floorplan name
+                summary += ` - ${wizardData.location} (${wizardData.floorplanName})`;
+            } else {
+                summary += ` - ${wizardData.location}`;
+            }
         }
         document.getElementById('package-summary').textContent = summary;
     }
@@ -1214,22 +3547,78 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function submitBooking() {
         // Mark final step as completed
-        markStepComplete(7);
+        markStepComplete(9);
+        
+        // Transform wizardData.menu array into the expected format
+        const menuItems = wizardData.menu || [];
+        const dishes = [];
+        let pasta = "";
+        let drink = "";
+        
+        menuItems.forEach(item => {
+            // Check if it's pasta
+            if (item.includes('Pancit') || item.includes('Fettuccine') || 
+                item.includes('Lasagna') || item.includes('Linguine') || 
+                item.includes('Baked Mac') || item.includes('Rigatoni') || 
+                item.includes('Spaghetti') || item.includes('Penne')) {
+                pasta = item;
+            }
+            // Check if it's drink
+            else if (item.includes('Lemonade') || item.includes('Juice') || 
+                     item.includes('Tea') || item.includes('Seasons')) {
+                drink = item;
+            }
+            // Otherwise it's a dish
+            else {
+                dishes.push(item);
+            }
+        });
+        
+        // Prepare theme data based on type (custom vs preset)
+        let themePayload;
+        if (wizardData.isCustomTheme && wizardData.customThemeImage) {
+            // Custom Generated Theme: Save with "Custom Generated Theme" name and Cloudinary URL
+            themePayload = {
+                theme_name: "Custom Generated Theme",
+                theme_urls: [wizardData.customThemeImage] // Cloudinary URL goes in theme_urls column
+            };
+        } else if (wizardData.theme_name && wizardData.theme_urls) {
+            // Preset Theme: Use normal preset theme data
+            themePayload = {
+                theme_name: wizardData.theme_name,
+                theme_urls: wizardData.theme_urls
+            };
+        } else {
+            // No theme selected
+            themePayload = {
+                theme_name: "",
+                theme_urls: []
+            };
+        }
         
         // Prepare the payload with all collected data
         const payload = {
             celebrant_name: wizardData.celebrant,           // Step 0 - Celebrant's Name
             date: wizardData.date,                          // Step 1 - Date of Event
             event_type: wizardData.eventType,               // Step 2 - Type of Event
-            pax: wizardData.pax,                            // Step 3 - Number of Pax
-            location: {                                     // Step 4 - Venue & Floor Plan
+            color_motif: wizardData.colors,                 // Step 3 - Color Motif (array of 1-3 colors)
+            pax: wizardData.pax,                            // Step 4 - Number of Pax
+            theme_name: themePayload.theme_name,            // Step 5 - Theme Name (Custom Generated Theme OR preset name)
+            theme_urls: themePayload.theme_urls,            // Step 5 - Theme URLs (Cloudinary URL for custom OR preset URLs)
+            location: {                                     // Step 6 - Venue & Floor Plan
                 venue: wizardData.location || "",
-                floorplan_filename: extractFilename(wizardData.floorplan || ""),
-                floorplan_display_name: wizardData.floorplanName || ""
+                floorplan_filename: wizardData.uploadedFloorplanFilename || 
+                                   (wizardData.aiEstimations ? `ai_dimensions_${Date.now()}.txt` : extractFilename(wizardData.floorplan || "")),
+                floorplan_display_name: wizardData.floorplanName || "", // This now contains the actual AI estimation text
+                cloudinary_url: wizardData.uploadedFloorplanUrl || "",
+                ai_estimations: wizardData.aiEstimations || ""
             },
-            color_motif: wizardData.color,                  // Step 5 - Color Motif
-            package: wizardData.package,                    // Step 6 - Package
-            menu: wizardData.menu                           // Step 7 - Food Menu
+            package: wizardData.package,                    // Step 7 - Package
+            menu: {                                         // Step 8 - Food Menu (transformed format)
+                dishes: dishes,
+                pasta: pasta,
+                drink: drink
+            }
         };
 
         // Create form data for submission
@@ -1272,6 +3661,430 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         return cookieValue;
+    }
+
+    // Helper functions for mutual exclusivity
+    function clearPresetThemeSelections() {
+        // Clear all selected theme items visually
+        document.querySelectorAll('.theme-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+        
+        // Clear form inputs for preset themes
+        document.getElementById('selected-theme-name').value = '';
+        document.getElementById('selected-theme-urls').value = '';
+        
+        // Clear wizardData preset theme data
+        wizardData.theme_name = '';
+        wizardData.theme_urls = [];
+        wizardData.isCustomTheme = false;
+        
+        console.log('Cleared preset theme selections');
+    }
+    
+    function clearCustomThemeData() {
+        // Clear wizardData custom theme data
+        wizardData.isCustomTheme = false;
+        wizardData.customThemeImage = null;
+        
+        // Remove any generated theme display
+        const generatedThemeDisplay = document.getElementById('generated-theme-display');
+        if (generatedThemeDisplay) {
+            generatedThemeDisplay.remove();
+        }
+        
+        // Remove custom theme interface if visible
+        const customInterface = document.getElementById('custom-theme-interface');
+        if (customInterface) {
+            customInterface.remove();
+        }
+        
+        console.log('Cleared custom theme data');
+    }
+
+    // Custom Theme Generator Functions
+    function showCustomThemeGenerator() {
+        const themeContainer = document.getElementById('theme-grids-container');
+        
+        // CLEAR PRESET THEME SELECTIONS - Mutual exclusivity
+        clearPresetThemeSelections();
+        
+        // Hide existing theme options
+        const existingThemes = themeContainer.querySelector('.theme-grid-container');
+        const existingGenerateBtn = themeContainer.querySelector('.generate-theme-btn');
+        if (existingThemes) existingThemes.style.display = 'none';
+        if (existingGenerateBtn) existingGenerateBtn.style.display = 'none';
+        
+        // Create custom theme generation interface
+        const customThemeInterface = document.createElement('div');
+        customThemeInterface.id = 'custom-theme-interface';
+        customThemeInterface.innerHTML = `
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h3 style="color: #AD974F; margin-bottom: 15px;">Generate Custom Theme</h3>
+                <p style="color: #666; font-size: 0.95rem; max-width: 500px; margin: 0 auto;">
+                    Create a unique theme tailored to your event using AI
+                </p>
+            </div>
+            
+            <div style="max-width: 500px; margin: 0 auto; padding: 20px; background: #f8f9fa; border-radius: 10px; border: 1px solid #ddd;">
+                <div style="margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px; border-left: 4px solid #AD974F;">
+                    <p style="margin: 0 0 10px 0; color: #333; font-size: 0.9rem; line-height: 1.4;">
+                        <strong>Event:</strong> ${wizardData.eventType || 'Not selected'} • 
+                        <strong>Guests:</strong> ${wizardData.pax || 'Not selected'} pax
+                    </p>
+                    <p style="margin: 0 0 10px 0; color: #333; font-size: 0.9rem; line-height: 1.4;">
+                        <strong>Colors:</strong> ${wizardData.colors && wizardData.colors.length > 0 ? wizardData.colors.join(', ') : 'Not selected'}
+                    </p>
+                    <p style="margin: 0; color: #666; font-size: 0.85rem; line-height: 1.3;">
+                        We'll automatically create a beautiful theme using your event details and colors. 
+                        Add a description below for extra customization.
+                    </p>
+                </div>
+                
+                <div style="margin-bottom: 25px;">
+                    <label for="theme-description" style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">
+                        Theme Description (Optional):
+                    </label>
+                    <textarea 
+                        id="theme-description" 
+                        placeholder="Optional: Add specific details like 'vintage', 'modern', 'rustic', 'elegant', 'tropical paradise', etc. Leave blank for a beautiful default theme based on your event and colors."
+                        style="width: 100%; height: 100px; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 0.95rem; resize: vertical; font-family: inherit; line-height: 1.4;"
+                        maxlength="300"
+                    ></textarea>
+                    <div style="text-align: right; margin-top: 5px;">
+                        <span id="char-count" style="font-size: 0.8rem; color: #999;">0/300</span>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    <button 
+                        id="back-to-preset-themes" 
+                        style="padding: 12px 24px; background: #f5f5f5; color: #666; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-size: 0.95rem;"
+                    >
+                        Select Preset Themes
+                    </button>
+                    <button 
+                        id="generate-theme-btn" 
+                        style="padding: 12px 24px; background: #AD974F; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 600;"
+                    >
+                        Generate Theme
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        themeContainer.appendChild(customThemeInterface);
+        
+        // Character count functionality
+        const textarea = document.getElementById('theme-description');
+        const charCount = document.getElementById('char-count');
+        const generateBtn = document.getElementById('generate-theme-btn');
+        
+        textarea.addEventListener('input', function() {
+            const length = this.value.length;
+            charCount.textContent = `${length}/300`;
+        });
+        
+        // Back to preset themes handler
+        document.getElementById('back-to-preset-themes').addEventListener('click', function() {
+            showPresetThemes();
+        });
+        
+        // Generate theme handler
+        generateBtn.addEventListener('click', function() {
+            const description = textarea.value.trim();
+            generateCustomTheme(description);
+        });
+        
+        // Focus on textarea
+        setTimeout(() => textarea.focus(), 100);
+    }
+    
+    function showPresetThemes() {
+        const themeContainer = document.getElementById('theme-grids-container');
+        
+        // CLEAR CUSTOM THEME DATA - Mutual exclusivity
+        clearCustomThemeData();
+        
+        // Remove custom theme interface
+        const customInterface = document.getElementById('custom-theme-interface');
+        if (customInterface) {
+            customInterface.remove();
+        }
+        
+        // Show existing theme options
+        const existingThemes = themeContainer.querySelector('.theme-grid-container');
+        const existingGenerateBtn = themeContainer.querySelector('.generate-theme-btn');
+        if (existingThemes) existingThemes.style.display = 'block';
+        if (existingGenerateBtn) existingGenerateBtn.style.display = 'block';
+    }
+    
+    function generateCustomTheme(description) {
+        console.log('Generating custom theme with description:', description);
+        
+        // Check if we're in regeneration mode or initial generation
+        const loadingIndicator = document.getElementById('theme-loading-indicator');
+        const customInterface = document.getElementById('custom-theme-interface');
+        
+        if (loadingIndicator) {
+            // We're regenerating - show the loading indicator
+            loadingIndicator.style.display = 'block';
+        } else if (customInterface) {
+            // Initial generation - replace interface with loading indicator
+            customInterface.innerHTML = `
+                <div style="text-align: center; padding: 60px 20px;">
+                    <div style="display: inline-block; animation: spin 1s linear infinite; margin-bottom: 20px;">
+                        <div style="width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #AD974F; border-radius: 50%;"></div>
+                    </div>
+                    <div style="color: #AD974F; font-size: 1.2rem; font-weight: 600; margin-bottom: 10px;">
+                        Generating Custom Theme...
+                    </div>
+                    <div style="color: #666; font-size: 0.95rem; max-width: 400px; margin: 0 auto; line-height: 1.4;">
+                        Our AI is creating a unique entrance design based on your event details. This may take up to a minute.
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Add CSS animation for spinner if not already added
+        if (!document.getElementById('spinner-style')) {
+            const style = document.createElement('style');
+            style.id = 'spinner-style';
+            style.textContent = `
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Prepare data for API call
+        const requestData = {
+            description: description,
+            event_type: wizardData.eventType || 'birthday',
+            colors: wizardData.colors || [],
+            pax: wizardData.pax || 50
+        };
+        
+        // Create AbortController for timeout handling (5 minutes for OpenAI generation)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minute timeout
+        
+        // Make API call to generate theme
+        fetch('/api/generate-custom-theme/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(requestData),
+            signal: controller.signal
+        })
+        .then(response => {
+            clearTimeout(timeoutId); // Clear timeout on successful response
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Hide loading indicator first
+                const loadingIndicator = document.getElementById('theme-loading-indicator');
+                if (loadingIndicator) {
+                    loadingIndicator.style.display = 'none';
+                }
+                
+                // Show generated theme (single image)
+                showGeneratedTheme(data.theme_name, data.theme_image, data.description);
+            } else {
+                // Hide loading indicator and restore buttons
+                const loadingIndicator = document.getElementById('theme-loading-indicator');
+                const regenerateBtn = document.getElementById('regenerate-theme-btn');
+                
+                if (loadingIndicator) {
+                    loadingIndicator.style.display = 'none';
+                }
+                if (regenerateBtn) {
+                    regenerateBtn.disabled = false;
+                    regenerateBtn.style.opacity = '1';
+                    regenerateBtn.textContent = '🔄 Regenerate Theme';
+                }
+                
+                showError('Failed to generate custom theme: ' + (data.error || 'Unknown error'));
+                
+                // If we're not in regeneration mode, go back to preset themes
+                if (!loadingIndicator) {
+                    showPresetThemes();
+                }
+            }
+        })
+        .catch(error => {
+            clearTimeout(timeoutId); // Clear timeout on error
+            console.error('Error generating theme:', error);
+            
+            // Hide loading indicator and restore buttons
+            const loadingIndicator = document.getElementById('theme-loading-indicator');
+            const regenerateBtn = document.getElementById('regenerate-theme-btn');
+            
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'none';
+            }
+            if (regenerateBtn) {
+                regenerateBtn.disabled = false;
+                regenerateBtn.style.opacity = '1';
+                regenerateBtn.textContent = '🔄 Regenerate Theme';
+            }
+            
+            // Handle specific error types
+            let errorMessage = 'Failed to generate custom theme. Please try again.';
+            if (error.name === 'AbortError') {
+                errorMessage = 'Theme generation timed out after 5 minutes. Please try again with a shorter description.';
+            } else if (error.message && error.message.includes('timeout')) {
+                errorMessage = 'Connection timeout. Please check your internet connection and try again.';
+            }
+            
+            showError(errorMessage);
+            
+            // If we're not in regeneration mode, go back to preset themes
+            if (!loadingIndicator) {
+                showPresetThemes();
+            }
+        });
+    }
+    
+    function showGeneratedTheme(themeName, themeImage, description) {
+        const themeContainer = document.getElementById('theme-grids-container');
+        
+        // Clear all content and show only the generated theme
+        themeContainer.innerHTML = '';
+        
+        // Create generated theme display
+        const generatedThemeDiv = document.createElement('div');
+        generatedThemeDiv.id = 'generated-theme-display';
+        generatedThemeDiv.innerHTML = `
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h3 style="color: #AD974F; margin-bottom: 10px;">🤖 AI Generated Theme</h3>
+                <p style="color: #666; font-size: 0.9rem;">${themeName}</p>
+            </div>
+            
+            <div style="max-width: 500px; margin: 0 auto; text-align: center;">
+                <div style="position: relative; display: inline-block;">
+                    <img src="${themeImage}" alt="${themeName}" 
+                         style="width: 100%; max-width: 500px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); border: 3px solid #AD974F;" />
+                    
+                    <div style="position: absolute; top: 15px; right: 15px; background: #AD974F; color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">
+                        AI Generated
+                    </div>
+                </div>
+                
+                <!-- Loading indicator (hidden by default) -->
+                <div id="theme-loading-indicator" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 10px; border: 2px dashed #AD974F;">
+                    <div style="display: inline-block; animation: spin 1s linear infinite; margin-bottom: 10px;">
+                        <div style="width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top: 3px solid #AD974F; border-radius: 50%;"></div>
+                    </div>
+                    <div style="color: #AD974F; font-size: 1rem; font-weight: 600;">
+                        Generating your custom theme...
+                    </div>
+                    <div style="color: #666; font-size: 0.85rem; margin-top: 5px;">
+                        🎨 AI is creating your entrance design (this may take 1-3 minutes)
+                    </div>
+                    <div style="color: #999; font-size: 0.8rem; margin-top: 8px;">
+                        Please don't close this page while we generate your unique design
+                    </div>
+                </div>
+                
+                <div style="margin-top: 25px; display: flex; gap: 15px; justify-content: center;">
+                    <button 
+                        id="select-preset-themes-btn"
+                        style="padding: 12px 20px; background: #f5f5f5; color: #666; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-size: 0.9rem;"
+                    >
+                        📋 Select Preset Themes
+                    </button>
+                    <button 
+                        id="regenerate-theme-btn"
+                        style="padding: 12px 20px; background: #AD974F; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600;"
+                    >
+                        🔄 Regenerate Theme
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        themeContainer.appendChild(generatedThemeDiv);
+        
+        // Set the theme data for form submission
+        document.getElementById('selected-theme-name').value = themeName;
+        document.getElementById('selected-theme-urls').value = JSON.stringify([themeImage]);
+        
+        // Store in wizardData to indicate this is a custom theme
+        wizardData.theme_name = themeName;
+        wizardData.theme_urls = [themeImage];
+        wizardData.isCustomTheme = true; // Mark as custom theme
+        wizardData.customThemeImage = themeImage; // Store the Cloudinary URL for database
+        
+        // Add event handlers for buttons
+        document.getElementById('select-preset-themes-btn').addEventListener('click', function() {
+            showPresetThemes();
+        });
+        
+        document.getElementById('regenerate-theme-btn').addEventListener('click', function() {
+            regenerateTheme();
+        });
+        
+        console.log('Generated theme displayed:', themeName, themeImage);
+    }
+    
+    function regenerateTheme() {
+        // Show loading indicator
+        const loadingIndicator = document.getElementById('theme-loading-indicator');
+        const regenerateBtn = document.getElementById('regenerate-theme-btn');
+        
+        if (loadingIndicator && regenerateBtn) {
+            loadingIndicator.style.display = 'block';
+            regenerateBtn.disabled = true;
+            regenerateBtn.style.opacity = '0.6';
+            regenerateBtn.textContent = '🔄 Generating...';
+        }
+        
+        // Get the current description from previous generation or ask for new one
+        const description = document.getElementById('theme-description')?.value || '';
+        
+        // Generate new theme
+        generateCustomTheme(description);
+    }
+    
+    function showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #dc3545;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10001;
+            max-width: 400px;
+            text-align: center;
+        `;
+        
+        errorDiv.innerHTML = `
+            <div style="margin-bottom: 15px;">${message}</div>
+            <button onclick="this.parentElement.remove()" 
+                    style="background: white; color: #dc3545; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                Close
+            </button>
+        `;
+        
+        document.body.appendChild(errorDiv);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (errorDiv.parentElement) {
+                errorDiv.remove();
+            }
+        }, 5000);
     }
 });
 </script>

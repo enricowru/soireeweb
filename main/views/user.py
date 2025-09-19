@@ -21,6 +21,22 @@ if settings.ENVIRONMENT == "prod":
 
 # Import notification helper
 from .admin import create_booking_notification
+
+def format_color_motif_display(color_motif_str):
+    """Format color motif for display - handles both old string format and new JSON array"""
+    if not color_motif_str:
+        return "—"
+    
+    try:
+        # Try to parse as JSON array (new format)
+        colors = json.loads(color_motif_str)
+        if isinstance(colors, list):
+            return " → ".join(colors)  # Display as "Color1 → Color2 → Color3"
+        else:
+            return color_motif_str  # Fallback to string display
+    except (json.JSONDecodeError, TypeError):
+        # If it's not valid JSON, treat as old string format
+        return color_motif_str
     
 def save_floorplan_with_custom_name(uploaded_file, booking_id):
     """
@@ -128,15 +144,33 @@ def bookhere_submit(request):
         
         print(f"[DEBUG] Location data: {data.get('location')}")
         
-        # Check if a floorplan was selected (URL from existing Cloudinary images)
+        # Check for floorplan data - could be regular floorplan or AI-generated
         floorplan_filename = data["location"].get("floorplan_filename", "")
         floorplan_display_name = data["location"].get("floorplan_display_name", "")
+        ai_estimations = data["location"].get("ai_estimations", "")
+        uploaded_cloudinary_url = data["location"].get("cloudinary_url", "")
         
         print(f"[DEBUG] floorplan_filename from frontend: '{floorplan_filename}'")
         print(f"[DEBUG] floorplan_display_name from frontend: '{floorplan_display_name}'")
+        print(f"[DEBUG] ai_estimations from frontend: '{ai_estimations}'")
+        print(f"[DEBUG] uploaded_cloudinary_url from frontend: '{uploaded_cloudinary_url}'")
         
-        if floorplan_filename:
-            # Use the filename directly as sent from frontend
+        # Handle uploaded image with AI analysis
+        if uploaded_cloudinary_url and ai_estimations:
+            # Store filename in floorplan field and Cloudinary URL in cloudinary_url field
+            floorplan_path = floorplan_filename
+            cloudinary_url = uploaded_cloudinary_url
+            # The floorplan_display_name will contain the actual AI estimation results
+            print(f"[DEBUG] Using uploaded image with AI analysis")
+        # Handle AI-generated floorplan (dimensions only)
+        elif ai_estimations and not uploaded_cloudinary_url:
+            # Store filename in floorplan field, leave cloudinary_url empty
+            floorplan_path = floorplan_filename  # Use filename instead of AI estimations
+            cloudinary_url = None  # No image URL for dimensions-only plans
+            # The floorplan_display_name will contain the actual AI estimation results
+            print(f"[DEBUG] Using dimensions with AI analysis - storing filename")
+        elif floorplan_filename:
+            # Regular floorplan - use the filename directly as sent from frontend
             floorplan_path = floorplan_filename
             print(f"[DEBUG] Using floorplan filename: '{floorplan_path}'")
             
@@ -145,7 +179,7 @@ def bookhere_submit(request):
                 # Reconstruct the Cloudinary URL from filename
                 cloudinary_url = f"https://res.cloudinary.com/dlha5ojqe/image/upload/v1732438097/event_floorplans/{floorplan_filename}"
         else:
-            print(f"[DEBUG] No floorplan_filename received")
+            print(f"[DEBUG] No floorplan data received")
             
         print(f"[DEBUG] Final values - venue: '{venue}', floorplan_path: '{floorplan_path}'")
 
@@ -161,7 +195,9 @@ def bookhere_submit(request):
         floorplan=floorplan_path,
         floorplan_display_name=floorplan_display_name,
         cloudinary_url=cloudinary_url,
-        color_motif=data.get("color_motif", ""),
+        color_motif=json.dumps(data.get("color_motif", [])),
+        theme_name=data.get("theme_name", ""),
+        theme_urls=data.get("theme_urls", []),
         package=data.get("package", ""),
         dishes=", ".join(data.get("menu", {}).get("dishes", [])),
         pasta=data.get("menu", {}).get("pasta", ""),
@@ -223,7 +259,7 @@ def booking_summary(booking) -> str:
         ("Type", booking.event_type),
         ("Pax", booking.pax),
         ("Venue", venue_display),
-        ("Color Motif", booking.color_motif),
+        ("Color Motif", format_color_motif_display(booking.color_motif)),
         ("Package", booking.package),
         ("Pasta", booking.pasta or "—"),
         ("Drink", booking.drink or "—"),
@@ -318,7 +354,7 @@ def user_booking_details_api(request, booking_id):
             'celebrant_name': booking.celebrant_name or '',
             'pax': str(booking.pax) if booking.pax else '',
             'venue': booking.venue or '',
-            'color_motif': booking.color_motif or '',
+            'color_motif': format_color_motif_display(booking.color_motif) or '',
             'package': booking.package or '',
             'dishes': booking.dishes or '',
             'pasta': booking.pasta or '',

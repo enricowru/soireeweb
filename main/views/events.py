@@ -139,6 +139,8 @@ def api_booking_list(request):
             "pax": b.pax,
             "venue": b.venue,
             "color_motif": b.color_motif,
+            "theme_name": b.theme_name,
+            "theme_urls": b.theme_urls if b.theme_urls else [],
             "package": b.package,
             "dishes": b.dish_list(),  # This returns a list from the dishes string
             "pasta": b.pasta,

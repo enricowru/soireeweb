@@ -1,0 +1,198 @@
+# Theme configuration for event booking
+# Maps event types to available themes with their image URLs
+
+THEMES_DATA = {
+    "WEDDING": {
+        "Blue Wedding": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757746206/bluewedding3_f4msj9.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757746210/bluewedding1_ssumre.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757746211/bluewedding2_i8pznk.jpg"
+        ],
+        "Green Wedding": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757746138/greenwedding1_z3msol.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757746140/greenwedding2_t5rowv.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757746135/greenwedding3_thmxen.jpg"
+        ],
+        "Red Wedding": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757746040/redwedding1_vophoo.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757746036/redwedding2_fivjij.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757746035/redwedding3_xgpzqq.jpg"
+        ],
+        "Blush Veil": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961342/wedding1_i4j4ed.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961343/wedding2_ahxv8y.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961343/wedding3_ebx0yl.jpg"
+        ]
+    },
+    
+    "BIRTHDAY": {
+        "Yellow": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961345/yellow1_zvv6xc.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961345/yellow2_u2hbdl.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961346/yellow3_szjl5e.jpg"
+        ],
+        "Traditional": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961336/traditional1_fdjojh.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961337/traditional2_v0a3un.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961338/traditional3_e2c2vc.jpg"
+        ],
+        "Rainbow": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961319/rainbow1_pqsbfi.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961320/rainbow2_be8qcj.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961320/rainbow3_pf0k0c.jpg"
+        ],
+        "Pink": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961207/pink1_xpydyr.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961209/pink2_zws6c6.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961210/pink3_du7zpo.jpg"
+        ],
+        "Macha": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961190/macha1_fskxl0.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961190/macha2_jocsuf.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961191/macha3_w6zp4o.jpg"
+        ],
+        "Green": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961166/green1_fkl6x9.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961166/green2_fxbdhw.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961167/green3_mzeklc.jpg"
+        ],
+        "Camouflage": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961125/camouflage1_v2nzrg.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961126/camouflage2_dcvl38.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961144/camouflage3_yewwka.jpg"
+        ],
+        "Butterfly": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961123/butterfly1_jnpau7.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961124/butterfly2_o3gnyl.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961124/butterfly3_g2eouo.jpg"
+        ],
+        "Blue": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961121/blue_kkekko.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961122/blue2_g3i7ns.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961122/blue3_gscl5x.jpg"
+        ],
+        "Black Gold": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961119/black_gold_sd8hns.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961120/black_gold2_hvg1qz.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961121/black_gold3_qf4cpj.jpg"
+        ]
+    },
+    
+    "CHRISTENING": {
+        "White Bear": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757745884/whitebear1_jc4sct.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757745885/whitebear2_hvqtzn.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757745880/whitebear3_spt8mx.jpg"
+        ],
+        "Blue Bear": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757745642/bluebear1_q2xqtf.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757745647/bluebear2_vmwzha.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757745645/bluebear3_yyiybb.jpg"
+        ],
+        "White Blue": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757745508/whiteblue1_v1vmni.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757745511/whiteblue2_yzuhal.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757745513/whiteblue3_novh1n.jpg"
+        ],
+        "Yellow Purple": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757745437/yellowpurple1_mr4eib.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757745437/yellowpurple2_jg571x.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757745439/yellowpurple3_g5dblh.jpg"
+        ],
+        "Blue": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757745199/blue1_w0hzoh.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757745206/blue2_zbm0o8.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757745201/blue3_mecvwf.jpg"
+        ],
+        "Sugarcloud Bears": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757744493/476906983_516572478123694_227983690661706907_n_ju5ylg.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757744497/477441493_516572704790338_4518002804860522390_n_tf0fuu.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757744495/477407186_516572454790363_8774392832666167746_n_ol6ohh.jpg"
+        ]
+    },
+    
+    "KIDDIE PARTY": {
+        "Zoo": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961348/zoo1_lkhguo.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961349/zoo2_izmxug.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961349/zoo3_tpivyn.jpg"
+        ],
+        "Transformers": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961339/transformers1_hpi1nw.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961340/transformers2_yrvfhz.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961341/transformers3_jkxnmk.jpg"
+        ],
+        "Tinkerbell": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961333/tinkerbell1_wutjm9.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961334/tinkerbell2_rvusmy.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961335/tinkerbell3_x1vztm.jpg"
+        ],
+        "Sweets": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961331/sweets1_xg2wj6.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961332/sweets2_ys2mpo.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961332/sweets3_ksjpy7.jpg"
+        ],
+        "Spongebob": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961328/spongebob2_nhnz7r.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961328/spongebob3_lnksll.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961329/spongebob4_z3pwmv.jpg"
+        ],
+        "Snow White": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961324/snowwhite1_ebjhlv.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961325/snowwhite2_xoq7wp.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961327/snowwhite3_qgghb6.jpg"
+        ],
+        "Roblox": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961321/roblox1_g3jscs.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961323/roblox2_hpso4g.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961324/roblox3_pkrmmz.jpg"
+        ],
+        "Princess": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961315/princess1_ckf2ef.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961316/princess2_rn0z7q.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961317/princess3_flsdje.jpg"
+        ],
+        "Pony": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961211/pony1_rdvceu.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961219/pony2_u9xona.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961315/pony3_idj8mn.jpg"
+        ],
+        "Nemo": [
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961199/nemo1_fwlhqc.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961200/nemo2_csahmk.jpg",
+            "https://res.cloudinary.com/dzjrdqkiw/image/upload/v1748961201/nemo3_ffr1bz.jpg"
+        ]
+    }
+}
+
+def get_themes_for_event_type(event_type):
+    """
+    Get available themes for a specific event type.
+    
+    Args:
+        event_type (str): The event type (e.g., 'WEDDING', 'Birthday Party', 'CHRISTENING', 'KIDDIE PARTY')
+    
+    Returns:
+        dict: Dictionary of theme names and their image URLs
+    """
+    # Normalize event type to uppercase for matching
+    event_type_normalized = event_type.upper()
+    
+    # Handle variations in naming - Birthday Party maps to BIRTHDAY in our data structure
+    if event_type_normalized in ['BIRTHDAY PARTY', 'BIRTHDAY', 'BDAY']:
+        event_type_normalized = 'BIRTHDAY'
+    elif event_type_normalized in ['KIDS PARTY', 'KIDS', 'KIDDIE', 'KIDDIE PARTY']:
+        event_type_normalized = 'KIDDIE PARTY'
+    elif event_type_normalized in ['BAPTISM', 'CHRISTENING']:
+        event_type_normalized = 'CHRISTENING'
+    
+    return THEMES_DATA.get(event_type_normalized, {})
+
+def get_all_themes():
+    """
+    Get all available themes across all event types.
+    
+    Returns:
+        dict: Dictionary organized by event type with theme names and URLs
+    """
+    return THEMES_DATA
