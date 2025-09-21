@@ -28,6 +28,7 @@ urlpatterns = [
     path('home/', views.home, name='home'),
     path('signup/', signup, name='signup'),
     path('chatbot', include('main.chatbot_urls')),
+    path('menu/', views.menu, name='menu'),
     path('api/update-profile/', update_profile, name='api_update_profile'),
 
     # ✅ Forgot Password Routes
