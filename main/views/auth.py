@@ -57,6 +57,11 @@ def home(request):
         'top_reviews': top_reviews
     })
 
+def menu(request):
+    """Display the full menu page"""
+    return render(request, 'menu.html', {
+        'logged_in': request.user.is_authenticated,
+    })
     
 def login_view(request):
     message = ''
