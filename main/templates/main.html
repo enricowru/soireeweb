@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   
-  <link rel="icon" type="image/x-icon" href="{% static 'images/logo-round.png' %}">
+  <link rel="icon" type="image/x-icon" href="{% static 'images/soireelogo-l.svg' %}">
 
 
 </head>
@@ -26,6 +26,7 @@
 
   <!-- MAIN -->
   <header id="main">
+    <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758442112/soireelogo-l_eazlvf.svg" alt="The Soiree Logo" class="logo">
     <h1>Nike's Catering Services</h1>
     <p>Nikes Catering Services brings your events to life with exceptional food, elegant styling, and professional
       coordination. Whether it's an intimate gathering or a grand celebration, we specialize in crafting memorable
@@ -42,99 +43,225 @@
   </a>
   {% endif %}
 
+<!-- OUR SERVICES -->
+<section id="services">
+  <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758442104/servicesseparator_mal0bv.png" alt="Services Separator" class="services-separator">
+  <h1 class="services-title">OUR SERVICES</h1>
+  <p>We offer full-service catering, event styling, and coordination tailored to your unique needs.</p>
 
-  <!-- OUR SERVICES -->
-  <section id="services">
-    <h1 class="services-title">OUR SERVICES</h1>
-    <p>We offer full-service catering, event styling, and coordination tailored to your unique needs. From themed
-      celebrations to formal occasions, our team ensures every detail is thoughtfully planned and flawlessly executed.
-    </p>
-    <div class="services-grid">
-      <div class="service-box kiddieparty" data-event="Kiddie Party"
-        style="background-image: url('{% static 'images/upgraded balloon set-up/R6A.jpg' %}');">
-        KIDDIE PARTY
-      </div>
-      <div class="service-box birthday" data-event="Birthday"
-        style="background-image: url('{% static 'images/birthday/greengold.jpg' %}');">
-        BIRTHDAY
-      </div>
-      <div class="service-box wedding" data-event="Wedding"
-        style="background-image: url('{% static 'images/signature set-up/R4A.jpg' %}');">
-        WEDDING
-      </div>
-      <div class="service-box christening" data-event="Christening"
-        style="background-image: url('{% static 'images/christening/bears.jpg' %}');">
-        CHRISTENING
-      </div>
-      <div class="service-box corporate" data-event="Custom Event"
-        style="background-image: url('{% static 'images/corporate/yellowblack.jpg' %}');">
-        OTHERS
+  <div class="services-row">
+    <div class="service-card" data-event="Kiddie Party" data-bg-url="{% static 'images/upgraded balloon set-up/R6A.jpg' %}">
+      <div class="overlay"></div>
+      <h2>Kiddie Party</h2>
+      <div class="arrow"><i class="fa-solid fa-chevron-down"></i></div>
+    </div>
+
+    <div class="service-card" data-event="Birthday" data-bg-url="{% static 'images/birthday/greengold.jpg' %}">
+      <div class="overlay"></div>
+      <h2>Birthday</h2>
+      <div class="arrow"><i class="fa-solid fa-chevron-down"></i></div>
+    </div>
+
+    <div class="service-card" data-event="Wedding" data-bg-url="{% static 'images/signature set-up/R4A.jpg' %}">
+      <div class="overlay"></div>
+      <h2>Wedding</h2>
+      <div class="arrow"><i class="fa-solid fa-chevron-down"></i></div>
+    </div>
+
+    <div class="service-card" data-event="Christening" data-bg-url="{% static 'images/christening/bears.jpg' %}">
+      <div class="overlay"></div>
+      <h2>Christening</h2>
+      <div class="arrow"><i class="fa-solid fa-chevron-down"></i></div>
+    </div>
+
+    <div class="service-card" data-event="Custom Event" data-bg-url="{% static 'images/corporate/yellowblack.jpg' %}">
+      <div class="overlay"></div>
+      <h2>Custom Event</h2>
+      <div class="arrow"><i class="fa-solid fa-chevron-down"></i></div>
+    </div>
+  </div>
+
+
+  <!-- DROPDOWNS BELOW THE CARDS -->
+  <div id="service-dropdowns">
+
+    <!-- KIDDIE -->
+    <div class="service-dropdown" id="dropdown-kiddie" style="display: none;">
+      <div class="service-grid">
+        <div class="side-images left">
+          <img class="side-img" src="{% static 'images/upgraded balloon set-up/R1A.jpg' %}" alt="Kiddie side 1">
+          <img class="side-img" src="{% static 'images/upgraded balloon set-up/R3A.jpg' %}" alt="Kiddie side 2">
+        </div>
+        <div class="package-col">
+          <div class="package-slider">
+            <button class="pkg-prev">❮</button>
+            <img class="pkg-image" src="{% static 'images/packages/kiddie party/50pax.jpg' %}" alt="Kiddie Party">
+            <button class="pkg-next">❯</button>
+          </div>
+        </div>
+        <div class="side-images right">
+          <img class="side-img" src="{% static 'images/upgraded balloon set-up/R5A.jpg' %}" alt="Kiddie side 3">
+          <img class="side-img" src="{% static 'images/upgraded balloon set-up/R6A.jpg' %}" alt="Kiddie side 4">
+        </div>
       </div>
     </div>
-  </section>
+
+    <!-- BIRTHDAY -->
+    <div class="service-dropdown" id="dropdown-birthday" style="display: none;">
+      <div class="service-grid">
+        <div class="side-images left">
+          <img class="side-img" src="{% static 'images/upgraded balloon set-up/R9A.jpg' %}" alt="Birthday side 1">
+          <img class="side-img" src="{% static 'images/upgraded balloon set-up/R10A.jpg' %}" alt="Birthday side 2">
+        </div>
+        <div class="package-col">
+          <div class="package-slider">
+            <button class="pkg-prev">❮</button>
+            <img class="pkg-image" src="{% static 'images/packages/birthday/50pax.jpg' %}" alt="Birthday">
+            <button class="pkg-next">❯</button>
+          </div>
+        </div>
+        <div class="side-images right">
+          <img class="side-img" src="{% static 'images/minimalist set-up/R1A.jpg' %}" alt="Birthday side 3">
+          <img class="side-img" src="{% static 'images/minimalist set-up/R4A.jpg' %}" alt="Birthday side 4">
+        </div>
+      </div>
+    </div>
+
+    <!-- WEDDING -->
+    <div class="service-dropdown" id="dropdown-wedding" style="display: none;">
+      <div class="service-grid">
+        <div class="side-images left">
+          <img class="side-img" src="{% static 'images/minimalist set-up/R2A.jpg' %}" alt="Wedding side 1">
+          <img class="side-img" src="{% static 'images/minimalist set-up/R3A.jpg' %}" alt="Wedding side 2">
+        </div>
+        <div class="package-col">
+          <div class="package-slider">
+            <button class="pkg-prev">❮</button>
+            <img class="pkg-image" src="{% static 'images/packages/wedding/50pax.jpg' %}" alt="Wedding">
+            <button class="pkg-next">❯</button>
+          </div>
+        </div>
+        <div class="side-images right">
+          <img class="side-img" src="{% static 'images/minimalist set-up/R5A.jpg' %}" alt="Wedding side 3">
+          <img class="side-img" src="{% static 'images/minimalist set-up/R8A.jpg' %}" alt="Wedding side 4">
+        </div>
+      </div>
+    </div>
+
+    <!-- CHRISTENING -->
+    <div class="service-dropdown" id="dropdown-christening" style="display: none;">
+      <div class="service-grid">
+        <div class="side-images left">
+          <img class="side-img" src="{% static 'images/upgraded balloon set-up/R2A.jpg' %}" alt="Christening side 1">
+          <img class="side-img" src="{% static 'images/upgraded balloon set-up/R2D.jpg' %}"  alt="Christening side 2">
+        </div>
+        <div class="package-col">
+          <div class="package-slider">
+            <button class="pkg-prev">❮</button>
+            <img class="pkg-image" src="{% static 'images/packages/christening/50pax.jpg' %}" alt="Christening">
+            <button class="pkg-next">❯</button>
+          </div>
+        </div>
+        <div class="side-images right">
+          <img class="side-img" src="{% static 'images/upgraded balloon set-up/R4A.jpg' %}"  alt="Christening side 3">
+          <img class="side-img" src="{% static 'images/upgraded balloon set-up/R4D.jpg' %}"  alt="Christening side 4">
+        </div>
+      </div>
+    </div>
+
+    <!-- CUSTOM -->
+    <div class="service-dropdown" id="dropdown-custom" style="display: none;">
+      <div class="service-grid">
+        <div class="side-images left">
+          <img class="side-img" src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758441906/gawad_zkqk8o.jpg" alt="Custom side 1">
+          <img class="side-img" src="{% static 'images/corporate/reunion.jpg' %}" alt="Custom side 2">
+        </div>
+        <div class="package-col">
+          <div class="package-slider">
+            <button class="pkg-prev">❮</button>
+            <img class="pkg-image" src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758441906/reunion_hhfvrl.jpg" alt="Custom Event">
+            <button class="pkg-next">❯</button>
+          </div>
+        </div>
+        <div class="side-images right">
+          <img class="side-img" src="{% static 'images/corporate/orangeyellow.png' %}" alt="Custom side 3">
+          <img class="side-img" src="{% static 'images/corporate/yellowblack.jpg' %}"alt="Custom side 4">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 
   <!-- MENU -->
   <section id="menu">
     <div class="menu-content">
       <div class="menu-left">
-        <h2>Nike's Featured Menus</h2>
-        <p>Our menu features a diverse selection of delicious, handcrafted dishes made with fresh ingredients to suit
-          any event or celebration.</p>
-        <div class="menu-nav">
-          <button class="prev">❮</button>
-          <div class="dots">
-            <span class="dot active"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
+        <h3 class="menu-subtitle">NIKE'S CATERING SERVICES</h3>
+        <h2 class="menu-title">Featured Menu</h2>
+        
+        <div class="menu-items">
+          <div class="menu-item">
+            <div class="menu-item-header">
+              <span class="menu-item-name">Beef Brocolli</span>
+              <!-- <span class="menu-item-price">$20</span> -->
+            </div>
+            <p class="menu-item-description">Tender beef slices sautéed with fresh broccoli in a savory sauce.</p>
           </div>
-          <button class="next">❯</button>
+          
+          <div class="menu-item">
+            <div class="menu-item-header">
+              <span class="menu-item-name">Honey Glazed Chicken</span>
+              <!-- <span class="menu-item-price">$25</span> -->
+            </div>
+            <p class="menu-item-description">Crispy chicken coated with a sweet honey glaze for a rich flavor.</p>
+          </div>
+          
+          <div class="menu-item">
+            <div class="menu-item-header">
+              <span class="menu-item-name">Kare-Kare Bagnet</span>
+              <!-- <span class="menu-item-price">$27</span> -->
+            </div>
+            <p class="menu-item-description">Crispy pork belly served with peanut sauce and vegetables.</p>
+          </div>
+          
+          <div class="menu-item">
+            <div class="menu-item-header">
+              <span class="menu-item-name">Mixed Seafoods with Vegetables</span>
+              <!-- <span class="menu-item-price">$18</span> -->
+            </div>
+            <p class="menu-item-description">A medley of shrimp, squid, and fish cooked with fresh vegetables.</p>
+          </div>
+          
+          <div class="menu-item">
+            <div class="menu-item-header">
+              <span class="menu-item-name">Pot Roast Beef</span>
+              <!-- <span class="menu-item-price">$19</span> -->
+            </div>
+            <p class="menu-item-description">Slow-cooked beef roast in a rich, flavorful gravy sauce.</p>
+          </div>
         </div>
       </div>
 
       <div class="menu-right">
-        <div class="carousel-track">
-          <div class="menus">
-            <div class="menu-bg" style="background-image: url('{% static 'images/menus/bestsellers.jpg' %}');"></div>
-            <span>BEST SELLERS</span>
+        <div class="menu-images">
+          <div class="menu-image-large">
+            <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782677/beefbroccolli_c3hbve.jpg" alt="Beef Broccoli" class="food-image">
           </div>
-          <div class="menus">
-            <div class="menu-bg" style="background-image: url('{% static 'images/menus/dessertbuffet.png' %}');"></div>
-            <span>DESSERT BUFFET</span>
+          <div class="menu-images-small">
+            <div class="menu-image-small">
+              <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783624/karekarebagnet_paezmf.jpg" alt="Karekare Bagnet" class="food-image">
+            </div>
+            <div class="menu-image-small">
+              <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784415/honeyglazedchicken_d4evdv.jpg" alt="Honey Glazed Chicken" class="food-image">
+            </div>
           </div>
-          <div class="menus">
-            <div class="menu-bg" style="background-image: url('{% static 'images/menus/beef.jpg' %}');"></div>
-            <span>BEEF</span>
+          <div class="menu-button-container">
+           <a href="{% url 'menu' %}" class="view-menu-btn"><i class="fas fa-utensils"></i> View Menu</a>
           </div>
-          <div class="menus">
-            <div class="menu-bg" style="background-image: url('{% static 'images/menus/chicken.jpg' %}');"></div>
-            <span>CHICKEN</span>
-          </div>
-          <div class="menus">
-            <div class="menu-bg" style="background-image: url('{% static 'images/menus/seafood.jpg' %}');"></div>
-            <span>SEAFOODS</span>
-          </div>
-          <div class="menus">
-            <div class="menu-bg" style="background-image: url('{% static 'images/menus/vegetable.jpg' %}');"></div>
-            <span>VEGETABLES</span>
-          </div>
-          <div class="menus">
-            <div class="menu-bg" style="background-image: url('{% static 'images/menus/pasta.jpg' %}');"></div>
-            <span>PASTA</span>
-          </div>
-          <div class="menus">
-            <div class="menu-bg" style="background-image: url('{% static 'images/menus/drinks.jpg' %}');"></div>
-            <span>DRINKS</span>
-          </div>
-
         </div>
-      </div>
+      </div>  
     </div>
-    <a href="#calendar" class="book-tasting">
-      <img src="{% static 'images/taste.png' %}" alt="Book Tasting">
-      <h3>BOOK A FOOD TASTING</h3>
-    </a>
   </section>
 
 
@@ -148,270 +275,147 @@
     <p class="packages-subtitle">Our event packages are designed to fit every occasion, combining catering, styling, and
       coordination into convenient, customizable bundles.</p>
 
-    <div class="packages-grid">
-      <!-- Package 1 -->
-      <div class="package" id="kiddie-package">
-        <div class="package-title">KIDDIE PARTY PACKAGES</div>
-        <div class="package-body">
-          <div class="package-row">
-            <div class="package-slider">
-              <button class="pkg-prev">❮</button>
-              <img class="pkg-image" src="{% static 'images/packages/christening1.jpg' %}" alt="Kiddie Party">
-              <button class="pkg-next">❯</button>
-            </div>
-            <!-- <div class="package-selection">
-              <h3>Want this as your package?</h3>
-
-              <div class="form-group">
-                <label for="event-type">Event Type:</label>
-                <input type="text" id="event-type" value="Kiddie Party" readonly />
-              </div>
-
-              <div class="form-group">
-                <label for="guest-count">Good for:</label>
-                <select id="guest-count">
-                  <option value="50">50 pax</option>
-                  <option value="70">70 pax</option>
-                  <option value="80">80 pax</option>
-                  <option value="100">100 pax</option>
-                  <option value="120">120 pax</option>
-                  <option value="130">130 pax</option>
-                  <option value="150">150 pax</option>
-                  <option value="160">160 pax</option>
-                  <option value="170">170 pax</option>
-                  <option value="180">180 pax</option>
-                  <option value="200">200 pax</option>
-                </select>
-              </div>
-
-              <div class="package-buttons">
-                <button type="button">PACKAGE A</button>
-                <button type="button">PACKAGE B</button>
-                <button type="button">PACKAGE C</button>
-              </div>
-            </div> -->
-          </div>
+    <div class="packages-grid-new">
+      <!-- Package A -->
+      <div class="package-card">
+        <div class="package-header">
+          <h3 class="package-name">Package A</h3>
+        </div>
+        <div class="package-content">
+          <ul class="package-features">
+            <li><i class="fas fa-check"></i> Choice of 3 Dishes</li>
+            <li><i class="fas fa-check"></i> Steamed Rice</li>
+            <li><i class="fas fa-check"></i> Choice of 1 Pasta</li>
+            <li><i class="fas fa-check"></i> Choice of 1 Drink</li>
+            <li><i class="fas fa-check"></i> Dessert Buffet</li>
+          </ul>
         </div>
       </div>
 
-      <!-- Package 2 -->
-      <div class="package" id="birthday-package">
-        <div class="package-title">BIRTHDAY PACKAGES</div>
-        <div class="package-body">
-          <div class="package-row">
-            <div class="package-slider">
-              <button class="pkg-prev">❮</button>
-              <img class="pkg-image" src="{% static 'images/packages/packageb1.jpg' %}" alt="Birthday">
-              <button class="pkg-next">❯</button>
-            </div>
-            <!-- <div class="package-selection">
-              <h3>Want this as your package?</h3>
-
-              <div class="form-group">
-                <label for="event-type">Event Type:</label>
-                <input type="text" id="event-type" value="Birthday" readonly />
-              </div>
-
-              <div class="form-group">
-                <label for="guest-count">Good for:</label>
-                <select id="guest-count">
-                  <option value="50">50 pax</option>
-                  <option value="70">70 pax</option>
-                  <option value="80">80 pax</option>
-                  <option value="100">100 pax</option>
-                  <option value="120">120 pax</option>
-                  <option value="130">130 pax</option>
-                  <option value="150">150 pax</option>
-                  <option value="160">160 pax</option>
-                  <option value="170">170 pax</option>
-                  <option value="180">180 pax</option>
-                  <option value="200">200 pax</option>
-                </select>
-              </div>
-
-              <div class="package-buttons">
-                <button type="button">PACKAGE A</button>
-                <button type="button">PACKAGE B</button>
-                <button type="button">PACKAGE C</button>
-              </div>
-            </div> -->
-          </div>
+      <!-- Package B -->
+      <div class="package-card">
+        <div class="package-header">
+          <h3 class="package-name">Package B</h3>
+        </div>
+        <div class="package-content">
+          <ul class="package-features">
+            <li><i class="fas fa-check"></i> Choice of 4 Dishes</li>
+            <li><i class="fas fa-check"></i> Steamed Rice</li>
+            <li><i class="fas fa-check"></i> Choice of 1 Pasta</li>
+            <li><i class="fas fa-check"></i> Choice of 1 Drink</li>
+            <li><i class="fas fa-check"></i> Dessert Buffet</li>
+          </ul>
         </div>
       </div>
 
-      <!-- Package 3 -->
-      <div class="package" id="wedding-package">
-        <div class="package-title">WEDDING PACKAGES</div>
-        <div class="package-body">
-          <div class="package-row">
-            <div class="package-slider">
-              <button class="pkg-prev">❮</button>
-              <img class="pkg-image" src="{% static 'images/packages/packagec1.jpg' %}" alt="Wedding">
-              <button class="pkg-next">❯</button>
-            </div>
-            <!-- <div class="package-selection">
-              <h3>Want this as your package?</h3>
-
-              <div class="form-group">
-                <label for="event-type">Event Type:</label>
-                <input type="text" id="event-type" value="Wedding" readonly />
-              </div>
-
-              <div class="form-group">
-                <label for="guest-count">Good for:</label>
-                <select id="guest-count">
-                  <option value="50">50 pax</option>
-                  <option value="70">70 pax</option>
-                  <option value="80">80 pax</option>
-                  <option value="100">100 pax</option>
-                  <option value="120">120 pax</option>
-                  <option value="130">130 pax</option>
-                  <option value="150">150 pax</option>
-                  <option value="160">160 pax</option>
-                  <option value="170">170 pax</option>
-                  <option value="180">180 pax</option>
-                  <option value="200">200 pax</option>
-                  <option value="250">250 pax</option>
-                </select>
-              </div>
-
-              <div class="package-buttons">
-                <button type="button">PACKAGE A</button>
-                <button type="button">PACKAGE B</button>
-                <button type="button">PACKAGE C</button>
-              </div>
-            </div> -->
-          </div>
+      <!-- Package C -->
+      <div class="package-card">
+        <div class="package-header">
+          <h3 class="package-name">Package C</h3>
+        </div>
+        <div class="package-content">
+          <ul class="package-features">
+            <li><i class="fas fa-check"></i> Choice of 5 Dishes</li>
+            <li><i class="fas fa-check"></i> Steamed Rice</li>
+            <li><i class="fas fa-check"></i> Choice of 1 Pasta</li>
+            <li><i class="fas fa-check"></i> Choice of 1 Drink</li>
+            <li><i class="fas fa-check"></i> Dessert Buffet</li>
+          </ul>
         </div>
       </div>
+    </div>
 
-      <!-- Package 4 -->
-      <div class="package" id="christening-package">
-        <div class="package-title">CHRISTENING PACKAGES</div>
-        <div class="package-body">
-          <div class="package-row">
-            <div class="package-slider">
-              <button class="pkg-prev">❮</button>
-              <img class="pkg-image" src="{% static 'images/packages/packaged1.jpg' %}" alt="Christening">
-              <button class="pkg-next">❯</button>
-            </div>
-            <!-- <div class="package-selection">
-              <h3>Want this as your package?</h3>
+    <div class="packages-note">
+      <p><i class="fas fa-info-circle"></i> Prices, inclusions, and add-ons vary depending on event type.</p>
+    </div>
 
-              <div class="form-group">
-                <label for="event-type">Event Type:</label>
-                <input type="text" id="event-type" value="Christening" readonly />
-              </div>
-
-              <div class="form-group">
-                <label for="guest-count">Good for:</label>
-                <select id="guest-count">
-                  <option value="50">50 pax</option>
-                  <option value="70">70 pax</option>
-                  <option value="80">80 pax</option>
-                  <option value="100">100 pax</option>
-                  <option value="120">120 pax</option>
-                  <option value="130">130 pax</option>
-                  <option value="150">150 pax</option>
-                  <option value="200">200 pax</option>
-                </select>
-              </div>
-
-              <div class="package-buttons">
-                <button type="button">PACKAGE A</button>
-                <button type="button">PACKAGE B</button>
-                <button type="button">PACKAGE C</button>
-              </div>
-            </div> -->
-          </div>
-        </div>
-      </div>
-
-      <!-- Package 5 -->
-      <div class="package" id="custom-package">
-        <div class="package-title">CUSTOM EVENT PACKAGES</div>
-        <div class="package-body">
-          <div class="package-row">
-            <div class="package-slider">
-              <button class="pkg-prev">❮</button>
-              <img class="pkg-image" src="{% static 'images/packages/packaged1.jpg' %}" alt="Custom Event">
-              <button class="pkg-next">❯</button>
-            </div>
-            <!-- <div class="package-selection">
-              <h3>Want this as your package?</h3>
-
-              <div class="form-group">
-                <label for="event-type">Event Type:</label>
-                <input type="text" id="event-type" value="Custom Event" readonly />
-              </div>
-
-              <div class="form-group">
-                <label for="guest-count">Good for (rates per head):</label>
-                <select id="guest-count">
-                  <option value="below 100">below 100 pax</option>
-                  <option value="100 and above">100 pax & above</option>
-                </select>
-              </div>
-
-              <div class="package-buttons">
-                <button type="button">PACKAGE A</button>
-                <button type="button">PACKAGE B</button>
-                <button type="button">PACKAGE C</button>
-              </div>
-            </div> -->
-          </div>
-        </div>
-      </div>
+    <div class="packages-actions">
+      <a href="#services" class="explore-btn" onclick="openKiddieDropdown()">
+        <i class="fas fa-gift"></i>
+        Explore Packages
+      </a>
+      <a href="{% url 'menu' %}" class="explore-btn">
+        <i class="fas fa-utensils"></i>
+        Explore Menu
+      </a>
     </div>
   </section>
 
   <!-- DESIGN -->
   <section id="design">
-    <h1>EXPLORE OUR VARIOUS THEMES AND DESIGN</h1>
-    <p>We bring your vision to life with creative themes and personalized event designs that reflect your style. From
-      elegant to playful, every detail is crafted to create a cohesive and memorable atmosphere.</p>
-    <div class="themes-grid">
-      <a class="theme" href="{% url 'moredesign' %}?category=themed_backdrop"
-        style="background-image: url('{% static 'images/upgraded balloon set-up/R1A.jpg' %}');">THEMED BACKDROP</a>
-      <a class="theme" href="{% url 'moredesign' %}?category=minimalist_setup"
-        style="background-image: url('{% static 'images/minimalist set-up/R1A.jpg' %}');">MINIMALIST SETUP</a>
-      <a class="theme" href="{% url 'moredesign' %}?category=signature_setup"
-        style="background-image: url('{% static 'images/signature set-up/R1A.jpg' %}');">SIGNATURE SETUP</a>
+    <div class="design-hero">
+      <div class="design-hero-content">
+        <div class="design-image">
+          <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758442090/eventprep_plo13r.jpg" alt="Our Design Story">
+        </div>
+        <div class="design-story">
+          <div class="design-story-header">
+            <hr class="story-line">
+            <span class="story-subtitle">OUR DESIGN</span>
+            <hr class="story-line">
+          </div>
+          <h2 class="design-title">Why is it special?</h2>
+          <p class="design-description">We bring your vision to life with creative themes and personalized event designs that reflect your style. From elegant to playful, every detail is crafted to create a cohesive and memorable atmosphere.</p>
+          <div class="design-features">
+            <div class="feature-item">
+              <i class="fas fa-check"></i>
+              <span>Themed Backdrop</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-check"></i>
+              <span>Minimalist Setup</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-check"></i>
+              <span>Signature Setup</span>
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-check"></i>
+              <span>Custom Design</span>
+            </div>
+          </div>
+          <a href="{% url 'moredesign' %}" class="learn-more-btn">VIEW DESIGNS</a>
+        </div>
+      </div>
     </div>
-    <a href="{% url 'moredesign' %}" class="more-design">
-      MORE DESIGN
-    </a>
+
+    <div class="design-categories">
+      <h3 class="categories-title">Our Design Categories</h3>
+
+      <div class="categories-grid">
+        <a class="design-category" href="{% url 'moredesign' %}?category=themed_backdrop">
+          <div class="category-image">
+            <img src="{% static 'images/upgraded balloon set-up/R1A.jpg' %}" alt="Themed Backdrop">
+          </div>
+          <div class="category-content">
+            <h4>Themed Backdrop</h4>
+            <p>Custom themed backdrops that bring your event vision to life</p>
+          </div>
+        </a>
+        
+        <a class="design-category" href="{% url 'moredesign' %}?category=minimalist_setup">
+          <div class="category-image">
+            <img src="{% static 'images/minimalist set-up/R1A.jpg' %}" alt="Minimalist Setup">
+          </div>
+          <div class="category-content">
+            <h4>Minimalist Setup</h4>
+            <p>Clean, elegant designs that focus on simplicity and sophistication</p>
+          </div>
+        </a>
+        
+        <a class="design-category" href="{% url 'moredesign' %}?category=signature_setup">
+          <div class="category-image">
+            <img src="{% static 'images/signature set-up/R1A.jpg' %}" alt="Signature Setup">
+          </div>
+          <div class="category-content">
+            <h4>Signature Setup</h4>
+            <p>Unique, personalized designs that reflect your special style</p>
+          </div>
+        </a>
+      </div>
+    </div>
   </section>
 
-  <!-- CALENDAR -->
-  <!-- <section id="calendar">
-    <div class="calendar-title">CALENDAR</div>
-    <div class="calendar-content">
-      <div class="calendar-left">
-        <img src="{% static 'images/maycalendar.jpg' %}" alt="Calendar">
-      </div>
-      <div class="calendar-right">
-        <h1>BOOK WITH US!</h1>
-        <p>Ready to plan your next event? Book with us today and let our team turn your ideas into an unforgettable
-          celebration.</p> <a href={% url 'bookhere' %} class="book-calendar">
-          <img src="{% static 'images/calendar.png' %}" alt="Book Here">
-          <h3>BOOK HERE</h3>
-        </a>
-        <div class="legend">
-        <h4>Legends:</h4>
-        <ul>
-          <li><span class="circle red"></span> 0 Slots left</li>
-          <li><span class="circle violet"></span> 1 Slot left</li>
-          <li><span class="circle orange"></span> 2 Slots left</li>
-          <li><span class="circle yellow"></span> 3 Slots left</li>
-          <li><span class="circle green"></span> 4 Slots left</li>
-          <li><img src="{% static 'images/taste-legend.png' %}" alt="Food Tasting Icon" class="taste-icon" />Food Tasting</li>
-        </ul>
-      </div>
-
-      </div>
-    </div>
-  </section> -->
 
   <!-- REVIEWS -->
   <section id="reviews">
@@ -479,100 +483,299 @@
 
   <!-- ABOUT US -->
   <section id="about-us">
-    <div class="about-header">
-      <h1>ABOUT US</h1>
-      <h2><em>Nike’s Catering Services</em></h2>
-    </div>
-
-    <div class="about-content">
-      <div class="about-logo">
-        <img src="{% static 'images/CLogo-text.jpg' %}" alt="Company Logo">
+    <div class="about-grid">
+      <div class="about-photo">
+        <img src="{% static 'images/minimalist set-up/R3A.jpg' %}" alt="Decor details">
       </div>
-      <div class="about-text">
-        <p>
-          Nike's Catering Services began in 2014 as a party needs supplier, and has since expanded to provide
-          all-inclusive packages for various occasions.
-        </p>
-        <p>
-          As a commitment to bringing a tasteful yet affordable experience, Nike's Catering Services has become one of
-          the top choice for catering and event suppliers in Bulacan and nearby cities.
-        </p>
+      <div class="about-card">
+        <div class="about-card-inner">
+          <img class="about-mark" src="{% static 'images/CLogo-text.jpg' %}" alt="Brand mark">
+          <h3 class="about-heading">CELEBRATE WITH<br>NIKE'S CATERING SERVICES</h3>
+          <p class="about-copy">
+
+              Nike's Catering Services began in 2014 as a party needs supplier, and has since 
+              expanded to provide
+              all-inclusive packages for various occasions.
+            </p>
+            <p class="about-copy">
+              As a commitment to bringing a tasteful yet affordable experience, Nike's Catering 
+              Services has become one of
+              the top choice for catering and event suppliers in Bulacan and nearby cities.
+            </p>
+        </div>
+      </div>
+      <div class="about-photo">
+        <img src="{% static 'images/signature set-up/R4A.jpg' %}" alt="Reception setup">
       </div>
     </div>
   </section>
 
   <!-- FAQs -->
   <section id="faqs">
-    <h1 class="faq-title">FREQUENTLY ASKED QUESTIONS</h1>
-
-    <div class="faq-container">
-      <div class="faq-item">
-        <div class="faq-question">How do I book a package?</div>
-        <div class="faq-answer">
-          You can book through our website, message us on Facebook, or contact us directly using the numbers provided in the Contact Us section.
-        </div>
+    <div class="faq-grid">
+      <div class="faq-left">
+        <h2 class="faq-hero-title">Any questions?<br>We got you.</h2>
+        <p class="faq-hero-sub">Got questions about booking, packages, or payments? Here are quick answers to the most common ones.</p>
       </div>
 
-      <div class="faq-item">
-        <div class="faq-question">Do you offer custom event packages?</div>
-        <div class="faq-answer">
-          Yes! We customize packages based on your preferences. Let us know your budget, theme, and number of guests, and we'll take care of the rest.
-        </div>
-      </div>
+      <div class="faq-right">
+        <div class="faq-container">
+          <div class="faq-item">
+            <div class="faq-question">How do I book a package?</div>
+            <div class="faq-answer">
+              You can book through our website, message us on Facebook, or contact us directly using the numbers provided in the Contact Us section.
+            </div>
+          </div>
 
-      <div class="faq-item">
-        <div class="faq-question">What are your mode of payments?</div>
-        <div class="faq-answer">
-          We cater cash and GCash payments.
-        </div>
-      </div>
+          <div class="faq-item">
+            <div class="faq-question">Do you offer custom event packages?</div>
+            <div class="faq-answer">
+              Yes! We customize packages based on your preferences. Let us know your budget, theme, and number of guests, and we'll take care of the rest.
+            </div>
+          </div>
 
-      <div class="faq-item">
-        <div class="faq-question">Can I request a food tasting before booking?</div>
-        <div class="faq-answer">
-          Absolutely. We offer scheduled food tasting sessions on every weekend of the month. You can book one directly through the "Book a Food Tasting" section.
+          <div class="faq-item">
+            <div class="faq-question">What are your mode of payments?</div>
+            <div class="faq-answer">
+              We cater cash and GCash payments.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">Can I request a food tasting before booking?</div>
+            <div class="faq-answer">
+              Absolutely. We offer scheduled food tasting sessions on every weekend of the month. You can reach us by clicking our contact details in Contact Us section.
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
 
-  <!-- CONTACT US -->
-  <section id="contact-us">
-    <div class="contact-left">
-      <div class="company">
-        <img src="{% static 'images/CLogo-iNotext.png' %}" alt="Company Logo" class="clogo">
-        <div class="left-text">
-          <h1>Nike's</h1>
-          <h2>Catering Services</h2>
-          <p>Celebrate with Nikes!</p>
+ <!-- CONTACT US -->
+<section id="contact-us">
+  <div class="footer-container">
+    <div class="footer-column company-info">
+      <div class="footer-logo">
+        <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758442112/soireelogo-l_eazlvf.svg" alt="Company Logo">
+        <div class="logo-text">
+          <span class="company-name">Nike's Catering Services</span>
+          <p class="company-subtext">Celebrate with Nike's!</p>
         </div>
       </div>
 
+      
+      <div class="footer-address">
+        <p>Bulacan, Philippines</p>
+        <p class="mobile"><a href="tel:+639662003092">+63 966 200 3092</a></p>
+        <p class="mobile"><a href="tel:+639283452913">+63 928 345 2913</a></p>
+      </div>
 
+      <div class="footer-copyright">
+        <p>© 2024 Nike's Catering Services. All rights reserved.</p>
+      </div>
     </div>
 
-    <div class="contact-right">
-      <h1>CONTACT US</h1>
-
-      <h2><i class="fa-solid fa-envelope"></i>
-        <a href="mailto:nikescateringofficial@gmail.com">nikescateringofficial@gmail.com</a>
-      </h2>
-
-      <h2><i class="fa-brands fa-facebook"></i>
-        <a href="https://www.facebook.com/nikescateringservicesofficial">Nike's Catering Services</a>
-      </h2>
-
-      <h2><i class="fa-solid fa-mobile-screen-button"></i>
-        <a href="tel:+639662003092">+63 966 200 3092</a>
-        <a href="tel:+639283452913">+63 928 345 2913</a>
-      </h2>
-
-
+    <div class="footer-column">
+      <h3 class="footer-heading">ABOUT</h3>
+      <ul class="footer-links">
+        <li><a href="#about-us">Our Story</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#packages">Packages</a></li>
+        <li><a href="#design">Designs</a></li>
+      </ul>
     </div>
-  </section>
+
+    <div class="footer-column">
+      <h3 class="footer-heading">SERVICES</h3>
+      <ul class="footer-links">
+        <li><a href="#services">Wedding</a></li>
+        <li><a href="#services">Birthday</a></li>
+        <li><a href="#services">Kiddie Party</a></li>
+        <li><a href="#services">Christening</a></li>
+        <li><a href="#services">Custom Events</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-column">
+      <h3 class="footer-heading">CONTACT</h3>
+      <ul class="footer-links">
+        <li><a href="mailto:nikescateringofficial@gmail.com">Email Us</a></li>
+        <li><a href="https://www.facebook.com/nikescateringservicesofficial">Facebook</a></li>
+        <li><a href="tel:+639662003092">Call Us</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
 
   <!-- FUNCTIONS -->
+
+<script>
+// Function to open kiddie dropdown when Explore Packages is clicked
+function openKiddieDropdown() {
+  // Close all dropdowns first
+  document.querySelectorAll('.service-dropdown').forEach(d => d.style.display = 'none');
+  
+  // Open kiddie dropdown
+  const kiddieDropdown = document.getElementById('dropdown-kiddie');
+  if (kiddieDropdown) {
+    kiddieDropdown.style.display = 'block';
+  }
+  
+  // Update openDropdown variable
+  window.openDropdown = kiddieDropdown;
+}
+</script>
+
+<script>
+// filepath: c:\Users\yasmi\Downloads\workspace\soireeweb\main\templates\main.html
+document.addEventListener('DOMContentLoaded', function () {
+  // Apply backgrounds for service cards (avoid inline style quoting issues)
+  document.querySelectorAll('.service-card').forEach(card => {
+    const bg = card.getAttribute('data-bg-url');
+    if (bg) card.style.backgroundImage = `url('${bg}')`;
+  });
+  const serviceDropdownMap = {
+    'Kiddie Party': 'dropdown-kiddie',
+    'Birthday': 'dropdown-birthday',
+    'Wedding': 'dropdown-wedding',
+    'Christening': 'dropdown-christening',
+    'Custom Event': 'dropdown-custom'
+  };
+
+  let openDropdown = null;
+
+  document.querySelectorAll('.service-card').forEach(card => {
+    card.addEventListener('click', function () {
+      const event = card.getAttribute('data-event');
+      const dropdownId = serviceDropdownMap[event];
+      const dropdown = document.getElementById(dropdownId);
+
+      // If clicking the same card, toggle its dropdown
+      if (openDropdown === dropdown) {
+        dropdown.style.display = (dropdown.style.display === 'none' || dropdown.style.display === '') ? 'block' : 'none';
+        openDropdown = dropdown.style.display === 'block' ? dropdown : null;
+      } else {
+        // Hide all dropdowns
+        document.querySelectorAll('.service-dropdown').forEach(d => d.style.display = 'none');
+        // Show the clicked one
+        dropdown.style.display = 'block';
+        openDropdown = dropdown;
+      }
+    });
+  });
+
+  // Slider logic for each dropdown
+  const packageImages = [
+    [
+      "{% static 'images/packages/kiddie party/50pax.jpg' %}",
+      "{% static 'images/packages/kiddie party/70pax.jpg' %}",
+      "{% static 'images/packages/kiddie party/80pax.jpg' %}",
+      "{% static 'images/packages/kiddie party/100pax.jpg' %}",
+      "{% static 'images/packages/kiddie party/120pax.jpg' %}",
+      "{% static 'images/packages/kiddie party/130pax.jpg' %}",
+      "{% static 'images/packages/kiddie party/150pax.jpg' %}",
+      "{% static 'images/packages/kiddie party/160pax.jpg' %}",
+      "{% static 'images/packages/kiddie party/170pax.jpg' %}",
+      "{% static 'images/packages/kiddie party/180pax.jpg' %}",
+      "{% static 'images/packages/kiddie party/200pax.jpg' %}",
+    ],
+    [
+      "{% static 'images/packages/birthday/50pax.jpg' %}",
+      "{% static 'images/packages/birthday/70pax.jpg' %}",
+      "{% static 'images/packages/birthday/80pax.jpg' %}",
+      "{% static 'images/packages/birthday/100pax.jpg' %}",
+      "{% static 'images/packages/birthday/120pax.jpg' %}",
+      "{% static 'images/packages/birthday/130pax.jpg' %}",
+      "{% static 'images/packages/birthday/150pax.jpg' %}",
+      "{% static 'images/packages/birthday/160pax.jpg' %}",
+      "{% static 'images/packages/birthday/170pax.jpg' %}",
+      "{% static 'images/packages/birthday/180pax.jpg' %}",
+      "{% static 'images/packages/birthday/200pax.jpg' %}",
+    ],
+    [
+      "{% static 'images/packages/wedding/50pax.jpg' %}",
+      "{% static 'images/packages/wedding/60pax.jpg' %}",
+      "{% static 'images/packages/wedding/70pax.jpg' %}",
+      "{% static 'images/packages/wedding/80pax.jpg' %}",
+      "{% static 'images/packages/wedding/100pax.jpg' %}",
+      "{% static 'images/packages/wedding/120pax.jpg' %}",
+      "{% static 'images/packages/wedding/130pax.jpg' %}",
+      "{% static 'images/packages/wedding/150pax.jpg' %}",
+      "{% static 'images/packages/wedding/160pax.jpg' %}",
+      "{% static 'images/packages/wedding/170pax.jpg' %}",
+      "{% static 'images/packages/wedding/180pax.jpg' %}",
+      "{% static 'images/packages/wedding/200pax.jpg' %}",
+      "{% static 'images/packages/wedding/250pax.jpg' %}",
+    ],
+    [
+      "{% static 'images/packages/christening/50pax.jpg' %}",
+      "{% static 'images/packages/christening/70pax.jpg' %}",
+      "{% static 'images/packages/christening/80pax.jpg' %}",
+      "{% static 'images/packages/christening/100pax.jpg' %}",
+      "{% static 'images/packages/christening/120pax.jpg' %}",
+      "{% static 'images/packages/christening/150pax.jpg' %}",
+      "{% static 'images/packages/christening/200pax.jpg' %}",
+    ],
+    [
+      "{% static 'images/packages/others/below100.jpg' %}",
+      "{% static 'images/packages/others/above100.jpg' %}",
+    ]
+  ];
+
+  document.querySelectorAll('.service-dropdown').forEach(function (dropdown, idx) {
+    const slider = dropdown.querySelector('.package-slider');
+    const img = dropdown.querySelector('.pkg-image');
+    const prev = dropdown.querySelector('.pkg-prev');
+    const next = dropdown.querySelector('.pkg-next');
+    let imgIdx = 0;
+
+    if (slider && img && prev && next) {
+      function updateImg() {
+        img.src = packageImages[idx][imgIdx];
+      }
+      prev.addEventListener('click', function (e) {
+        e.stopPropagation();
+        imgIdx = (imgIdx - 1 + packageImages[idx].length) % packageImages[idx].length;
+        updateImg();
+      });
+      next.addEventListener('click', function (e) {
+        e.stopPropagation();
+        imgIdx = (imgIdx + 1) % packageImages[idx].length;
+        updateImg();
+      });
+      updateImg();
+    }
+  });
+
+  // Populate side images based on selected service
+  const sideImagesMap = {};
+
+  function setSideImages(dropdownId) {
+    const dropdown = document.getElementById(dropdownId);
+    if (!dropdown) return;
+    const imgs = dropdown.querySelectorAll('.side-img');
+    const sources = sideImagesMap[dropdownId] || [];
+    imgs.forEach((img, i) => {
+      // Do not override if the image already has a src defined in HTML
+      if (!img.getAttribute('src')) {
+        if (sources[i]) img.src = sources[i];
+      }
+    });
+  }
+
+  // Hook into service card clicks to set side images
+  document.querySelectorAll('.service-card').forEach(card => {
+    card.addEventListener('click', function () {
+      const event = card.getAttribute('data-event');
+      const dropdownId = serviceDropdownMap[event];
+      setSideImages(dropdownId);
+    });
+  });
+});
+</script>
 
   <!-- AI CHATBOT PRESENCE -->
   <script>
@@ -582,318 +785,323 @@
     }
   </script>
 
-  <!-- SLIDER ON MENU -->
+
+ <!-- FOR PACKAGES -->
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const track = document.querySelector('.carousel-track');
-      const slides = Array.from(track.children);
-      const next = document.querySelector('.next');
-      const prev = document.querySelector('.prev');
-      const dots = document.querySelectorAll('.dot'); // exactly 5 dots
-      const menuRight = document.querySelector('.menu-right');
+  document.addEventListener('DOMContentLoaded', function () {
+    const packageImages = [
+      [
+        "{% static 'images/packages/kiddie party/50pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/70pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/80pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/100pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/120pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/130pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/150pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/160pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/170pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/180pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/200pax.jpg' %}",
+      ],
+      [
+        "{% static 'images/packages/birthday/50pax.jpg' %}",
+        "{% static 'images/packages/birthday/70pax.jpg' %}",
+        "{% static 'images/packages/birthday/80pax.jpg' %}",
+        "{% static 'images/packages/birthday/100pax.jpg' %}",
+        "{% static 'images/packages/birthday/120pax.jpg' %}",
+        "{% static 'images/packages/birthday/130pax.jpg' %}",
+        "{% static 'images/packages/birthday/150pax.jpg' %}",
+        "{% static 'images/packages/birthday/160pax.jpg' %}",
+        "{% static 'images/packages/birthday/170pax.jpg' %}",
+        "{% static 'images/packages/birthday/180pax.jpg' %}",
+        "{% static 'images/packages/birthday/200pax.jpg' %}",
+      ],
+      [
+        "{% static 'images/packages/wedding/50pax.jpg' %}",
+        "{% static 'images/packages/wedding/60pax.jpg' %}",
+        "{% static 'images/packages/wedding/70pax.jpg' %}",
+        "{% static 'images/packages/wedding/80pax.jpg' %}",
+        "{% static 'images/packages/wedding/100pax.jpg' %}",
+        "{% static 'images/packages/wedding/120pax.jpg' %}",
+        "{% static 'images/packages/wedding/130pax.jpg' %}",
+        "{% static 'images/packages/wedding/150pax.jpg' %}",
+        "{% static 'images/packages/wedding/160pax.jpg' %}",
+        "{% static 'images/packages/wedding/170pax.jpg' %}",
+        "{% static 'images/packages/wedding/180pax.jpg' %}",
+        "{% static 'images/packages/wedding/200pax.jpg' %}",
+        "{% static 'images/packages/wedding/250pax.jpg' %}",
+      ],
+      [
+        "{% static 'images/packages/christening/50pax.jpg' %}",
+        "{% static 'images/packages/christening/70pax.jpg' %}",
+        "{% static 'images/packages/christening/80pax.jpg' %}",
+        "{% static 'images/packages/christening/100pax.jpg' %}",
+        "{% static 'images/packages/christening/120pax.jpg' %}",
+        "{% static 'images/packages/christening/150pax.jpg' %}",
+        "{% static 'images/packages/christening/200pax.jpg' %}",
+      ],
+      [
+        "{% static 'images/packages/others/below100.jpg' %}",
+        "{% static 'images/packages/others/above100.jpg' %}",
+      ]
+    ];
 
-      function getCardWidth() {
-        const rect = slides[0].getBoundingClientRect();
-        const mr = parseFloat(getComputedStyle(slides[0]).marginRight || '0');
-        return rect.width + mr;
-      }
-      let index = 0;
+    document.querySelectorAll('.package').forEach(function (pkg, pkgIdx) {
+      const title = pkg.querySelector('.package-title');
+      const body = pkg.querySelector('.package-body');
+      const slider = pkg.querySelector('.package-slider');
+      const img = pkg.querySelector('.pkg-image');
+      const prev = pkg.querySelector('.pkg-prev');
+      const next = pkg.querySelector('.pkg-next');
+      let imgIdx = 0;
 
-      function getVisibleCount() {
-        const containerWidth = menuRight.getBoundingClientRect().width;
-        return Math.max(1, Math.floor(containerWidth / getCardWidth()));
-      }
-
-      function getMaxIndex() {
-        const cardW = getCardWidth();
-        const maxTranslate = Math.max(0, track.scrollWidth - menuRight.clientWidth);
-        return Math.max(0, Math.floor(maxTranslate / cardW));
-      }
-
-      function clampIndex() {
-        // Keep index within 0..(dots.length-1) so we only have 5 positions
-        if (index < 0) index = 0;
-        if (index > dots.length - 1) index = dots.length - 1;
-      }
-
-      function updateButtons() {
-        // Always enabled for continuous loop UX
-        prev.disabled = false;
-        next.disabled = false;
-      }
-
-      function updateCarousel() {
-        clampIndex();
-        const cardW = getCardWidth();
-        const maxTranslate = Math.max(0, track.scrollWidth - menuRight.clientWidth);
-        const desired = index * cardW;
-        const tx = Math.min(desired, maxTranslate);
-        track.style.transform = `translateX(-${tx}px)`;
-        // Exactly 5 dots – highlight the current step only
-        dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
-        updateButtons();
-      }
-
-      next.addEventListener('click', () => {
-        index = (index + 1) % dots.length; // loop after 5 steps
-        updateCarousel();
-      });
-
-      prev.addEventListener('click', () => {
-        index = (index - 1 + dots.length) % dots.length; // loop within 5 steps
-        updateCarousel();
-      });
-
-      dots.forEach((dot, i) => {
-        dot.addEventListener('click', () => {
-          index = i;
-          updateCarousel();
+      // Accordion toggle
+      title.addEventListener('click', function () {
+        document.querySelectorAll('.package-body').forEach(b => {
+          if (b !== body) b.classList.remove('open');
         });
+        body.classList.toggle('open');
       });
 
-      window.addEventListener('resize', updateCarousel);
-      updateCarousel();
-    });
-  </script>
-
-  <!-- FOR PACKAGES -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const packageImages = [
-        [
-          "{% static 'images/packages/kiddie party/50pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/70pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/80pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/100pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/120pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/130pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/150pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/160pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/170pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/180pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/200pax.jpg' %}",
-        ],
-        [
-          "{% static 'images/packages/birthday/50pax.jpg' %}",
-          "{% static 'images/packages/birthday/70pax.jpg' %}",
-          "{% static 'images/packages/birthday/80pax.jpg' %}",
-          "{% static 'images/packages/birthday/100pax.jpg' %}",
-          "{% static 'images/packages/birthday/120pax.jpg' %}",
-          "{% static 'images/packages/birthday/130pax.jpg' %}",
-          "{% static 'images/packages/birthday/150pax.jpg' %}",
-          "{% static 'images/packages/birthday/160pax.jpg' %}",
-          "{% static 'images/packages/birthday/170pax.jpg' %}",
-          "{% static 'images/packages/birthday/180pax.jpg' %}",
-          "{% static 'images/packages/birthday/200pax.jpg' %}",
-        ],
-        [
-          "{% static 'images/packages/wedding/50pax.jpg' %}",
-          "{% static 'images/packages/wedding/60pax.jpg' %}",
-          "{% static 'images/packages/wedding/70pax.jpg' %}",
-          "{% static 'images/packages/wedding/80pax.jpg' %}",
-          "{% static 'images/packages/wedding/100pax.jpg' %}",
-          "{% static 'images/packages/wedding/120pax.jpg' %}",
-          "{% static 'images/packages/wedding/130pax.jpg' %}",
-          "{% static 'images/packages/wedding/150pax.jpg' %}",
-          "{% static 'images/packages/wedding/160pax.jpg' %}",
-          "{% static 'images/packages/wedding/170pax.jpg' %}",
-          "{% static 'images/packages/wedding/180pax.jpg' %}",
-          "{% static 'images/packages/wedding/200pax.jpg' %}",
-          "{% static 'images/packages/wedding/250pax.jpg' %}",
-        ],
-        [
-          "{% static 'images/packages/christening/50pax.jpg' %}",
-          "{% static 'images/packages/christening/70pax.jpg' %}",
-          "{% static 'images/packages/christening/80pax.jpg' %}",
-          "{% static 'images/packages/christening/100pax.jpg' %}",
-          "{% static 'images/packages/christening/120pax.jpg' %}",
-          "{% static 'images/packages/christening/150pax.jpg' %}",
-          "{% static 'images/packages/christening/200pax.jpg' %}",
-        ],
-        [
-          "{% static 'images/packages/others/below100.jpg' %}",
-          "{% static 'images/packages/others/above100.jpg' %}",
-        ]
-      ];
-
-      document.querySelectorAll('.package').forEach(function (pkg, pkgIdx) {
-        const title = pkg.querySelector('.package-title');
-        const body = pkg.querySelector('.package-body');
-        const slider = pkg.querySelector('.package-slider');
-        const img = pkg.querySelector('.pkg-image');
-        const prev = pkg.querySelector('.pkg-prev');
-        const next = pkg.querySelector('.pkg-next');
-        let imgIdx = 0;
-
-        // Accordion toggle
-        title.addEventListener('click', function () {
-          document.querySelectorAll('.package-body').forEach(b => {
-            if (b !== body) b.classList.remove('open');
-          });
-          body.classList.toggle('open');
-        });
-
-        // Only run slider logic if slider exists
-        if (slider && img && prev && next) {
-          function updateImg() {
-            img.src = packageImages[pkgIdx][imgIdx];
-          }
-          prev.addEventListener('click', function (e) {
-            e.stopPropagation();
-            imgIdx = (imgIdx - 1 + packageImages[pkgIdx].length) % packageImages[pkgIdx].length;
-            updateImg();
-          });
-          next.addEventListener('click', function (e) {
-            e.stopPropagation();
-            imgIdx = (imgIdx + 1) % packageImages[pkgIdx].length;
-            updateImg();
-          });
-          updateImg();
+      // Only run slider logic if slider exists
+      if (slider && img && prev && next) {
+        function updateImg() {
+          img.src = packageImages[pkgIdx][imgIdx];
         }
-      });
+        prev.addEventListener('click', function (e) {
+          e.stopPropagation();
+          imgIdx = (imgIdx - 1 + packageImages[pkgIdx].length) % packageImages[pkgIdx].length;
+          updateImg();
+        });
+        next.addEventListener('click', function (e) {
+          e.stopPropagation();
+          imgIdx = (imgIdx + 1) % packageImages[pkgIdx].length;
+          updateImg();
+        });
+        updateImg();
+      }
     });
-  </script>
+  });
+</script>
 
-  <!-- For images in packages -->
-  <div id="image-modal" class="image-modal">
-    <button class="modal-prev">❮</button>
-    <img class="modal-content" id="modal-img" src="" alt="Full Size">
-    <button class="modal-next">❯</button>
-    <span class="close-modal">&times;</span>
-  </div>
+<!-- For images in packages -->
+<div id="image-modal" class="image-modal">
+  <button class="modal-prev">❮</button>
+  <img class="modal-content" id="modal-img" src="" alt="Full Size">
+  <button class="modal-next">❯</button>
+  <span class="close-modal">&times;</span>
+</div>
+<script>
+  // filepath: main/templates/main.html
+  document.addEventListener('DOMContentLoaded', function () {
+    // Use the same packageImages array as your slider (PACKAGES section)
+    const packageImages = [
+      [
+        "{% static 'images/packages/kiddie party/50pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/70pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/80pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/100pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/120pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/130pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/150pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/160pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/170pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/180pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/200pax.jpg' %}",
+      ],
+      [
+        "{% static 'images/packages/birthday/50pax.jpg' %}",
+        "{% static 'images/packages/birthday/70pax.jpg' %}",
+        "{% static 'images/packages/birthday/80pax.jpg' %}",
+        "{% static 'images/packages/birthday/100pax.jpg' %}",
+        "{% static 'images/packages/birthday/120pax.jpg' %}",
+        "{% static 'images/packages/birthday/130pax.jpg' %}",
+        "{% static 'images/packages/birthday/150pax.jpg' %}",
+        "{% static 'images/packages/birthday/160pax.jpg' %}",
+        "{% static 'images/packages/birthday/170pax.jpg' %}",
+        "{% static 'images/packages/birthday/180pax.jpg' %}",
+        "{% static 'images/packages/birthday/200pax.jpg' %}",
+      ],
+      [
+        "{% static 'images/packages/wedding/50pax.jpg' %}",
+        "{% static 'images/packages/wedding/60pax.jpg' %}",
+        "{% static 'images/packages/wedding/70pax.jpg' %}",
+        "{% static 'images/packages/wedding/80pax.jpg' %}",
+        "{% static 'images/packages/wedding/100pax.jpg' %}",
+        "{% static 'images/packages/wedding/120pax.jpg' %}",
+        "{% static 'images/packages/wedding/130pax.jpg' %}",
+        "{% static 'images/packages/wedding/150pax.jpg' %}",
+        "{% static 'images/packages/wedding/160pax.jpg' %}",
+        "{% static 'images/packages/wedding/170pax.jpg' %}",
+        "{% static 'images/packages/wedding/180pax.jpg' %}",
+        "{% static 'images/packages/wedding/200pax.jpg' %}",
+        "{% static 'images/packages/wedding/250pax.jpg' %}",
+      ],
+      [
+        "{% static 'images/packages/christening/50pax.jpg' %}",
+        "{% static 'images/packages/christening/70pax.jpg' %}",
+        "{% static 'images/packages/christening/80pax.jpg' %}",
+        "{% static 'images/packages/christening/100pax.jpg' %}",
+        "{% static 'images/packages/christening/120pax.jpg' %}",
+        "{% static 'images/packages/christening/150pax.jpg' %}",
+        "{% static 'images/packages/christening/200pax.jpg' %}",
+      ],
+      [
+        "{% static 'images/packages/others/below100.jpg' %}",
+        "{% static 'images/packages/others/above100.jpg' %}",
+      ]
+    ];
 
-  <script>
-    // filepath: main/templates/main.html
-    document.addEventListener('DOMContentLoaded', function () {
-      // Use the same packageImages array as your slider
-      const packageImages = [
-        [
-          "{% static 'images/packages/kiddie party/50pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/70pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/80pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/100pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/120pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/130pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/150pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/160pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/170pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/180pax.jpg' %}",
-          "{% static 'images/packages/kiddie party/200pax.jpg' %}",
-        ],
-        [
-          "{% static 'images/packages/birthday/50pax.jpg' %}",
-          "{% static 'images/packages/birthday/70pax.jpg' %}",
-          "{% static 'images/packages/birthday/80pax.jpg' %}",
-          "{% static 'images/packages/birthday/100pax.jpg' %}",
-          "{% static 'images/packages/birthday/120pax.jpg' %}",
-          "{% static 'images/packages/birthday/130pax.jpg' %}",
-          "{% static 'images/packages/birthday/150pax.jpg' %}",
-          "{% static 'images/packages/birthday/160pax.jpg' %}",
-          "{% static 'images/packages/birthday/170pax.jpg' %}",
-          "{% static 'images/packages/birthday/180pax.jpg' %}",
-          "{% static 'images/packages/birthday/200pax.jpg' %}",
-        ],
-        [
-          "{% static 'images/packages/wedding/50pax.jpg' %}",
-          "{% static 'images/packages/wedding/60pax.jpg' %}",
-          "{% static 'images/packages/wedding/70pax.jpg' %}",
-          "{% static 'images/packages/wedding/80pax.jpg' %}",
-          "{% static 'images/packages/wedding/100pax.jpg' %}",
-          "{% static 'images/packages/wedding/120pax.jpg' %}",
-          "{% static 'images/packages/wedding/130pax.jpg' %}",
-          "{% static 'images/packages/wedding/150pax.jpg' %}",
-          "{% static 'images/packages/wedding/160pax.jpg' %}",
-          "{% static 'images/packages/wedding/170pax.jpg' %}",
-          "{% static 'images/packages/wedding/180pax.jpg' %}",
-          "{% static 'images/packages/wedding/200pax.jpg' %}",
-          "{% static 'images/packages/wedding/250pax.jpg' %}",
-        ],
-        [
-          "{% static 'images/packages/christening/50pax.jpg' %}",
-          "{% static 'images/packages/christening/70pax.jpg' %}",
-          "{% static 'images/packages/christening/80pax.jpg' %}",
-          "{% static 'images/packages/christening/100pax.jpg' %}",
-          "{% static 'images/packages/christening/120pax.jpg' %}",
-          "{% static 'images/packages/christening/150pax.jpg' %}",
-          "{% static 'images/packages/christening/200pax.jpg' %}",
-        ],
-        [
-          "{% static 'images/packages/others/below100.jpg' %}",
-          "{% static 'images/packages/others/above100.jpg' %}",
-        ]
-      ];
+    // Images for SERVICES dropdown slider (same order as #service-dropdowns)
+    const serviceImages = [
+      [
+        "{% static 'images/packages/kiddie party/50pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/70pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/80pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/100pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/120pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/130pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/150pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/160pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/170pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/180pax.jpg' %}",
+        "{% static 'images/packages/kiddie party/200pax.jpg' %}",
+      ],
+      [
+        "{% static 'images/packages/birthday/50pax.jpg' %}",
+        "{% static 'images/packages/birthday/70pax.jpg' %}",
+        "{% static 'images/packages/birthday/80pax.jpg' %}",
+        "{% static 'images/packages/birthday/100pax.jpg' %}",
+        "{% static 'images/packages/birthday/120pax.jpg' %}",
+        "{% static 'images/packages/birthday/130pax.jpg' %}",
+        "{% static 'images/packages/birthday/150pax.jpg' %}",
+        "{% static 'images/packages/birthday/160pax.jpg' %}",
+        "{% static 'images/packages/birthday/170pax.jpg' %}",
+        "{% static 'images/packages/birthday/180pax.jpg' %}",
+        "{% static 'images/packages/birthday/200pax.jpg' %}",
+      ],
+      [
+        "{% static 'images/packages/wedding/50pax.jpg' %}",
+        "{% static 'images/packages/wedding/60pax.jpg' %}",
+        "{% static 'images/packages/wedding/70pax.jpg' %}",
+        "{% static 'images/packages/wedding/80pax.jpg' %}",
+        "{% static 'images/packages/wedding/100pax.jpg' %}",
+        "{% static 'images/packages/wedding/120pax.jpg' %}",
+        "{% static 'images/packages/wedding/130pax.jpg' %}",
+        "{% static 'images/packages/wedding/150pax.jpg' %}",
+        "{% static 'images/packages/wedding/160pax.jpg' %}",
+        "{% static 'images/packages/wedding/170pax.jpg' %}",
+        "{% static 'images/packages/wedding/180pax.jpg' %}",
+        "{% static 'images/packages/wedding/200pax.jpg' %}",
+        "{% static 'images/packages/wedding/250pax.jpg' %}",
+      ],
+      [
+        "{% static 'images/packages/christening/50pax.jpg' %}",
+        "{% static 'images/packages/christening/70pax.jpg' %}",
+        "{% static 'images/packages/christening/80pax.jpg' %}",
+        "{% static 'images/packages/christening/100pax.jpg' %}",
+        "{% static 'images/packages/christening/120pax.jpg' %}",
+        "{% static 'images/packages/christening/150pax.jpg' %}",
+        "{% static 'images/packages/christening/200pax.jpg' %}",
+      ],
+      [
+        "{% static 'images/packages/others/below100.jpg' %}",
+        "{% static 'images/packages/others/above100.jpg' %}",
+      ]
+    ];
+    const modal = document.getElementById('image-modal');
+    const modalImg = document.getElementById('modal-img');
+    const closeBtn = document.querySelector('.close-modal');
+    const prevBtn = document.querySelector('.modal-prev');
+    const nextBtn = document.querySelector('.modal-next');
 
-      const modal = document.getElementById('image-modal');
-      const modalImg = document.getElementById('modal-img');
-      const closeBtn = document.querySelector('.close-modal');
-      const prevBtn = document.querySelector('.modal-prev');
-      const nextBtn = document.querySelector('.modal-next');
+    // Track which gallery is open
+    let currentContext = 'packages'; // 'packages' | 'services'
+    let currentPackage = 0; // for packages
+    let currentService = 0; // for services
+    let currentImgIdx = 0;
 
-      // Track which package and image is open
-      let currentPackage = 0;
-      let currentImgIdx = 0;
-
-      // Find all .pkg-image and set up click
-      document.querySelectorAll('.package').forEach(function (pkg, pkgIdx) {
-        const imgs = pkg.querySelectorAll('.pkg-image');
-        imgs.forEach(function (img) {
-          img.addEventListener('click', function (e) {
-            // Find the current image index in the packageImages array
-            currentPackage = pkgIdx;
-            // Find the current image index by matching src
-            currentImgIdx = 0;
-            const src = img.src;
-            packageImages[pkgIdx].forEach((url, idx) => {
-              // Django static URLs may be absolute or relative, so use includes
-              if (src.includes(url.replace("{% static '", "").replace("' %}", ""))) {
-                currentImgIdx = idx;
-              }
-            });
-            showModalImage();
-            modal.classList.add('open');
+    // Find all .pkg-image and set up click
+    document.querySelectorAll('.package').forEach(function (pkg, pkgIdx) {
+      const imgs = pkg.querySelectorAll('.pkg-image');
+      imgs.forEach(function (img) {
+        img.addEventListener('click', function (e) {
+          // Find the current image index in the packageImages array
+          currentContext = 'packages';
+          currentPackage = pkgIdx;
+          // Find the current image index by matching src
+          currentImgIdx = 0;
+          const src = img.src;
+          packageImages[pkgIdx].forEach((url, idx) => {
+            // Django static URLs may be absolute or relative, so use includes
+            if (src.includes(url.replace("{% static '", "").replace("' %}", ""))) {
+              currentImgIdx = idx;
+            }
           });
+          showModalImage();
+          modal.classList.add('open');
         });
       });
+    });
 
-      function showModalImage() {
+    // Make SERVICES dropdown images viewable
+    const serviceDropdowns = document.querySelectorAll('#service-dropdowns .service-dropdown');
+    serviceDropdowns.forEach(function (dd, ddIdx) {
+      const img = dd.querySelector('.pkg-image');
+      if (!img) return;
+      img.addEventListener('click', function () {
+        currentContext = 'services';
+        currentService = ddIdx;
+        currentImgIdx = 0;
+        showModalImage();
+        modal.classList.add('open');
+      });
+    });
+
+    function showModalImage() {
+      if (currentContext === 'services') {
+        modalImg.src = serviceImages[currentService][currentImgIdx];
+      } else {
         modalImg.src = packageImages[currentPackage][currentImgIdx];
       }
+    }
 
-      prevBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        currentImgIdx = (currentImgIdx - 1 + packageImages[currentPackage].length) % packageImages[currentPackage].length;
-        showModalImage();
-      });
+    prevBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      const arr = currentContext === 'services' ? serviceImages[currentService] : packageImages[currentPackage];
+      currentImgIdx = (currentImgIdx - 1 + arr.length) % arr.length;
+      showModalImage();
+    });
 
-      nextBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        currentImgIdx = (currentImgIdx + 1) % packageImages[currentPackage].length;
-        showModalImage();
-      });
+    nextBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      const arr = currentContext === 'services' ? serviceImages[currentService] : packageImages[currentPackage];
+      currentImgIdx = (currentImgIdx + 1) % arr.length;
+      showModalImage();
+    });
 
-      closeBtn.addEventListener('click', function () {
+    closeBtn.addEventListener('click', function () {
+      modal.classList.remove('open');
+      modalImg.src = '';
+    });
+
+    // Close modal on background click
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) {
         modal.classList.remove('open');
         modalImg.src = '';
-      });
-
-      // Close modal on background click
-      modal.addEventListener('click', function (e) {
-        if (e.target === modal) {
-          modal.classList.remove('open');
-          modalImg.src = '';
-        }
-      });
-
-      // Optional: Close modal on ESC key
-      document.addEventListener('keydown', function (e) {
-        if (e.key === "Escape") {
-          modal.classList.remove('open');
-          modalImg.src = '';
-        }
-      });
+      }
     });
-  </script>
 
+    // Optional: Close modal on ESC key
+    document.addEventListener('keydown', function (e) {
+      if (e.key === "Escape") {
+        modal.classList.remove('open');
+        modalImg.src = '';
+      }
+    });
+  });
+</script>
 
 
   <!-- STARS ON REVIEWS -->
@@ -979,74 +1187,6 @@
       question.addEventListener('click', () => {
         item.classList.toggle('open');
       });
-    });
-  });
-</script>
-
-
-<!-- BOOK CONFIRMATION MODAL  OF SERICES-->
-<div id="bookingModal" class="modal-overlay">
-  <div class="modal-box">
-    <h2 class="modal-title">Event Packages</h2>
-    <p id="modal-message">Do you want to view the available packages for <span id="selected-event"></span>?</p>
-    <div class="modal-actions">
-      <button class="modal-btn confirm-btn">Yes, show packages</button>
-      <button class="modal-btn cancel-btn">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL POPUP -->
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const serviceBoxes = document.querySelectorAll('.service-box');
-    const modal = document.getElementById('bookingModal');
-    const messageSpan = document.getElementById('selected-event');
-    const confirmBtn = document.querySelector('.confirm-btn');
-    const cancelBtn = document.querySelector('.cancel-btn');
-
-    const packageIds = {
-      'Kiddie Party': 'kiddie-package',
-      'Birthday': 'birthday-package',
-      'Wedding': 'wedding-package',
-      'Christening': 'christening-package',
-      'Custom Event': 'custom-package',
-    };
-
-    let selectedEvent = null;
-
-    serviceBoxes.forEach(box => {
-      box.addEventListener('click', () => {
-        selectedEvent = box.getAttribute('data-event');
-        messageSpan.textContent = selectedEvent;
-        modal.style.display = 'flex';
-      });
-    });
-
-    confirmBtn.addEventListener('click', () => {
-      modal.style.display = 'none';
-      const targetId = packageIds[selectedEvent];
-      const target = document.getElementById(targetId);
-      if (target) {
-        document.querySelectorAll('.package-body').forEach(b => b.classList.remove('open'));
-        const body = target.querySelector('.package-body');
-        if (body) body.classList.add('open');
-        const yOffset = -110; // Adjust this value as needed (e.g. navbar height)
-        const y = target.getBoundingClientRect().top + window.pageYOffset + yOffset;
-        window.scrollTo({ top: y, behavior: 'smooth' });
-
-      }
-    });
-
-    cancelBtn.addEventListener('click', () => {
-      modal.style.display = 'none';
-    });
-
-    // Optional: Close on click outside the modal box
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.style.display = 'none';
-      }
     });
   });
 </script>

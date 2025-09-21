@@ -14,94 +14,135 @@
   {% include "navbar.html" %}
 
   <div class="form-center">
+    <div class="auth-container" id="main-auth-container">
+      <!-- Left Column - Form -->
+      <div class="form-column">
+        <!-- Login Form -->
+        <div class="login-container" id="login-form">
+          <div class="form-header">
+            <p class="greeting">Welcome back!</p>
+            <h2>Login</h2>
+          </div>
 
-   <!-- Login Form -->
-<div class="login-container" id="login-form">
-  <h2>LOGIN</h2>
+          <!-- Error Message -->
+          {% if message %}
+            <div class="error-message">
+              {{ message }}
+            </div>
+          {% endif %}
 
-    <!-- Error Message -->
-    {% if message %}
-      <div class="error-message">
-        {{ message }}
+          <form action="{% url 'login' %}" method="POST" autocomplete="off">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" autocomplete="username" required>
+              </div>
+              <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-wrapper">
+                  <input type="password" id="password" name="password" autocomplete="current-password" required>
+                  <i class="fa-solid fa-eye-slash toggle-password" toggle="#password"></i>
+                </div>
+              </div>
+              <div class="forgot-remember">
+                <a href="#" id="forgot-password-link">Forgot password?</a>
+              </div>
+              <button type="submit">Sign in</button>
+          </form>
+          <p class="switch-form">Don't have an account? <a href="#" id="show-register">Register here</a></p>
+        </div>
+
+        <!-- Register Form -->
+        <div class="login-container" id="register-form" style="display:none;">
+          <div class="form-header">
+            <p class="member-link">Start celebrating with Nikes!</p>
+            <h2>Registration</h2>
+          </div>
+          
+          <form id="registerForm" autocomplete="off">
+            <div class="register-flex">
+              <div class="register-col">
+                <label for="reg-firstname">First Name</label>
+                <input type="text" id="reg-firstname" name="firstname" autocomplete="given-name" required>
+              </div>
+              <div class="register-col">
+                <label for="reg-lastname">Last Name</label>
+                <input type="text" id="reg-lastname" name="lastname" autocomplete="family-name" required>
+              </div>
+            </div>
+            
+            <div class="register-flex">
+              <div class="register-col">
+                <label for="reg-username">Username</label>
+                <input type="text" id="reg-username" name="username" autocomplete="username" required minlength="6" maxlength="12">
+              </div>
+              <div class="register-col">
+                <label for="reg-mobile">Mobile Number</label>
+                <input type="text" id="reg-mobile" name="mobile" autocomplete="tel" maxlength="11" placeholder="09XXXXXXXXX" required>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="reg-email">Email Address</label>
+              <input type="email" id="reg-email" name="email" autocomplete="email" required>
+            </div>
+            
+            <div class="register-flex">
+              <div class="register-col">
+                <label for="reg-password1">Password</label>
+                <div class="password-wrapper">
+                  <input type="password" id="reg-password1" name="password" autocomplete="new-password" required minlength="8" maxlength="16">
+                  <i class="fa-solid fa-eye-slash toggle-password" toggle="#reg-password1"></i>
+                </div>
+                <div id="password-requirements" class="password-requirements" style="display: none;">
+                  <h4>Password Requirements:</h4>
+                  <ul>
+                    <li id="req-length">At least 8 characters long</li>
+                    <li id="req-uppercase">At least one uppercase letter (A-Z)</li>
+                    <li id="req-lowercase">At least one lowercase letter (a-z)</li>
+                    <li id="req-number">At least one number (0-9)</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="register-col">
+                <label for="reg-password2">Confirm Password</label>
+                <div class="password-wrapper">
+                  <input type="password" id="reg-password2" name="password2" autocomplete="new-password" required minlength="8" maxlength="16">
+                  <i class="fa-solid fa-eye-slash toggle-password" toggle="#reg-password2"></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="terms-checkbox">
+              <label class="checkbox-label">
+                <input type="checkbox" id="terms-checkbox" required>
+                <span class="checkmark"></span>
+                I agree to all the statements included in the <a href="#" id="terms-link">Terms and Policy</a> and <a href="#" id="privacy-link">Data Privacy</a>
+              </label>
+            </div>
+
+            <button type="submit" id="register-btn">Create Account</button>
+          </form>
+          <p class="switch-form">Already have an account? <a href="#" id="show-login">Login here</a></p>
+        </div>
       </div>
-    {% endif %}
 
-    <form action="{% url 'login' %}" method="POST" autocomplete="off">
-        {% csrf_token %}
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" autocomplete="username" required>
-        <br>
-        <label for="password">Password:</label>
-        <div class="password-wrapper">
-          <input type="password" id="password" name="password" autocomplete="current-password" required>
-          <i class="fa-solid fa-eye-slash toggle-password" toggle="#password"></i>
+      <!-- Right Column - Image -->
+      <div class="image-column">
+        <div class="brand-section">
+          <h1 class="brand-name">NIKE'S CATERING SERVICES</h1>
+          <h3 class="brand-tagline">Celebrate with <span class="highlight">Nikes!</span></h3>
         </div>
-        <div class="forgot-remember">
-          <a href="#" id="forgot-password-link">Forgot password?</a>
+        <div class="background-image" id="login-bg">
+          <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758442090/loginbg_fndv0o.jpg" alt="Background" />
         </div>
-        <button type="submit">Login</button>
-    </form>
-    <p>Don't have an account? <a href="#" id="show-register">Register here</a></p>
-  </div>
-
-
-    <!-- Register Form -->
-    <div class="register-container" id="register-form" style="display:none;">
-      <h2>REGISTER</h2>
-      <form id="registerForm" autocomplete="off">
-        <div class="register-flex">
-          <div class="register-col">
-            <label for="reg-firstname">First Name:</label>
-            <input type="text" id="reg-firstname" name="firstname" autocomplete="given-name" required>
-          </div>
-          <div class="register-col">
-            <label for="reg-lastname">Last Name:</label>
-            <input type="text" id="reg-lastname" name="lastname" autocomplete="family-name" required>
-          </div>
+        <div class="background-image" id="register-bg" style="display:none;">
+          <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758442089/registerbg_rlyfuy.jpg" alt="Background" />
         </div>
-        <div class="register-flex">
-          <div class="register-col">
-            <label for="reg-username">Username:</label>
-            <input type="text" id="reg-username" name="username" autocomplete="username" required minlength="6" maxlength="12">
-          </div>
-          <div class="register-col">
-            <label for="reg-mobile">Mobile Number (PH):</label>
-            <input type="text" id="reg-mobile" name="mobile" autocomplete="tel" maxlength="11" placeholder="09XXXXXXXXX" required>
-          </div>
-        </div>
-        <label for="reg-email">Email:</label>
-        <input type="email" id="reg-email" name="email" autocomplete="email" required>
-
-        <div class="register-flex">
-          <div class="register-col">
-            <label for="reg-password1">Password:</label>
-            <div class="password-wrapper">
-              <input type="password" id="reg-password1" name="password" autocomplete="new-password" required minlength="8" maxlength="16">
-              <i class="fa-solid fa-eye-slash toggle-password" toggle="#reg-password1"></i>
-            </div>
-            <div id="password-requirements" class="password-requirements" style="display: none;">
-              <h4>Password Requirements:</h4>
-              <ul>
-                <li id="req-length">At least 8 characters long</li>
-                <li id="req-uppercase">At least one uppercase letter (A-Z)</li>
-                <li id="req-lowercase">At least one lowercase letter (a-z)</li>
-                <li id="req-number">At least one number (0-9)</li>
-              </ul>
-            </div>
-          </div>
-          <div class="register-col">
-            <label for="reg-password2">Confirm Password:</label>
-            <div class="password-wrapper">
-              <input type="password" id="reg-password2" name="password2" autocomplete="new-password" required minlength="8" maxlength="16">
-              <i class="fa-solid fa-eye-slash toggle-password" toggle="#reg-password2"></i>
-            </div>
-          </div>
-        </div>
-
-        <button type="submit" id="register-btn">Register</button>
-      </form>
-      <p>Already have an account? <a href="#" id="show-login">Login here</a></p>
+      </div>
     </div>
+
+
 
     <!-- ✅ EMAIL VERIFICATION FORMS -->
     
@@ -223,15 +264,52 @@
         showForm('email-verification-form');
       });
     {% endif %}
-    // Toggle between login and register
-    document.getElementById('show-register').onclick = function (e) {
-      e.preventDefault();
-      showForm('register-form');
-    };
-    document.getElementById('show-login').onclick = function (e) {
-      e.preventDefault();
-      showForm('login-form');
-    };
+     // Toggle between login and register
+     document.querySelectorAll('#show-register').forEach(function(link) {
+       link.onclick = function (e) {
+         e.preventDefault();
+         // Hide all other form containers first
+         document.querySelectorAll('.form-center > div[id]').forEach(container => {
+           container.style.display = 'none';
+         });
+         // Show main auth container
+         document.getElementById('main-auth-container').style.display = 'flex';
+         // Hide all login containers first
+         document.querySelectorAll('.login-container[id]').forEach(container => {
+           container.style.display = 'none';
+         });
+         // Show register form
+         document.getElementById('register-form').style.display = 'block';
+         // Switch to register background image
+         document.getElementById('login-bg').style.display = 'none';
+         document.getElementById('register-bg').style.display = 'block';
+         // Clear any previous messages
+         clearMessages();
+       };
+     });
+     
+     document.querySelectorAll('#show-login').forEach(function(link) {
+       link.onclick = function (e) {
+         e.preventDefault();
+         // Hide all other form containers first
+         document.querySelectorAll('.form-center > div[id]').forEach(container => {
+           container.style.display = 'none';
+         });
+         // Show main auth container
+         document.getElementById('main-auth-container').style.display = 'flex';
+         // Hide all login containers first
+         document.querySelectorAll('.login-container[id]').forEach(container => {
+           container.style.display = 'none';
+         });
+         // Show login form
+         document.getElementById('login-form').style.display = 'block';
+         // Switch to login background image
+         document.getElementById('login-bg').style.display = 'block';
+         document.getElementById('register-bg').style.display = 'none';
+         // Clear any previous messages
+         clearMessages();
+       };
+     });
 
     // ✅ EMAIL VERIFICATION NAVIGATION
     document.getElementById('show-verification-otp').onclick = function (e) {
@@ -239,15 +317,47 @@
       showForm('email-verification-otp-form');
     };
 
-    document.getElementById('back-to-login-from-verification').onclick = function (e) {
-      e.preventDefault();
-      showForm('login-form');
-    };
+     document.getElementById('back-to-login-from-verification').onclick = function (e) {
+       e.preventDefault();
+       // Hide all other form containers first
+       document.querySelectorAll('.form-center > div[id]').forEach(container => {
+         container.style.display = 'none';
+       });
+       // Show main auth container
+       document.getElementById('main-auth-container').style.display = 'flex';
+       // Hide all login containers first
+       document.querySelectorAll('.login-container[id]').forEach(container => {
+         container.style.display = 'none';
+       });
+       // Show login form
+       document.getElementById('login-form').style.display = 'block';
+       // Switch to login background image
+       document.getElementById('login-bg').style.display = 'block';
+       document.getElementById('register-bg').style.display = 'none';
+       // Clear any previous messages
+       clearMessages();
+     };
 
-    document.getElementById('back-to-login-from-otp').onclick = function (e) {
-      e.preventDefault();
-      showForm('login-form');
-    };
+     document.getElementById('back-to-login-from-otp').onclick = function (e) {
+       e.preventDefault();
+       // Hide all other form containers first
+       document.querySelectorAll('.form-center > div[id]').forEach(container => {
+         container.style.display = 'none';
+       });
+       // Show main auth container
+       document.getElementById('main-auth-container').style.display = 'flex';
+       // Hide all login containers first
+       document.querySelectorAll('.login-container[id]').forEach(container => {
+         container.style.display = 'none';
+       });
+       // Show login form
+       document.getElementById('login-form').style.display = 'block';
+       // Switch to login background image
+       document.getElementById('login-bg').style.display = 'block';
+       document.getElementById('register-bg').style.display = 'none';
+       // Clear any previous messages
+       clearMessages();
+     };
 
     document.getElementById('resend-verification-code').onclick = function (e) {
       e.preventDefault();
@@ -260,10 +370,26 @@
       showForm('forgot-email-form');
     };
 
-    document.getElementById('back-to-login').onclick = function (e) {
-      e.preventDefault();
-      showForm('login-form');
-    };
+     document.getElementById('back-to-login').onclick = function (e) {
+       e.preventDefault();
+       // Hide all other form containers first
+       document.querySelectorAll('.form-center > div[id]').forEach(container => {
+         container.style.display = 'none';
+       });
+       // Show main auth container
+       document.getElementById('main-auth-container').style.display = 'flex';
+       // Hide all login containers first
+       document.querySelectorAll('.login-container[id]').forEach(container => {
+         container.style.display = 'none';
+       });
+       // Show login form
+       document.getElementById('login-form').style.display = 'block';
+       // Switch to login background image
+       document.getElementById('login-bg').style.display = 'block';
+       document.getElementById('register-bg').style.display = 'none';
+       // Clear any previous messages
+       clearMessages();
+     };
 
     document.getElementById('back-to-email').onclick = function (e) {
       e.preventDefault();
@@ -283,17 +409,22 @@
       return csrfTokens[0] ? csrfTokens[0].value : '';
     }
 
-    // Helper function to show forms
-    function showForm(formId) {
-      const forms = ['login-form', 'register-form', 'email-verification-form', 'email-verification-otp-form', 'forgot-email-form', 'forgot-otp-form', 'forgot-reset-form'];
-      forms.forEach(id => {
-        document.getElementById(id).style.display = 'none';
-      });
-      document.getElementById(formId).style.display = 'block';
-      
-      // Clear any previous messages
-      clearMessages();
-    }
+     // Helper function to show forms
+     function showForm(formId) {
+       // Hide all form containers
+       document.querySelectorAll('.form-center > div[id]').forEach(container => {
+         container.style.display = 'none';
+       });
+       
+       // Show the requested form
+       const targetForm = document.getElementById(formId);
+       if (targetForm) {
+         targetForm.style.display = 'block';
+       }
+       
+       // Clear any previous messages
+       clearMessages();
+     }
 
     function clearMessages() {
       const messageContainers = document.querySelectorAll('.message-container');
@@ -714,6 +845,13 @@
         hasErrors = true;
       }
 
+      // Check terms and policy checkbox
+      const termsCheckbox = document.getElementById('terms-checkbox');
+      if (!termsCheckbox.checked) {
+        alert('Please agree to the Terms and Policy and Data Privacy to continue.');
+        hasErrors = true;
+      }
+
       if (hasErrors) {
         return;
       }
@@ -889,6 +1027,100 @@
         submitBtn.textContent = 'Verify Email';
       }
     });
+
+    // Terms and Policy Modal
+    document.getElementById('terms-link').onclick = function (e) {
+      e.preventDefault();
+      document.getElementById('terms-modal').style.display = 'block';
+    };
+
+    // Data Privacy Modal
+    document.getElementById('privacy-link').onclick = function (e) {
+      e.preventDefault();
+      document.getElementById('privacy-modal').style.display = 'block';
+    };
+
+    // Close modals when clicking outside or on close button
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.modal-close').forEach(function(closeBtn) {
+        closeBtn.onclick = function(e) {
+          e.preventDefault();
+          this.closest('.modal').style.display = 'none';
+        };
+      });
+
+      window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+          event.target.style.display = 'none';
+        }
+      };
+    });
   </script>
+
+  <!-- Terms and Policy Modal -->
+  <div id="terms-modal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close">&times;</span>
+      <h2>Terms and Policy</h2>
+      <div class="modal-body">
+        <h3>1. Acceptance of Terms</h3>
+        <p>By accessing and using this website, you accept and agree to be bound by the terms and provision of this agreement.</p>
+        
+        <h3>2. Use License</h3>
+        <p>Permission is granted to temporarily download one copy of the materials on our website for personal, non-commercial transitory viewing only.</p>
+        
+        <h3>3. Disclaimer</h3>
+        <p>The materials on our website are provided on an 'as is' basis. We make no warranties, expressed or implied, and hereby disclaim and negate all other warranties including without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.</p>
+        
+        <h3>4. Limitations</h3>
+        <p>In no event shall our company or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on our website, even if we or our authorized representative has been notified orally or in writing of the possibility of such damage.</p>
+        
+        <h3>5. Accuracy of Materials</h3>
+        <p>The materials appearing on our website could include technical, typographical, or photographic errors. We do not warrant that any of the materials on its website are accurate, complete, or current.</p>
+        
+        <h3>6. Links</h3>
+        <p>We have not reviewed all of the sites linked to our website and are not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement by us of the site.</p>
+        
+        <h3>7. Modifications</h3>
+        <p>We may revise these terms of service for its website at any time without notice. By using this website, you are agreeing to be bound by the then current version of these terms of service.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Privacy Modal -->
+  <div id="privacy-modal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close">&times;</span>
+      <h2>Data Privacy Policy</h2>
+      <div class="modal-body">
+        <h3>1. Information We Collect</h3>
+        <p>We collect information you provide directly to us, such as when you create an account, make a booking, or contact us for support.</p>
+        
+        <h3>2. How We Use Your Information</h3>
+        <p>We use the information we collect to provide, maintain, and improve our services, process transactions, and communicate with you.</p>
+        
+        <h3>3. Information Sharing and Disclosure</h3>
+        <p>We do not sell, trade, or otherwise transfer your personal information to third parties without your consent, except as described in this policy.</p>
+        
+        <h3>4. Data Security</h3>
+        <p>We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.</p>
+        
+        <h3>5. Cookies and Tracking Technologies</h3>
+        <p>We use cookies and similar tracking technologies to collect and use personal information about you. You can control cookies through your browser settings.</p>
+        
+        <h3>6. Your Rights</h3>
+        <p>You have the right to access, update, or delete your personal information. You may also opt out of certain communications from us.</p>
+        
+        <h3>7. Data Retention</h3>
+        <p>We retain your personal information for as long as necessary to provide our services and fulfill the purposes outlined in this policy.</p>
+        
+        <h3>8. Changes to This Policy</h3>
+        <p>We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page.</p>
+        
+        <h3>9. Contact Us</h3>
+        <p>If you have any questions about this privacy policy, please contact us at privacy@linkedspaces.com</p>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

@@ -1,69 +1,64 @@
 {% load static %}
 
 <nav class="navbar">
-    <!-- Left side navigation - always visible -->
     <ul class="nav-links">
-        <li><a href="{% url 'home' %}#services">Services</a></li>
+        <!-- Always visible -->
+        <li><a href="{% url 'home' %}#main"><i class="fa-solid fa-house"></i></a></li>
+        <li><a href="{% url 'home' %}#services">SERVICES</a></li>
         <li class="dropdown">
-            <a href="{% url 'home' %}#menu" class="dropbtn">Packages</a>
+            <a href="{% url 'home' %}#menu" class="dropbtn">PACKAGES</a>
             <ul class="dropdown-content">
-                <li><a href="{% url 'home' %}#menu">Menu</a></li>
-                <li><a href="{% url 'home' %}#packages">Event Packages</a></li>
-                <li><a href="{% url 'home' %}#design">Themes &amp; Design</a></li>
+                <li><a href="{% url 'home' %}#menu">MENU</a></li>
+                <li><a href="{% url 'home' %}#packages">EVENT PACKAGES</a></li>
+                <li><a href="{% url 'home' %}#design">THEMES &amp; DESIGN</a></li>
             </ul>
         </li>
-        <li><a href="{% url 'home' %}#reviews">Reviews</a></li>
-        {% if user.is_authenticated %}
-        <li class="dropdown">
-            <a href="{% url 'home' %}#about-us" class="dropbtn">About Us</a>
-            <ul class="dropdown-content">
-                <li><a href="{% url 'home' %}#about-us">Who We Are</a></li>
-                <li><a href="{% url 'home' %}#faqs">FAQs</a></li>
-            </ul>
-        </li>
-        {% endif %}
-    </ul>
+        <li><a href="{% url 'home' %}#reviews">REVIEWS</a></li>
 
-    <!-- Centered logo -->
-    <div class="logo">
-        <a href="{% url 'home' %}">
-            <img src="{% static 'images/logo-round.png' %}" alt="Nike Catering Logo">
-        </a>
-    </div>
-
-    <!-- Right side navigation - conditional based on authentication -->
-    <ul class="nav-links">
-        {% if not user.is_authenticated %}
-                <li class="dropdown">
-                    <a href="{% url 'home' %}#about-us" class="dropbtn">About Us</a>
-                    <ul class="dropdown-content">
-                        <li><a href="{% url 'home' %}#about-us">Who We Are</a></li>
-                        <li><a href="{% url 'home' %}#faqs">FAQs</a></li>
-                    </ul>
-                 </li>
-        {% endif %}
-         <li><a href="{% url 'home' %}#contact-us">Contact Us</a></li>
+        <!-- About Us (authenticated vs not authenticated) -->
         {% if user.is_authenticated %}
-            <li><a href="{% url 'my_bookings' %}" class="book-here-btn">My Bookings</a></li>
+            <li class="dropdown">
+                <a href="{% url 'home' %}#about-us" class="dropbtn">ABOUT US</a>
+                <ul class="dropdown-content">
+                    <li><a href="{% url 'home' %}#about-us">WHO WE ARE</a></li>
+                    <li><a href="{% url 'home' %}#faqs">FAQS</a></li>
+                </ul>
+            </li>
+        {% else %}
+            <li class="dropdown">
+                <a href="{% url 'home' %}#about-us" class="dropbtn">ABOUT US</a>
+                <ul class="dropdown-content">
+                    <li><a href="{% url 'home' %}#about-us">WHO WE ARE</a></li>
+                    <li><a href="{% url 'home' %}#faqs">FAQS</a></li>
+                </ul>
+            </li>
+        {% endif %}
+
+        <!-- Contact -->
+        <li><a href="{% url 'home' %}#contact-us">CONTACT US</a></li>
+
+        <!-- Auth-based options -->
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'my_bookings' %}" class="book-here-btn">MY BOOKINGS</a></li>
             <li>
                 <a href="#" class="notification-btn" data-bs-toggle="modal" data-bs-target="#userNotificationModal">
-                    <i class="fas fa-bell"></i> Notifications
+                    <i class="fas fa-bell"></i> NOTIFICATIONS
                     <span class="notification-badge" id="userNotificationBadge" style="display: none;">0</span>
                 </a>
             </li>
-            <li><a href="{% url 'logout' %}">Logout</a></li>
+            <li><a href="{% url 'logout' %}">LOGOUT</a></li>
         {% else %}
-            <li><a href="{% url 'login' %}" class="book-here-btn">Login</a></li>
+            <li><a href="{% url 'login' %}" class="book-here-btn">LOGIN</a></li>
         {% endif %}
     </ul>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const toggle = document.querySelector('.navbar-toggle');
-            const navLinks = document.querySelectorAll('.nav-links');
+            const navLinks = document.querySelector('.nav-links');
             if (toggle) {
                 toggle.addEventListener('click', function () {
-                    navLinks.forEach(links => links.classList.toggle('show'));
+                    navLinks.classList.toggle('show');
                 });
             }
         });

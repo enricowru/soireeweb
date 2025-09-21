@@ -1,0 +1,839 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu - Nike's Catering Services</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <link rel="stylesheet" href="{% static 'css/menu.css' %}">
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <link rel="icon" type="image/x-icon" href="{% static 'images/soireelogo-l.svg' %}">
+</head>
+
+<body>
+  <!-- NAV BAR -->
+  {% include "navbar.html" %}
+
+  <!-- MENU HEADER -->
+  <section class="menu-header" data-bg-url="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758441998/menubg_eve2ep.jpg">
+    <div class="menu-header-overlay"></div>
+    <div class="container">
+      <!-- BACK BUTTON -->
+      <div class="menu-back-button">
+        <a href="{% url 'main' %}#menu" class="back-btn">
+          <i class="fas fa-arrow-left"></i>
+          Back to Home
+        </a>
+      </div>
+      
+      <div class="menu-header-content">
+        <h3 class="menu-subtitle">NIKE'S CATERING SERVICES</h3>
+        <h1 class="menu-main-title">Full Menu</h1>
+        <p class="menu-description">Discover our complete selection of delicious dishes crafted with fresh ingredients and authentic flavors.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU CONTENT -->
+  <section class="menu-full-content">
+    <div class="container">
+      
+      <!-- CATEGORY FILTERS -->
+      <div class="category-filters">
+        <div class="filter-button active" data-category="beef">
+          <div class="filter-icon">
+            <i class="fa-solid fa-cow"></i>
+          </div>
+          <span class="filter-text">Beef</span>
+        </div>
+        
+        <div class="filter-button" data-category="pork">
+          <div class="filter-icon">
+            <i class="fas fa-bacon"></i>
+          </div>
+          <span class="filter-text">Pork</span>
+        </div>
+        
+        <div class="filter-button" data-category="chicken">
+          <div class="filter-icon">
+            <i class="fas fa-drumstick-bite"></i>
+          </div>
+          <span class="filter-text">Chicken</span>
+        </div>
+        
+        <div class="filter-button" data-category="seafoods">
+          <div class="filter-icon">
+            <i class="fas fa-fish"></i>
+          </div>
+          <span class="filter-text">Seafoods</span>
+        </div>
+        
+        <div class="filter-button" data-category="vegetables">
+          <div class="filter-icon">
+            <i class="fas fa-carrot"></i>
+          </div>
+          <span class="filter-text">Vegetables</span>
+        </div>
+        
+        <div class="filter-button" data-category="pasta">
+          <div class="filter-icon">
+            <i class="fas fa-utensils"></i>
+          </div>
+          <span class="filter-text">Pasta</span>
+        </div>
+        
+        <div class="filter-button" data-category="dessert">
+          <div class="filter-icon">
+            <i class="fas fa-ice-cream"></i>
+          </div>
+          <span class="filter-text">Dessert</span>
+        </div>
+        
+        <div class="filter-button" data-category="drinks">
+          <div class="filter-icon">
+            <i class="fas fa-glass-whiskey"></i>
+          </div>
+          <span class="filter-text">Drinks</span>
+        </div>
+      </div>
+
+      <!-- DISHES DISPLAY -->
+      <div class="dishes-container">
+        
+        <!-- BEEF DISHES -->
+        <div class="dishes-category active" id="beef-dishes">
+          <div class="menu-items-grid">
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782677/beefbroccolli_c3hbve.jpg" alt="Beef Broccoli">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Beef Broccoli</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782676/beefcaldereta_ellvq7.jpg" alt="Beef Caldereta">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Beef Caldereta</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782677/beefkarekare_n317oe.jpg" alt="Beef Kare-Kare">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Beef Kare-Kare</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782675/beefteriyaki_yhszrn.jpg" alt="Beef Teriyaki">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Beef Teriyaki</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782677/beefwithgravysauce_qyrcsv.jpg" alt="Beef with Gravy Sauce">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Beef with Gravy Sauce</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782675/garlicbeef_othv0q.jpg" alt="Garlic Beef">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Garlic Beef</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782676/lenguapastel_ofenul.jpg" alt="Lengua Pastel">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Lengua Pastel</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782676/potroastbeef_tfekkp.jpg" alt="Pot-Roast Beef">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Pot-Roast Beef</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PORK DISHES -->
+        <div class="dishes-category" id="pork-dishes">
+          <div class="menu-items-grid">
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783623/grilledliempo_fdq0kp.jpg" alt="Grilled Liempo">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Grilled Liempo</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783626/hawaiianspareribs_ouwkwg.jpg" alt="Hawaiian Sparibs">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Hawaiian Sparibs</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783624/karekarebagnet_paezmf.jpg" alt="Kare-Kare Bagnet">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Kare-Kare Bagnet</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783625/lechonkawali_v3v04s.jpg" alt="Lechon Kawali">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Lechon Kawali</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783626/lenguapastel_kodvks.jpg" alt="Lengua Pastel">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Lengua Pastel</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783621/lumpiangshanghai_p4ralv.jpg" alt="Lumpiang Shanghai">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Lumpiang Shanghai</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783621/porkbbq_hrudyt.jpg" alt="Pork BBQ">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Pork BBQ</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783622/porkcaldereta_lddwze.jpg" alt="Pork Caldereta">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Pork Caldereta</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783622/porkhamonado_noxvzn.jpg" alt="Pork Hamonado">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Pork Hamonado</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783622/porkmenudo_mimd9h.jpg" alt="Pork Menudo">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Pork Menudo</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783622/porkmorcon_p5sdud.jpg" alt="Pork Morcon">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Pork Morcon</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783623/porkteriyaki_iyrgu2.jpg" alt="Pork Teriyaki">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Pork Teriyaki</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783623/roastporkhawaiian_hbkpf1.jpg" alt="Roast Pork Hawaiian">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Roast Pork Hawaiian</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783623/roastporkraisinsauce_zcyjjj.jpg" alt="Roast Pork with Raisin Sauce">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Roast Pork with Raisin Sauce</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHICKEN DISHES -->
+        <div class="dishes-category" id="chicken-dishes">
+          <div class="menu-items-grid">
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784414/breadedfriedchicken_agzutr.jpg" alt="Breaded Fried Chicken">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Breaded Fried Chicken</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784415/butteredchicken_hgsxnr.jpg" alt="Buttered Chicken">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Buttered Chicken</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784418/chickenbbq_lkpnac.jpg" alt="Chicken BBQ">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Chicken BBQ</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784415/chickencordonbleu_y9qjjw.jpg" alt="Chicken Cordon Bleu">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Chicken Cordon Bleu</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784416/chickenlollipop_z9dwso.jpg" alt="Chicken Lollipop">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Chicken Lollipop</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784429/chickenpastel_mgfrq5.jpg" alt="Chicken Pastel">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Chicken Pastel</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784413/chickenteriyaki_azw467.jpg" alt="Chicken Teriyaki">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Chicken Teriyaki</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784415/honeyglazedchicken_d4evdv.jpg" alt="Honey Glazed Chicken">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Honey Glazed Chicken</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784414/hongkongchicken_ymcmk3.jpg" alt="Hongkong Chicken">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Hongkong Chicken</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784417/orangechicken_jo3vc3.jpg" alt="Orange Chicken with Lemon Sauce">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Orange Chicken with Lemon Sauce</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784413/royalchicken_tmd2ja.jpg" alt="Royal Chicken">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Royal Chicken</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEAFOOD DISHES -->
+        <div class="dishes-category" id="seafoods-dishes">
+          <div class="menu-items-grid">
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784676/calamares_hhy97q.jpg" alt="Calamares">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Calamares</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784680/fishwithchilisauce_gd0icq.jpg" alt="Fish Fillet with Chili Sauce">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Fish Fillet with Chili Sauce</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784678/fishtartarsauce_ln7vfb.jpg" alt="Fish Fillet with Tartar Sauce">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Fish Fillet with Tartar Sauce</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784677/fishtofu_rsofxm.jpg" alt="Fish Tofu">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Fish Tofu</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784678/miexedseafoodsvegetables_puvtvi.jpg" alt="Mixed Seafoods with Vegetables">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Mixed Seafoods with Vegetables</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784686/squidlemonsauce_o5rhz6.jpg" alt="Squid with Lemon Sauce">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Squid with Lemon Sauce</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784677/tempura_g0w6dz.jpg" alt="Tempura">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Tempura</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VEGETABLE DISHES -->
+        <div class="dishes-category" id="vegetables-dishes">
+          <div class="menu-items-grid">
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784866/butteredmixedvegetables_sbq13l.jpg" alt="Buttered Mixed Vegetables">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Buttered Mixed Vegetables</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784866/chopsueywhitesauce_dc831v.jpg" alt="Chopsuey in White Sauce">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Chopsuey in White Sauce</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784868/chopsueyoystersauce_w4tmnz.jpg" alt="Chopsuey in Oyster Sauce">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Chopsuey in Oyster Sauce</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784867/lumpiangsariwa_qmfz49.jpg" alt="Lumpiang Sariwa">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Lumpiang Sariwa</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784870/orientalmixedvegetables_x7eube.jpg" alt="Oriental Mixed Vegetables">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Oriental Mixed Vegetables</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784865/stirfryvegetables_grgi20.jpg" alt="Stir Fry Vegetables">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Stir Fry Vegetables</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PASTA DISHES -->
+        <div class="dishes-category" id="pasta-dishes">
+          <div class="menu-items-grid">
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785109/bakedmac_dlltkg.jpg" alt="Baked Macaroni">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Baked Macaroni</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785111/fettucinealfredo_ytvr6y.jpg" alt="Fettuccine Alfredo">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Fettuccine Alfredo</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785110/lasagnarolls_b0esab.jpg" alt="Lasagna Rolls">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Lasagna Rolls</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785110/linguine_g4nteu.jpg" alt="Linguine in White or Red Sauce">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Linguine in White or Red Sauce</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785111/pancit_pnh4ho.jpg" alt="Pancit Bihon or Canton">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Pancit Bihon or Canton</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785107/penne_twzzq9.jpg" alt="Penne in White or Red Sauce">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Penne in White or Red Sauce</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785109/rigatoni_wko7vk.jpg" alt="Rigatoni in White or Red Sauce">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Rigatoni in White or Red Sauce</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785109/spaghetti_gzwqbu.jpg" alt="Spaghetti">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Spaghetti</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DESSERT -->
+        <div class="dishes-category" id="dessert-dishes">
+          <div class="menu-items-grid">
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758279378/bukosalad_fhmyqn.jpg" alt="Buko Salad">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Buko Salad</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758279289/bukopandan_j7lnfc.jpg" alt="Buko Pandan">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Buko Pandan</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758279290/chocolatefountain_eukmsr.jpg" alt="Chocolate Fountain">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Chocolate Fountain</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758279291/coffeejelly_levjqz.jpg" alt="Coffee Jelly">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Coffee Jelly</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758279292/dessertbuffet_cwctyj.jpg" alt="Dessert Buffet">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Dessert Buffet</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758279293/fruitsalad_umunye.png" alt="Fruit Salad">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Fruit Salad</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758279295/gardensalad_lumhk2.jpg" alt="Garden Salad">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Garden Salad</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758279290/icecream_dhwttp.jpg" alt="Ice Cream">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Ice Cream</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758279290/lecheflan_qjoknz.jpg" alt="Leche Flan">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Leche Flan</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758279290/mangotapioca_rjl0es.jpg" alt="Mango Tapioca">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Mango Tapioca</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758279290/tropicalfruits_lp3cn2.jpg" alt="Tropical Fruits">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Tropical Fruits</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DRINKS -->
+        <div class="dishes-category" id="drinks-dishes">
+          <div class="menu-items-grid">
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785362/bluelemonade_pwthcl.jpg" alt="Blue Lemonade">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Blue Lemonade</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785362/cucumberlemonade_fciacg.jpg" alt="Cucumber Lemonade">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Cucumber Lemonade</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785362/fourseasons_yocljk.jpg" alt="Four Seasons">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Four Seasons</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785363/lemontea_k3bvj4.jpg" alt="Lemon Tea">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Lemon Tea</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785364/orangejuice_jtybgq.jpg" alt="Orange Juice">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Orange Juice</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785373/pineapplejuice_svj2xb.jpg" alt="Pineapple Juice">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Pineapple Juice</h3>
+              </div>
+            </div>
+            
+            <div class="menu-item-card">
+              <div class="menu-item-image">
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785360/redtea_atzt39.jpg" alt="Red Tea">
+              </div>
+              <div class="menu-item-info">
+                <h3 class="item-name">Red Tea</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Bootstrap JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Menu Filter JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const menuHeader = document.querySelector('.menu-header');
+      if (menuHeader && menuHeader.dataset.bgUrl) {
+        menuHeader.style.backgroundImage = `url('${menuHeader.dataset.bgUrl}')`;
+      }
+      const filterButtons = document.querySelectorAll('.filter-button');
+      const dishCategories = document.querySelectorAll('.dishes-category');
+      
+      filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const category = this.getAttribute('data-category');
+          
+          // Remove active class from all buttons
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          
+          // Add active class to clicked button
+          this.classList.add('active');
+          
+          // Hide all dish categories
+          dishCategories.forEach(category => {
+            category.classList.remove('active');
+          });
+          
+          // Show selected category
+          const targetCategory = document.getElementById(category + '-dishes');
+          if (targetCategory) {
+            targetCategory.classList.add('active');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>
