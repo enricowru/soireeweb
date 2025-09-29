@@ -348,6 +348,148 @@ def user_booking_details_api(request, booking_id):
         # Ensure user can only access their own bookings - use 'client' field not 'user'
         booking = get_object_or_404(BookingRequest, id=booking_id, client=request.user)
         
+        # Color names mapping (same as in bookhere.html) - make case-insensitive
+        color_images_raw = {
+            'Orange': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770591/orange_beq6g2.jpg',
+            'Red': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770587/red_ddg0wx.jpg',
+            'Royal Blue': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770577/royalblue_bhz1ow.jpg',
+            'Rust Red': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770507/rustred_q2fgz8.jpg',
+            'Yellow': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770509/yellow_v2d7ma.jpg',
+            'Dark Green': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770513/darkgreen_zunnwu.jpg',
+            'Gray': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770517/gray_b9dlwb.jpg',
+            'Lake Blue': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770521/lakeblue_zsjili.jpg',
+            'Brown': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770525/brown_kg72gb.jpg',
+            'Champagne': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770529/champagne_rwkvv5.jpg',
+            'Pink': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770533/pink_b9wuoq.jpg',
+            'Light Pink': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770537/lightpink_jb3gqb.jpg',
+            'Off White': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770541/offwhite_qu62zb.jpg',
+            'Gold': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770545/gold_cpuahs.jpg',
+            'Purple': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770549/purple_nsrd84.jpg',
+            'White': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770553/white_aupuke.jpg',
+            'Sky Blue': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770557/skyblue_i6mdz7.jpg',
+            'Dark Yellow': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770561/darkyellow_d0pxgh.jpg',
+            'Olive Green': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770565/olivegreen_ijgrtv.jpg',
+            'Mint': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770569/mint_h8nbh0.jpg',
+            'Skin Pink': 'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770573/skinpink_ibuunv.jpg'
+        }
+        
+        # Create case-insensitive mapping
+        color_images = {}
+        for color_name, url in color_images_raw.items():
+            color_images[color_name] = url
+            color_images[color_name.lower()] = url
+            color_images[color_name.upper()] = url
+        
+        # Food names mapping (same as in bookhere.html)
+        food_names = {
+            # Beef dishes
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782677/beefwithgravysauce_qyrcsv.jpg': 'Beef with Gravy Sauce',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782677/beefbroccolli_c3hbve.jpg': 'Beef Brocolli',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782677/beefkarekare_n317oe.jpg': 'Beef Kare-Kare',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782676/lenguapastel_ofenul.jpg': 'Lengua Pastel',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782676/potroastbeef_tfekkp.jpg': 'Pot Roast Beef',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782676/beefcaldereta_ellvq7.jpg': 'Beef Caldereta',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782675/garlicbeef_othv0q.jpg': 'Garlic Beef',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757782675/beefteriyaki_yhszrn.jpg': 'Beef Teriyaki',
+            
+            # Pork dishes
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783626/hawaiianspareribs_ouwkwg.jpg': 'Hawaiian Spare Ribs',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783626/lenguapastel_kodvks.jpg': 'Lengua Pastel',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783625/lechonkawali_v3v04s.jpg': 'Lechon Kawali',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783624/karekarebagnet_paezmf.jpg': 'Kare-Kare Bagnet',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783623/roastporkraisinsauce_zcyjjj.jpg': 'Roast Pork Raisin Sauce',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783623/porkteriyaki_iyrgu2.jpg': 'Pork Teriyaki',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783623/grilledliempo_fdq0kp.jpg': 'Grilled Liempo',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783623/roastporkhawaiian_hbkpf1.jpg': 'Roast Pork Hawaiian',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783622/porkmorcon_p5sdud.jpg': 'Pork Morcon',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783622/porkhamonado_noxvzn.jpg': 'Pork Hamonado',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783622/porkcaldereta_lddwze.jpg': 'Pork Caldereta',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783622/porkmenudo_mimd9h.jpg': 'Pork Menudo',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783621/porkbbq_hrudyt.jpg': 'Pork BBQ',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757783621/lumpiangshanghai_p4ralv.jpg': 'Lumpiang Shanghai',
+            
+            # Chicken dishes
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784429/chickenpastel_mgfrq5.jpg': 'Chicken Pastel',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784418/chickenbbq_lkpnac.jpg': 'Chicken BBQ',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784417/orangechicken_jo3vc3.jpg': 'Orange Chicken',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784416/chickenlollipop_z9dwso.jpg': 'Chicken Lollipop',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784415/butteredchicken_hgsxnr.jpg': 'Buttered Chicken',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784415/chickencordonbleu_y9qjjw.jpg': 'Chicken Cordon Bleu',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784415/honeyglazedchicken_d4evdv.jpg': 'Honey Glazed Chicken',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784414/breadedfriedchicken_agzutr.jpg': 'Breaded Fried Chicken',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784414/hongkongchicken_ymcmk3.jpg': 'Hong Kong Chicken',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784413/royalchicken_tmd2ja.jpg': 'Royal Chicken',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784413/chickenteriyaki_azw467.jpg': 'Chicken Teriyaki',
+            
+            # Seafood dishes
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784686/squidlemonsauce_o5rhz6.jpg': 'Squid Lemon Sauce',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784680/fishwithchilisauce_gd0icq.jpg': 'Fish with Chili Sauce',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784678/miexedseafoodsvegetables_puvtvi.jpg': 'Mixed Seafoods & Vegetables',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784678/fishtartarsauce_ln7vfb.jpg': 'Fish Tartar Sauce',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784677/fishtofu_rsofxm.jpg': 'Fish Tofu',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784677/tempura_g0w6dz.jpg': 'Tempura',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757784676/calamares_hhy97q.jpg': 'Calamares',
+            
+            # Pasta dishes
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785111/pancit_pnh4ho.jpg': 'Pancit',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785111/fettucinealfredo_ytvr6y.jpg': 'Fettuccine Alfredo',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785110/linguine_g4nteu.jpg': 'Linguine',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785110/lasagnarolls_b0esab.jpg': 'Lasagna Rolls',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785109/bakedmac_dlltkg.jpg': 'Baked Mac',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785109/rigatoni_wko7vk.jpg': 'Rigatoni',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785109/spaghetti_gzwqbu.jpg': 'Spaghetti',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785107/penne_twzzq9.jpg': 'Penne',
+            
+            # Drinks
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785373/pineapplejuice_svj2xb.jpg': 'Pineapple Juice',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785364/orangejuice_jtybgq.jpg': 'Orange Juice',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785363/lemontea_k3bvj4.jpg': 'Lemon Tea',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785362/fourseasons_yocljk.jpg': 'Four Seasons',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785362/bluelemonade_pwthcl.jpg': 'Blue Lemonade',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785362/cucumberlemonade_fciacg.jpg': 'Cucumber Lemonade',
+            'https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757785360/redtea_atzt39.jpg': 'Red Tea'
+        }
+        
+        # Create reverse mapping (name to URL) for finding images
+        name_to_url = {name: url for url, name in food_names.items()}
+        
+        # Parse dishes into a list 
+        dishes_list = [dish.strip() for dish in booking.dishes.split(',') if dish.strip()] if booking.dishes else []
+        
+        # Create dishes with images
+        dishes_with_images = []
+        for dish_name in dishes_list:
+            dish_url = name_to_url.get(dish_name, '')
+            dishes_with_images.append({
+                'name': dish_name,
+                'image_url': dish_url
+            })
+        
+        # Add pasta and drink with images if they exist
+        pasta_image = name_to_url.get(booking.pasta, '') if booking.pasta else ''
+        drink_image = name_to_url.get(booking.drink, '') if booking.drink else ''
+        
+        # Get color motif as a list with images
+        color_motif_list = []
+        color_motif_with_images = []
+        if booking.color_motif:
+            # Split by arrow or comma to handle different formats
+            colors = booking.color_motif.replace(' → ', ',').replace('→', ',').split(',')
+            color_motif_list = [color.strip() for color in colors if color.strip()]
+            
+            # Create colors with images
+            for color_name in color_motif_list:
+                # Try exact match first, then case-insensitive variations
+                color_image = (color_images.get(color_name) or 
+                             color_images.get(color_name.lower()) or 
+                             color_images.get(color_name.upper()) or 
+                             color_images.get(color_name.title()) or '')
+
+                color_motif_with_images.append({
+                    'name': color_name,
+                    'image_url': color_image
+                })
+        
         data = {
             'event_type': booking.event_type or '',
             'event_date': booking.event_date.strftime('%B %d, %Y') if booking.event_date else '',
@@ -355,10 +497,20 @@ def user_booking_details_api(request, booking_id):
             'pax': str(booking.pax) if booking.pax else '',
             'venue': booking.venue or '',
             'color_motif': format_color_motif_display(booking.color_motif) or '',
+            'color_motif_list': color_motif_list,
+            'color_motif_with_images': color_motif_with_images,
             'package': booking.package or '',
             'dishes': booking.dishes or '',
+            'dishes_list': dishes_list,
+            'dishes_with_images': dishes_with_images,
             'pasta': booking.pasta or '',
+            'pasta_image': pasta_image,
             'drink': booking.drink or '',
+            'drink_image': drink_image,
+            'theme_name': booking.theme_name or '',
+            'theme_urls': booking.theme_urls or [],
+            'floorplan_name': booking.floorplan_display_name or '',
+            'floorplan_url': booking.display_url,
         }
         
         return JsonResponse(data)
