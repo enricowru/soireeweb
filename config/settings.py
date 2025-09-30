@@ -275,37 +275,19 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG  # Allow all origins in development
 CORS_ALLOWED_ORIGINS = CSRF_TRUSTED_ORIGINS
 CORS_ALLOW_CREDENTIALS = True
 
-# Email Configuration - Enhanced for Render deployment
+# Email Configuration - SendGrid for both production and development
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey'  # SendGrid SMTP username is always 'apikey'
+EMAIL_HOST_PASSWORD = config('SENDGRID_API_KEY', default='')  # Your SendGrid API key from env
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_TIMEOUT = 30
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='websoiree1@gmail.com')
 
-# Gmail SMTP Configuration - Try SSL first for better Render compatibility
-if ENVIRONMENT == 'prod':
-    # Production: Use SSL (port 465) which often works better on hosting platforms
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_PORT = 465
-    EMAIL_USE_TLS = False
-    EMAIL_USE_SSL = True
-    EMAIL_TIMEOUT = 120
-    
-    # Additional settings for better Render compatibility
-    import socket
-    socket.setdefaulttimeout(120)  # 2 minute socket timeout
-else:
-    # Development: Use TLS (port 587)
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_USE_SSL = False
-    EMAIL_TIMEOUT = 30
-
-# SSL certificate settings
-EMAIL_SSL_CERTFILE = None
-EMAIL_SSL_KEYFILE = None
-
-# Email credentials - Hardcoded to avoid Render environment variable issues with spaces
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = 'rjyu jzts iegc vzvc'  # Gmail app password hardcoded
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default=EMAIL_HOST_USER)
+# SendGrid configuration
+SENDGRID_API_KEY = config('SENDGRID_API_KEY', default='')
 
 # Log email configuration status (only in debug mode)
 if DEBUG:
