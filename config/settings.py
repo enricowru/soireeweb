@@ -279,10 +279,10 @@ CORS_ALLOW_CREDENTIALS = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 
-# Use SSL (port 465) instead of TLS (port 587) for better Render compatibility
-EMAIL_PORT = 465 if ENVIRONMENT == 'prod' else 587
-EMAIL_USE_TLS = False if ENVIRONMENT == 'prod' else True
-EMAIL_USE_SSL = True if ENVIRONMENT == 'prod' else False
+# Reverted back to TLS configuration as requested
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 EMAIL_TIMEOUT = 60 if ENVIRONMENT == 'prod' else 30  # Longer timeout for production
 
 # Robust email password handling - Enhanced for Render auto-quoting
@@ -310,16 +310,16 @@ def get_clean_email_password():
     if password.startswith("'") and password.endswith("'"):
         password = password[1:-1]
     
-    # CRITICAL INSIGHT: Gmail SMTP accepts passwords WITH spaces (works in localhost)
-    # The REAL issue: Render auto-quotes env vars with spaces, Gmail rejects quoted passwords
-    # Solution: Remove ONLY the quotes that Render adds, keep the spaces!
+    # Handle both Gmail app password formats:
+    # Format 1: "xxxx xxxx xxxx xxxx" (19 chars with spaces) - Render auto-quotes these
+    # Format 2: "xxxxxxxxxxxxxxxx" (16 chars no spaces) - Render doesn't quote these
     
-    # Don't remove spaces - Gmail accepts them! Only remove quotes.
-    # Final cleanup
+    # Remove quotes if present (from Render auto-quoting)
+    # Keep spaces if they exist (Gmail accepts both formats)
     password = password.strip()
     
     # Gmail app passwords should be exactly 19 characters with spaces (xxxx xxxx xxxx xxxx)
-    # or 16 characters without spaces (if user manually removed them)
+    # or 16 characters without spaces (xxxxxxxxxxxxxxxx)
     if len(password) not in [16, 19]:
         import logging
         logger = logging.getLogger(__name__)

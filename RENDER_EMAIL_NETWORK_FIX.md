@@ -12,15 +12,15 @@ The issue is likely one of these:
 
 ## Solutions (Try in Order)
 
-### 1. Switch to SSL (Port 465) Instead of TLS (Port 587)
-The updated settings in `config/settings.py` now automatically use SSL for production:
+### 1. Use TLS Configuration (Port 587)
+The settings in `config/settings.py` now use TLS for both development and production:
 
 ```python
-# For production (Render)
-EMAIL_PORT = 465
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
-EMAIL_TIMEOUT = 60
+# For all environments
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_TIMEOUT = 60  # Longer timeout for production
 ```
 
 ### 2. Fix Gmail App Password in Render Environment Variables
@@ -29,25 +29,30 @@ EMAIL_TIMEOUT = 60
 
 1. **Go to Render Dashboard** → Your Service → Environment Tab
 
-2. **Set EMAIL_HOST_PASSWORD** with the EXACT Gmail app password (with spaces):
+2. **Set EMAIL_HOST_PASSWORD** with your Gmail app password:
    
-   ✅ **Correct way to set in Render**:
+   ✅ **Current password format (16 chars, no spaces)**:
+   ```
+   rjyujztsiegcvzvc
+   ```
+   (This format won't be auto-quoted by Render)
+   
+   ✅ **Alternative format (19 chars, with spaces)**:
    ```
    abcd efgh ijkl mnop
    ```
-   (Paste exactly as Gmail provides it, with spaces)
+   (This format will be auto-quoted by Render, but Django handles it)
    
    ❌ **Don't do this**:
    ```
-   "abcd efgh ijkl mnop"  (don't add your own quotes)
-   abcdefghijklmnop       (don't remove spaces manually)
+   "rjyujztsiegcvzvc"     (don't add your own quotes)
    ```
 
-3. **What happens**:
-   - You enter: `abcd efgh ijkl mnop`
-   - Render automatically stores as: `"abcd efgh ijkl mnop"` (quotes added by Render)
-   - Django cleans it to: `abcd efgh ijkl mnop` (removes ONLY the quotes, keeps spaces)
-   - **Key insight**: Gmail SMTP accepts passwords with spaces! The issue is only the quotes.
+3. **What happens with new password**:
+   - You enter: `rjyujztsiegcvzvc`
+   - Render stores as: `rjyujztsiegcvzvc` (no auto-quoting needed)
+   - Django uses it as: `rjyujztsiegcvzvc` (no cleaning needed)
+   - **Result**: Clean, direct password without any formatting issues
 
 4. **Redeploy** your service after updating the environment variable
 
@@ -87,16 +92,15 @@ Make sure these are set correctly in Render:
 
 ```
 EMAIL_HOST_USER=websoiree1@gmail.com
-EMAIL_HOST_PASSWORD=abcd efgh ijkl mnop
+EMAIL_HOST_PASSWORD=rjyujztsiegcvzvc
 DEFAULT_FROM_EMAIL=websoiree1@gmail.com
 ```
 
-**Critical Understanding**: 
-- ✅ Gmail SMTP accepts passwords WITH spaces (works in localhost)
-- ✅ Problem is Render auto-quotes them: `"abcd efgh ijkl mnop"`
-- ✅ Gmail rejects quoted passwords 
-- ✅ Django removes ONLY the quotes, keeps the spaces
-- ✅ Result: `abcd efgh ijkl mnop` (works with Gmail SMTP)
+**Updated Configuration**: 
+- ✅ New Gmail app password: `rjyujztsiegcvzvc` (16 chars, no spaces)
+- ✅ No auto-quoting issues with this format
+- ✅ Reverted to TLS (port 587) configuration
+- ✅ Should work directly without complex cleaning
 
 ## Alternative SMTP Providers
 
