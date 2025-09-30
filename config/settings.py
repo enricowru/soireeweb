@@ -275,32 +275,33 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG  # Allow all origins in development
 CORS_ALLOWED_ORIGINS = CSRF_TRUSTED_ORIGINS
 CORS_ALLOW_CREDENTIALS = True
 
-# Email Configuration - SendGrid for both production and development
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = 'apikey'  # SendGrid SMTP username is always 'apikey'
-EMAIL_HOST_PASSWORD = config('SENDGRID_API_KEY', default='')  # Your SendGrid API key from env
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-EMAIL_TIMEOUT = 60  # Increased timeout for better reliability
+# Email Configuration - Switch to SendGrid Web API to avoid SMTP timeout issues
+SENDGRID_API_KEY = config('SENDGRID_API_KEY', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='websoiree1@gmail.com')
 
-# SendGrid configuration
-SENDGRID_API_KEY = config('SENDGRID_API_KEY', default='')
+# Use Web API instead of SMTP - more reliable on cloud platforms like Render
+if SENDGRID_API_KEY:
+    EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
+    # SendGrid Web API configuration
+    SENDGRID_API_KEY = SENDGRID_API_KEY
+else:
+    # Fallback to console backend for development
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    print("⚠️  WARNING: SENDGRID_API_KEY not configured! Using console backend.")
 
 # Email validation
-if not EMAIL_HOST_PASSWORD and ENVIRONMENT == 'prod':
+if not SENDGRID_API_KEY and ENVIRONMENT == 'prod':
     print("⚠️  WARNING: SENDGRID_API_KEY not configured! Email functionality will not work.")
-elif not EMAIL_HOST_PASSWORD:
+elif not SENDGRID_API_KEY:
     print("ℹ️  INFO: Running in development mode without SendGrid configuration.")
 
 # Log email configuration status
 print(f"📧 Email configuration:")
 print(f"  Environment: {ENVIRONMENT}")
-print(f"  Email Host: {EMAIL_HOST}")
-print(f"  Email Port: {EMAIL_PORT}")
-print(f"  Use TLS: {EMAIL_USE_TLS}")
-print(f"  API Key Status: {'✓ Configured' if EMAIL_HOST_PASSWORD else '✗ Missing'}")
-print(f"  From Email: {DEFAULT_FROM_EMAIL}")
 print(f"  Backend: {EMAIL_BACKEND}")
+print(f"  API Key Status: {'✓ Configured' if SENDGRID_API_KEY else '✗ Missing'}")
+print(f"  From Email: {DEFAULT_FROM_EMAIL}")
+if EMAIL_BACKEND == 'sendgrid_backend.SendgridBackend':
+    print("  Method: SendGrid Web API (HTTP)")
+else:
+    print("  Method: Console/Debug")
