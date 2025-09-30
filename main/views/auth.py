@@ -209,6 +209,25 @@ SoireeWeb Team
         except Exception as e:
             print(f"Email sending failed: {e}")
             print(f"Email settings - User: {settings.EMAIL_HOST_USER}, From: {settings.DEFAULT_FROM_EMAIL}")
+            print(f"Email Host: {settings.EMAIL_HOST}, Port: {settings.EMAIL_PORT}")
+            print(f"TLS: {settings.EMAIL_USE_TLS}, SSL: {settings.EMAIL_USE_SSL}")
+            print(f"Error type: {type(e).__name__}")
+            
+            # Try to identify the specific network issue
+            import socket
+            try:
+                socket.gethostbyname('smtp.gmail.com')
+                print("✓ DNS resolution for smtp.gmail.com works")
+            except socket.gaierror as dns_error:
+                print(f"✗ DNS resolution failed: {dns_error}")
+            
+            try:
+                sock = socket.create_connection(('smtp.gmail.com', 587), timeout=10)
+                sock.close()
+                print("✓ TCP connection to smtp.gmail.com:587 works")
+            except Exception as conn_error:
+                print(f"✗ TCP connection failed: {conn_error}")
+            
             return JsonResponse({'success': False, 'message': 'Failed to send email. Please try again.'})
     
     except Exception as e:

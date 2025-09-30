@@ -275,17 +275,34 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG  # Allow all origins in development
 CORS_ALLOWED_ORIGINS = CSRF_TRUSTED_ORIGINS
 CORS_ALLOW_CREDENTIALS = True
 
-# Email Configuration - Optimized for Render
+# Email Configuration - Enhanced for Render deployment
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
 
-# Reverted back to TLS configuration as requested
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-EMAIL_TIMEOUT = 60 if ENVIRONMENT == 'prod' else 30  # Longer timeout for production
+# Gmail SMTP Configuration - Try SSL first for better Render compatibility
+if ENVIRONMENT == 'prod':
+    # Production: Use SSL (port 465) which often works better on hosting platforms
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 465
+    EMAIL_USE_TLS = False
+    EMAIL_USE_SSL = True
+    EMAIL_TIMEOUT = 120
+    
+    # Additional settings for better Render compatibility
+    import socket
+    socket.setdefaulttimeout(120)  # 2 minute socket timeout
+else:
+    # Development: Use TLS (port 587)
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_USE_SSL = False
+    EMAIL_TIMEOUT = 30
 
-# Email password - Hardcoded to avoid Render environment variable issues with spaces
+# SSL certificate settings
+EMAIL_SSL_CERTFILE = None
+EMAIL_SSL_KEYFILE = None
+
+# Email credentials - Hardcoded to avoid Render environment variable issues with spaces
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = 'rjyu jzts iegc vzvc'  # Gmail app password hardcoded
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default=EMAIL_HOST_USER)
