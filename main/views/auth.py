@@ -258,11 +258,11 @@ def test_email_configuration(request):
                 'success': True, 
                 'message': f'Test email sent successfully to {test_email}!',
                 'config': {
-                    'host': settings.EMAIL_HOST,
-                    'port': settings.EMAIL_PORT,
-                    'user': settings.EMAIL_HOST_USER,
+                    'host': getattr(settings, 'EMAIL_HOST', 'N/A'),
+                    'port': getattr(settings, 'EMAIL_PORT', 'N/A'),
+                    'user': getattr(settings, 'EMAIL_HOST_USER', ''),
                     'from_email': settings.DEFAULT_FROM_EMAIL,
-                    'api_key_configured': bool(settings.EMAIL_HOST_PASSWORD),
+                    'api_key_configured': bool(getattr(settings, 'SENDGRID_API_KEY', '')),
                     'backend': settings.EMAIL_BACKEND
                 }
             })
@@ -273,11 +273,11 @@ def test_email_configuration(request):
                 'message': f'Email test failed: {str(e)}',
                 'error_type': type(e).__name__,
                 'config': {
-                    'host': settings.EMAIL_HOST,
-                    'port': settings.EMAIL_PORT,
-                    'user': settings.EMAIL_HOST_USER,
+                    'host': getattr(settings, 'EMAIL_HOST', 'N/A'),
+                    'port': getattr(settings, 'EMAIL_PORT', 'N/A'),
+                    'user': getattr(settings, 'EMAIL_HOST_USER', ''),
                     'from_email': settings.DEFAULT_FROM_EMAIL,
-                    'api_key_configured': bool(settings.EMAIL_HOST_PASSWORD),
+                    'api_key_configured': bool(getattr(settings, 'SENDGRID_API_KEY', '')),
                     'backend': settings.EMAIL_BACKEND
                 }
             })
