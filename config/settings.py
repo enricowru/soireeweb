@@ -285,50 +285,9 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_TIMEOUT = 60 if ENVIRONMENT == 'prod' else 30  # Longer timeout for production
 
-# Robust email password handling - Enhanced for Render auto-quoting
-def get_clean_email_password():
-    """
-    Clean Gmail app password that Render auto-wraps in quotes due to spaces
-    
-    Gmail provides: "abcd efgh ijkl mnop" (with spaces)
-    Render stores as: "abcd efgh ijkl mnop" (auto-quoted due to spaces)
-    We need: "abcdefghijklmnop" (no quotes, no spaces)
-    """
-    password = config('EMAIL_HOST_PASSWORD', default='')
-    if not password:
-        return ''
-    
-    # Remove surrounding quotes and whitespace
-    password = password.strip()
-    
-    # CRITICAL: Handle Render auto-quoting due to spaces in Gmail app password
-    # Render automatically adds quotes around env vars with spaces
-    if password.startswith('"') and password.endswith('"'):
-        password = password[1:-1]  # Remove Render's auto-added quotes
-    
-    # Handle single quotes (just in case)
-    if password.startswith("'") and password.endswith("'"):
-        password = password[1:-1]
-    
-    # Handle both Gmail app password formats:
-    # Format 1: "xxxx xxxx xxxx xxxx" (19 chars with spaces) - Render auto-quotes these
-    # Format 2: "xxxxxxxxxxxxxxxx" (16 chars no spaces) - Render doesn't quote these
-    
-    # Remove quotes if present (from Render auto-quoting)
-    # Keep spaces if they exist (Gmail accepts both formats)
-    password = password.strip()
-    
-    # Gmail app passwords should be exactly 19 characters with spaces (xxxx xxxx xxxx xxxx)
-    # or 16 characters without spaces (xxxxxxxxxxxxxxxx)
-    if len(password) not in [16, 19]:
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.warning(f"Gmail app password length is {len(password)}, expected 19 (with spaces) or 16 (without spaces)")
-    
-    return password
-
+# Email password - Hardcoded to avoid Render environment variable issues with spaces
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = get_clean_email_password()
+EMAIL_HOST_PASSWORD = 'rjyu jzts iegc vzvc'  # Gmail app password hardcoded
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default=EMAIL_HOST_USER)
 
 # Log email configuration status (only in debug mode)
