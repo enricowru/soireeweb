@@ -4,7 +4,7 @@ from django.urls import path, include
 from . import views
 from django.contrib.auth import views as auth_views
 from .api import *
-from .views.auth import forgot_password_request, forgot_password_verify_otp, forgot_password_reset
+from .views.auth import forgot_password_request, forgot_password_verify_otp, forgot_password_reset, test_email_configuration
 from .api.auth_api import email_verification_request, email_verification_verify
 from .api.themes_api import api_themes_by_event_type, api_all_themes
 from .api.custom_theme_api import generate_custom_theme
@@ -39,6 +39,9 @@ urlpatterns = [
     # ✅ Email Verification Routes
     path('email-verification/request/', email_verification_request, name='email_verification_request'),
     path('email-verification/verify/', email_verification_verify, name='email_verification_verify'),
+    
+    # 🧪 Email Testing Route (Debug only)
+    path('test-email/', test_email_configuration, name='test_email_configuration'),
 
 
     # API endpoint for mobile review submission

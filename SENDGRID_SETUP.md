@@ -32,7 +32,7 @@ SendGrid is an email delivery service that works perfectly with Render and other
 In your Render dashboard, add these environment variables:
 
 ```
-SENDGRID_API_KEY=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
+SENDGRID_API_KEY=your_sendgrid_api_key_here
 DEFAULT_FROM_EMAIL=websoiree1@gmail.com
 EMAIL_HOST_USER=websoiree1@gmail.com
 ```

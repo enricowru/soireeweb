@@ -283,15 +283,24 @@ EMAIL_HOST_PASSWORD = config('SENDGRID_API_KEY', default='')  # Your SendGrid AP
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-EMAIL_TIMEOUT = 30
+EMAIL_TIMEOUT = 60  # Increased timeout for better reliability
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='websoiree1@gmail.com')
 
 # SendGrid configuration
 SENDGRID_API_KEY = config('SENDGRID_API_KEY', default='')
 
-# Log email configuration status (only in debug mode)
-if DEBUG:
-    print(f"Email configuration loaded:")
-    print(f"  EMAIL_HOST_USER: {EMAIL_HOST_USER}")
-    print(f"  EMAIL_HOST_PASSWORD: {'*' * len(EMAIL_HOST_PASSWORD) if EMAIL_HOST_PASSWORD else 'NOT SET'}")
-    print(f"  DEFAULT_FROM_EMAIL: {DEFAULT_FROM_EMAIL}")
+# Email validation
+if not EMAIL_HOST_PASSWORD and ENVIRONMENT == 'prod':
+    print("⚠️  WARNING: SENDGRID_API_KEY not configured! Email functionality will not work.")
+elif not EMAIL_HOST_PASSWORD:
+    print("ℹ️  INFO: Running in development mode without SendGrid configuration.")
+
+# Log email configuration status
+print(f"📧 Email configuration:")
+print(f"  Environment: {ENVIRONMENT}")
+print(f"  Email Host: {EMAIL_HOST}")
+print(f"  Email Port: {EMAIL_PORT}")
+print(f"  Use TLS: {EMAIL_USE_TLS}")
+print(f"  API Key Status: {'✓ Configured' if EMAIL_HOST_PASSWORD else '✗ Missing'}")
+print(f"  From Email: {DEFAULT_FROM_EMAIL}")
+print(f"  Backend: {EMAIL_BACKEND}")

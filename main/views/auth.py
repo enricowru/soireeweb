@@ -216,15 +216,15 @@ SoireeWeb Team
             # Try to identify the specific network issue
             import socket
             try:
-                socket.gethostbyname('smtp.gmail.com')
-                print("✓ DNS resolution for smtp.gmail.com works")
+                socket.gethostbyname('smtp.sendgrid.net')
+                print("✓ DNS resolution for smtp.sendgrid.net works")
             except socket.gaierror as dns_error:
                 print(f"✗ DNS resolution failed: {dns_error}")
             
             try:
-                sock = socket.create_connection(('smtp.gmail.com', 587), timeout=10)
+                sock = socket.create_connection(('smtp.sendgrid.net', 587), timeout=10)
                 sock.close()
-                print("✓ TCP connection to smtp.gmail.com:587 works")
+                print("✓ TCP connection to smtp.sendgrid.net:587 works")
             except Exception as conn_error:
                 print(f"✗ TCP connection failed: {conn_error}")
             
@@ -233,6 +233,56 @@ SoireeWeb Team
     except Exception as e:
         print(f"Error in forgot_password_request: {e}")
         return JsonResponse({'success': False, 'message': 'An error occurred. Please try again.'})
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def test_email_configuration(request):
+    """Test email configuration - FOR DEBUGGING ONLY"""
+    if settings.DEBUG or settings.ENVIRONMENT != 'prod':
+        try:
+            from django.core.mail import send_mail
+            
+            # Test email send
+            test_email = request.GET.get('email', 'test@example.com')
+            
+            send_mail(
+                'SoireeWeb Email Test',
+                'This is a test email to verify SendGrid configuration is working.',
+                settings.DEFAULT_FROM_EMAIL,
+                [test_email],
+                fail_silently=False,
+            )
+            
+            return JsonResponse({
+                'success': True, 
+                'message': f'Test email sent successfully to {test_email}!',
+                'config': {
+                    'host': settings.EMAIL_HOST,
+                    'port': settings.EMAIL_PORT,
+                    'user': settings.EMAIL_HOST_USER,
+                    'from_email': settings.DEFAULT_FROM_EMAIL,
+                    'api_key_configured': bool(settings.EMAIL_HOST_PASSWORD),
+                    'backend': settings.EMAIL_BACKEND
+                }
+            })
+            
+        except Exception as e:
+            return JsonResponse({
+                'success': False, 
+                'message': f'Email test failed: {str(e)}',
+                'error_type': type(e).__name__,
+                'config': {
+                    'host': settings.EMAIL_HOST,
+                    'port': settings.EMAIL_PORT,
+                    'user': settings.EMAIL_HOST_USER,
+                    'from_email': settings.DEFAULT_FROM_EMAIL,
+                    'api_key_configured': bool(settings.EMAIL_HOST_PASSWORD),
+                    'backend': settings.EMAIL_BACKEND
+                }
+            })
+    else:
+        return JsonResponse({'success': False, 'message': 'Test endpoint disabled in production'})
 
 
 @csrf_exempt
