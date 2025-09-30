@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from .views.admin import send_notification_to_user_view, send_notification_to_all_users_view
 from .views import reviews as reviews_views
+from .views import email_debug_views
 
 urlpatterns = [
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
@@ -47,6 +48,11 @@ urlpatterns = [
     path("bookings/stream/", views.booking_notifications, name="booking_stream"),
     path("request-bookings/", views.booking_requests, name = "request_bookings"),
     path("request-bookings/status/<int:id>", views.booking_requests_status, name = "booking_request_status"),
+    
+    # Email Debug Endpoints (Admin Only)
+    path('debug/email/diagnosis/', email_debug_views.email_diagnosis_view, name='email_diagnosis'),
+    path('debug/email/test/', email_debug_views.test_email_view, name='test_email'),
+    path('debug/email/network/', email_debug_views.network_test_view, name='network_test'),
     
     path("request-bookings/status/<int:id>/mark-as-done", views.mark_step_done, name ="mark_step_done"),
     path("request-bookings/status/<int:id>/undo-step", views.undo_step, name ="undo_step"),

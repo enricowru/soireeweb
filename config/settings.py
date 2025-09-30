@@ -275,13 +275,15 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG  # Allow all origins in development
 CORS_ALLOWED_ORIGINS = CSRF_TRUSTED_ORIGINS
 CORS_ALLOW_CREDENTIALS = True
 
-# Email Configuration
+# Email Configuration - Optimized for Render
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-EMAIL_TIMEOUT = 30
+
+# Use SSL (port 465) instead of TLS (port 587) for better Render compatibility
+EMAIL_PORT = 465 if ENVIRONMENT == 'prod' else 587
+EMAIL_USE_TLS = False if ENVIRONMENT == 'prod' else True
+EMAIL_USE_SSL = True if ENVIRONMENT == 'prod' else False
+EMAIL_TIMEOUT = 60 if ENVIRONMENT == 'prod' else 30  # Longer timeout for production
 
 # Robust email password handling
 def get_clean_email_password():
