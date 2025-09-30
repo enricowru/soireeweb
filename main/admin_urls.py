@@ -3,6 +3,7 @@ from . import views
 from .views.admin import send_notification_to_user_view, send_notification_to_all_users_view
 from .views import reviews as reviews_views
 from .views import email_debug_views
+from .views.quick_email_check import quick_email_config_check
 
 urlpatterns = [
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
@@ -53,6 +54,7 @@ urlpatterns = [
     path('debug/email/diagnosis/', email_debug_views.email_diagnosis_view, name='email_diagnosis'),
     path('debug/email/test/', email_debug_views.test_email_view, name='test_email'),
     path('debug/email/network/', email_debug_views.network_test_view, name='network_test'),
+    path('debug/email/quick-check/', quick_email_config_check, name='quick_email_check'),
     
     path("request-bookings/status/<int:id>/mark-as-done", views.mark_step_done, name ="mark_step_done"),
     path("request-bookings/status/<int:id>/undo-step", views.undo_step, name ="undo_step"),

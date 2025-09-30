@@ -285,9 +285,15 @@ EMAIL_USE_TLS = False if ENVIRONMENT == 'prod' else True
 EMAIL_USE_SSL = True if ENVIRONMENT == 'prod' else False
 EMAIL_TIMEOUT = 60 if ENVIRONMENT == 'prod' else 30  # Longer timeout for production
 
-# Robust email password handling
+# Robust email password handling - Enhanced for Render auto-quoting
 def get_clean_email_password():
-    """Clean email password from various possible formats"""
+    """
+    Clean Gmail app password that Render auto-wraps in quotes due to spaces
+    
+    Gmail provides: "abcd efgh ijkl mnop" (with spaces)
+    Render stores as: "abcd efgh ijkl mnop" (auto-quoted due to spaces)
+    We need: "abcdefghijklmnop" (no quotes, no spaces)
+    """
     password = config('EMAIL_HOST_PASSWORD', default='')
     if not password:
         return ''
@@ -295,16 +301,29 @@ def get_clean_email_password():
     # Remove surrounding quotes and whitespace
     password = password.strip()
     
-    # Handle double quotes
+    # CRITICAL: Handle Render auto-quoting due to spaces in Gmail app password
+    # Render automatically adds quotes around env vars with spaces
     if password.startswith('"') and password.endswith('"'):
-        password = password[1:-1]
+        password = password[1:-1]  # Remove Render's auto-added quotes
     
-    # Handle single quotes
+    # Handle single quotes (just in case)
     if password.startswith("'") and password.endswith("'"):
         password = password[1:-1]
     
-    # Final strip
+    # CRITICAL INSIGHT: Gmail SMTP accepts passwords WITH spaces (works in localhost)
+    # The REAL issue: Render auto-quotes env vars with spaces, Gmail rejects quoted passwords
+    # Solution: Remove ONLY the quotes that Render adds, keep the spaces!
+    
+    # Don't remove spaces - Gmail accepts them! Only remove quotes.
+    # Final cleanup
     password = password.strip()
+    
+    # Gmail app passwords should be exactly 19 characters with spaces (xxxx xxxx xxxx xxxx)
+    # or 16 characters without spaces (if user manually removed them)
+    if len(password) not in [16, 19]:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Gmail app password length is {len(password)}, expected 19 (with spaces) or 16 (without spaces)")
     
     return password
 

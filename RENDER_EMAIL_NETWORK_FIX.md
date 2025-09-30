@@ -25,26 +25,31 @@ EMAIL_TIMEOUT = 60
 
 ### 2. Fix Gmail App Password in Render Environment Variables
 
+**IMPORTANT**: Gmail app passwords have spaces by design (`abcd efgh ijkl mnop`), and Render auto-quotes environment variables with spaces.
+
 1. **Go to Render Dashboard** → Your Service → Environment Tab
 
-2. **Update EMAIL_HOST_PASSWORD** with these exact steps:
-   - **Remove quotes**: Don't wrap the password in quotes
-   - **Remove spaces**: Make sure there are no spaces before/after
-   - **Use raw password**: Paste the 16-character app password directly
+2. **Set EMAIL_HOST_PASSWORD** with the EXACT Gmail app password (with spaces):
    
-   ❌ Wrong:
+   ✅ **Correct way to set in Render**:
    ```
-   "abcd efgh ijkl mnop"
-   'abcd efgh ijkl mnop'
-   abcd efgh ijkl mnop (with spaces)
+   abcd efgh ijkl mnop
    ```
+   (Paste exactly as Gmail provides it, with spaces)
    
-   ✅ Correct:
+   ❌ **Don't do this**:
    ```
-   abcdefghijklmnop
+   "abcd efgh ijkl mnop"  (don't add your own quotes)
+   abcdefghijklmnop       (don't remove spaces manually)
    ```
 
-3. **Redeploy** your service after updating the environment variable
+3. **What happens**:
+   - You enter: `abcd efgh ijkl mnop`
+   - Render automatically stores as: `"abcd efgh ijkl mnop"` (quotes added by Render)
+   - Django cleans it to: `abcd efgh ijkl mnop` (removes ONLY the quotes, keeps spaces)
+   - **Key insight**: Gmail SMTP accepts passwords with spaces! The issue is only the quotes.
+
+4. **Redeploy** your service after updating the environment variable
 
 ### 3. Generate a Fresh Gmail App Password
 
@@ -82,11 +87,16 @@ Make sure these are set correctly in Render:
 
 ```
 EMAIL_HOST_USER=websoiree1@gmail.com
-EMAIL_HOST_PASSWORD=your16characterapppassword
+EMAIL_HOST_PASSWORD=abcd efgh ijkl mnop
 DEFAULT_FROM_EMAIL=websoiree1@gmail.com
 ```
 
-**Critical**: No quotes, no spaces around values!
+**Critical Understanding**: 
+- ✅ Gmail SMTP accepts passwords WITH spaces (works in localhost)
+- ✅ Problem is Render auto-quotes them: `"abcd efgh ijkl mnop"`
+- ✅ Gmail rejects quoted passwords 
+- ✅ Django removes ONLY the quotes, keeps the spaces
+- ✅ Result: `abcd efgh ijkl mnop` (works with Gmail SMTP)
 
 ## Alternative SMTP Providers
 
