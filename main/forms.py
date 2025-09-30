@@ -26,7 +26,7 @@ class UserRegistrationForm(forms.Form):
     password = forms.CharField(min_length=8, required=True)
     mobile = forms.CharField(
         max_length=11,
-        required=False,
+        required=True,
         validators=[RegexValidator(
             regex=r'^09\d{9}$', 
             message='Mobile number must be 11 digits and start with 09'
