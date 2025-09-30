@@ -280,6 +280,39 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD').strip('"').strip("'")
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default=config('EMAIL_HOST_USER'))
+EMAIL_USE_SSL = False
+EMAIL_TIMEOUT = 30
+
+# Robust email password handling
+def get_clean_email_password():
+    """Clean email password from various possible formats"""
+    password = config('EMAIL_HOST_PASSWORD', default='')
+    if not password:
+        return ''
+    
+    # Remove surrounding quotes and whitespace
+    password = password.strip()
+    
+    # Handle double quotes
+    if password.startswith('"') and password.endswith('"'):
+        password = password[1:-1]
+    
+    # Handle single quotes
+    if password.startswith("'") and password.endswith("'"):
+        password = password[1:-1]
+    
+    # Final strip
+    password = password.strip()
+    
+    return password
+
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = get_clean_email_password()
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default=EMAIL_HOST_USER)
+
+# Log email configuration status (only in debug mode)
+if DEBUG:
+    print(f"Email configuration loaded:")
+    print(f"  EMAIL_HOST_USER: {EMAIL_HOST_USER}")
+    print(f"  EMAIL_HOST_PASSWORD: {'*' * len(EMAIL_HOST_PASSWORD) if EMAIL_HOST_PASSWORD else 'NOT SET'}")
+    print(f"  DEFAULT_FROM_EMAIL: {DEFAULT_FROM_EMAIL}")

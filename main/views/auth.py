@@ -8,6 +8,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+import smtplib
 from django.views.decorators.http import require_http_methods
 from django.middleware.csrf import get_token
 import json
@@ -198,8 +199,16 @@ SoireeWeb Team
             
             return JsonResponse({'success': True, 'message': 'OTP has been sent to your email.'})
             
+        except smtplib.SMTPAuthenticationError as e:
+            print(f"SMTP Authentication failed: {e}")
+            print(f"Check EMAIL_HOST_USER and EMAIL_HOST_PASSWORD settings")
+            return JsonResponse({'success': False, 'message': 'Email configuration error. Please contact support.'})
+        except smtplib.SMTPException as e:
+            print(f"SMTP Error: {e}")
+            return JsonResponse({'success': False, 'message': 'Failed to send email. Please try again.'})
         except Exception as e:
             print(f"Email sending failed: {e}")
+            print(f"Email settings - User: {settings.EMAIL_HOST_USER}, From: {settings.DEFAULT_FROM_EMAIL}")
             return JsonResponse({'success': False, 'message': 'Failed to send email. Please try again.'})
     
     except Exception as e:

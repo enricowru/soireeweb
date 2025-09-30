@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.conf import settings
 import json
+import smtplib
 from django.contrib.auth.decorators import login_required
 from ..models import EmailVerificationOTP
 from ..forms import UserRegistrationForm
@@ -95,8 +96,16 @@ SoireeWeb Team
             
             print(f"[SIGNUP] Verification email sent to {email}")
             
+        except smtplib.SMTPAuthenticationError as e:
+            print(f"[SIGNUP] SMTP Authentication failed: {e}")
+            print(f"[SIGNUP] Check EMAIL_HOST_USER and EMAIL_HOST_PASSWORD settings")
+            # Don't fail the registration if email fails
+        except smtplib.SMTPException as e:
+            print(f"[SIGNUP] SMTP Error: {e}")
+            # Don't fail the registration if email fails
         except Exception as e:
             print(f"[SIGNUP] Email sending failed: {e}")
+            print(f"[SIGNUP] Email settings - User: {settings.EMAIL_HOST_USER}, From: {settings.DEFAULT_FROM_EMAIL}")
             # Don't fail the registration if email fails
             
         return JsonResponse({
@@ -240,8 +249,16 @@ SoireeWeb Team
             
             return JsonResponse({'success': True, 'message': 'Verification code has been sent to your email.'})
             
+        except smtplib.SMTPAuthenticationError as e:
+            print(f"SMTP Authentication failed: {e}")
+            print(f"Check EMAIL_HOST_USER and EMAIL_HOST_PASSWORD settings")
+            return JsonResponse({'success': False, 'message': 'Email configuration error. Please contact support.'})
+        except smtplib.SMTPException as e:
+            print(f"SMTP Error: {e}")
+            return JsonResponse({'success': False, 'message': 'Failed to send email. Please try again.'})
         except Exception as e:
             print(f"Email sending failed: {e}")
+            print(f"Email settings - User: {settings.EMAIL_HOST_USER}, From: {settings.DEFAULT_FROM_EMAIL}")
             return JsonResponse({'success': False, 'message': 'Failed to send email. Please try again.'})
     
     except Exception as e:
