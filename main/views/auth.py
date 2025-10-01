@@ -12,6 +12,7 @@ import smtplib
 from django.views.decorators.http import require_http_methods
 from django.middleware.csrf import get_token
 import json
+import time
 from ..models import Review, PasswordResetOTP, User
 
 Users = get_user_model()
@@ -280,6 +281,53 @@ def test_email_configuration(request):
                     'api_key_configured': bool(getattr(settings, 'SENDGRID_API_KEY', '')),
                     'backend': settings.EMAIL_BACKEND
                 }
+            })
+    else:
+        return JsonResponse({'success': False, 'message': 'Test endpoint disabled in production'})
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST"])
+def detailed_email_test(request):
+    """Detailed SendGrid email test with delivery tracking"""
+    if settings.DEBUG or settings.ENVIRONMENT != 'prod':
+        try:
+            from main.utils.sendgrid_debug import test_sendgrid_delivery, check_sender_authentication
+            
+            test_email = request.GET.get('email', 'test@example.com')
+            
+            # Test email delivery with detailed logging
+            result = test_sendgrid_delivery(
+                to_email=test_email,
+                subject="SoireeWeb Detailed Email Test",
+                content=f"This is a detailed test email sent at {time.strftime('%Y-%m-%d %H:%M:%S')}. If you receive this, email delivery is working!"
+            )
+            
+            # Check sender authentication
+            auth_status = check_sender_authentication()
+            
+            result['sender_authenticated'] = auth_status
+            result['recommendations'] = []
+            
+            # Add recommendations based on results
+            if not auth_status:
+                result['recommendations'].append("Set up sender authentication in SendGrid dashboard")
+            
+            if result.get('status_code') == 202:
+                result['recommendations'].extend([
+                    f"Check spam/junk folder in {test_email}",
+                    f"Check SendGrid dashboard > Activity for delivery status",
+                    f"Try sending to different email providers",
+                    f"Ensure {settings.DEFAULT_FROM_EMAIL} is verified in SendGrid"
+                ])
+            
+            return JsonResponse(result)
+            
+        except Exception as e:
+            return JsonResponse({
+                'success': False, 
+                'message': f'Detailed email test failed: {str(e)}',
+                'error_type': type(e).__name__
             })
     else:
         return JsonResponse({'success': False, 'message': 'Test endpoint disabled in production'})
