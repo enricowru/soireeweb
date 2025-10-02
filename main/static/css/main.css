@@ -33,6 +33,7 @@ body {
   padding: 0;
   color: #11120D;
   background-color: #ffffff;
+  overflow-x: hidden;
 }
 
 html {
@@ -115,7 +116,7 @@ section {
   bottom: 32px;
   right: 32px;
   z-index: 9999;
-  background: #565449;
+  background: #568756;
   color: white;
   border: none;
   border-radius: 50px;
@@ -252,7 +253,7 @@ margin-top: 20px;
 /* Service dropdown (same style as package dropdown) */
 .service-dropdown {
 width: 100%;
-max-width: 1350px;
+max-width: 1200px;
 margin: 0 auto 30px;
 background: #fff;
 border: 1px solid #ccc;
@@ -1509,15 +1510,15 @@ transition: transform 0.5s;
 }
 
 .review {
-flex: 0 0 100%;
-min-width: 100%;
-box-sizing: border-box;
-padding: 30px;
-background-color: #565449;
-color: white;
-display: flex;
-flex-direction: column;
-gap: 20px;
+  flex: 0 0 100%;
+  min-width: 100%;
+  box-sizing: border-box;
+  padding: 30px;
+  background-color: #2d4a2d;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 /* HEADER */
@@ -2383,4 +2384,192 @@ opacity: 1;
 position: static !important;
 margin-top: 20px;
 text-align: center;
+}
+
+/* FLOATING DOWNLOAD BANNER */
+.floating-banner {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    z-index: 1000;
+    background-color: white;
+    border-radius: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    cursor: move;
+    user-select: none;
+    max-width: 300px;
+    min-width: 250px;
+}
+
+.floating-banner.minimized {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    max-width: 60px;
+    min-width: 60px;
+}
+
+.floating-banner.minimized .banner-content {
+    display: none;
+}
+
+.floating-banner.minimized .banner-minimized {
+    display: flex;
+}
+
+.banner-content {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    gap: 12px;
+}
+
+.banner-minimized {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+
+.banner-logo {
+    flex-shrink: 0;
+}
+
+.banner-logo-img {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+}
+
+.banner-text {
+    flex: 1;
+    text-align: left;
+}
+
+.banner-title {
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 1.2;
+    margin-bottom: 2px;
+}
+
+.download-text {
+    color: #568756;
+    text-transform: uppercase;
+}
+
+.app-text {
+    color: black;
+    text-transform: uppercase;
+}
+
+.banner-subtitle {
+    font-size: 10px;
+    color: #666;
+    font-weight: normal;
+    line-height: 1.2;
+}
+
+.banner-download {
+    flex-shrink: 0;
+}
+
+.download-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    background-color: #568756;
+    border-radius: 50%;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.download-icon:hover {
+    background-color: #2f5232;
+    color: white;
+}
+
+.download-icon i {
+    font-size: 14px;
+}
+
+.download-icon-mini {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background-color: #568756;
+    border-radius: 50%;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.download-icon-mini:hover {
+    background-color: #2f5232;
+    color: white;
+}
+
+.download-icon-mini i {
+    font-size: 18px;
+}
+
+/* Auto-minimize timer */
+.floating-banner.auto-minimize {
+    animation: minimizeBanner 0.3s ease forwards;
+}
+
+@keyframes minimizeBanner {
+    from {
+        width: 300px;
+        border-radius: 25px;
+    }
+    to {
+        width: 60px;
+        border-radius: 50%;
+    }
+}
+
+/* Responsive banner styles */
+@media (max-width: 768px) {
+    .floating-banner {
+        right: 10px;
+        max-width: 250px;
+        min-width: 200px;
+    }
+    
+    .banner-content {
+        padding: 12px 15px;
+        gap: 10px;
+    }
+    
+    .banner-title {
+        font-size: 12px;
+    }
+    
+    .banner-subtitle {
+        font-size: 9px;
+    }
+    
+    .banner-logo-img {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .download-icon {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .download-icon i {
+        font-size: 12px;
+    }
 }

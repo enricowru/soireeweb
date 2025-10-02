@@ -44,7 +44,6 @@
         border: 2px solid #B8860B;
         background-color: rgba(184, 134, 11, 0.1);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
         position: relative;
     }
 
@@ -165,7 +164,7 @@
         font-size: 12px;
         font-weight: 500;
         text-align: center;
-        color: #b0adad;
+        color: #333;
         line-height: 1.2;
         min-height: 30px;
         display: flex;
@@ -214,7 +213,7 @@
     .food-section-title {
         font-size: 16px;
         font-weight: 600;
-        color: #fff;
+        color: #333;
         margin-bottom: 12px;
         padding-left: 4px;
     }
@@ -234,7 +233,7 @@
         transition: all 0.3s ease;
         padding: 8px;
         border-radius: 12px;
-        border: 2px solid transparent;
+        border: 2px solid #e2dfda;
         background: rgba(255, 255, 255, 0.05);
     }
     
@@ -245,10 +244,9 @@
     }
     
     .food-item.selected {
-        border: 2px solid #B8860B;
+        border: 2px solid #3b6255;
         background-color: rgba(184, 134, 11, 0.15);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
     }
     
     .food-image {
@@ -268,7 +266,7 @@
         font-size: 13px;
         font-weight: 500;
         text-align: center;
-        color: #fff;
+        color: #333;
         line-height: 1.3;
         min-height: 35px;
         display: flex;
@@ -277,7 +275,7 @@
     }
     
     .food-item.selected .food-label {
-        color: #B8860B;
+        color: #3b6255;
         font-weight: 600;
     }
     
@@ -328,7 +326,7 @@
     .theme-section-title {
         font-size: 16px;
         font-weight: 600;
-        color: #fff;
+        color: #333;
         margin-bottom: 12px;
         padding-left: 4px;
     }
@@ -348,7 +346,7 @@
         transition: all 0.3s ease;
         padding: 15px;
         border-radius: 12px;
-        border: 2px solid transparent;
+        border: 2px solid #e2dfda;
         background: rgba(255, 255, 255, 0.05);
         width: 100%;
     }
@@ -363,7 +361,6 @@
         border: 2px solid #B8860B;
         background-color: rgba(184, 134, 11, 0.15);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
     }
     
     .theme-images {
@@ -392,7 +389,7 @@
         font-size: 16px;
         font-weight: 600;
         text-align: center;
-        color: #fff;
+        color: #333;
         line-height: 1.3;
         margin-bottom: 8px;
         display: flex;
@@ -402,7 +399,7 @@
     }
     
     .theme-item.selected .theme-label {
-        color: #B8860B;
+        color: #333;
         font-weight: 600;
     }
 
@@ -822,8 +819,7 @@
     <div id="step-0" class="wizard-step" style="display:none;">
         <div class="date-modal-content">
             <div id="alert-name" class="modal-alert alert alert-danger d-none"></div>
-            <div class="date-modal-message">Hey there! I'm Patrice — your go‑to buddy for planning awesome events.
-                So, what's the celebrant's name?</div>
+            <div class="date-modal-message">Please enter the celebrant's name.</div>
             <form id="name-form" autocomplete="off">
                 <div style="display:flex; justify-content:center;">
                     <input style="width:70%;" type="text" id="celebrant-name" class="date-input" required placeholder="Enter full name">
@@ -842,11 +838,11 @@
         <div class="date-modal-content">
             <div id="alert-date" class="modal-alert alert alert-danger d-none"></div>
             <div class="date-modal-message">
-                Great, so what date are we looking at for your event?
+                Select the date of the event.
             </div>
             <form id="date-form" autocomplete="off">
                 <input type="date" id="date-picker" class="date-input" required min="">
-                <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+                <div style="display:flex; justify-content:center; gap:10px;">
                     <button type="button" class="back-btn">Back</button>
                     <button type="submit" class="date-submit">Next</button>
                 </div>
@@ -861,7 +857,7 @@
         <div class="date-modal-content">
             <div id="alert-event" class="modal-alert alert alert-danger d-none"></div>
             <div class="date-modal-message">
-                Great! Now, what type of event would you like to plan?
+                Select the type of event.
             </div>
             <div class="event-btn-group">
                 <button type="button" class="event-btn">Kiddie Party</button>
@@ -1011,7 +1007,7 @@
         <div class="date-modal-content">
             <div id="alert-pax" class="modal-alert alert alert-danger d-none"></div>
             <div class="date-modal-message">
-                Great! Now, please tell me the number of guests (pax) for your event.
+                Select the number of guests (pax) for your event.
             </div>
             <form id="pax-form" autocomplete="off" style="width:100%;">
                 <select id="pax-select" class="pax-select" required>
@@ -1042,9 +1038,9 @@
     <div id="step-5" class="wizard-step" style="display:none;">
         <div class="date-modal-content">
             <div id="alert-theme" class="modal-alert alert alert-danger d-none"></div>
-            <div class="date-modal-message">Perfect! Now let's choose a theme for your <span id="theme-event-type">event</span>.</div>
+            <div class="date-modal-message">Select a theme for your <span id="theme-event-type">event</span>.</div>
             
-            <form id="theme-form" style="width:100%; display:flex; flex-direction:column; gap:15px;">
+            <form id="theme-form" style="width:100%; display:flex; flex-direction:column; gap:8px;">
                 <!-- Theme Grid Container -->
                 <div id="theme-grids-container">
                     <!-- Grid will be dynamically generated by JavaScript -->
@@ -1071,7 +1067,7 @@
             <form id="location-form" style="width:100%; display:flex; flex-direction:column; gap:15px;">
                 <input type="text" id="venue-input" class="custom-location-input" placeholder="Venue name..." required>
                 
-                <button type="button" id="select-floorplan-btn" class="date-submit" style="margin: 10px 0;" disabled>Select Floorplan</button>
+                <button type="button" id="select-floorplan-btn" class="date-submit" style="margin: 10px 0;" disabled>Select Floor Plan</button>
                 
                 <div class="date-modal-message" id="floorplan-instruction" style="margin-bottom: 10px; display: none;">Select a floor plan:</div>
                 
@@ -1085,7 +1081,7 @@
                     
                     <!-- Option 1: Upload Floorplan Image -->
                     <div class="custom-option">
-                        <h4 style="margin-bottom: 10px; color: #B8860B;">Upload Floorplan Image</h4>
+                        <h4 style="margin-bottom: 10px; color: #B8860B;">Upload Floor plan Image</h4>
                         
                         <!-- Modern Upload Area -->
                         <div class="upload-container">
@@ -1095,7 +1091,7 @@
                                         <i class="fas fa-cloud-upload-alt"></i>
                                     </div>
                                     <div class="upload-text">
-                                        <p class="upload-title">Drop your floorplan image here</p>
+                                        <p class="upload-title">Drop your floor plan image here</p>
                                         <p class="upload-subtitle">or <span class="upload-link">browse files</span></p>
                                     </div>
                                     <div class="upload-formats">
@@ -1149,7 +1145,7 @@
                     <!-- AI Analysis Results -->
                     <div id="ai-results" style="display: none; width: 100%; margin-top: 20px;">
                         <h4 style="color: #B8860B; margin-bottom: 10px;">AI Estimations:</h4>
-                        <div id="ai-estimations" style="background: #f8f9fa; padding: 15px; border-radius: 8px; color:#242424 white-space: pre-line; font-family: monospace; font-size: 14px; border: 1px solid #e9ecef;"></div>
+                        <div id="ai-estimations" style="background: #f8f9fa; padding: 15px; border-radius: 8px; color: #242424; white-space: pre-line; font-family: monospace; font-size: 14px; border: 1px solid #e9ecef;"></div>
             
                     </div>
                     
@@ -1246,11 +1242,38 @@
     {% csrf_token %}
 </form>
 
+<!-- Image Modal for Package Images -->
+<div id="image-modal" class="image-modal">
+    <button class="modal-prev">❮</button>
+    <img class="modal-content" id="modal-img" src="" alt="Full Size">
+    <button class="modal-next">❯</button>
+    <span class="close-modal">&times;</span>
+</div>
+
 <!-- ===============   WIZARD JAVASCRIPT   =============== -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let currentStep = 0;
     const totalSteps = 10;
+    
+    // Initialize custom event submit button as disabled
+    document.querySelector('.custom-event-submit').disabled = true;
+    
+    // Initialize custom pax submit button as disabled
+    document.querySelector('.custom-pax-submit').disabled = true;
+    
+    // Initialize all Next buttons as disabled (except theme, location, and food steps)
+    document.querySelectorAll('.date-submit, .next-btn').forEach(btn => {
+        if (btn.type === 'submit' || btn.id.includes('next-btn')) {
+            // Skip theme, location, and food step buttons - keep them enabled
+            const isThemeButton = btn.closest('#step-5');
+            const isLocationButton = btn.closest('#step-6');
+            const isFoodButton = btn.closest('#step-8');
+            if (!isThemeButton && !isLocationButton && !isFoodButton) {
+                btn.disabled = true;
+            }
+        }
+    });
     
     // Food menu data with Cloudinary URLs
     const foodMenuData = {
@@ -1505,6 +1528,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Load package image when showing step 7 (packages)
         if (stepIndex === 7) { // step-7 is packages (formerly step-6)
             loadPackageImage();
+            // Make package image clickable after it's loaded
+            setTimeout(() => {
+                makePackageImageClickable();
+            }, 100);
         }
 
         currentStep = stepIndex;
@@ -1552,6 +1579,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Step 0: Name form
+    document.getElementById('celebrant-name').addEventListener('input', function() {
+        const nextBtn = document.querySelector('#step-0 .date-submit');
+        nextBtn.disabled = !this.value.trim();
+    });
+
     document.getElementById('name-form').addEventListener('submit', function(e) {
         e.preventDefault();
         clearAlert('name');
@@ -1565,6 +1597,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Step 1: Date form
+    document.getElementById('date-picker').addEventListener('change', function() {
+        const nextBtn = document.querySelector('#step-1 .date-submit');
+        nextBtn.disabled = !this.value;
+    });
+
     document.getElementById('date-form').addEventListener('submit', function(e) {
         e.preventDefault();
         clearAlert('date');
@@ -1587,14 +1624,23 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Clear custom input when preset button is selected
             document.querySelector('.custom-event-input').value = '';
+            // Disable custom submit button when preset is selected
+            document.querySelector('.custom-event-submit').disabled = true;
         });
     });
 
-    // Add input event listener to clear selected buttons when typing
+    // Add input event listener to clear selected buttons when typing and control button state
     document.querySelector('.custom-event-input').addEventListener('input', function() {
+        const submitBtn = document.querySelector('.custom-event-submit');
+        
         if (this.value.trim()) {
             // Clear all selected preset buttons when user types
             document.querySelectorAll('.event-btn').forEach(b => b.classList.remove('selected'));
+            // Enable submit button
+            submitBtn.disabled = false;
+        } else {
+            // Disable submit button when input is empty
+            submitBtn.disabled = true;
         }
     });
 
@@ -1613,19 +1659,37 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('event-next-btn').addEventListener('click', nextStep);
 
     // Step 4: Pax with mutual exclusivity
+    function updatePaxButtonState() {
+        const nextBtn = document.querySelector('#step-4 .date-submit');
+        const paxSelect = document.getElementById('pax-select').value;
+        const customPax = document.querySelector('.custom-pax-input').value.trim();
+        nextBtn.disabled = !paxSelect && !customPax;
+    }
+
     document.getElementById('pax-select').addEventListener('change', function() {
         if (this.value) {
             // Clear custom input when dropdown is selected
             document.querySelector('.custom-pax-input').value = '';
+            // Disable custom submit button when preset is selected
+            document.querySelector('.custom-pax-submit').disabled = true;
         }
+        updatePaxButtonState();
     });
 
-    // Clear dropdown when custom input is typed
+    // Clear dropdown when custom input is typed and control button state
     document.querySelector('.custom-pax-input').addEventListener('input', function() {
+        const submitBtn = document.querySelector('.custom-pax-submit');
+        
         if (this.value.trim()) {
             // Clear dropdown selection when user types
             document.getElementById('pax-select').value = '';
+            // Enable submit button
+            submitBtn.disabled = false;
+        } else {
+            // Disable submit button when input is empty
+            submitBtn.disabled = true;
         }
+        updatePaxButtonState();
     });
 
     document.getElementById('pax-form').addEventListener('submit', function(e) {
@@ -1653,6 +1717,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Step 5: Theme Selection
+    function updateThemeButtonState() {
+        const nextBtn = document.querySelector('#step-5 .date-submit');
+        
+        if (nextBtn) {
+            nextBtn.disabled = false; // Always enabled
+        }
+    }
+
     document.getElementById('theme-form').addEventListener('submit', function(e) {
         e.preventDefault();
         clearAlert('theme');
@@ -1669,6 +1741,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Step 6: Location with Floor Plan Selection
+    function updateLocationButtonState() {
+        const nextBtn = document.querySelector('#step-6 .date-submit');
+        
+        if (nextBtn) {
+            nextBtn.disabled = false; // Always enabled
+        }
+    }
+
     document.getElementById('location-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const venue = document.getElementById('venue-input').value.trim();
@@ -1683,7 +1763,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const roomLength = document.getElementById('room-length');
         const roomWidth = document.getElementById('room-width');
         const hasDimensions = roomLength && roomWidth && 
-                              roomLength.value.trim() && roomWidth.value.trim();
+                             roomLength.value.trim() && roomWidth.value.trim();
         
         // Validation logic:
         // 1. Venue is always required
@@ -1713,6 +1793,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Venue input handler
+    document.getElementById('venue-input').addEventListener('input', updateLocationButtonState);
+
     // Dimension input handlers - clear upload state when typing dimensions
     const roomLengthInput = document.getElementById('room-length');
     const roomWidthInput = document.getElementById('room-width');
@@ -1722,6 +1805,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.value.trim()) {
                 clearUploadState();
             }
+            updateLocationButtonState();
         });
     }
     
@@ -1730,6 +1814,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.value.trim()) {
                 clearUploadState();
             }
+            updateLocationButtonState();
         });
     }
 
@@ -1943,6 +2028,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Set the hidden input
             document.getElementById('selected-floorplan').value = 'ai-generated';
+            
+            // Update button state
+            updateLocationButtonState();
         }
     }
     
@@ -2281,6 +2369,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // CLEAR AI STATE - when floorplan is selected, clear all AI data
                 clearAIState();
+                
+                // Update button state
+                updateLocationButtonState();
             });
             
             floorplanContainer.appendChild(optionDiv);
@@ -2790,6 +2881,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('selected-theme-name').value = themeName;
         document.getElementById('selected-theme-urls').value = JSON.stringify(themeImages);
         
+        // Update button state
+        updateThemeButtonState();
+        
         // Store in wizardData to indicate this is a preset theme
         wizardData.theme_name = themeName;
         wizardData.theme_urls = themeImages;
@@ -2943,6 +3037,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 updateColorPreview();
+                updateColorButtonState();
                 console.log('Colors selected:', wizardData.colors);
             });
         });
@@ -2993,6 +3088,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Function to update color step button state
+    function updateColorButtonState() {
+        const nextBtn = document.querySelector('#step-3 .date-submit');
+        nextBtn.disabled = wizardData.colors.length < 1;
+    }
+
     document.getElementById('color-form').addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -3005,6 +3106,60 @@ document.addEventListener('DOMContentLoaded', function() {
         nextStep();
     });
     
+    // Image Modal Functionality
+    const modal = document.getElementById('image-modal');
+    const modalImg = document.getElementById('modal-img');
+    const closeBtn = document.querySelector('.close-modal');
+    const prevBtn = document.querySelector('.modal-prev');
+    const nextBtn = document.querySelector('.modal-next');
+    
+    let currentImageUrl = '';
+
+    // Make package image clickable
+    function makePackageImageClickable() {
+        const packageImg = document.getElementById('package_img');
+        if (packageImg) {
+            packageImg.style.cursor = 'pointer';
+            packageImg.addEventListener('click', function() {
+                currentImageUrl = this.src;
+                modalImg.src = currentImageUrl;
+                modal.classList.add('open');
+            });
+        }
+    }
+
+    // Modal event listeners
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function() {
+            modal.classList.remove('open');
+            modalImg.src = '';
+        });
+    }
+
+    // Close modal on background click
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('open');
+                modalImg.src = '';
+            }
+        });
+    }
+
+    // Close modal on ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === "Escape" && modal.classList.contains('open')) {
+            modal.classList.remove('open');
+            modalImg.src = '';
+        }
+    });
+
+    // Hide navigation buttons for single image
+    if (prevBtn && nextBtn) {
+        prevBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
+    }
+
     // Initialize food grids
     function initializeFoodGrids() {
         const container = document.getElementById('food-grids-container');
@@ -3685,6 +3840,9 @@ document.addEventListener('DOMContentLoaded', function() {
         wizardData.theme_urls = [];
         wizardData.isCustomTheme = false;
         
+        // Update button state
+        updateThemeButtonState();
+        
         console.log('Cleared preset theme selections');
     }
     
@@ -3704,6 +3862,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (customInterface) {
             customInterface.remove();
         }
+        
+        // Update button state
+        updateThemeButtonState();
         
         console.log('Cleared custom theme data');
     }
@@ -4026,6 +4187,9 @@ document.addEventListener('DOMContentLoaded', function() {
         wizardData.theme_urls = [themeImage];
         wizardData.isCustomTheme = true; // Mark as custom theme
         wizardData.customThemeImage = themeImage; // Store the Cloudinary URL for database
+        
+        // Update button state
+        updateThemeButtonState();
         
         // Add event handlers for buttons
         document.getElementById('select-preset-themes-btn').addEventListener('click', function() {

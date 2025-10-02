@@ -1,14 +1,23 @@
 /* NAV BAR */
+/* Ensure proper scrolling context for sticky positioning */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 .navbar {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #f2f1ec;
+    background-color: #E2DFDA;
     position: sticky;
     top: 0;
     z-index: 1000;
     padding: 10px 20px;
     height: 45px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .nav-links {
