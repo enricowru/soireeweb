@@ -43,6 +43,34 @@
   </a>
   {% endif %}
 
+  <!-- FLOATING DOWNLOAD BANNER -->
+  <div id="floating-banner" class="floating-banner">
+    <div class="banner-content">
+      <div class="banner-logo">
+        <img src="{% static 'images/CLogo-Notext.png' %}" alt="Soiree Logo" class="banner-logo-img">
+      </div>
+      <div class="banner-text">
+        <div class="banner-title">
+          <span class="download-text">DOWNLOAD</span>
+          <span class="app-text">THE APP NOW!</span>
+        </div>
+        <div class="banner-subtitle">
+          Book your events conveniently anytime, anywhere.
+        </div>
+      </div>
+      <div class="banner-download">
+        <a href="https://drive.google.com/uc?export=download&id=1RbqxenA-kVvVdjgGeLFZzAF5rlpZAsg8" class="download-icon">
+          <i class="fas fa-download"></i>
+        </a>
+      </div>
+    </div>
+    <div class="banner-minimized">
+      <a href="https://drive.google.com/uc?id=1BhXDuUqR79qebFQWRNUrEGx-VNbd9NFq&export=download" class="download-icon-mini">
+        <i class="fas fa-download"></i>
+      </a>
+    </div>
+  </div>
+
 <!-- OUR SERVICES -->
 <section id="services">
   <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1758442104/servicesseparator_mal0bv.png" alt="Services Separator" class="services-separator">
@@ -1194,7 +1222,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <!-- User Notification Modal -->
 {% if user.is_authenticated %}
 <div class="modal fade user-notification-modal" id="userNotificationModal" tabindex="-1" aria-labelledby="userNotificationModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-lg" style="max-width: 800px;">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="userNotificationModalLabel">
@@ -1212,7 +1240,7 @@ document.addEventListener('DOMContentLoaded', function () {
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn" style="background: #AD974F; color: white;" onclick="markAllUserNotificationsAsRead()">
+        <button type="button" class="btn" style="background: #568756; color: white;" onclick="markAllUserNotificationsAsRead()">
           Mark All as Read
         </button>
       </div>
@@ -1235,7 +1263,7 @@ document.addEventListener('DOMContentLoaded', function () {
   position: absolute;
   top: -8px;
   right: -8px;
-  background: #AD974F;
+  background: #568756;
   color: #fff;
   border-radius: 50%;
   padding: 2px 6px;
@@ -1255,7 +1283,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 
 .user-notification-modal .modal-header {
-  background: #AD974F;
+  background: #568756;
   color: #fff;
   border-radius: 10px 10px 0 0;
 }
@@ -1279,7 +1307,7 @@ document.addEventListener('DOMContentLoaded', function () {
 .user-notification-icon {
   width: 40px;
   height: 40px;
-  background: #AD974F;
+  background: #568756;
   color: #fff;
   border-radius: 50%;
   display: flex;
@@ -1318,7 +1346,7 @@ document.addEventListener('DOMContentLoaded', function () {
 }
 
 .user-notification-sender {
-  color: #AD974F;
+  color: #222;
   font-size: 12px;
   font-weight: 500;
 }
@@ -1342,7 +1370,7 @@ document.addEventListener('DOMContentLoaded', function () {
   position: fixed;
   top: 80px;
   right: 20px;
-  background: #AD974F;
+  background: #568756;
   color: white;
   padding: 15px 20px;
   border-radius: 8px;
@@ -1595,6 +1623,224 @@ function getCsrfToken() {
 
 <!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Floating Banner JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const banner = document.getElementById('floating-banner');
+    let isDragging = false;
+    let startX, startY, initialX, initialY;
+    let autoMinimizeTimer;
+    let isMinimized = false;
+
+    // Auto-minimize timer (5 seconds)
+    const AUTO_MINIMIZE_DELAY = 5000;
+
+    // Start auto-minimize timer
+    function startAutoMinimizeTimer() {
+        clearTimeout(autoMinimizeTimer);
+        autoMinimizeTimer = setTimeout(() => {
+            if (!isMinimized) {
+                minimizeBanner();
+            }
+        }, AUTO_MINIMIZE_DELAY);
+    }
+
+    // Minimize banner
+    function minimizeBanner() {
+        banner.classList.add('minimized');
+        isMinimized = true;
+        clearTimeout(autoMinimizeTimer);
+    }
+
+    // Expand banner
+    function expandBanner() {
+        banner.classList.remove('minimized');
+        isMinimized = false;
+        startAutoMinimizeTimer();
+    }
+
+    // Toggle banner state
+    function toggleBanner() {
+        if (isMinimized) {
+            expandBanner();
+        } else {
+            minimizeBanner();
+        }
+    }
+
+    // Drag functionality
+    banner.addEventListener('mousedown', function(e) {
+        // Don't drag if clicking on download link
+        if (e.target.closest('a')) {
+            return;
+        }
+        
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        
+        const rect = banner.getBoundingClientRect();
+        initialX = rect.left;
+        initialY = rect.top;
+        
+        banner.style.transition = 'none';
+        document.addEventListener('mousemove', handleDrag);
+        document.addEventListener('mouseup', handleDragEnd);
+        
+        e.preventDefault();
+    });
+
+    function handleDrag(e) {
+        if (!isDragging) return;
+        
+        const deltaX = e.clientX - startX;
+        const deltaY = e.clientY - startY;
+        
+        let newX = initialX + deltaX;
+        let newY = initialY + deltaY;
+        
+        // Constrain to viewport
+        const bannerRect = banner.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        // Keep banner within viewport bounds
+        newX = Math.max(0, Math.min(newX, viewportWidth - bannerRect.width));
+        newY = Math.max(0, Math.min(newY, viewportHeight - bannerRect.height));
+        
+        banner.style.left = newX + 'px';
+        banner.style.top = newY + 'px';
+        banner.style.right = 'auto';
+        banner.style.transform = 'none';
+    }
+
+    function handleDragEnd() {
+        if (!isDragging) return;
+        
+        isDragging = false;
+        banner.style.transition = 'all 0.3s ease';
+        
+        // Snap to edges
+        const rect = banner.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        // Snap to right edge if close enough
+        if (rect.right > viewportWidth - 50) {
+            banner.style.left = 'auto';
+            banner.style.right = '20px';
+            banner.style.top = '50%';
+            banner.style.transform = 'translateY(-50%)';
+        }
+        // Snap to left edge if close enough
+        else if (rect.left < 50) {
+            banner.style.left = '20px';
+            banner.style.right = 'auto';
+            banner.style.top = '50%';
+            banner.style.transform = 'translateY(-50%)';
+        }
+        
+        document.removeEventListener('mousemove', handleDrag);
+        document.removeEventListener('mouseup', handleDragEnd);
+        
+        // Restart auto-minimize timer after dragging
+        if (!isMinimized) {
+            startAutoMinimizeTimer();
+        }
+    }
+
+    // Click to toggle (only when not dragging)
+    banner.addEventListener('click', function(e) {
+        // Don't toggle if clicking on download link
+        if (e.target.closest('a')) {
+            return;
+        }
+        
+        // Small delay to distinguish between click and drag
+        setTimeout(() => {
+            if (!isDragging) {
+                toggleBanner();
+            }
+        }, 100);
+    });
+
+    // Touch support for mobile
+    banner.addEventListener('touchstart', function(e) {
+        if (e.target.closest('a')) {
+            return;
+        }
+        
+        isDragging = true;
+        const touch = e.touches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+        
+        const rect = banner.getBoundingClientRect();
+        initialX = rect.left;
+        initialY = rect.top;
+        
+        banner.style.transition = 'none';
+        e.preventDefault();
+    });
+
+    banner.addEventListener('touchmove', function(e) {
+        if (!isDragging) return;
+        
+        const touch = e.touches[0];
+        const deltaX = touch.clientX - startX;
+        const deltaY = touch.clientY - startY;
+        
+        let newX = initialX + deltaX;
+        let newY = initialY + deltaY;
+        
+        // Constrain to viewport
+        const bannerRect = banner.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        newX = Math.max(0, Math.min(newX, viewportWidth - bannerRect.width));
+        newY = Math.max(0, Math.min(newY, viewportHeight - bannerRect.height));
+        
+        banner.style.left = newX + 'px';
+        banner.style.top = newY + 'px';
+        banner.style.right = 'auto';
+        banner.style.transform = 'none';
+        
+        e.preventDefault();
+    });
+
+    banner.addEventListener('touchend', function(e) {
+        if (!isDragging) return;
+        
+        isDragging = false;
+        banner.style.transition = 'all 0.3s ease';
+        
+        // Snap to edges
+        const rect = banner.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        
+        if (rect.right > viewportWidth - 50) {
+            banner.style.left = 'auto';
+            banner.style.right = '20px';
+            banner.style.top = '50%';
+            banner.style.transform = 'translateY(-50%)';
+        } else if (rect.left < 50) {
+            banner.style.left = '20px';
+            banner.style.right = 'auto';
+            banner.style.top = '50%';
+            banner.style.transform = 'translateY(-50%)';
+        }
+        
+        if (!isMinimized) {
+            startAutoMinimizeTimer();
+        }
+    });
+
+    // Start the auto-minimize timer when page loads
+    startAutoMinimizeTimer();
+});
+</script>
 
 </body>
 

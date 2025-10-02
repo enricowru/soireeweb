@@ -5,10 +5,14 @@
     <link rel="stylesheet" href="{% static 'chatbot/css/main.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="{% static 'main/images/logo-round.png' %}">
-    <title>Virtual Event Assistant</title>
+    <title>Ask Patrice</title>
 </head>
 <body>
     <div id="sidebar" class="sidebar">
+        <a href="{% url 'home' %}" class="back-button">
+            <i class="fa-solid fa-chevron-left"></i>
+            <span>BACK TO HOME</span>
+        </a>
         <h1>The Soiree</h1>
         <h3>By Nike's Catering Services</h3>
         <div class="middle" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
@@ -37,13 +41,14 @@
     <div id="main" class="main-content">
         <div class="top">            
             <div class="left">
-                <img src="{% static 'main/images/CLogo-Notext.png' %}" alt="Company Logo" width="60">
-                <h2>Virtual Event Assistant</h2>
+                <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1759092240/CLogo-Notext_ijnd1q.png" alt="Company Logo" width="60">
+                <h2>Ask Patrice</h2>
             </div>
             <div class="right">
-                <button id="saveChatBtn">Save Chat</button>
-                <div class="vertical-divider"></div>
-                <img src="{% static 'main/images/sampleprofile.jpg' %}" alt="Profile Picture" width="60" title="Profile">
+                <button id="saveChatBtn">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    <span>Save Chat</span>
+                </button>
             </div>
         </div>
 

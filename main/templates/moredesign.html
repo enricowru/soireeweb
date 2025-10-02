@@ -13,9 +13,15 @@
     {% include "navbar.html" %}
 
     <div class="filter-bar">
-        <button class="filter-btn active" data-category="themed_backdrop">Themed Backdrop</button>
-        <button class="filter-btn" data-category="minimalist_setup">Minimalist Setup</button>
-        <button class="filter-btn" data-category="signature_setup">Signature Setup</button>
+        <a href="{% url 'home' %}" class="back-button">
+            <i class="fa-solid fa-chevron-left"></i>
+            <span>BACK TO HOME</span>
+        </a>
+        <div class="filter-buttons-group">
+            <button class="filter-btn active" data-category="themed_backdrop">Themed Backdrop</button>
+            <button class="filter-btn" data-category="minimalist_setup">Minimalist Setup</button>
+            <button class="filter-btn" data-category="signature_setup">Signature Setup</button>
+        </div>
     </div>
 
     <div id="design-grids" class="category-grids">

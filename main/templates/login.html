@@ -35,12 +35,12 @@
               {% csrf_token %}
               <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" autocomplete="username" required>
+                <input type="text" id="username" name="username" autocomplete="username" required minlength="6" maxlength="12">
               </div>
               <div class="form-group">
                 <label for="password">Password</label>
                 <div class="password-wrapper">
-                  <input type="password" id="password" name="password" autocomplete="current-password" required>
+                  <input type="password" id="password" name="password" autocomplete="current-password" required minlength="8" maxlength="16">
                   <i class="fa-solid fa-eye-slash toggle-password" toggle="#password"></i>
                 </div>
               </div>
@@ -58,16 +58,19 @@
             <p class="member-link">Start celebrating with Nikes!</p>
             <h2>Registration</h2>
           </div>
+
+          <!-- Registration Error Message -->
+          <div id="register-error-message" class="error-message" style="display:none;"></div>
           
           <form id="registerForm" autocomplete="off">
             <div class="register-flex">
               <div class="register-col">
                 <label for="reg-firstname">First Name</label>
-                <input type="text" id="reg-firstname" name="firstname" autocomplete="given-name" required>
+                <input type="text" id="reg-firstname" name="firstname" autocomplete="given-name" minlength="3" maxlength="20">
               </div>
               <div class="register-col">
                 <label for="reg-lastname">Last Name</label>
-                <input type="text" id="reg-lastname" name="lastname" autocomplete="family-name" required>
+                <input type="text" id="reg-lastname" name="lastname" autocomplete="family-name" minlength="3" maxlength="20s">
               </div>
             </div>
             
@@ -78,13 +81,13 @@
               </div>
               <div class="register-col">
                 <label for="reg-mobile">Mobile Number</label>
-                <input type="text" id="reg-mobile" name="mobile" autocomplete="tel" maxlength="11" placeholder="09XXXXXXXXX" required>
+                <input type="text" id="reg-mobile" name="mobile" autocomplete="tel" minlength="11" maxlength="11" placeholder="09XXXXXXXXX" required>
               </div>
             </div>
             
             <div class="form-group">
               <label for="reg-email">Email Address</label>
-              <input type="email" id="reg-email" name="email" autocomplete="email" required>
+              <input type="email" id="reg-email" name="email" autocomplete="email"  minlength="6" maxlength="254" pattern=".{6,254}"  required>
             </div>
             
             <div class="register-flex">
@@ -115,7 +118,7 @@
 
             <div class="terms-checkbox">
               <label class="checkbox-label">
-                <input type="checkbox" id="terms-checkbox" required>
+                <input type="checkbox" id="terms-checkbox">
                 <span class="checkmark"></span>
                 I agree to all the statements included in the <a href="#" id="terms-link">Terms and Policy</a> and <a href="#" id="privacy-link">Data Privacy</a>
               </label>
@@ -168,7 +171,7 @@
     <!-- Email Verification OTP Form -->
     <div class="login-container" id="email-verification-otp-form" style="display:none;">
       <h2>Enter Verification Code</h2>
-      <p>Please enter the 6-digit verification code sent to your email.</p>
+      <p>Please enter the 6-digit verification code sent to your email. Please also check your email spam folder for the OTP.</p>
       <form id="emailVerificationOtpForm" autocomplete="off">
         <input 
           type="email" 
@@ -213,7 +216,7 @@
     <!-- OTP Verification Form -->
     <div class="login-container" id="forgot-otp-form" style="display:none;">
       <h2>VERIFY OTP</h2>
-      <p style="color: #666; text-align: center; margin-bottom: 20px;">Enter the 6-digit code sent to your email</p>
+      <p style="color: #666; text-align: center; margin-bottom: 20px;">Enter the 6-digit code sent to your email. Please also check your email spam folder for the OTP.</p>
       
       <div id="forgot-otp-message" class="message-container" style="display:none;"></div>
       
@@ -239,6 +242,15 @@
         <div class="password-wrapper">
           <input type="password" id="new-password" name="new_password" required minlength="8" maxlength="16">
           <i class="fa-solid fa-eye-slash toggle-password" toggle="#new-password"></i>
+        </div>
+        <div id="reset-password-requirements" class="password-requirements" style="display: none;">
+          <h4>Password Requirements:</h4>
+          <ul>
+            <li id="reset-req-length">At least 8 characters long</li>
+            <li id="reset-req-uppercase">At least one uppercase letter (A-Z)</li>
+            <li id="reset-req-lowercase">At least one lowercase letter (a-z)</li>
+            <li id="reset-req-number">At least one number (0-9)</li>
+          </ul>
         </div>
         
         <label for="confirm-new-password">Confirm Password:</label>
@@ -432,6 +444,8 @@
         container.style.display = 'none';
         container.innerHTML = '';
       });
+      // Clear registration error message
+      clearRegisterError();
     }
 
     function showMessage(containerId, message, isError = false) {
@@ -574,7 +588,7 @@
         const result = await res.json();
         
         if (result.success) {
-          showMessage('forgot-otp-message', 'New OTP has been sent to your email.', false);
+          showMessage('forgot-otp-message', 'New OTP has been sent to your email. If you don\'t see the OTP in your inbox, please check your spam or junk folder.', false);
           document.getElementById('forgot-otp').value = '';
         } else {
           showMessage('forgot-otp-message', result.message, true);
@@ -588,23 +602,34 @@
     // ✅ FORGOT PASSWORD RESET FORM
     document.getElementById('forgotResetForm').addEventListener('submit', async function (e) {
       e.preventDefault();
+      clearAllErrors();
       
       const newPassword = document.getElementById('new-password').value;
       const confirmPassword = document.getElementById('confirm-new-password').value;
       const submitBtn = document.getElementById('reset-password-btn');
       
-      if (!newPassword || !confirmPassword) {
-        showMessage('forgot-reset-message', 'Please fill in all fields.', true);
-        return;
+      let hasErrors = false;
+
+      if (!newPassword) {
+        showFieldError('new-password', 'Password is required');
+        hasErrors = true;
+      } else {
+        const passwordErrors = validatePassword(newPassword);
+        if (passwordErrors.length > 0) {
+          showFieldError('new-password', passwordErrors.join(', '));
+          hasErrors = true;
+        }
       }
 
-      if (newPassword.length < 8 || newPassword.length > 16) {
-        showMessage('forgot-reset-message', 'Password must be 8 to 16 characters long.', true);
-        return;
+      if (!confirmPassword) {
+        showFieldError('confirm-new-password', 'Please confirm your password');
+        hasErrors = true;
+      } else if (newPassword !== confirmPassword) {
+        showFieldError('confirm-new-password', 'Passwords do not match');
+        hasErrors = true;
       }
 
-      if (newPassword !== confirmPassword) {
-        showMessage('forgot-reset-message', 'Passwords do not match.', true);
+      if (hasErrors) {
         return;
       }
 
@@ -627,17 +652,27 @@
         const result = await res.json();
 
         if (result.success) {
-          showMessage('forgot-reset-message', result.message, false);
+          showMessage('forgot-reset-message', result.message + ' Redirecting to login...', false);
           
           // Clear stored email
           delete window.resetEmail;
           
           // Redirect to login after 3 seconds
           setTimeout(() => {
-            showForm('login-form');
-            // Clear reset form
+            document.querySelectorAll('.form-center > div[id]').forEach(container => {
+              container.style.display = 'none';
+            });
+            document.getElementById('main-auth-container').style.display = 'flex';
+            document.querySelectorAll('.login-container[id]').forEach(container => {
+              container.style.display = 'none';
+            });
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('login-bg').style.display = 'block';
+            document.getElementById('register-bg').style.display = 'none';
             document.getElementById('forgotResetForm').reset();
+            clearMessages();
           }, 3000);
+
         } else {
           showMessage('forgot-reset-message', result.message, true);
         }
@@ -678,6 +713,20 @@
       errorDivs.forEach(div => div.style.display = 'none');
       const errorFields = document.querySelectorAll('.error');
       errorFields.forEach(field => field.classList.remove('error'));
+      // Clear registration error message
+      clearRegisterError();
+    }
+
+    function showRegisterError(message) {
+      const errorDiv = document.getElementById('register-error-message');
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+    }
+
+    function clearRegisterError() {
+      const errorDiv = document.getElementById('register-error-message');
+      errorDiv.style.display = 'none';
+      errorDiv.textContent = '';
     }
 
     function validatePassword(password) {
@@ -790,6 +839,92 @@
       }
     });
 
+    // Clear terms error when checkbox is checked
+    document.getElementById('terms-checkbox').addEventListener('change', function(e) {
+      if (e.target.checked) {
+        clearRegisterError();
+      }
+    });
+
+    // Add real-time password validation for reset password form
+    document.getElementById('new-password').addEventListener('input', function(e) {
+      const password = e.target.value;
+      const requirementsDiv = document.getElementById('reset-password-requirements');
+      
+      if (password.length > 0) {
+        requirementsDiv.style.display = 'block';
+        
+        // Check each requirement
+        const lengthReq = document.getElementById('reset-req-length');
+        const uppercaseReq = document.getElementById('reset-req-uppercase');
+        const lowercaseReq = document.getElementById('reset-req-lowercase');
+        const numberReq = document.getElementById('reset-req-number');
+        
+        // Length check
+        if (password.length >= 8) {
+          lengthReq.classList.add('valid');
+        } else {
+          lengthReq.classList.remove('valid');
+        }
+        
+        // Uppercase check
+        if (/[A-Z]/.test(password)) {
+          uppercaseReq.classList.add('valid');
+        } else {
+          uppercaseReq.classList.remove('valid');
+        }
+        
+        // Lowercase check
+        if (/[a-z]/.test(password)) {
+          lowercaseReq.classList.add('valid');
+        } else {
+          lowercaseReq.classList.remove('valid');
+        }
+        
+        // Number check
+        if (/[0-9]/.test(password)) {
+          numberReq.classList.add('valid');
+        } else {
+          numberReq.classList.remove('valid');
+        }
+      } else {
+        requirementsDiv.style.display = 'none';
+      }
+    });
+
+    document.getElementById('new-password').addEventListener('focus', function(e) {
+      const password = e.target.value;
+      if (password.length > 0) {
+        document.getElementById('reset-password-requirements').style.display = 'block';
+      }
+    });
+
+    document.getElementById('new-password').addEventListener('blur', function(e) {
+      const password = e.target.value;
+      const passwordErrors = validatePassword(password);
+      
+      if (password.length === 0) {
+        document.getElementById('reset-password-requirements').style.display = 'none';
+      }
+      
+      if (passwordErrors.length > 0 && password.length > 0) {
+        showFieldError('new-password', passwordErrors.join(', '));
+      } else {
+        clearFieldError('new-password');
+      }
+    });
+
+    document.getElementById('confirm-new-password').addEventListener('input', function(e) {
+      const password = document.getElementById('new-password').value;
+      const confirmPassword = e.target.value;
+      
+      if (confirmPassword && password !== confirmPassword) {
+        showFieldError('confirm-new-password', 'Passwords do not match');
+      } else {
+        clearFieldError('confirm-new-password');
+      }
+    });
+
      // Validate and submit register form
     document.getElementById('registerForm').addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -848,7 +983,7 @@
       // Check terms and policy checkbox
       const termsCheckbox = document.getElementById('terms-checkbox');
       if (!termsCheckbox.checked) {
-        alert('Please agree to the Terms and Policy and Data Privacy to continue.');
+        showRegisterError('Please agree to the Terms and Policy and Data Privacy to continue.');
         hasErrors = true;
       }
 
@@ -1008,13 +1143,29 @@
         const result = await res.json();
 
         if (result.success) {
-          showMessage('email-verification-otp-message', result.message, false);
-          
-          // Clear form and redirect to login after success
-          document.getElementById('emailVerificationOtpForm').reset();
-          
+          showMessage('email-verification-otp-message', result.message + ' Redirecting to login...', false);
+
+          // Redirect to login after 2 seconds
           setTimeout(() => {
-            showForm('login-form');
+            // Hide all forms
+            document.querySelectorAll('.form-center > div[id]').forEach(container => {
+              container.style.display = 'none';
+            });
+            // Show main auth container
+            document.getElementById('main-auth-container').style.display = 'flex';
+            // Hide all login/register forms
+            document.querySelectorAll('#main-auth-container .login-container[id]').forEach(container => {
+              container.style.display = 'none';
+            });
+            // Show login form
+            document.getElementById('login-form').style.display = 'block';
+            // Set background image
+            document.getElementById('login-bg').style.display = 'block';
+            document.getElementById('register-bg').style.display = 'none';
+            clearMessages();
+            
+            // Clear form
+            document.getElementById('emailVerificationOtpForm').reset();
           }, 2000);
         } else {
           showMessage('email-verification-otp-message', result.message, true);
@@ -1061,28 +1212,27 @@
   <div id="terms-modal" class="modal">
     <div class="modal-content">
       <span class="modal-close">&times;</span>
-      <h2>Terms and Policy</h2>
+      <h2>TERMS AND POLICY</h2>
       <div class="modal-body">
-        <h3>1. Acceptance of Terms</h3>
-        <p>By accessing and using this website, you accept and agree to be bound by the terms and provision of this agreement.</p>
+        <p>Nike's Catering Services requires a minimum of ₱10,000 or 20% down payment fee for booking confirmation which must be made upon the signing of the contract. Remaining balance must be paid in full on or before the event date.</p>
         
-        <h3>2. Use License</h3>
-        <p>Permission is granted to temporarily download one copy of the materials on our website for personal, non-commercial transitory viewing only.</p>
+        <p>All down payment fees made for reservations are forfeited upon cancellation. Reservation fees are non-refundable, non-transferable, and non-convertible.</p>
         
-        <h3>3. Disclaimer</h3>
-        <p>The materials on our website are provided on an 'as is' basis. We make no warranties, expressed or implied, and hereby disclaim and negate all other warranties including without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.</p>
+        <p>If the client needs to reschedule the reservation date due to unforeseen events or circumstances, the client must provide us with as much early notice as possible of the rebooking. Rebooking and/or damage fees may apply.</p>
         
-        <h3>4. Limitations</h3>
-        <p>In no event shall our company or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on our website, even if we or our authorized representative has been notified orally or in writing of the possibility of such damage.</p>
+        <p>Corkage fees and caterer's bond at the venue will be charged to the client. If the selected venue of the client provides tables and chairs, no reduction will be applied to the overall package.</p>
         
-        <h3>5. Accuracy of Materials</h3>
-        <p>The materials appearing on our website could include technical, typographical, or photographic errors. We do not warrant that any of the materials on its website are accurate, complete, or current.</p>
+        <p>The client shall be solely responsible for securing all the necessary permits, gate passes, authorization, and clearances necessary for the caterer to effectively set up its equipment and paraphernalia at the venue.</p>
         
-        <h3>6. Links</h3>
-        <p>We have not reviewed all of the sites linked to our website and are not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement by us of the site.</p>
+        <p>The caterer requires at least 4-5 hours for ingress depending on the required styling and design, and 3-4 hours for egress.</p>
         
-        <h3>7. Modifications</h3>
-        <p>We may revise these terms of service for its website at any time without notice. By using this website, you are agreeing to be bound by the then current version of these terms of service.</p>
+        <p>Additional charges such as transportation or trucking fees may apply, if the selected venue is not within Marilao-Meycauayan.</p>
+        
+        <p>Food tasting is only available upon request or by schedule. The selection of dishes is subject to availability.</p>
+        
+        <p>Food not provided by the caterer may be allowed, but additional fees may apply.</p>
+        
+        <p>Catering service shall be limited to 4-5 hours starting from the program time. Overtime fees may apply.</p>
       </div>
     </div>
   </div>
@@ -1091,34 +1241,90 @@
   <div id="privacy-modal" class="modal">
     <div class="modal-content">
       <span class="modal-close">&times;</span>
-      <h2>Data Privacy Policy</h2>
+      <h2>DATA PRIVACY</h2>
       <div class="modal-body">
-        <h3>1. Information We Collect</h3>
-        <p>We collect information you provide directly to us, such as when you create an account, make a booking, or contact us for support.</p>
+        <h3>Nike's Catering Services – Data Privacy Policy</h3>
         
-        <h3>2. How We Use Your Information</h3>
-        <p>We use the information we collect to provide, maintain, and improve our services, process transactions, and communicate with you.</p>
+        <h3>1. Introduction</h3>
+        <p>At Nike's Catering Services, we are committed to protecting the privacy of our clients and ensuring that any personal data collected is handled with care and in compliance with applicable data privacy laws. This policy explains what personal information we collect, how we use it, and your rights in relation to that information.</p>
         
-        <h3>3. Information Sharing and Disclosure</h3>
-        <p>We do not sell, trade, or otherwise transfer your personal information to third parties without your consent, except as described in this policy.</p>
+        <h3>2. Types of Personal Data Collected</h3>
+        <p>We collect and process the following personal data:</p>
+        <ul>
+          <li>Name of client</li>
+          <li>Email address</li>
+          <li>Phone number</li>
+          <li>Venue</li>
+          <li>Event details (name of celebrant, type of event, preferences)</li>
+          <li>Payment information</li>
+          <li>Photos or videos taken during the event (if applicable)</li>
+        </ul>
         
-        <h3>4. Data Security</h3>
-        <p>We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.</p>
+        <h3>3. Purpose of Data Collection</h3>
+        <p>Personal data is collected for the following purposes:</p>
+        <ul>
+          <li>Booking and confirming catering services</li>
+          <li>Event planning and coordination</li>
+          <li>Processing payments</li>
+          <li>Marketing (with client consent)</li>
+          <li>Internal record-keeping</li>
+          <li>Customer service follow-ups</li>
+        </ul>
         
-        <h3>5. Cookies and Tracking Technologies</h3>
-        <p>We use cookies and similar tracking technologies to collect and use personal information about you. You can control cookies through your browser settings.</p>
+        <h3>4. How Data is Collected</h3>
+        <p>We collect personal data through the following means:</p>
+        <ul>
+          <li>Email or phone communication</li>
+          <li>Booking via Web or Mobile platforms</li>
+          <li>In-person consultations</li>
+        </ul>
         
-        <h3>6. Your Rights</h3>
-        <p>You have the right to access, update, or delete your personal information. You may also opt out of certain communications from us.</p>
+        <h3>5. How Data is Used</h3>
+        <p>We use personal data in order to:</p>
+        <ul>
+          <li>Provide the agreed catering and event services</li>
+          <li>Personalize and enhance the client experience</li>
+          <li>Conduct internal analysis for service improvement</li>
+          <li>Send updates regarding the client's booked event</li>
+        </ul>
         
-        <h3>7. Data Retention</h3>
-        <p>We retain your personal information for as long as necessary to provide our services and fulfill the purposes outlined in this policy.</p>
+        <h3>6. Data Sharing and Disclosure</h3>
+        <p>We may share personal data only with:</p>
+        <ul>
+          <li>Event Coordinators for planning and managing the event</li>
+          <li>Payment processors to complete transactions</li>
+          <li>Relevant authorities, if required by law</li>
+        </ul>
+        <p>We do not sell or disclose your personal information to third parties for marketing purposes.</p>
         
-        <h3>8. Changes to This Policy</h3>
-        <p>We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page.</p>
+        <h3>7. Data Storage and Security</h3>
+        <p>Personal data is stored in secure databases with appropriate technical measures, including encrypted communication, to prevent unauthorized access.</p>
+        <p>Access to personal data is limited to:</p>
+        <ul>
+          <li>Business owner</li>
+          <li>Event Coordinator (only during the preparation and execution of the event)</li>
+        </ul>
         
-        <h3>9. Contact Us</h3>
-        <p>If you have any questions about this privacy policy, please contact us at privacy@linkedspaces.com</p>
+        <h3>8. Retention of Data</h3>
+        <p>We retain personal data for up to 2 years from the date of collection, unless a longer retention period is required by law. After this period, data will be securely deleted.</p>
+        
+        <h3>9. Rights of the Data Subject</h3>
+        <p>Clients have the right to:</p>
+        <ul>
+          <li>Access their personal data</li>
+          <li>Request corrections to inaccurate data</li>
+          <li>Request deletion of their data</li>
+          <li>Withdraw consent to data processing at any time</li>
+          <li>Lodge complaints with the relevant data privacy authority</li>
+        </ul>
+        
+        <h3>10. Contact Information</h3>
+        <p>For any inquiries or concerns regarding this policy or the handling of your personal data, please contact us:</p>
+        <p><strong>Email:</strong> nikescateringofficial@gmail.com<br>
+        <strong>Phone:</strong> +63 966 200 3092 or +63 928 345 2913</p>
+        
+        <h3>11. Policy Updates</h3>
+        <p>Nike's Catering Services reserves the right to update this Data Privacy Policy as needed. Clients will be notified of any significant changes through our website or direct communication.</p>
       </div>
     </div>
   </div>
