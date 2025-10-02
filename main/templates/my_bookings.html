@@ -12,6 +12,9 @@
   <link rel="stylesheet" href="{% static 'css/my_bookings.css' %}">
   <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
   
+  <!-- Add CSRF token for API calls -->
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  
   <style>
     /* Ensure navbar looks exactly like home page */
     .navbar {
@@ -65,27 +68,28 @@
   <!-- ────────── CHAT PANE ────────── -->
   <section class="chat-pane">
   <header id="chat-header" class="d-flex align-items-center gap-2">
-    {% if first_chat and first_booking %}
-      <span id="chat-meta" class="flex-grow-1">{{ booking_meta }}</span>
+    <span id="chat-meta" class="flex-grow-1">
+      {% if first_chat and first_booking %}
+        {{ booking_meta }}
+      {% else %}
+        <span class="small text-muted">Select a booking to start chatting</span>
+      {% endif %}
+    </span>
 
-      <!-- View Request btn -->
-      <button id="viewRequestBtn" class="btn btn-outline-light btn-sm" 
-              data-booking-id="{{ first_booking.id }}" 
-              title="View Request Details"
-              style="border-color: white; color: white;">
-        <i class="fas fa-eye me-1" style="color: white;"></i> View Request
-      </button>
+    <!-- View Request btn -->
+    <button id="viewRequestBtn" class="btn btn-outline-light btn-sm" 
+            data-booking-id="{% if first_booking %}{{ first_booking.id }}{% endif %}" 
+            title="View Request Details"
+            style="border-color: white; color: white; {% if not first_booking %}display: none;{% endif %}">
+      <i class="fas fa-eye me-1" style="color: white;"></i> View Request
+    </button>
 
-      <!-- status btn -->
-     <a id="status-link" class="btn btn-back"
-      href="{% url 'event-status' first_booking.id %}">
+    <!-- status btn -->
+    <a id="status-link" class="btn btn-back"
+       href="{% if first_booking %}{% url 'event-status' first_booking.id %}{% endif %}"
+       style="{% if not first_booking %}display: none;{% endif %}">
       Status <i class="fas fa-arrow-right small"></i>
     </a>
-    
-
-    {% else %}
-      <span class="small text-muted">Select a booking to start chatting</span>
-    {% endif %}
   </header>
       <div id="chat-messages">
         {% for m in first_messages %}
@@ -212,8 +216,12 @@ async function submitMessage(e) {
           const chatMetaElement = document.getElementById('chat-meta');
           const statusLinkElement = document.getElementById('status-link');
           
-          if (chatMetaElement && meta) {
-              chatMetaElement.textContent = meta;
+          if (chatMetaElement) {
+              if (meta) {
+                  chatMetaElement.innerHTML = `<span>${meta}</span>`;
+              } else {
+                  chatMetaElement.innerHTML = '<span class="small text-muted">Select a booking to start chatting</span>';
+              }
           }
           
           if (statusLinkElement) {
@@ -223,6 +231,18 @@ async function submitMessage(e) {
               } else {
                   // Hide status button for general chat
                   statusLinkElement.style.display = 'none';
+              }
+          }
+          
+          // Update View Request button's booking ID
+          const viewRequestBtn = document.getElementById('viewRequestBtn');
+          if (viewRequestBtn) {
+              if (bookingId) {
+                  viewRequestBtn.setAttribute('data-booking-id', bookingId);
+                  viewRequestBtn.style.display = 'block';
+              } else {
+                  // Hide View Request button for general chat
+                  viewRequestBtn.style.display = 'none';
               }
           }
 
@@ -670,8 +690,18 @@ document.addEventListener('DOMContentLoaded', function() {
       const bookingId = this.dataset.bookingId;
       if (bookingId) {
         try {
+          // Get CSRF token from meta tag
+          const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+          
           // Fetch booking details from the API
-          const response = await fetch(`/api/booking/${bookingId}/details/`);
+          const response = await fetch(`/api/booking/${bookingId}/details/`, {
+            method: 'GET',
+            headers: {
+              'X-CSRFToken': csrfToken,
+              'Content-Type': 'application/json',
+            },
+            credentials: 'same-origin'
+          });
           if (response.ok) {
             const booking = await response.json();
             
@@ -847,26 +877,38 @@ document.addEventListener('DOMContentLoaded', function() {
               swatchContainer.style.cssText = 'display: flex; gap: 3px;';
               
               item.colors.forEach((colorItem, index) => {
-                
                 const colorPreview = document.createElement('div');
                 
-                // Always ensure the basic styling is applied first
+                // Set up the color preview container with proper styling
                 colorPreview.style.cssText = `
-                  width: 25px; 
-                  height: 25px; 
-                  border-radius: 4px; 
+                  width: 32px; 
+                  height: 32px; 
+                  border-radius: 6px; 
                   border: 2px solid #B8860B;
                   position: relative;
                   display: inline-block;
+                  overflow: hidden;
+                  background-color: #f0f0f0;
                 `;
                 
-                // Then apply the background image if available
-                if (colorItem.image_url) {
-                  colorPreview.style.backgroundImage = `url('${colorItem.image_url}')`;
-                  colorPreview.style.backgroundSize = 'cover';
-                  colorPreview.style.backgroundPosition = 'center';
-                } else {
-                  colorPreview.style.backgroundColor = '#f0f0f0';
+                // Apply the background image if available
+                if (colorItem.image_url && colorItem.image_url.trim() !== '') {
+                  // Create an image element to preload and test the image
+                  const img = new Image();
+                  img.onload = function() {
+                    // Image loaded successfully, apply it as background
+                    colorPreview.style.backgroundImage = `url('${colorItem.image_url}')`;
+                    colorPreview.style.backgroundSize = 'cover';
+                    colorPreview.style.backgroundPosition = 'center';
+                    colorPreview.style.backgroundRepeat = 'no-repeat';
+                    colorPreview.style.backgroundColor = 'transparent';
+                  };
+                  img.onerror = function() {
+                    // Image failed to load, keep the gray background
+                    console.warn(`Failed to load color image for ${colorItem.name}: ${colorItem.image_url}`);
+                  };
+                  // Start loading the image
+                  img.src = colorItem.image_url;
                 }
                 
                 // Add order number
@@ -878,13 +920,14 @@ document.addEventListener('DOMContentLoaded', function() {
                   right: -2px;
                   background: #B8860B;
                   color: white;
-                  width: 12px;
-                  height: 12px;
+                  width: 14px;
+                  height: 14px;
                   border-radius: 50%;
-                  font-size: 8px;
+                  font-size: 9px;
                   display: flex;
                   align-items: center;
                   justify-content: center;
+                  font-weight: bold;
                 `;
                 colorPreview.appendChild(orderNum);
                 swatchContainer.appendChild(colorPreview);

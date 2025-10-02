@@ -416,7 +416,7 @@ document.getElementById('viewStatusBtn').addEventListener('click', function () {
   }
 });
 
-// View Details button functionality
+// View Details button functionality - Enhanced to match user booking summary
 document.getElementById('viewDetailsBtn').addEventListener('click', async function () {
   const bookingId = this.dataset.bookingId;
   if (bookingId) {
@@ -426,17 +426,8 @@ document.getElementById('viewDetailsBtn').addEventListener('click', async functi
       if (response.ok) {
         const booking = await response.json();
         
-        // Populate modal with booking details
-        document.getElementById('modal-event-type').textContent = booking.event_type || '-';
-        document.getElementById('modal-event-date').textContent = booking.event_date || '-';
-        document.getElementById('modal-celebrant').textContent = booking.celebrant_name || '-';
-        document.getElementById('modal-pax').textContent = booking.pax || '-';
-        document.getElementById('modal-venue').textContent = booking.venue || '-';
-        document.getElementById('modal-color-motif').textContent = booking.color_motif || '-';
-        document.getElementById('modal-package').textContent = booking.package || '-';
-        document.getElementById('modal-dishes').textContent = booking.dishes || '-';
-        document.getElementById('modal-pasta').textContent = booking.pasta || '-';
-        document.getElementById('modal-drink').textContent = booking.drink || '-';
+        // Generate booking summary exactly like my_bookings.html
+        showBookingSummary(booking);
         
         // Show the modal
         const modal = new bootstrap.Modal(document.getElementById('bookingDetailsModal'));
@@ -450,6 +441,261 @@ document.getElementById('viewDetailsBtn').addEventListener('click', async functi
     }
   }
 });
+
+// Show booking summary function - copied from my_bookings.html
+function showBookingSummary(booking) {
+  const summaryContainer = document.getElementById('booking-summary-content');
+  if (!summaryContainer) return;
+
+  // Clear previous content
+  summaryContainer.innerHTML = '';
+
+  // Create summary sections exactly like my_bookings.html
+  const sections = [
+    {
+      title: 'Event Details',
+      items: [
+        { label: 'Celebrant Name', value: booking.celebrant_name },
+        { label: 'Event Date', value: booking.event_date },
+        { label: 'Event Type', value: booking.event_type },
+        { label: 'Number of Guests', value: `${booking.pax} Pax` },
+        { label: 'Color Motif', value: booking.color_motif, showColorPreview: true, colors: booking.color_motif_with_images }
+      ]
+    },
+    {
+      title: 'Theme & Venue',
+      items: [
+        { label: 'Theme', value: booking.theme_name },
+        { label: 'Venue', value: booking.venue },
+        { label: 'Floor Plan', value: booking.floorplan_name || 'Not Selected' },
+        { label: 'Package', value: booking.package }
+      ]
+    },
+    {
+      title: 'Food Menu',
+      items: [],
+      showFoodImages: true,
+      dishes: booking.dishes_with_images || [],
+      pasta: { name: booking.pasta, image: booking.pasta_image },
+      drink: { name: booking.drink, image: booking.drink_image }
+    }
+  ];
+
+  sections.forEach(section => {
+    const sectionDiv = document.createElement('div');
+    sectionDiv.style.cssText = 'background: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px solid #ddd;';
+    
+    const titleDiv = document.createElement('h3');
+    titleDiv.textContent = section.title;
+    titleDiv.style.cssText = 'margin: 0 0 15px 0; color: #333; font-size: 1.1rem; border-bottom: 2px solid #AD974F; padding-bottom: 5px;';
+    sectionDiv.appendChild(titleDiv);
+
+    if (section.showFoodImages) {
+      // Show selected food items with images
+      const foodGrid = document.createElement('div');
+      foodGrid.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;';
+      
+      // Add dishes
+      if (section.dishes && section.dishes.length > 0) {
+        section.dishes.forEach(dish => {
+          const foodItem = document.createElement('div');
+          foodItem.style.cssText = 'display: flex; flex-direction: column; align-items: center; padding: 10px; background: white; border-radius: 8px; border: 1px solid #ddd;';
+          
+          if (dish.image_url) {
+            const img = document.createElement('img');
+            img.src = dish.image_url;
+            img.alt = dish.name;
+            img.style.cssText = 'width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;';
+            img.onerror = function() {
+              this.style.display = 'none';
+            };
+            foodItem.appendChild(img);
+          }
+          
+          const label = document.createElement('div');
+          label.textContent = dish.name;
+          label.style.cssText = 'text-align: center; font-size: 0.9rem; color: #333; font-weight: 500; line-height: 1.2;';
+          foodItem.appendChild(label);
+          
+          foodGrid.appendChild(foodItem);
+        });
+      }
+      
+      // Add pasta if exists
+      if (section.pasta && section.pasta.name) {
+        const foodItem = document.createElement('div');
+        foodItem.style.cssText = 'display: flex; flex-direction: column; align-items: center; padding: 10px; background: white; border-radius: 8px; border: 1px solid #ddd;';
+        
+        if (section.pasta.image) {
+          const img = document.createElement('img');
+          img.src = section.pasta.image;
+          img.alt = section.pasta.name;
+          img.style.cssText = 'width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;';
+          img.onerror = function() {
+            this.style.display = 'none';
+          };
+          foodItem.appendChild(img);
+        }
+        
+        const label = document.createElement('div');
+        label.textContent = section.pasta.name;
+        label.style.cssText = 'text-align: center; font-size: 0.9rem; color: #333; font-weight: 500; line-height: 1.2;';
+        foodItem.appendChild(label);
+        
+        foodGrid.appendChild(foodItem);
+      }
+      
+      // Add drink if exists
+      if (section.drink && section.drink.name) {
+        const foodItem = document.createElement('div');
+        foodItem.style.cssText = 'display: flex; flex-direction: column; align-items: center; padding: 10px; background: white; border-radius: 8px; border: 1px solid #ddd;';
+        
+        if (section.drink.image) {
+          const img = document.createElement('img');
+          img.src = section.drink.image;
+          img.alt = section.drink.name;
+          img.style.cssText = 'width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;';
+          img.onerror = function() {
+            this.style.display = 'none';
+          };
+          foodItem.appendChild(img);
+        }
+        
+        const label = document.createElement('div');
+        label.textContent = section.drink.name;
+        label.style.cssText = 'text-align: center; font-size: 0.9rem; color: #333; font-weight: 500; line-height: 1.2;';
+        foodItem.appendChild(label);
+        
+        foodGrid.appendChild(foodItem);
+      }
+      
+      sectionDiv.appendChild(foodGrid);
+    } else {
+      // Regular items
+      section.items.forEach(item => {
+        if (item.value) {
+          const itemDiv = document.createElement('div');
+          itemDiv.style.cssText = 'margin: 8px 0; display: flex; justify-content: space-between; align-items: center;';
+          
+          const labelSpan = document.createElement('span');
+          labelSpan.textContent = item.label + ':';
+          labelSpan.style.cssText = 'font-weight: 600; color: #555;';
+          
+          if (item.showColorPreview && item.colors && item.colors.length > 0) {
+            // Create color preview container
+            const colorContainer = document.createElement('div');
+            colorContainer.style.cssText = 'display: flex; align-items: center; gap: 10px;';
+            
+            // Add text value
+            const valueSpan = document.createElement('span');
+            valueSpan.textContent = item.value;
+            valueSpan.style.cssText = 'color: #333; font-size: 0.9rem;';
+            colorContainer.appendChild(valueSpan);
+            
+            // Add color swatches with actual images
+            const swatchContainer = document.createElement('div');
+            swatchContainer.style.cssText = 'display: flex; gap: 3px;';
+            
+            item.colors.forEach((colorItem, index) => {
+              const colorPreview = document.createElement('div');
+              
+              // Set up the color preview container with proper styling
+              colorPreview.style.cssText = `
+                width: 32px; 
+                height: 32px; 
+                border-radius: 6px; 
+                border: 2px solid #B8860B;
+                position: relative;
+                display: inline-block;
+                overflow: hidden;
+                background-color: #f0f0f0;
+              `;
+              
+              // Apply the background image if available
+              if (colorItem.image_url && colorItem.image_url.trim() !== '') {
+                // Create an image element to preload and test the image
+                const img = new Image();
+                img.onload = function() {
+                  // Image loaded successfully, apply it as background
+                  colorPreview.style.backgroundImage = `url('${colorItem.image_url}')`;
+                  colorPreview.style.backgroundSize = 'cover';
+                  colorPreview.style.backgroundPosition = 'center';
+                  colorPreview.style.backgroundRepeat = 'no-repeat';
+                  colorPreview.style.backgroundColor = 'transparent';
+                };
+                img.onerror = function() {
+                  // Image failed to load, keep the gray background
+                  console.warn(`Failed to load color image for ${colorItem.name}: ${colorItem.image_url}`);
+                };
+                // Start loading the image
+                img.src = colorItem.image_url;
+              }
+              
+              // Add order number
+              const orderNum = document.createElement('div');
+              orderNum.textContent = index + 1;
+              orderNum.style.cssText = `
+                position: absolute;
+                bottom: -2px;
+                right: -2px;
+                background: #B8860B;
+                color: white;
+                width: 14px;
+                height: 14px;
+                border-radius: 50%;
+                font-size: 9px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+              `;
+              colorPreview.appendChild(orderNum);
+              swatchContainer.appendChild(colorPreview);
+            });
+            
+            colorContainer.appendChild(swatchContainer);
+            itemDiv.appendChild(colorContainer);
+          } else {
+            const valueSpan = document.createElement('span');
+            valueSpan.textContent = item.value;
+            valueSpan.style.cssText = 'color: #333; text-align: right; max-width: 60%; word-break: break-word;';
+            itemDiv.appendChild(valueSpan);
+          }
+          
+          itemDiv.insertBefore(labelSpan, itemDiv.firstChild);
+          sectionDiv.appendChild(itemDiv);
+        }
+      });
+    }
+
+    summaryContainer.appendChild(sectionDiv);
+  });
+
+  // Add theme images if available (same as my_bookings.html)
+  if (booking.theme_urls && booking.theme_urls.length > 0) {
+    const themeImagesDiv = document.createElement('div');
+    themeImagesDiv.style.cssText = 'background: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px solid #ddd;';
+    
+    const themeTitle = document.createElement('h3');
+    themeTitle.textContent = 'Theme Images';
+    themeTitle.style.cssText = 'margin: 0 0 15px 0; color: #333; font-size: 1.1rem; border-bottom: 2px solid #AD974F; padding-bottom: 5px;';
+    themeImagesDiv.appendChild(themeTitle);
+
+    const imagesContainer = document.createElement('div');
+    imagesContainer.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;';
+    
+    booking.theme_urls.slice(0, 3).forEach(imageUrl => {
+      const img = document.createElement('img');
+      img.src = imageUrl;
+      img.style.cssText = 'width: 100%; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;';
+      img.alt = booking.theme_name;
+      imagesContainer.appendChild(img);
+    });
+
+    themeImagesDiv.appendChild(imagesContainer);
+    summaryContainer.appendChild(themeImagesDiv);
+  }
+}
 
 // Auto-select booking if booking ID is provided in URL
 {% if selected_booking_id %}
@@ -541,37 +787,20 @@ function getCsrfToken() {
 {% endif %}
 </script>
 
-<!-- Booking Details Modal -->
+<!-- Booking Details Modal - Enhanced Booking Summary Layout -->
 <div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-labelledby="bookingDetailsModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="bookingDetailsModalLabel">Booking Details</h5>
+        <h5 class="modal-title" id="bookingDetailsModalLabel" style="color: #333; font-size: 1.2rem;">
+          <strong>Booking Summary</strong>
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <dl class="row">
-          <dt class="col-sm-3">Event Type</dt>
-          <dd class="col-sm-9" id="modal-event-type">-</dd>
-          <dt class="col-sm-3">Date</dt>
-          <dd class="col-sm-9" id="modal-event-date">-</dd>
-          <dt class="col-sm-3">Celebrant</dt>
-          <dd class="col-sm-9" id="modal-celebrant">-</dd>
-          <dt class="col-sm-3">Pax</dt>
-          <dd class="col-sm-9" id="modal-pax">-</dd>
-          <dt class="col-sm-3">Venue</dt>
-          <dd class="col-sm-9" id="modal-venue">-</dd>
-          <dt class="col-sm-3">Blue</dt>
-          <dd class="col-sm-9" id="modal-color-motif">-</dd>
-          <dt class="col-sm-3">Package</dt>
-          <dd class="col-sm-9" id="modal-package">-</dd>
-          <dt class="col-sm-3">Dishes</dt>
-          <dd class="col-sm-9" id="modal-dishes">-</dd>
-          <dt class="col-sm-3">Pasta</dt>
-          <dd class="col-sm-9" id="modal-pasta">-</dd>
-          <dt class="col-sm-3">Drink</dt>
-          <dd class="col-sm-9" id="modal-drink">-</dd>
-        </dl>
+      <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+        <div id="booking-summary-content" style="display: grid; gap: 20px;">
+          <!-- Summary content will be generated by JavaScript -->
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

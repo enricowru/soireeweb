@@ -1,6 +1,7 @@
 {% extends 'custom_admin/base.html' %}
 
 {% block content %}
+{% csrf_token %}
 <div class="container">
     <div class="row mb-4">
         <div class="col">
@@ -71,7 +72,7 @@
                                                         <td>{{ event.date }}</td>
                                                         <td>{{ event.description }}</td>
                                                         <td>
-                                                                <button type="button" class="btn btn-info btn-sm me-2" data-bs-toggle="modal" data-bs-target="#eventModal{{ event.id }}">
+                                                                <button type="button" class="btn btn-info btn-sm me-2" onclick="showBookingSummary({{ event.booking.id }})">
                                                                         <i class="fas fa-eye"></i> View
                                                                 </button>
                                                                 <a href="{% url 'event_edit' event.id %}" class="btn btn-primary btn-sm me-2">
@@ -83,45 +84,7 @@
                                                                                 <i class="fas fa-trash"></i> Remove
                                                                         </button>
                                                                 </form>
-                                                                <!-- Modal -->
-                                                                <div class="modal fade" id="eventModal{{ event.id }}" tabindex="-1" aria-labelledby="eventModalLabel{{ event.id }}" aria-hidden="true">
-                                                                    <div class="modal-dialog modal-lg">
-                                                                        <div class="modal-content">
-                                                                            <div class="modal-header">
-                                                                                <h5 class="modal-title" id="eventModalLabel{{ event.id }}">Event Details</h5>
-                                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                            </div>
-                                                                            <div class="modal-body">
-                                                                                <dl class="row">
-                                                                                    <dt class="col-sm-3">Event Type</dt>
-                                                                                    <dd class="col-sm-9">{{ event.booking.event_type }}</dd>
-                                                                                    <dt class="col-sm-3">Date</dt>
-                                                                                    <dd class="col-sm-9">{{ event.booking.event_date }}</dd>
-                                                                                    <dt class="col-sm-3">Celebrant</dt>
-                                                                                    <dd class="col-sm-9">{{ event.booking.celebrant_name }}</dd>
-                                                                                    <dt class="col-sm-3">Pax</dt>
-                                                                                    <dd class="col-sm-9">{{ event.booking.pax }}</dd>
-                                                                                    <dt class="col-sm-3">Venue</dt>
-                                                                                    <dd class="col-sm-9">{{ event.booking.venue }}</dd>
-                                                                                    <dt class="col-sm-3">Blue</dt>
-                                                                                    <dd class="col-sm-9">{{ event.booking.color_motif }}</dd>
-                                                                                    <dt class="col-sm-3">Package</dt>
-                                                                                    <dd class="col-sm-9">{{ event.booking.package }}</dd>
-                                                                                    <dt class="col-sm-3">Dishes</dt>
-                                                                                    <dd class="col-sm-9">{{ event.booking.dishes }}</dd>
-                                                                                    <dt class="col-sm-3">Pasta</dt>
-                                                                                    <dd class="col-sm-9">{{ event.booking.pasta }}</dd>
-                                                                                    <dt class="col-sm-3">Drink</dt>
-                                                                                    <dd class="col-sm-9">{{ event.booking.drink }}</dd>
-                                                                                </dl>
-                                                                            </div>
-                                                                            <div class="modal-footer">
-                                                                                <a href="/admin/request-bookings/?booking={{ event.booking.id }}" class="btn btn-warning">Go to Chat</a>
-                                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
+
                                                         </td>
                                                 </tr>
                                                 {% empty %}
@@ -137,4 +100,176 @@
         </div>
     </div>
 </div>
+
+<!-- Booking Summary Modal -->
+<div class="modal fade" id="bookingSummaryModal" tabindex="-1" aria-labelledby="bookingSummaryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookingSummaryModalLabel">Booking Summary</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="bookingSummaryContent">
+                    <!-- Booking summary will be loaded here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showBookingSummary(bookingId) {
+    const modal = new bootstrap.Modal(document.getElementById('bookingSummaryModal'));
+    const content = document.getElementById('bookingSummaryContent');
+    
+    // Show loading state
+    content.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+    modal.show();
+    
+    // Get CSRF token
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    // Fetch booking details
+    fetch(`/admin/booking-details/${bookingId}/`, {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const booking = data.booking;
+            
+            let colorMotifsHtml = '';
+            if (booking.color_motif && booking.color_motif.length > 0) {
+                colorMotifsHtml = booking.color_motif.map(color => {
+                    const imageHtml = color.image_url ? 
+                        `<img src="${color.image_url}" alt="${color.name}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; margin-right: 10px;">` : 
+                        '';
+                    return `<div class="d-flex align-items-center mb-2">${imageHtml}<span>${color.name}</span></div>`;
+                }).join('');
+            } else {
+                colorMotifsHtml = '<span class="text-muted">No colors selected</span>';
+            }
+
+            let dishesHtml = '';
+            if (booking.dishes && booking.dishes.length > 0) {
+                dishesHtml = booking.dishes.map(dish => {
+                    const imageHtml = dish.image_url ? 
+                        `<img src="${dish.image_url}" alt="${dish.name}" style="width: 60px; height: 40px; object-fit: cover; border-radius: 8px; margin-right: 10px;">` : 
+                        '';
+                    return `<div class="d-flex align-items-center mb-2">${imageHtml}<span>${dish.name}</span></div>`;
+                }).join('');
+            } else {
+                dishesHtml = '<span class="text-muted">No dishes selected</span>';
+            }
+
+            let pastaHtml = '';
+            if (booking.pasta && booking.pasta.length > 0) {
+                pastaHtml = booking.pasta.map(pasta => {
+                    const imageHtml = pasta.image_url ? 
+                        `<img src="${pasta.image_url}" alt="${pasta.name}" style="width: 60px; height: 40px; object-fit: cover; border-radius: 8px; margin-right: 10px;">` : 
+                        '';
+                    return `<div class="d-flex align-items-center mb-2">${imageHtml}<span>${pasta.name}</span></div>`;
+                }).join('');
+            } else {
+                pastaHtml = '<span class="text-muted">No pasta selected</span>';
+            }
+
+            let drinkHtml = '';
+            if (booking.drink && booking.drink.length > 0) {
+                drinkHtml = booking.drink.map(drink => {
+                    const imageHtml = drink.image_url ? 
+                        `<img src="${drink.image_url}" alt="${drink.name}" style="width: 60px; height: 40px; object-fit: cover; border-radius: 8px; margin-right: 10px;">` : 
+                        '';
+                    return `<div class="d-flex align-items-center mb-2">${imageHtml}<span>${drink.name}</span></div>`;
+                }).join('');
+            } else {
+                drinkHtml = '<span class="text-muted">No drinks selected</span>';
+            }
+
+            content.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-calendar"></i> Event Details</h6>
+                        <div class="mb-3">
+                            <strong>Event Type:</strong> ${booking.event_type || 'N/A'}<br>
+                            <strong>Event Date:</strong> ${booking.event_date || 'N/A'}<br>
+                            <strong>Event Time:</strong> ${booking.event_time || 'N/A'}<br>
+                            <strong>Celebrant:</strong> ${booking.celebrant_name || 'N/A'}<br>
+                            <strong>Pax:</strong> ${booking.pax || 'N/A'}<br>
+                            <strong>Venue:</strong> ${booking.venue || 'N/A'}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-box"></i> Package & Pricing</h6>
+                        <div class="mb-3">
+                            <strong>Package:</strong> ${booking.package || 'N/A'}<br>
+                            <strong>Total Cost:</strong> ₱${booking.total_cost ? parseFloat(booking.total_cost).toLocaleString() : 'N/A'}<br>
+                            <strong>Payment Status:</strong> ${booking.payment_status || 'N/A'}<br>
+                            <strong>Status:</strong> <span class="badge bg-${booking.status === 'approved' ? 'success' : booking.status === 'pending' ? 'warning' : 'danger'}">${booking.status || 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-palette"></i> Color Motif</h6>
+                        <div class="mb-3">
+                            ${colorMotifsHtml}
+                        </div>
+                        
+                        <h6><i class="fas fa-utensils"></i> Food Selection</h6>
+                        <div class="mb-3">
+                            ${dishesHtml}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-wine-glass"></i> Beverages & Pasta</h6>
+                        <div class="mb-2">
+                            <strong>Pasta:</strong><br>
+                            ${pastaHtml}
+                        </div>
+                        <div class="mb-3">
+                            <strong>Drinks:</strong><br>
+                            ${drinkHtml}
+                        </div>
+                    </div>
+                </div>
+                
+                ${booking.special_requests ? `
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6><i class="fas fa-comment"></i> Special Requests</h6>
+                        <div class="alert alert-light">
+                            ${booking.special_requests}
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+            `;
+
+            // Preload images to ensure they display properly
+            const images = content.querySelectorAll('img');
+            images.forEach(img => {
+                img.onerror = function() {
+                    this.style.display = 'none';
+                };
+            });
+        } else {
+            content.innerHTML = '<div class="alert alert-danger">Error loading booking details: ' + (data.message || 'Unknown error') + '</div>';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        content.innerHTML = '<div class="alert alert-danger">Error loading booking details. Please try again.</div>';
+    });
+}
+</script>
 {% endblock %} 

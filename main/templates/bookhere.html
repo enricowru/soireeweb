@@ -3039,17 +3039,23 @@ document.addEventListener('DOMContentLoaded', function() {
             foodMenuData[section.key].forEach((url, index) => {
                 const foodItem = document.createElement('div');
                 foodItem.className = 'food-item';
-                foodItem.setAttribute('data-name', getFoodName(url));
+                const foodName = getFoodName(url);
+                foodItem.setAttribute('data-name', foodName);
                 foodItem.setAttribute('data-url', url);
+                
+                // Check if this food item was previously selected and restore selection
+                if (wizardData.menu && wizardData.menu.includes(foodName)) {
+                    foodItem.classList.add('selected');
+                }
                 
                 const img = document.createElement('img');
                 img.src = url;
                 img.className = 'food-image';
-                img.alt = getFoodName(url);
+                img.alt = foodName;
                 
                 const label = document.createElement('div');
                 label.className = 'food-label';
-                label.textContent = getFoodName(url);
+                label.textContent = foodName;
                 
                 foodItem.appendChild(img);
                 foodItem.appendChild(label);

@@ -473,9 +473,18 @@ def user_booking_details_api(request, booking_id):
         color_motif_list = []
         color_motif_with_images = []
         if booking.color_motif:
-            # Split by arrow or comma to handle different formats
-            colors = booking.color_motif.replace(' → ', ',').replace('→', ',').split(',')
-            color_motif_list = [color.strip() for color in colors if color.strip()]
+            try:
+                # Try to parse as JSON first (new format)
+                colors = json.loads(booking.color_motif)
+                if isinstance(colors, list):
+                    color_motif_list = colors
+                else:
+                    # If it's not a list, treat as single color
+                    color_motif_list = [str(colors)]
+            except (json.JSONDecodeError, TypeError):
+                # If JSON parsing fails, try old string format
+                colors = booking.color_motif.replace(' → ', ',').replace('→', ',').split(',')
+                color_motif_list = [color.strip() for color in colors if color.strip()]
             
             # Create colors with images
             for color_name in color_motif_list:
