@@ -275,19 +275,24 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG  # Allow all origins in development
 CORS_ALLOWED_ORIGINS = CSRF_TRUSTED_ORIGINS
 CORS_ALLOW_CREDENTIALS = True
 
-# Email Configuration - Switch to SendGrid Web API to avoid SMTP timeout issues
+# Email Configuration - SendGrid (Works on both localhost and Render)
 SENDGRID_API_KEY = config('SENDGRID_API_KEY', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='websoiree1@gmail.com')
 
-# Use Web API instead of SMTP - more reliable on cloud platforms like Render
+# Use SendGrid Web API for both development and production
 if SENDGRID_API_KEY:
     EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-    # SendGrid Web API configuration
-    SENDGRID_API_KEY = SENDGRID_API_KEY
+    # Disable sandbox mode to actually send emails
+    SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+    SENDGRID_TRACK_CLICKS_HTML = False
+    SENDGRID_TRACK_CLICKS_PLAIN = False
+    SENDGRID_TRACK_OPENS = False
+    print(f"✅ SendGrid configured with API key: {SENDGRID_API_KEY[:10]}...{SENDGRID_API_KEY[-4:]}")
 else:
-    # Fallback to console backend for development
+    # Fallback to console backend if no API key
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     print("⚠️  WARNING: SENDGRID_API_KEY not configured! Using console backend.")
+    print("⚠️  Emails will not be sent! Please configure SendGrid API key.")
 
 # Email validation
 if not SENDGRID_API_KEY and ENVIRONMENT == 'prod':
