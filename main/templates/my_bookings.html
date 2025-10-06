@@ -12,14 +12,6 @@
   <link rel="stylesheet" href="{% static 'css/my_bookings.css' %}">
   <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
   
-  <style>
-    /* Ensure navbar looks exactly like home page */
-    .navbar {
-      background-color: #161616 !important;
-      background-image: none !important;
-      background: #161616 !important;
-    }
-  </style>
 </head>
 <body>
 {% include 'navbar.html' %}
@@ -74,12 +66,14 @@
     </span>
 
       <!-- View Request btn -->
+      {% if first_booking %}
       <button id="viewRequestBtn" class="btn btn-outline-light btn-sm" 
               data-booking-id="{{ first_booking.id }}" 
               title="View Request Details"
               style="border-color: white; color: white;">
         <i class="fas fa-eye me-1" style="color: white;"></i> View Request
       </button>
+      {% endif %}
 
     <!-- status btn -->
     <a id="status-link" class="btn btn-back"
@@ -973,7 +967,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add theme images if available (same as bookhere.html)
     if (booking.theme_urls && booking.theme_urls.length > 0) {
       const themeImagesDiv = document.createElement('div');
-      themeImagesDiv.style.cssText = 'background: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px solid #ddd;';
+      themeImagesDiv.style.cssText = 'background: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px solid #ddd; height: 100%;';
       
       const themeTitle = document.createElement('h3');
       themeTitle.textContent = 'Theme Images';

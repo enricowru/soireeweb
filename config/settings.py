@@ -175,10 +175,7 @@ USE_TZ = True
 DEEPAI_API_KEY = 'c6ea7310-add9-441d-9a53-019f2f12da1f'  # Replace with your actual DeepAI API key
 
 # OpenAI API Configuration
-OPENAI_API_KEY = config('OPENAI_API_KEY')
-
-if not OPENAI_API_KEY:
-    print("⚠️ Warning: OPENAI_API_KEY not found in environment.")
+OPENAI_API_KEY = config('OPENAI_API_KEY', default='dummy_key')
 
 ASGI_APPLICATION = "config.asgi.application"
 
@@ -278,38 +275,11 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG  # Allow all origins in development
 CORS_ALLOWED_ORIGINS = CSRF_TRUSTED_ORIGINS
 CORS_ALLOW_CREDENTIALS = True
 
-# Email Configuration - SendGrid (Works on both localhost and Render)
-SENDGRID_API_KEY = config('SENDGRID_API_KEY', default='')
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='websoiree1@gmail.com')
-
-# Use SendGrid Web API for both development and production
-if SENDGRID_API_KEY:
-    EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-    # Disable sandbox mode to actually send emails
-    SENDGRID_SANDBOX_MODE_IN_DEBUG = False
-    SENDGRID_TRACK_CLICKS_HTML = False
-    SENDGRID_TRACK_CLICKS_PLAIN = False
-    SENDGRID_TRACK_OPENS = False
-    print(f"✅ SendGrid configured with API key: {SENDGRID_API_KEY[:10]}...{SENDGRID_API_KEY[-4:]}")
-else:
-    # Fallback to console backend if no API key
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-    print("⚠️  WARNING: SENDGRID_API_KEY not configured! Using console backend.")
-    print("⚠️  Emails will not be sent! Please configure SendGrid API key.")
-
-# Email validation
-if not SENDGRID_API_KEY and ENVIRONMENT == 'prod':
-    print("⚠️  WARNING: SENDGRID_API_KEY not configured! Email functionality will not work.")
-elif not SENDGRID_API_KEY:
-    print("ℹ️  INFO: Running in development mode without SendGrid configuration.")
-
-# Log email configuration status
-print(f"📧 Email configuration:")
-print(f"  Environment: {ENVIRONMENT}")
-print(f"  Backend: {EMAIL_BACKEND}")
-print(f"  API Key Status: {'✓ Configured' if SENDGRID_API_KEY else '✗ Missing'}")
-print(f"  From Email: {DEFAULT_FROM_EMAIL}")
-if EMAIL_BACKEND == 'sendgrid_backend.SendgridBackend':
-    print("  Method: SendGrid Web API (HTTP)")
-else:
-    print("  Method: Console/Debug")
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='dummy_email_host_user')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='dummy_email_password')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='dummy@example.com')

@@ -66,11 +66,11 @@
             <div class="register-flex">
               <div class="register-col">
                 <label for="reg-firstname">First Name</label>
-                <input type="text" id="reg-firstname" name="firstname" autocomplete="given-name" minlength="3" maxlength="20">
+                <input type="text" id="reg-firstname" name="firstname" autocomplete="given-name" minlength="3" maxlength="20" pattern="[a-zA-Z\s]+" title="First name can only contain letters and spaces">
               </div>
               <div class="register-col">
                 <label for="reg-lastname">Last Name</label>
-                <input type="text" id="reg-lastname" name="lastname" autocomplete="family-name" minlength="3" maxlength="20s">
+                <input type="text" id="reg-lastname" name="lastname" autocomplete="family-name" minlength="3" maxlength="20" pattern="[a-zA-Z\s]+" title="Last name can only contain letters and spaces">
               </div>
             </div>
             
@@ -749,6 +749,44 @@
       return null;
     }
 
+    function validateName(name) {
+      const nameRegex = /^[a-zA-Z\s]+$/;
+      if (!nameRegex.test(name)) {
+        return "Name can only contain letters and spaces";
+      }
+      return null;
+    }
+
+    // Prevent number input in first name and last name fields
+    function preventNumberInput(input) {
+      input.addEventListener('input', function(e) {
+        const value = e.target.value;
+        const nameError = validateName(value);
+        
+        if (value && nameError) {
+          showFieldError(e.target.id, nameError);
+        } else {
+          clearFieldError(e.target.id);
+        }
+      });
+
+      input.addEventListener('keypress', function(e) {
+        // Allow backspace, delete, tab, escape, enter
+        if ([8, 9, 27, 13, 46].indexOf(e.keyCode) !== -1 ||
+            // Allow Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+            (e.keyCode === 65 && e.ctrlKey === true) ||
+            (e.keyCode === 67 && e.ctrlKey === true) ||
+            (e.keyCode === 86 && e.ctrlKey === true) ||
+            (e.keyCode === 88 && e.ctrlKey === true)) {
+          return;
+        }
+        // Ensure that it is a letter or space
+        if ((e.shiftKey || (e.keyCode < 65 || e.keyCode > 90)) && (e.keyCode < 97 || e.keyCode > 122) && e.keyCode !== 32) {
+          e.preventDefault();
+        }
+      });
+    }
+
     // Add real-time password validation with visual feedback
     document.getElementById('reg-password1').addEventListener('input', function(e) {
       const password = e.target.value;
@@ -845,6 +883,10 @@
         clearRegisterError();
       }
     });
+
+    // Apply number input prevention to first name and last name fields
+    preventNumberInput(document.getElementById('reg-firstname'));
+    preventNumberInput(document.getElementById('reg-lastname'));
 
     // Add real-time password validation for reset password form
     document.getElementById('new-password').addEventListener('input', function(e) {
@@ -945,10 +987,22 @@
       if (!firstname) {
         showFieldError('reg-firstname', 'First name is required');
         hasErrors = true;
+      } else {
+        const firstNameError = validateName(firstname);
+        if (firstNameError) {
+          showFieldError('reg-firstname', firstNameError);
+          hasErrors = true;
+        }
       }
       if (!lastname) {
         showFieldError('reg-lastname', 'Last name is required');
         hasErrors = true;
+      } else {
+        const lastNameError = validateName(lastname);
+        if (lastNameError) {
+          showFieldError('reg-lastname', lastNameError);
+          hasErrors = true;
+        }
       }
       if (!username) {
         showFieldError('reg-username', 'Username is required');

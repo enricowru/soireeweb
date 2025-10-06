@@ -449,7 +449,6 @@ body {
 
 .wizard-step {
     width: 100%;
-    max-width: 600px;
     margin: 0 auto;
     display: flex;
     justify-content: center;
@@ -480,6 +479,8 @@ body {
     overflow-y: visible;
     z-index: auto;
     margin: 40px;
+    align-self: center;
+    justify-self: center    ;
 }
 
 .step-form-container {
@@ -1682,3 +1683,1007 @@ body {
     color: #999;
     font-family: 'Courier New', monospace;
 }
+
+/* ============================================
+   BOOKING SUMMARY & RECEIPT STYLING
+   ============================================ */
+
+/* =======================
+   SUMMARY CONTAINER LAYOUT
+   ======================= */
+.summary-container {
+    display: flex;
+    justify-content: flex-start; /* align left */
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.event-details {
+    flex: 1 1 50%;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 30px;
+    margin: 0;
+}
+
+.booking-receipt {
+    flex: 1 1 50%;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 30px;
+    margin: 0;
+    height: fit-content;
+    min-height: max-content;
+    overflow: visible;
+}
+
+.summary-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 24px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+/* Content spacing within cards */
+#booking-summary-content,
+#receipt-content {
+    font-size: 1rem;
+    line-height: 1.6;
+    width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+#booking-summary-content > div,
+#receipt-content > div {
+    margin-bottom: 15px;
+    padding: 8px 0;
+    width: 100%;
+    white-space: normal;
+    overflow: visible;
+}
+
+#booking-summary-content h4,
+#receipt-content h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 12px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #dee2e6;
+    white-space: normal;
+    overflow: visible;
+}
+
+#booking-summary-content p,
+#receipt-content p {
+    margin: 8px 0;
+    font-size: 0.95rem;
+    color: #6c757d;
+    white-space: normal;
+    overflow: visible;
+}
+
+/* Allow text to wrap naturally */
+#booking-summary-content span,
+#receipt-content span {
+    display: inline-block;
+    max-width: 100%;
+    white-space: normal;
+    overflow: visible;
+}
+
+/* Receipt-specific styling for better layout */
+#receipt-content {
+    width: 100%;
+    min-width: 300px;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+#receipt-content > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f0f0;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+#receipt-content > div:last-child {
+    border-bottom: none;
+}
+
+#receipt-content .label {
+    font-weight: 600;
+    color: #333;
+    min-width: 120px;
+    flex-shrink: 0;
+    font-size: 0.85rem;
+    margin-right: 10px;
+}
+
+#receipt-content .value {
+    color: #666;
+    text-align: right;
+    flex: 1;
+    font-size: 0.85rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Export PDF Button Styling */
+.export-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: #ffffff !important;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.export-btn * {
+    color: #ffffff !important;
+}
+
+.export-btn:hover {
+    background: linear-gradient(135deg, #218838, #1ea085);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+}
+
+.export-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+/* ============================================
+   PACKAGE SELECTION STYLING
+   ============================================ */
+
+.package-selection-container {
+    width: 100%;
+    padding: 40px;
+    background: #f8f9fa;
+    min-height: 100vh;
+    align-items: center;
+    justify-items: center;
+    align-self: center;
+    justify-self: center    ;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+}
+
+/* Two Column Layout */
+.package-two-column-layout {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.package-left-column {
+    flex: 1;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+}
+
+.package-right-column {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: visible;
+}
+
+/* Package Image Hover Effects */
+#package_img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+}
+
+/* AI Recommendation Bar */
+.ai-recommendation-bar {
+    background: linear-gradient(135deg, #e8f5e8, #d4edda);
+    border: 2px solid #28a745;
+    border-radius: 12px;
+    padding: 20px 30px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+    position: relative;
+    overflow: visible;
+    width: 100%;
+    max-width: none;
+}
+
+
+.ai-recommendation-bar i {
+    color: #28a745;
+    font-size: 1.5rem;
+    background: white;
+    padding: 8px;
+    border-radius: 50%;
+    box-shadow: 0 3px 10px rgba(40, 167, 69, 0.3);
+    flex-shrink: 0;
+}
+
+.ai-recommendation-bar span {
+    color: #155724;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.4;
+    flex: 1;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    min-width: 0;
+    max-width: none;
+    width: 100%;
+}
+
+
+/* Package Question */
+.package-question {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.package-question h2 {
+    color: #333;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Packages Container */
+.packages-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* Package Cards */
+.package-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.package-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.package-card.selected {
+    border-color: #28a745;
+    background: #f8fff8;
+}
+
+.package-card.recommended {
+    border-color: #28a745;
+    background: #f8fff8;
+}
+
+.recommended-badge {
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    background: #28a745;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.package-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.package-header h3 {
+    color: #333;
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.package-price {
+    color: #28a745;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.package-description {
+    color: #6c757d;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.package-features {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.feature-item i {
+    color: #28a745;
+    font-size: 0.9rem;
+}
+
+.feature-item span {
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+/* Add-ons Section */
+.addons-section {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.addons-section h3 {
+    color: #333;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.addons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.addon-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.addon-item:hover {
+    border-color: #28a745;
+    background: #f8fff8;
+}
+
+.addon-item.selected {
+    border-color: #28a745;
+    background: #e8f5e8;
+}
+
+.addon-checkbox {
+    display: none;
+}
+
+.checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #dee2e6;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.addon-checkbox:checked + .checkmark {
+    background: #28a745;
+    border-color: #28a745;
+}
+
+.addon-checkbox:checked + .checkmark::after {
+    content: '✓';
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.addon-text {
+    flex: 1;
+    color: #495057;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.addon-price {
+    color: #28a745;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Total Price Section */
+.total-price-section {
+    background: #28a745;
+    border-radius: 8px;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.total-price-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.total-label {
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.total-amount {
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+/* Package Navigation */
+.package-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.package-navigation .back-btn,
+.package-navigation .next-btn {
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.package-navigation .back-btn {
+    background: white;
+    color: #28a745;
+    border: 2px solid #28a745;
+}
+
+.package-navigation .back-btn:hover {
+    background: #28a745;
+    color: white;
+}
+
+.package-navigation .next-btn {
+    background: #6c757d;
+    color: white;
+    border: 2px solid #6c757d;
+}
+
+.package-navigation .next-btn:not(:disabled) {
+    background: #28a745;
+    border-color: #28a745;
+}
+
+.package-navigation .next-btn:not(:disabled):hover {
+    background: #218838;
+    border-color: #218838;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .package-two-column-layout {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .package-left-column {
+        flex: none;
+        position: static;
+        order: 2;
+        padding: 20px;
+        max-width: 350px;
+        margin: 0 auto;
+    }
+    
+    .package-right-column {
+        order: 1;
+        width: 100%;
+    }
+    
+    .packages-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    
+    .package-selection-container {
+        padding: 20px;
+    }
+    
+    .ai-recommendation-bar {
+        padding: 20px 30px;
+        margin-bottom: 25px;
+        width: 100%;
+        max-width: none;
+    }
+    
+    .ai-recommendation-bar i {
+        font-size: 1.4rem;
+        padding: 8px;
+    }
+    
+    .ai-recommendation-bar span {
+        font-size: 0.95rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .packages-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .addons-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .package-selection-container {
+        padding: 15px;
+    }
+    
+    .total-price-display {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .total-price-section {
+        padding: 10px 15px;
+        margin-bottom: 15px;
+    }
+    
+    .total-label {
+        font-size: 0.9rem;
+    }
+    
+    .total-amount {
+        font-size: 1.2rem;
+    }
+    
+    .package-left-column {
+        padding: 20px;
+        max-width: 350px;
+    }
+    
+    .ai-recommendation-bar {
+        padding: 18px 25px;
+        margin-bottom: 20px;
+        gap: 15px;
+        flex-direction: column;
+        text-align: center;
+        width: 100%;
+        max-width: none;
+    }
+    
+    .ai-recommendation-bar i {
+        font-size: 1.3rem;
+        padding: 6px;
+    }
+    
+    .ai-recommendation-bar span {
+        font-size: 0.9rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: normal;
+        width: 100%;
+        max-width: none;
+    }
+    
+    .package-card {
+        padding: 20px;
+    }
+    
+    .addons-section {
+        padding: 20px;
+    }
+    
+}
+
+/* Specific optimization for 1920px screens */
+@media (min-width: 1800px) and (max-width: 2000px) {
+    .booking-summary-grid {
+        padding: 0 20px;
+        gap: 40px;
+        margin: 40px auto;
+        max-width: 99vw;
+    }
+    
+    .event-details-box,
+    .receipt-box {
+        padding: 35px;
+    }
+    
+    .summary-header {
+        padding: 20px 20px;
+    }
+}
+
+/* Responsive design for new layout */
+@media (max-width: 1200px) {
+    .summary-container {
+        max-width: 90%;
+        padding: 0 20px;
+        gap: 1.5rem;
+    }
+    
+    .event-details {
+        flex: 1 1 35%;
+        min-width: 280px;
+        max-width: 350px;
+    }
+    
+    .booking-receipt {
+        flex: 1 1 55%;
+        min-width: 350px;
+        max-width: 550px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .summary-container {
+        width: 100%;
+        max-width: 100%;
+        padding: 0 15px;
+        gap: 1rem;
+        margin: 20px auto;
+        flex-direction: column;
+    }
+    
+    .event-details {
+        flex: none;
+        width: 100%;
+        min-width: auto;
+        max-width: none;
+        order: 2;
+    }
+    
+    .booking-receipt {
+        flex: none;
+        width: 100%;
+        min-width: auto;
+        max-width: none;
+        order: 1;
+        padding: 30px;
+    }
+    
+    #receipt-content {
+        min-width: auto;
+    }
+    
+    .summary-header {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .summary-container {
+        flex-direction: column;
+        gap: 15px;
+        margin: 20px auto;
+        padding: 0 10px;
+    }
+    
+    .summary-header {
+        padding: 10px;
+    }
+    
+    .event-details,
+    .booking-receipt {
+        padding: 15px;
+    }
+}
+
+/* Full screen summary layout */
+.summary-full-screen {
+    width: 100%;
+    min-height: 100vh;
+    background: #f8f9fa;
+    padding: 20px 0;
+    box-sizing: border-box;
+    margin: 0;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: visible;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    max-width: 100vw;
+    width: 100vw;
+}
+
+/* Summary header */
+.summary-header {
+    text-align: left;       /* align text left */
+    padding-left: 30px;     /* match .step-progress-bar */
+    margin: 0 auto 30px auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.summary-header h2 {
+    font-size: 2rem;
+    color: #333;
+    margin: 0;
+    font-weight: bold;
+}
+
+#booking-summary-content {
+    display: grid;
+    gap: 25px;
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+    overflow: visible;
+    grid-template-columns: 1fr;
+    align-content: start;
+}
+
+/* Ensure summary sections can expand properly */
+#booking-summary-content > div {
+    width: 100%;
+    min-width: 0;
+    overflow: visible;
+    background: #f9f9f9;
+    padding: 25px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+/* Food grid in summary should be responsive */
+#booking-summary-content .food-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    width: 100%;
+}
+
+
+#booking-receipt {
+    background: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 30px;
+    position: relative;
+    font-family: 'Arial', sans-serif;
+    height: fit-content;
+    overflow-y: auto;
+    width: 100%;
+    box-sizing: border-box;
+    display: block;
+}
+
+/* Summary actions */
+.summary-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 40px;
+    padding: 20px 0;
+}
+
+/* Export button */
+.export-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.export-btn:hover {
+    background: #218838;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Receipt content styling */
+#receipt-content {
+    margin-top: 50px; /* Space for the export button */
+}
+
+#receipt-content h2 {
+    color: #B8860B;
+    font-weight: bold;
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+#receipt-content h3 {
+    color: #333;
+    font-weight: bold;
+    margin: 15px 0 0 0;
+    font-size: 1.2rem;
+}
+
+#receipt-content h4 {
+    color: #333;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+    font-size: 1rem;
+}
+
+/* Responsive design for summary section */
+@media (max-width: 1200px) {
+    /* Old summary rules removed - using booking-summary-grid */
+}
+
+@media (max-width: 1024px) {
+    .summary-full-screen {
+        padding: 15px;
+    }
+    
+    /* Old summary rules removed - using booking-summary-grid */
+    
+    #booking-receipt {
+        max-height: 500px;
+        padding: 20px;
+    }
+}
+
+/* Responsive design for very wide screens */
+@media (min-width: 1400px) {
+    /* Old summary rules removed - using booking-summary-grid */
+}
+
+/* Responsive design for medium screens */
+@media (max-width: 1024px) {
+    /* Old summary rules removed - using booking-summary-grid */
+}
+
+@media (max-width: 768px) {
+    .summary-full-screen {
+        padding: 10px;
+    }
+    
+    .summary-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    /* Old summary rules removed - using booking-summary-grid */
+    
+    #booking-receipt {
+        padding: 15px;
+        max-height: 400px;
+    }
+    
+    .summary-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+
+/* Step 9 – Booking Summary layout */
+
+  #step-9 .summary-full-screen {
+    padding: 40px;
+    background: #f8f9fa;
+    min-height: 100vh;
+    align-items: center;
+    justify-items: center;
+  }
+
+/* Step 9 – align summary cards with progress bar steps */
+#step-9 .summary-container {
+    display: flex;
+    gap: 2rem;
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding: 0;
+    overflow: visible;
+  }
+
+  #step-9 .summary-container {
+    margin: 0 auto;      /* center it */
+    box-sizing: border-box;
+  }
+
+  #step-9 .event-details {
+    width: 100%;
+  }
+  
+  /* Right card (receipt) */
+  #step-9 .booking-receipt {
+    width: 50%;
+  }
+
+  /* Step 9 alignment fix */
+#step-9 .summary-full-screen {
+    display: flex;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Match the step progress bar container */
+  #step-9 .summary-container {
+    max-width: 100%;   /* same as .step-progress-bar */
+    margin: 0 auto;      /* center on page */
+    box-sizing: border-box;
+  }
+  
+  /* Two-column layout under header */
+  #step-9 .summary-container {
+    display: flex;
+    grid-template-columns: 280px 1fr;  /* Event Details fixed, Receipt flexible */
+    gap: 2rem;
+  }

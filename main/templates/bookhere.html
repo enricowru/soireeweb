@@ -5,12 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Here ‑ Nike's Catering Services</title>
-
-    <!-- STYLES -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
-    <link rel="stylesheet" href="{% static 'css/bookhere.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
     <style>
     /* Color Swatch Grid Styles */
@@ -55,8 +49,8 @@
         right: -8px;
         background: #B8860B;
         color: white;
-        width: 24px;
-        height: 24px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -69,7 +63,7 @@
 
     /* Color Selection Preview Styles */
     .color-preview-container {
-        margin: 20px 0;
+        margin: 0;
         padding: 20px;
         background: rgba(255,255,255,0.05);
         border-radius: 12px;
@@ -119,8 +113,8 @@
     }
 
     .layer-color {
-        width: 80px;
-        height: 80px;
+        width: 200px;
+        height: 200px;
         border-radius: 12px;
         border: 3px solid white;
         background-size: cover;
@@ -132,24 +126,24 @@
     .color-layer:nth-child(1) {
         z-index: 3;
         top: 0;
-        left: 0;
+        left: -100px;
     }
 
     .color-layer:nth-child(2) {
         z-index: 2;
-        top: 20px;
-        left: 40px;
+        top: 40px;
+        left: 30px;
     }
 
     .color-layer:nth-child(3) {
         z-index: 1;
-        top: 40px;
-        left: 80px;
+        top: 80px;
+        left: 110px;
     }
 
     .swatch-image {
-        width: 50px;
-        height: 50px;
+        width: 150px;
+        height: 150px;
         border-radius: 8px;
         object-fit: cover;
         margin-bottom: 2px;
@@ -161,7 +155,7 @@
     }
     
     .swatch-label {
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 500;
         text-align: center;
         color: #333;
@@ -211,6 +205,7 @@
     }
     
     .food-section-title {
+        position: sticky;
         font-size: 16px;
         font-weight: 600;
         color: #333;
@@ -250,8 +245,8 @@
     }
     
     .food-image {
-        width: 70px;
-        height: 70px;
+        width: 90%;
+        height: 200px;
         border-radius: 10px;
         object-fit: cover;
         margin-bottom: 8px;
@@ -263,7 +258,7 @@
     }
     
     .food-label {
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 500;
         text-align: center;
         color: #333;
@@ -318,7 +313,6 @@
     /* Theme Selection Grid Styles - exactly matching food menu design */
     .theme-grid-container {
         margin: 20px 0;
-        max-width: 700px;
         margin-left: auto;
         margin-right: auto;
     }
@@ -368,13 +362,13 @@
         grid-template-columns: repeat(3, 1fr);
         gap: 12px;
         width: 100%;
-        max-width: 600px;
+        height: 100%;
         margin-bottom: 12px;
     }
     
     .theme-preview {
         width: 100%;
-        height: 120px;
+        height: 100%;
         border-radius: 10px;
         object-fit: cover;
         transition: all 0.3s ease;
@@ -382,7 +376,7 @@
     }
     
     .theme-item:hover .theme-preview {
-        transform: scale(1.05);
+        transform: scale(1.02);
     }
     
     .theme-label {
@@ -513,7 +507,7 @@
     #custom-floorplan-options input[type="number"] {
         background: rgba(255, 255, 255, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.3);
-        color: #fff;
+        color: #000;
     }
     
     #custom-floorplan-options input[type="number"]:focus {
@@ -769,6 +763,15 @@
         }
     }
     </style>
+
+    <!-- STYLES -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/bookhere.css' %}">
+    <!-- PDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 </head>
 <body>
 {% include 'navbar.html' %}
@@ -822,7 +825,7 @@
             <div class="date-modal-message">Please enter the celebrant's name.</div>
             <form id="name-form" autocomplete="off">
                 <div style="display:flex; justify-content:center;">
-                    <input style="width:70%;" type="text" id="celebrant-name" class="date-input" required placeholder="Enter full name">
+                    <input style="width:100%;" type="text" id="celebrant-name" class="date-input" required placeholder="Enter full name">
                 </div>
                 <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
                     <button type="submit" class="date-submit">Next</button>
@@ -992,7 +995,7 @@
                     </div>
                 </div>
 
-                <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+                <div style="display:flex; justify-content:center; gap:10px; margin-top:150px;">
                     <button type="button" class="back-btn">Back</button>
                     <button type="submit" class="date-submit">Next</button>
                 </div>
@@ -1076,7 +1079,7 @@
                 </div>
                 
                 <!-- Custom Floorplan Options -->
-                <div id="custom-floorplan-options" style="display: none; flex-direction: column; gap: 20px; align-items: center; max-width: 600px; margin: 0 auto;">
+                <div id="custom-floorplan-options" style="display: none; flex-direction: column; gap: 10px; align-items: center; width: 100%; margin: 0 auto;">
                     <div class="date-modal-message">Choose your option:</div>
                     
                     <!-- Option 1: Upload Floorplan Image -->
@@ -1168,25 +1171,183 @@
     </div>
 
     <!-- ========================================================= -->
-    <!--                 STEP 7 – PACKAGE                           -->
+    <!--                 STEP 7 – PACKAGE SELECTION                  -->
     <!-- ========================================================= -->
     <div id="step-7" class="wizard-step" style="display:none;">
-        <div class="date-modal-content" style="max-width:400px;">
+        <div class="package-selection-container">
             <div id="alert-package" class="modal-alert alert alert-danger d-none"></div>
-            <div class="date-modal-message" style="margin-bottom:18px;">
-                You selected: <span id="package-summary">Wedding 180 Pax</span>
+            
+            <!-- Two Column Layout -->
+            <div class="package-two-column-layout">
+                   <!-- Left Column - Package Image (Clickable) -->
+                   <div class="package-left-column">
+                       <div class="date-modal-message" style="margin-bottom:18px;">
+                           You selected: <span id="package-summary">Wedding 180 Pax</span>
+                       </div>
+                       <div style="display:flex; justify-content:center; margin-bottom:18px;">
+                           <img id="package_img" src="https://i.ibb.co/6b7Qw8d/sample-package.jpg" alt="Package Sample"
+                                style="width:100%; max-width:300px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.15); cursor:pointer; transition:transform 0.3s ease;"
+                                onclick="openPackageImageModal()">
+                       </div>
+                       <div style="text-align:center; color:#666; font-size:0.9rem;">
+                           Click image to view larger
+                       </div>
+
+                        <!-- Add-ons Section -->
+                    <div class="addons-section">
+                        <h3>ADD ONS</h3>
+                        <div class="addons-grid">
+                            <label class="addon-item">
+                                <input type="checkbox" class="addon-checkbox" data-price="15000" data-name="Upgraded Balloon Setup">
+                                <span class="checkmark"></span>
+                                <span class="addon-text">Upgraded Balloon Setup</span>
+                                <span class="addon-price">PHP 15,000</span>
+                            </label>
+                            <label class="addon-item">
+                                <input type="checkbox" class="addon-checkbox" data-price="2000" data-name="Kiddie Meals">
+                                <span class="checkmark"></span>
+                                <span class="addon-text">Kiddie Meals</span>
+                                <span class="addon-price">PHP 2,000</span>
+                            </label>
+                            <label class="addon-item">
+                                <input type="checkbox" class="addon-checkbox" data-price="3000" data-name="Fondant & Soft Icing Cake">
+                                <span class="checkmark"></span>
+                                <span class="addon-text">Fondant & Soft Icing Cake</span>
+                                <span class="addon-price">PHP 3,000</span>
+                            </label>
+                            <label class="addon-item">
+                                <input type="checkbox" class="addon-checkbox" data-price="5000" data-name="Food Carts">
+                                <span class="checkmark"></span>
+                                <span class="addon-text">Food Carts</span>
+                                <span class="addon-price">PHP 5,000</span>
+                            </label>
+                            <label class="addon-item">
+                                <input type="checkbox" class="addon-checkbox" data-price="5000" data-name="Photo and Video Coverage">
+                                <span class="checkmark"></span>
+                                <span class="addon-text">Photo and Video Coverage</span>
+                                <span class="addon-price">PHP 5,000</span>
+                            </label>
+                            <label class="addon-item">
+                                <input type="checkbox" class="addon-checkbox" data-price="5000" data-name="Face Painting and Bubble Show">
+                                <span class="checkmark"></span>
+                                <span class="addon-text">Face Painting and Bubble Show</span>
+                                <span class="addon-price">PHP 5,000</span>
+                            </label>
+                            <label class="addon-item">
+                                <input type="checkbox" class="addon-checkbox" data-price="3000" data-name="Digital Invitations">
+                                <span class="checkmark"></span>
+                                <span class="addon-text">Digital Invitations</span>
+                                <span class="addon-price">PHP 3,000</span>
+                            </label>
+                        </div>
+                    </div>
+                   </div>
+
+                <!-- Right Column - New Package Selection Content -->
+                <div class="package-right-column">
+                    <!-- AI Recommendation Bar -->
+                    <div class="ai-recommendation-bar">
+                        <i class="fas fa-lightbulb"></i>
+                        <span id="ai-recommendation-text">AI Recommendation: Package B is ideal for your event</span>
+                    </div>
+
+                    <!-- Package Cards -->
+                    <div class="packages-container">
+                        <!-- Package A -->
+                        <div class="package-card" data-package="Package A">
+                            <div class="package-header">
+                                <h3>Package A</h3>
+                                <div class="package-price" id="package-a-price">PHP 0</div>
+                            </div>
+                            <p class="package-description">Perfect for intimate gatherings and smaller events. Includes essential services with quality food options.</p>
+                            <div class="package-features">
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Main Dishes: 3 choices</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Pasta & Drink: Included</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Setup & Service: Full service</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Extras: Basic decoration</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Package B (Recommended) -->
+                        <div class="package-card recommended" data-package="Package B">
+                            <div class="recommended-badge">Recommended</div>
+                            <div class="package-header">
+                                <h3>Package B</h3>
+                                <div class="package-price" id="package-b-price">PHP 0</div>
+                            </div>
+                            <p class="package-description">Our most popular choice! Great balance of variety, quality, and value for medium-sized events.</p>
+                            <div class="package-features">
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Main Dishes: 4 choices</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Pasta & Drink: Included</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Setup & Service: Full service</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Extras: Enhanced decoration, centerpieces</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Package C -->
+                        <div class="package-card" data-package="Package C">
+                            <div class="package-header">
+                                <h3>Package C</h3>
+                                <div class="package-price" id="package-c-price">PHP 0</div>
+                            </div>
+                            <p class="package-description">Premium experience for grand celebrations. Maximum variety and luxurious presentation.</p>
+                            <div class="package-features">
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Main Dishes: 5 choices</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Pasta & Drink: Included</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Setup & Service: Full service</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i>
+                                    <span>Extras: Premium decoration, themed setup, extra staff</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Price Display -->
+                    <div class="total-price-section">
+                        <div class="total-price-display">
+                            <span class="total-label">Total Package Price:</span>
+                            <span class="total-amount" id="total-package-price">PHP 0</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div style="display:flex; justify-content:center; margin-bottom:18px;">
-                <img id="package_img" src="https://i.ibb.co/6b7Qw8d/sample-package.jpg" alt="Package Sample"
-                     style="width:240px; border-radius:12px; box-shadow:0 2px 8px #0002;">
-            </div>
-            <div class="date-modal-message" style="margin-bottom:12px;">Which package do you want for this?</div>
-            <div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
-                <button type="button" class="package-choice-btn">Package A</button>
-                <button type="button" class="package-choice-btn">Package B</button>
-                <button type="button" class="package-choice-btn">Package C</button>
-            </div>
-            <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+
+            <!-- Navigation Buttons -->
+            <div class="package-navigation">
                 <button type="button" class="back-btn">Back</button>
                 <button type="button" class="next-btn" id="package-next-btn" disabled>Next</button>
             </div>
@@ -1197,7 +1358,7 @@
     <!--                   STEP 8 – FOOD MENU                       -->
     <!-- ========================================================= -->
     <div id="step-8" class="wizard-step" style="display:none;">
-        <div class="date-modal-content" style="max-width:800px; max-height:80vh; overflow-y:auto;">
+        <div class="date-modal-content" style="max-width:1600px; max-height:80vh; overflow-y:auto;">
             <div id="alert-food" class="modal-alert alert alert-danger d-none"></div>
             <form id="food-form" autocomplete="off" style="width:100%;">
                 <div class="date-modal-message" id="food-menu-message">Please select <strong>4 dishes total</strong> + 1 pasta + 1 drink:</div>
@@ -1215,20 +1376,42 @@
         </div>
     </div>
 
+
     <!-- ========================================================= -->
     <!--                 STEP 9 – BOOKING SUMMARY                 -->
     <!-- ========================================================= -->
     <div id="step-9" class="wizard-step" style="display:none;">
-        <div class="date-modal-content" style="max-width:900px; max-height:80vh; overflow-y:auto;">
-            <div class="date-modal-message" style="text-align:center; margin-bottom:20px; font-size:1.2rem;">
-                <strong>Booking Summary</strong>
+        <div class="summary-full-screen">
+            <div class="summary-header">
+                <h2>Booking Summary</h2>
             </div>
             
-            <div id="booking-summary-content" style="display:grid; gap:20px;">
-                <!-- Summary content will be generated by JavaScript -->
+            <!-- Booking Summary Section -->
+            <div class="summary-container">
+                <!-- Left column: Event Details -->
+                <div class="event-details">
+                    <div id="booking-summary-content">
+                        <!-- Summary content will be generated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Right column: Receipt -->
+                <div class="booking-receipt">
+                    <div id="booking-receipt">
+                        <!-- Export PDF Button -->
+                        <button type="button" id="export-pdf-btn" class="export-btn">
+                            📄 Export PDF
+                        </button>
+                        
+                        <!-- Receipt content will be generated by JavaScript -->
+                        <div id="receipt-content">
+                            <!-- Receipt will be generated here -->
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div style="display:flex; justify-content:center; gap:15px; margin-top:30px;">
+            <div class="summary-actions">
                 <button type="button" class="back-btn" id="summary-back-btn">Back to Food Menu</button>
                 <button type="button" class="date-submit" id="confirm-booking-btn">Confirm Booking</button>
             </div>
@@ -1532,6 +1715,11 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 makePackageImageClickable();
             }, 100);
+            
+            // Initialize package selection
+            updateAIRecommendation();
+            updatePackagePrices();
+            updateTotalPrice();
         }
 
         currentStep = stepIndex;
@@ -3194,23 +3382,17 @@ document.addEventListener('DOMContentLoaded', function() {
             foodMenuData[section.key].forEach((url, index) => {
                 const foodItem = document.createElement('div');
                 foodItem.className = 'food-item';
-                const foodName = getFoodName(url);
-                foodItem.setAttribute('data-name', foodName);
+                foodItem.setAttribute('data-name', getFoodName(url));
                 foodItem.setAttribute('data-url', url);
-                
-                // Check if this food item was previously selected and restore selection
-                if (wizardData.menu && wizardData.menu.includes(foodName)) {
-                    foodItem.classList.add('selected');
-                }
                 
                 const img = document.createElement('img');
                 img.src = url;
                 img.className = 'food-image';
-                img.alt = foodName;
+                img.alt = getFoodName(url);
                 
                 const label = document.createElement('div');
                 label.className = 'food-label';
-                label.textContent = foodName;
+                label.textContent = getFoodName(url);
                 
                 foodItem.appendChild(img);
                 foodItem.appendChild(label);
@@ -3294,8 +3476,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Show booking summary
     function showBookingSummary() {
+        console.log('showBookingSummary called');
         const summaryContainer = document.getElementById('booking-summary-content');
-        if (!summaryContainer) return;
+        const receiptContainer = document.getElementById('receipt-content');
+        
+        console.log('Summary container found:', !!summaryContainer);
+        console.log('Receipt container found:', !!receiptContainer);
+        console.log('Summary container element:', summaryContainer);
+        console.log('Receipt container element:', receiptContainer);
+        
+        if (!summaryContainer || !receiptContainer) {
+            console.error('Containers not found!');
+            console.error('Available elements with booking-summary-content:', document.querySelectorAll('[id*="booking-summary"]'));
+            console.error('Available elements with receipt-content:', document.querySelectorAll('[id*="receipt"]'));
+            return;
+        }
 
         // Debug floorplan data
         console.log('Summary Debug - floorplanName:', wizardData.floorplanName);
@@ -3305,8 +3500,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Clear previous content
         summaryContainer.innerHTML = '';
+        receiptContainer.innerHTML = '';
 
-        // Create summary sections
+        // Generate original summary (left side) - keep original structure
+        console.log('Generating summary...');
+        generateOriginalSummary(summaryContainer);
+        
+        // Generate receipt (right side) - completely separate
+        console.log('Generating receipt...');
+        generateReceipt(receiptContainer);
+        
+        console.log('Summary content length:', summaryContainer.innerHTML.length);
+        console.log('Receipt content length:', receiptContainer.innerHTML.length);
+        
+        // Setup PDF buttons after content is generated
+        setTimeout(() => {
+            console.log('Setting up PDF buttons after content generation...');
+            setupPDFButtons();
+        }, 100);
+    }
+
+    function generateOriginalSummary(container) {
+        // Create summary sections - keeping original structure
         const sections = [
             {
                 title: 'Event Details',
@@ -3459,7 +3674,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
 
-            summaryContainer.appendChild(sectionDiv);
+            container.appendChild(sectionDiv);
         });
 
         // Add theme images if available
@@ -3484,10 +3699,719 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             themeImagesDiv.appendChild(imagesContainer);
-            summaryContainer.appendChild(themeImagesDiv);
+            container.appendChild(themeImagesDiv);
+        }
+    }
+
+    function generateReceipt(container) {
+        // Receipt header
+        const header = document.createElement('div');
+        header.style.cssText = 'text-align: center; margin-bottom: 20px; border-bottom: 2px solid rgb(51, 51, 51); padding-bottom: 15px; display: flex; flex-direction: column';
+        
+        const companyName = document.createElement('h2');
+        companyName.textContent = 'NIKE\'S CATERING SERVICES';
+        companyName.style.cssText = 'margin: 0; color: #B8860B; font-size: 1.4rem; font-weight: bold;';
+        
+        const tagline = document.createElement('p');
+        tagline.textContent = 'Celebrate with Nikes!';
+        tagline.style.cssText = 'margin: 5px 0 0 0; color: #666; font-size: 0.9rem;';
+        
+        const receiptTitle = document.createElement('h3');
+        receiptTitle.textContent = 'BOOKING RECEIPT';
+        receiptTitle.style.cssText = 'margin: 15px 0 0 0; color: #333; font-size: 1.1rem;';
+        
+        header.appendChild(companyName);
+        header.appendChild(tagline);
+        header.appendChild(receiptTitle);
+        container.appendChild(header);
+
+        // Receipt details
+        const details = document.createElement('div');
+        details.style.cssText = 'display: flex; flex-direction: column; align-items: flex-start; justify-items: flex-start; margin-bottom: 20px;';
+        
+        const receiptItems = [
+            { label: 'Booking Date', value: new Date().toLocaleDateString() },
+            { label: 'Event Date', value: wizardData.date },
+            { label: 'Celebrant', value: wizardData.celebrant },
+            { label: 'Event Type', value: wizardData.eventType },
+            { label: 'Guests', value: `${wizardData.pax} Pax` },
+            { label: 'Theme', value: wizardData.theme_name },
+            { label: 'Venue', value: wizardData.location },
+            { label: 'Package', value: wizardData.package },
+            { label: 'Color Motif', value: wizardData.colors.join(', ') }
+        ];
+
+        receiptItems.forEach(item => {
+            if (item.value) {
+                const itemDiv = document.createElement('div');
+                
+                const label = document.createElement('span');
+                label.textContent = item.label + ':';
+                label.className = 'label';
+                
+                const value = document.createElement('span');
+                value.textContent = item.value;
+                value.className = 'value';
+                
+                itemDiv.appendChild(label);
+                itemDiv.appendChild(value);
+                details.appendChild(itemDiv);
+            }
+        });
+
+        container.appendChild(details);
+
+        // Pricing section
+        const pricingSection = document.createElement('div');
+        pricingSection.style.cssText = 'display: flex;flex-direction: column; align-items: stretch;margin-bottom: 20px; background: rgb(248, 249, 250);padding: 15px; border-radius: 8px;';
+        
+        const pricingTitle = document.createElement('h4');
+        pricingTitle.textContent = 'PRICE ESTIMATION';
+        pricingTitle.style.cssText = 'margin: 0 0 15px 0; color: #333; font-size: 1rem; border-bottom: 2px solid #28a745; padding-bottom: 8px; text-align: center;';
+        pricingSection.appendChild(pricingTitle);
+        
+        // Calculate package price using display pricing
+        const packagePrice = calculatePackagePrice(wizardData.package, wizardData.eventType, wizardData.pax);
+        
+        // Package price
+        const packagePriceDiv = document.createElement('div');
+        packagePriceDiv.style.display = 'flex';
+        packagePriceDiv.style.justifyContent = 'space-between';
+        packagePriceDiv.style.alignItems = 'center';
+        
+        
+        const packageLabel = document.createElement('span');
+        packageLabel.textContent = `${wizardData.package}:`;
+        packageLabel.className = 'label';
+        
+        const packageValue = document.createElement('span');
+        packageValue.textContent = `PHP ${packagePrice.toLocaleString()}`;
+        packageValue.className = 'value';
+        packageValue.style.color = '#28a745';
+        packageValue.style.fontWeight = '600';
+        
+        packagePriceDiv.appendChild(packageLabel);
+        packagePriceDiv.appendChild(packageValue);
+        pricingSection.appendChild(packagePriceDiv);
+        
+        // Add-ons section
+        const selectedAddons = [];
+        document.querySelectorAll('.addon-checkbox:checked').forEach(checkbox => {
+            selectedAddons.push({
+                name: checkbox.dataset.name,
+                price: parseInt(checkbox.dataset.price)
+            });
+        });
+        
+        if (selectedAddons.length > 0) {
+            const addonsTitle = document.createElement('h5');
+            addonsTitle.textContent = 'Add-ons:';
+            addonsTitle.style.cssText = 'margin: 15px 0 8px 0; color: #666; font-size: 0.85rem; font-weight: 600;';
+            pricingSection.appendChild(addonsTitle);
+            
+            selectedAddons.forEach(addon => {
+                const addonDiv = document.createElement('div');
+                addonDiv.style.paddingLeft = '15px';
+                addonDiv.style.display = 'flex';
+                addonDiv.style.justifyContent = 'space-between';
+                addonDiv.style.alignItems = 'center';
+                
+                const addonLabel = document.createElement('span');
+                addonLabel.textContent = addon.name;
+                addonLabel.className = 'label';
+                addonLabel.style.color = '#666';
+                
+                const addonValue = document.createElement('span');
+                addonValue.textContent = `PHP ${addon.price.toLocaleString()}`;
+                addonValue.className = 'value';
+                addonValue.style.color = '#28a745';
+                addonValue.style.fontWeight = '500';
+                
+                addonDiv.appendChild(addonLabel);
+                addonDiv.appendChild(addonValue);
+                pricingSection.appendChild(addonDiv);
+            });
+        }
+        
+        // Total price
+        const totalPrice = packagePrice + selectedAddons.reduce((sum, addon) => sum + addon.price, 0);
+        
+        const totalDiv = document.createElement('div');
+        totalDiv.style.cssText = 'margin: 15px 0 0 0; padding: 10px 0; border-top: 2px solid #28a745; font-size: 1rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center;';
+        
+        const totalLabel = document.createElement('span');
+        totalLabel.textContent = 'TOTAL:';
+        totalLabel.className = 'label';
+        totalLabel.style.color = '#333';
+        
+        const totalValue = document.createElement('span');
+        totalValue.textContent = `PHP ${totalPrice.toLocaleString()}`;
+        totalValue.className = 'value';
+        totalValue.style.color = '#28a745';
+        totalValue.style.fontSize = '1.1rem';
+        
+        totalDiv.appendChild(totalLabel);
+        totalDiv.appendChild(totalValue);
+        pricingSection.appendChild(totalDiv);
+        
+        container.appendChild(pricingSection);
+
+        // Food menu section
+        if (wizardData.menu && wizardData.menu.length > 0) {
+            const foodSection = document.createElement('div');
+            foodSection.style.cssText = 'margin-bottom: 20px;';
+            foodSection.style.display = 'flex';
+            foodSection.style.flexDirection = 'column';
+            foodSection.style.alignItems = 'flex-start';
+            foodSection.style.justifyContent = 'flex-start';
+            
+            const foodTitle = document.createElement('h4');
+            foodTitle.textContent = 'Selected Menu';
+            foodTitle.style.cssText = 'margin: 0 0 10px 0; color: #333; font-size: 1rem; border-bottom: 1px solid #ddd; padding-bottom: 5px;';
+            foodSection.appendChild(foodTitle);
+            
+            const foodList = document.createElement('div');
+            foodList.style.cssText = 'font-size: 0.85rem;';
+            
+            wizardData.menu.forEach((foodName, index) => {
+                const foodItem = document.createElement('div');
+                foodItem.style.cssText = 'margin: 3px 0; padding: 2px 0;';
+                foodItem.textContent = `${index + 1}. ${foodName}`;
+                foodList.appendChild(foodItem);
+            });
+            
+            foodSection.appendChild(foodList);
+            container.appendChild(foodSection);
+        }
+
+        // Receipt footer
+        const footer = document.createElement('div');
+        footer.style.cssText = 'margin-top: 20px; padding-top: 15px; border-top: 1px solid #ddd; text-align: center; font-size: 0.8rem; color: #666;';
+        
+        const footerText = document.createElement('p');
+        footerText.textContent = 'Thank you for choosing Nike\'s Catering Services!';
+        footerText.style.cssText = 'margin: 0 0 5px 0;';
+        
+        const contactInfo = document.createElement('p');
+        contactInfo.textContent = 'Contact: nikescateringofficial@gmail.com';
+        contactInfo.style.cssText = 'margin: 0;';
+        
+        footer.appendChild(footerText);
+        footer.appendChild(contactInfo);
+        container.appendChild(footer);
+    }
+
+    // PDF Export functionality
+    function exportReceiptToPDF() {
+        try {
+            console.log('Exporting PDF...');
+            console.log('jsPDF available:', typeof window.jspdf);
+            console.log('wizardData:', wizardData);
+            
+            // Check if jsPDF is available
+            if (typeof window.jspdf === 'undefined') {
+                console.error('jsPDF library not loaded');
+                alert('PDF library not loaded. Please refresh the page and try again.');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            console.log('jsPDF constructor:', jsPDF);
+            const doc = new jsPDF();
+            console.log('PDF document created:', doc);
+            
+            // Set up the PDF document
+            doc.setFontSize(20);
+            doc.setFont(undefined, 'bold');
+            doc.text('NIKE\'S CATERING SERVICES', 105, 20, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'normal');
+            doc.text('Celebrate with Nikes!', 105, 30, { align: 'center' });
+            
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text('BOOKING RECEIPT', 105, 45, { align: 'center' });
+            
+            // Add a line
+            doc.setLineWidth(0.5);
+            doc.line(20, 50, 190, 50);
+            
+            // Receipt details
+            let yPosition = 65;
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            
+            const receiptData = [
+                { label: 'Booking Date:', value: new Date().toLocaleDateString() },
+                { label: 'Event Date:', value: wizardData.date || 'Not specified' },
+                { label: 'Celebrant:', value: wizardData.celebrant || 'Not specified' },
+                { label: 'Event Type:', value: wizardData.eventType || 'Not specified' },
+                { label: 'Number of Guests:', value: wizardData.pax ? `${wizardData.pax} Pax` : 'Not specified' },
+                { label: 'Theme:', value: wizardData.theme_name || 'Not specified' },
+                { label: 'Venue:', value: wizardData.location || 'Not specified' },
+                { label: 'Package:', value: wizardData.package || 'Not specified' },
+                { label: 'Color Motif:', value: wizardData.colors ? wizardData.colors.join(', ') : 'Not specified' }
+            ];
+            
+            receiptData.forEach(item => {
+                doc.text(item.label, 20, yPosition);
+                doc.text(item.value, 80, yPosition);
+                yPosition += 7;
+            });
+            
+            // Add food menu if available
+            if (wizardData.menu && wizardData.menu.length > 0) {
+                yPosition += 10;
+                doc.setFont(undefined, 'bold');
+                doc.text('Selected Menu:', 20, yPosition);
+                yPosition += 7;
+                doc.setFont(undefined, 'normal');
+                
+                wizardData.menu.forEach((foodName, index) => {
+                    doc.text(`${index + 1}. ${foodName}`, 25, yPosition);
+                    yPosition += 6;
+                });
+            } else {
+                yPosition += 10;
+                doc.setFont(undefined, 'bold');
+                doc.text('Selected Menu:', 20, yPosition);
+                yPosition += 7;
+                doc.setFont(undefined, 'normal');
+                doc.text('No menu selected', 25, yPosition);
+                yPosition += 6;
+            }
+            
+            // Add floor plan if available
+            if (wizardData.floorplanName) {
+                yPosition += 10;
+                doc.setFont(undefined, 'bold');
+                doc.text('Floor Plan:', 20, yPosition);
+                yPosition += 7;
+                doc.setFont(undefined, 'normal');
+                doc.text(wizardData.floorplanName, 25, yPosition);
+                yPosition += 6;
+            }
+            
+            // Add pricing section
+            yPosition += 15;
+            doc.setFont(undefined, 'bold');
+            doc.setFontSize(12);
+            doc.text('PRICE ESTIMATION', 105, yPosition, { align: 'center' });
+            yPosition += 10;
+            
+            // Add a line
+            doc.setLineWidth(0.3);
+            doc.line(20, yPosition, 190, yPosition);
+            yPosition += 8;
+            
+            // Calculate package price
+            const packagePrice = calculatePackagePrice(wizardData.package, wizardData.eventType, wizardData.pax);
+            
+            // Package price
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.text(`${wizardData.package}:`, 20, yPosition);
+            doc.text(`PHP ${packagePrice.toLocaleString()}`, 150, yPosition);
+            yPosition += 7;
+            
+            // Add-ons
+            const selectedAddons = [];
+            document.querySelectorAll('.addon-checkbox:checked').forEach(checkbox => {
+                selectedAddons.push({
+                    name: checkbox.dataset.name,
+                    price: parseInt(checkbox.dataset.price)
+                });
+            });
+            
+            if (selectedAddons.length > 0) {
+                doc.setFont(undefined, 'bold');
+                doc.text('Add-ons:', 20, yPosition);
+                yPosition += 7;
+                doc.setFont(undefined, 'normal');
+                
+                selectedAddons.forEach(addon => {
+                    doc.text(`• ${addon.name}`, 25, yPosition);
+                    doc.text(`PHP ${addon.price.toLocaleString()}`, 150, yPosition);
+                    yPosition += 6;
+                });
+            }
+            
+            // Total price
+            const totalPrice = packagePrice + selectedAddons.reduce((sum, addon) => sum + addon.price, 0);
+            yPosition += 8;
+            doc.setLineWidth(0.3);
+            doc.line(20, yPosition, 190, yPosition);
+            yPosition += 8;
+            
+            doc.setFont(undefined, 'bold');
+            doc.setFontSize(11);
+            doc.text('TOTAL:', 20, yPosition);
+            doc.text(`PHP ${totalPrice.toLocaleString()}`, 150, yPosition);
+            yPosition += 10;
+            
+            // Add footer
+            yPosition += 15;
+            doc.setLineWidth(0.3);
+            doc.line(20, yPosition, 190, yPosition);
+            yPosition += 10;
+            
+            doc.setFontSize(9);
+            doc.text('Thank you for choosing Nike\'s Catering Services!', 105, yPosition, { align: 'center' });
+            yPosition += 6;
+            doc.text('Contact: nikescateringofficial@gmail.com', 105, yPosition, { align: 'center' });
+            yPosition += 6;
+            doc.text('Phone: +63 123 456 7890', 105, yPosition, { align: 'center' });
+            
+            // Save the PDF
+            const celebrantName = wizardData.celebrant ? wizardData.celebrant.replace(/[^a-zA-Z0-9]/g, '_') : 'Unknown';
+            const eventDate = wizardData.date ? wizardData.date.replace(/\//g, '-') : 'Unknown_Date';
+            const fileName = `Nike_Catering_Receipt_${celebrantName}_${eventDate}.pdf`;
+            
+            console.log('Saving PDF as:', fileName);
+            doc.save(fileName);
+            
+            // Show success message
+            alert('Receipt downloaded successfully!');
+            
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            alert('Error generating PDF. Please try again.');
         }
     }
     
+    
+    // Function to setup PDF button listeners
+    function setupPDFButtons() {
+        console.log('Setting up PDF button listeners...');
+        
+        const exportBtn = document.getElementById('export-pdf-btn');
+        
+        if (exportBtn) {
+            console.log('Found export button, adding listener');
+            // Remove any existing listeners first
+            exportBtn.replaceWith(exportBtn.cloneNode(true));
+            const newExportBtn = document.getElementById('export-pdf-btn');
+            newExportBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Export PDF button clicked!');
+                exportReceiptToPDF();
+            });
+        } else {
+            console.log('Export button not found');
+        }
+    }
+
+    // Add event listener for PDF export button
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, setting up PDF export listener');
+        
+        // Use event delegation to handle dynamically created buttons
+        document.addEventListener('click', function(e) {
+            console.log('Click detected on:', e.target, 'ID:', e.target.id);
+            if (e.target && e.target.id === 'export-pdf-btn') {
+                console.log('PDF export button clicked via delegation');
+                e.preventDefault();
+                e.stopPropagation();
+                exportReceiptToPDF();
+            }
+        });
+        
+        // Try to setup buttons immediately
+        setupPDFButtons();
+        
+        // Also try after a delay
+        setTimeout(setupPDFButtons, 1000);
+        setTimeout(setupPDFButtons, 3000);
+    });
+    
+    // Package pricing configuration - Based on actual package images analysis
+    const packagePricing = {
+        'Wedding': {
+            'Package A': { 
+                50: 40000, 60: 45000, 70: 50000, 80: 55000, 100: 60000, 
+                120: 65000, 130: 70000, 150: 75000, 160: 80000, 170: 85000, 
+                180: 95000, 200: 100000, 250: 125000 
+            },
+            'Package B': { 
+                50: 45000, 60: 50000, 70: 55000, 80: 60000, 100: 65000, 
+                120: 70000, 130: 75000, 150: 85000, 160: 90000, 170: 95000, 
+                180: 105000, 200: 110000, 250: 145000 
+            },
+            'Package C': { 
+                50: 50000, 60: 55000, 70: 60000, 80: 65000, 100: 70000, 
+                120: 75000, 130: 80000, 150: 95000, 160: 100000, 170: 105000, 
+                180: 115000, 200: 120000, 250: 165000 
+            }
+        },
+        'Birthday Party': {
+            'Package A': { 
+                50: 35000, 70: 40000, 80: 45000, 100: 50000, 
+                120: 60000, 130: 65000, 150: 70000, 160: 75000, 170: 80000, 
+                180: 85000, 200: 90000 
+            },
+            'Package B': { 
+                50: 40000, 70: 45000, 80: 50000, 100: 55000, 
+                120: 65000, 130: 70000, 150: 80000, 160: 85000, 170: 90000, 
+                180: 95000, 200: 100000 
+            },
+            'Package C': { 
+                50: 45000, 70: 50000, 80: 55000, 100: 60000, 
+                120: 70000, 130: 75000, 150: 90000, 160: 95000, 170: 100000, 
+                180: 105000, 200: 110000 
+            }
+        },
+        'Kiddie Party': {
+            'Package A': { 
+                50: 35000, 70: 40000, 80: 45000, 100: 50000, 
+                120: 60000, 130: 65000, 150: 70000, 160: 75000, 170: 80000, 
+                180: 85000, 200: 90000 
+            },
+            'Package B': { 
+                50: 40000, 70: 45000, 80: 50000, 100: 55000, 
+                120: 65000, 130: 70000, 150: 80000, 160: 85000, 170: 90000, 
+                180: 95000, 200: 100000 
+            },
+            'Package C': { 
+                50: 45000, 70: 50000, 80: 55000, 100: 60000, 
+                120: 70000, 130: 75000, 150: 90000, 160: 95000, 170: 100000, 
+                180: 105000, 200: 110000 
+            }
+        },
+        'Christening': {
+            'Package A': { 
+                50: 30000, 70: 35000, 80: 40000, 100: 50000, 
+                120: 50000, 150: 65000, 180: 80000, 200: 65000 
+            },
+            'Package B': { 
+                50: 35000, 70: 40000, 80: 45000, 100: 55000, 
+                120: 55000, 150: 70000, 180: 90000, 200: 70000 
+            },
+            'Package C': { 
+                50: 40000, 70: 45000, 80: 50000, 100: 60000, 
+                120: 60000, 150: 80000, 180: 100000, 200: 80000 
+            }
+        },
+        'Corporate Event': {
+            'Package A': { 
+                50: 35000, 70: 40000, 80: 45000, 100: 50000, 
+                120: 60000, 130: 65000, 150: 70000, 160: 75000, 170: 80000, 
+                180: 85000, 200: 90000 
+            },
+            'Package B': { 
+                50: 40000, 70: 45000, 80: 50000, 100: 55000, 
+                120: 65000, 130: 70000, 150: 80000, 160: 85000, 170: 90000, 
+                180: 95000, 200: 100000 
+            },
+            'Package C': { 
+                50: 45000, 70: 50000, 80: 55000, 100: 60000, 
+                120: 70000, 130: 75000, 150: 90000, 160: 95000, 170: 100000, 
+                180: 105000, 200: 110000 
+            }
+        }
+    };
+
+    // Custom Event pricing (per-head)
+    const customEventPricing = {
+        '100+ pax': {
+            'Package A': 350,
+            'Package B': 400,
+            'Package C': 450
+        },
+        'Below 100 pax': {
+            'Package A': 400,
+            'Package B': 450,
+            'Package C': 500
+        }
+    };
+
+    // Add-ons pricing
+    const addonPrices = {
+        'Upgraded Balloon Setup': 15000,
+        'Kiddie Meals': 2000,
+        'Fondant & Soft Icing Cake': 3000,
+        'Food Carts': 5000,
+        'Photo and Video Coverage': 5000,
+        'Face Painting and Bubble Show': 5000,
+        'Digital Invitations': 3000
+    };
+
+    // Calculate package price based on exact pax pricing
+    function calculatePackagePrice(packageName, eventType, pax) {
+        // Handle custom events with per-head pricing
+        if (eventType && !packagePricing[eventType]) {
+            // This is a custom event, use per-head pricing
+            const pricingTier = pax >= 100 ? '100+ pax' : 'Below 100 pax';
+            const perHeadPrice = customEventPricing[pricingTier][packageName];
+            if (perHeadPrice) {
+                return perHeadPrice * pax;
+            }
+            return 0;
+        }
+
+        const eventPricing = packagePricing[eventType];
+        if (!eventPricing || !eventPricing[packageName]) {
+            return 0;
+        }
+
+        const packagePrices = eventPricing[packageName];
+        
+        // Check if exact pax count exists
+        if (packagePrices[pax]) {
+            return packagePrices[pax];
+        }
+        
+        // Find the closest lower and higher pax counts for interpolation
+        const availablePax = Object.keys(packagePrices).map(Number).sort((a, b) => a - b);
+        let lowerPax = null;
+        let higherPax = null;
+        
+        for (let i = 0; i < availablePax.length; i++) {
+            if (availablePax[i] <= pax) {
+                lowerPax = availablePax[i];
+            }
+            if (availablePax[i] >= pax && !higherPax) {
+                higherPax = availablePax[i];
+                break;
+            }
+        }
+        
+        // If pax is lower than minimum, use minimum price
+        if (!lowerPax) {
+            return packagePrices[availablePax[0]];
+        }
+        
+        // If pax is higher than maximum, use maximum price
+        if (!higherPax) {
+            return packagePrices[lowerPax];
+        }
+        
+        // If exact match found, return it
+        if (lowerPax === pax) {
+            return packagePrices[lowerPax];
+        }
+        
+        // Interpolate between lower and higher pax
+        const lowerPrice = packagePrices[lowerPax];
+        const higherPrice = packagePrices[higherPax];
+        const pricePerPax = (higherPrice - lowerPrice) / (higherPax - lowerPax);
+        const additionalPax = pax - lowerPax;
+        
+        return Math.round(lowerPrice + (additionalPax * pricePerPax));
+    }
+
+    // Calculate total price using display pricing
+    function calculateTotalPrice() {
+        const selectedPackage = wizardData.package;
+        const eventType = wizardData.eventType;
+        const pax = wizardData.pax;
+        
+        if (!selectedPackage || !eventType || !pax) {
+            return 0;
+        }
+
+        // Use display pricing for total calculation (same as package display)
+        const packagePrice = calculatePackagePrice(selectedPackage, eventType, pax);
+        
+        // Calculate add-ons total
+        let addonsTotal = 0;
+        document.querySelectorAll('.addon-checkbox:checked').forEach(checkbox => {
+            addonsTotal += parseInt(checkbox.dataset.price);
+        });
+
+        console.log(`Total calculation: ${eventType} ${selectedPackage} for ${pax} pax`);
+        console.log(`Package price: ${packagePrice}, Addons: ${addonsTotal}, Total: ${packagePrice + addonsTotal}`);
+
+        return packagePrice + addonsTotal;
+    }
+
+    // Update package prices display
+    function updatePackagePrices() {
+        const eventType = wizardData.eventType || 'Wedding';
+        const pax = wizardData.pax || 150;
+
+        ['Package A', 'Package B', 'Package C'].forEach(packageName => {
+            const price = calculatePackagePrice(packageName, eventType, pax);
+            const priceElement = document.getElementById(`${packageName.toLowerCase().replace(' ', '-')}-price`);
+            if (priceElement) {
+                priceElement.textContent = `PHP ${price.toLocaleString()}`;
+            }
+        });
+    }
+
+    // Update total price display
+    function updateTotalPrice() {
+        const totalPrice = calculateTotalPrice();
+        const totalElement = document.getElementById('total-package-price');
+        if (totalElement) {
+            totalElement.textContent = `PHP ${totalPrice.toLocaleString()}`;
+        }
+    }
+
+
+    // Update AI recommendation
+    function updateAIRecommendation() {
+        const recommendationElement = document.getElementById('ai-recommendation-text');
+        if (!recommendationElement) return;
+
+        const eventType = wizardData.eventType || 'Wedding';
+        const pax = wizardData.pax || 150;
+
+        let recommendation = '';
+        
+        // Calculate prices for comparison
+        const packageAPrice = calculatePackagePrice('Package A', eventType, pax);
+        const packageBPrice = calculatePackagePrice('Package B', eventType, pax);
+        const packageCPrice = calculatePackagePrice('Package C', eventType, pax);
+        
+        // Determine best recommendation based on event type and guest count
+        if (eventType === 'Kiddie Party') {
+            if (pax <= 50) {
+                recommendation = `Package A (PHP ${packageAPrice.toLocaleString()}) is perfect for your small kiddie party with ${pax} guests.`;
+            } else if (pax <= 100) {
+                recommendation = `Package B (PHP ${packageBPrice.toLocaleString()}) offers great value with more entertainment options for your kiddie party.`;
+            } else {
+                recommendation = `Package C (PHP ${packageCPrice.toLocaleString()}) provides premium entertainment and activities for your large kiddie party.`;
+            }
+        } else if (eventType === 'Wedding') {
+            if (pax <= 75) {
+                recommendation = `Package A (PHP ${packageAPrice.toLocaleString()}) is ideal for your intimate wedding with ${pax} guests.`;
+            } else if (pax <= 150) {
+                recommendation = `Package B (PHP ${packageBPrice.toLocaleString()}) offers the perfect balance of elegance and value for your wedding.`;
+            } else {
+                recommendation = `Package C (PHP ${packageCPrice.toLocaleString()}) provides luxury service for your grand wedding celebration.`;
+            }
+        } else if (eventType === 'Birthday Party') {
+            if (pax <= 60) {
+                recommendation = `Package A (PHP ${packageAPrice.toLocaleString()}) is perfect for your birthday celebration with ${pax} guests.`;
+            } else if (pax <= 120) {
+                recommendation = `Package B (PHP ${packageBPrice.toLocaleString()}) offers great variety and entertainment for your birthday party.`;
+            } else {
+                recommendation = `Package C (PHP ${packageCPrice.toLocaleString()}) provides premium celebration experience for your large birthday party.`;
+            }
+        } else if (eventType === 'Christening') {
+            if (pax <= 80) {
+                recommendation = `Package A (PHP ${packageAPrice.toLocaleString()}) is perfect for your intimate christening with ${pax} guests.`;
+            } else if (pax <= 120) {
+                recommendation = `Package B (PHP ${packageBPrice.toLocaleString()}) offers elegant service for your christening celebration.`;
+            } else {
+                recommendation = `Package C (PHP ${packageCPrice.toLocaleString()}) provides premium service for your large christening celebration.`;
+            }
+        } else {
+            // Corporate Event or other
+            if (pax <= 80) {
+                recommendation = `Package A (PHP ${packageAPrice.toLocaleString()}) is perfect for your corporate event with ${pax} guests.`;
+            } else if (pax <= 150) {
+                recommendation = `Package B (PHP ${packageBPrice.toLocaleString()}) offers professional service for your corporate event.`;
+            } else {
+                recommendation = `Package C (PHP ${packageCPrice.toLocaleString()}) provides premium corporate service for your large event.`;
+            }
+        }
+
+        recommendationElement.textContent = `AI Recommendation: ${recommendation}`;
+    }
+
     // Helper function to get required dish count
     function getRequiredDishCount() {
         switch (wizardData.package) {
@@ -3495,6 +4419,83 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'Package B': return 4;
             case 'Package C': return 5;
             default: return 4;
+        }
+    }
+
+    // Package image modal functionality
+    function openPackageImageModal() {
+        const packageImg = document.getElementById('package_img');
+        if (!packageImg) return;
+
+        // Create modal if it doesn't exist
+        let modal = document.getElementById('package-image-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'package-image-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                cursor: pointer;
+            `;
+            
+            const modalImg = document.createElement('img');
+            modalImg.style.cssText = `
+                max-width: 90%;
+                max-height: 90%;
+                border-radius: 12px;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+                cursor: default;
+            `;
+            
+            const closeBtn = document.createElement('div');
+            closeBtn.innerHTML = '&times;';
+            closeBtn.style.cssText = `
+                position: absolute;
+                top: 20px;
+                right: 30px;
+                color: white;
+                font-size: 40px;
+                font-weight: bold;
+                cursor: pointer;
+                z-index: 10001;
+            `;
+            
+            modal.appendChild(modalImg);
+            modal.appendChild(closeBtn);
+            document.body.appendChild(modal);
+            
+            // Event listeners
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closePackageImageModal();
+                }
+            });
+            
+            closeBtn.addEventListener('click', closePackageImageModal);
+            
+            // Store reference to modal image
+            modal.modalImg = modalImg;
+        }
+        
+        // Set image source and show modal
+        modal.modalImg.src = packageImg.src;
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePackageImageModal() {
+        const modal = document.getElementById('package-image-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
     }
 
@@ -3511,7 +4512,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Step 6: Package
+    // Step 6: Package (Legacy - for backward compatibility)
     document.querySelectorAll('.package-choice-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.package-choice-btn').forEach(b => b.classList.remove('selected'));
@@ -3532,6 +4533,51 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update food menu message with new package requirements
             updateFoodMenuMessage();
         });
+    });
+
+    // New Package Selection Event Listeners
+    document.addEventListener('click', function(e) {
+        // Handle package card selection
+        if (e.target.closest('.package-card')) {
+            const packageCard = e.target.closest('.package-card');
+            const packageName = packageCard.dataset.package;
+            
+            // Remove selected class from all cards
+            document.querySelectorAll('.package-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked card
+            packageCard.classList.add('selected');
+            
+            // Update wizard data
+            wizardData.package = packageName;
+            
+            // Update total price
+            updateTotalPrice();
+            
+            // Enable next button
+            document.getElementById('package-next-btn').disabled = false;
+            
+            console.log('Package selected:', packageName);
+        }
+        
+        // Handle addon checkbox changes
+        if (e.target.classList.contains('addon-checkbox')) {
+            const addonItem = e.target.closest('.addon-item');
+            const isChecked = e.target.checked;
+            
+            if (isChecked) {
+                addonItem.classList.add('selected');
+            } else {
+                addonItem.classList.remove('selected');
+            }
+            
+            // Update total price
+            updateTotalPrice();
+            
+            console.log('Addon toggled:', e.target.dataset.name, 'Price:', e.target.dataset.price);
+        }
     });
 
     document.getElementById('package-next-btn').addEventListener('click', nextStep);
@@ -3670,24 +4716,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Store the food selections (already stored by handleFoodItemClick)
         markStepComplete(8);
-        showBookingSummary();
+        console.log('About to show step 9...');
         showStep(9);
+        console.log('Step 9 should now be visible');
+        
+        // Wait a moment for the step to be visible, then populate content
+        setTimeout(() => {
+            console.log('About to show booking summary...');
+            showBookingSummary();
+        }, 100);
     });
 
     function updatePackageSummary() {
-        let summary = `${wizardData.eventType} ${wizardData.pax} Pax`;
-        if (wizardData.location) {
-            if (wizardData.floorplanName && wizardData.aiEstimations) {
-                // For AI estimations, show a shortened version in summary
-                summary += ` - ${wizardData.location} (AI Custom Estimations)`;
-            } else if (wizardData.floorplanName) {
-                // For regular floorplan selections, show the floorplan name
-                summary += ` - ${wizardData.location} (${wizardData.floorplanName})`;
-            } else {
-                summary += ` - ${wizardData.location}`;
+        // Update package prices when summary changes
+        updatePackagePrices();
+        updateTotalPrice();
+        
+        // Legacy support - try to update old package-summary element if it exists
+        const packageSummaryElement = document.getElementById('package-summary');
+        if (packageSummaryElement) {
+            let summary = `${wizardData.eventType} ${wizardData.pax} Pax`;
+            if (wizardData.location) {
+                if (wizardData.floorplanName && wizardData.aiEstimations) {
+                    // For AI estimations, show a shortened version in summary
+                    summary += ` - ${wizardData.location} (AI Custom Estimations)`;
+                } else if (wizardData.floorplanName) {
+                    // For regular floorplan selections, show the floorplan name
+                    summary += ` - ${wizardData.location} (${wizardData.floorplanName})`;
+                } else {
+                    summary += ` - ${wizardData.location}`;
+                }
             }
+            packageSummaryElement.textContent = summary;
         }
-        document.getElementById('package-summary').textContent = summary;
     }
 
     // Helper function to extract filename from Cloudinary URL
@@ -3893,7 +4954,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </p>
             </div>
             
-            <div style="max-width: 500px; margin: 0 auto; padding: 20px; background: #f8f9fa; border-radius: 10px; border: 1px solid #ddd;">
+            <div style="width: 100%; margin: 0 auto; padding: 20px; background: #f8f9fa; border-radius: 10px; border: 1px solid #ddd;">
                 <div style="margin-bottom: 20px; padding: 15px; background: white; border-radius: 8px; border-left: 4px solid #AD974F;">
                     <p style="margin: 0 0 10px 0; color: #333; font-size: 0.9rem; line-height: 1.4;">
                         <strong>Event:</strong> ${wizardData.eventType || 'Not selected'} • 
