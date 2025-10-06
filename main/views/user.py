@@ -110,30 +110,57 @@ def my_bookings(request):
 
 @login_required
 def bookhere_submit(request):
+    print(f"[DEBUG] bookhere_submit called - method: {request.method}")
+    
     if request.method != "POST":
         return HttpResponseBadRequest("Only POST allowed")
 
     # ---------- parse JSON ----------
-    raw = request.POST.get("payload") or "{}"
-    print(f"[DEBUG] Raw payload received: {raw}")
-    
     try:
+        raw = request.POST.get("payload") or "{}"
+        print(f"[DEBUG] Raw payload received: {raw}")
+        
         data = json.loads(raw)
         print(f"[DEBUG] Parsed data: {data}")
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
+        print(f"[DEBUG] JSON decode error: {e}")
         return HttpResponseBadRequest("Bad JSON")
+    except Exception as e:
+        print(f"[DEBUG] Unexpected error in data parsing: {e}")
+        return HttpResponseServerError("Data parsing failed")
 
     # ---------- 1) make / fetch the admin chat ----------
     try:
         admin_user = User.objects.get(username="admin")
     except User.DoesNotExist:
-        return HttpResponseServerError("Admin user 'admin' not found.")
+        # Try to find any staff user as fallback
+        try:
+            admin_user = User.objects.filter(is_staff=True, is_superuser=True).first()
+            if not admin_user:
+                print("[DEBUG] No admin or staff user found")
+                return HttpResponseServerError("No admin user found.")
+            print(f"[DEBUG] Using fallback admin user: {admin_user.username}")
+        except Exception as e:
+            print(f"[DEBUG] Error finding admin user: {e}")
+            return HttpResponseServerError("Admin user lookup failed.")
 
-    chat = Chat.objects.create(is_group_chat=False)
-    chat.participants.add(request.user, admin_user)
+    try:
+        print(f"[DEBUG] Creating chat with participants: {request.user}, {admin_user}")
+        chat = Chat.objects.create(is_group_chat=False)
+        chat.participants.add(request.user, admin_user)
+        print(f"[DEBUG] Chat {chat.id} created successfully")
+    except Exception as e:
+        print(f"[DEBUG] Error creating chat: {e}")
+        return HttpResponseServerError(f"Chat creation failed: {str(e)}")
 
     # ---------- 2) prepare booking fields ----------
-    event_date = _dt.date.fromisoformat(data["date"])
+    try:
+        event_date = _dt.date.fromisoformat(data["date"])
+        print(f"[DEBUG] Event date parsed: {event_date}")
+    except (KeyError, ValueError) as e:
+        print(f"[DEBUG] Error parsing event date: {e}")
+        return HttpResponseBadRequest(f"Invalid date format: {data.get('date', 'missing')}")
+    
     venue = ""
     floorplan_path = None
     floorplan_display_name = None
@@ -184,28 +211,37 @@ def bookhere_submit(request):
         print(f"[DEBUG] Final values - venue: '{venue}', floorplan_path: '{floorplan_path}'")
 
     # ---------- 3) create BookingRequest ----------
-    booking = BookingRequest.objects.create(
-        client=request.user,
-        chat=chat,
-        celebrant_name=data.get("celebrant_name", ""),
-        event_date=event_date,
-        event_type=data.get("event_type", ""),
-        pax=int(data.get("pax", 0)),
-        venue=venue,
-        floorplan=floorplan_path,
-        floorplan_display_name=floorplan_display_name,
-        cloudinary_url=cloudinary_url,
-        color_motif=json.dumps(data.get("color_motif", [])),
-        theme_name=data.get("theme_name", ""),
-        theme_urls=data.get("theme_urls", []),
-        package=data.get("package", ""),
-        dishes=", ".join(data.get("menu", {}).get("dishes", [])),
-        pasta=data.get("menu", {}).get("pasta", ""),
-        drink=data.get("menu", {}).get("drink", ""),
-        raw_payload=data,
-    )
+    try:
+        print(f"[DEBUG] Creating booking with user: {request.user}, chat: {chat.id}")
+        
+        booking = BookingRequest.objects.create(
+            client=request.user,
+            chat=chat,
+            celebrant_name=data.get("celebrant_name", ""),
+            event_date=event_date,
+            event_type=data.get("event_type", ""),
+            pax=int(data.get("pax", 0)),
+            venue=venue,
+            floorplan=floorplan_path,
+            floorplan_display_name=floorplan_display_name,
+            cloudinary_url=cloudinary_url,
+            color_motif=json.dumps(data.get("color_motif", [])),
+            theme_name=data.get("theme_name", ""),
+            theme_urls=data.get("theme_urls", []),
+            package=data.get("package", ""),
+            dishes=", ".join(data.get("menu", {}).get("dishes", [])),
+            pasta=data.get("menu", {}).get("pasta", ""),
+            drink=data.get("menu", {}).get("drink", ""),
+            raw_payload=data,
+        )
 
-    print(f"[DEBUG] Booking {booking.id} created with floorplan={booking.floorplan} cloudinary_url={booking.cloudinary_url}")
+        print(f"[DEBUG] Booking {booking.id} created successfully with floorplan={booking.floorplan} cloudinary_url={booking.cloudinary_url}")
+        
+    except Exception as e:
+        print(f"[DEBUG] Error creating booking: {e}")
+        import traceback
+        traceback.print_exc()
+        return HttpResponseServerError(f"Booking creation failed: {str(e)}")
 
     # ---------- 3.5) Create admin notification ----------
     try:
@@ -213,34 +249,46 @@ def bookhere_submit(request):
         print(f"[DEBUG] Notification created for booking {booking.id}")
     except Exception as e:
         print(f"[DEBUG] Failed to create notification: {e}")
+        # Don't fail the entire request if notification creation fails
 
     # ---------- 4) first system message ----------
-    msg_html = booking_summary(booking)
+    try:
+        msg_html = booking_summary(booking)
 
-    Message.objects.create(
-        chat=chat,
-        sender=admin_user,
-        content=msg_html,
-        is_read=False,
-    )
+        Message.objects.create(
+            chat=chat,
+            sender=admin_user,
+            content=msg_html,
+            is_read=False,
+        )
 
-    # Update chat's updated_at field to reflect new message
-    chat.save(update_fields=['updated_at'])
+        # Update chat's updated_at field to reflect new message
+        chat.save(update_fields=['updated_at'])
+        print(f"[DEBUG] System message created for booking {booking.id}")
+    except Exception as e:
+        print(f"[DEBUG] Failed to create system message: {e}")
+        # Don't fail the entire request if message creation fails
 
     # ---------- 5) push via WebSocket ----------
-    ws_payload = {
-        "type": "booking_message",
-        "data": {
-            "type": "booking",
-            "chatId": chat.id,
-            "html": msg_html,
-            "label": booking.short_label(),
-            "when": timezone.now().isoformat(),
-            "sender": {"id": admin_user.id, "username": admin_user.username},
-        },
-    }
-    _push_ws_event(chat.id, ws_payload)
+    try:
+        ws_payload = {
+            "type": "booking_message",
+            "data": {
+                "type": "booking",
+                "chatId": chat.id,
+                "html": msg_html,
+                "label": booking.short_label(),
+                "when": timezone.now().isoformat(),
+                "sender": {"id": admin_user.id, "username": admin_user.username},
+            },
+        }
+        _push_ws_event(chat.id, ws_payload)
+        print(f"[DEBUG] WebSocket event sent for booking {booking.id}")
+    except Exception as e:
+        print(f"[DEBUG] Failed to send WebSocket event: {e}")
+        # Don't fail the entire request if WebSocket fails
 
+    print(f"[DEBUG] Booking {booking.id} processing completed successfully")
     return redirect("my_bookings")
 
 def booking_summary(booking) -> str:
@@ -275,12 +323,20 @@ def _push_ws_event(chat_id: int, payload: dict):
     """
     Sends the payload to all WebSocket clients in the booking group.
     """
-    channel_layer = get_channel_layer()
+    try:
+        channel_layer = get_channel_layer()
+        
+        if channel_layer is None:
+            print(f"[DEBUG] Channel layer not available - skipping WebSocket event")
+            return
 
-    async def _send():
-        await channel_layer.group_send(f"booking_{chat_id}", payload)
+        async def _send():
+            await channel_layer.group_send(f"booking_{chat_id}", payload)
 
-    asyncio.run(_send())
+        asyncio.run(_send())
+    except Exception as e:
+        print(f"[DEBUG] WebSocket push failed: {e}")
+        # Don't raise the exception - just log it
 
 def get_cloud_image_by_name(name) -> str:
     """Helper function to get images based on theme"""
