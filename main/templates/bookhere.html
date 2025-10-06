@@ -120,6 +120,23 @@
         background-size: cover;
         background-position: center;
         box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .layer-color.custom-color {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: bold;
+        color: #B8860B;
+        background-color: #f0f0f0;
+        border: 2px dashed #B8860B;
+        text-align: center;
+        padding: 10px;
+        word-wrap: break-word;
+        line-height: 1.2;
     }
 
     /* Stacked positioning for the layers */
@@ -196,6 +213,157 @@
         .swatch-label {
             font-size: 10px;
             min-height: 25px;
+        }
+    }
+    
+    /* Others Color Option Styles */
+    .others-color-container {
+        margin-top: 20px;
+        padding: 15px;
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+    }
+    
+    .others-color-option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .others-color-swatch {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        padding: 8px;
+        border-radius: 12px;
+        border: 2px solid transparent;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .others-color-swatch:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border-color: #B8860B;
+    }
+    
+    .others-color-swatch.selected {
+        border: 2px solid #B8860B;
+        background-color: rgba(184, 134, 11, 0.1);
+        transform: translateY(-2px);
+        position: relative;
+    }
+    
+    .others-color-swatch.selected::after {
+        content: attr(data-order);
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #B8860B;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+        border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .others-color-icon {
+        font-size: 24px;
+        margin-bottom: 5px;
+    }
+    
+    .others-text-fields-container {
+        width: 100%;
+        max-width: 400px;
+    }
+    
+    .others-inputs-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .others-input-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .others-input-group input {
+        flex: 1;
+        padding: 10px;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+    }
+    
+    .others-input-group input:focus {
+        outline: none;
+        border-color: #B8860B;
+        box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.1);
+    }
+    
+    .remove-others-btn {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 6px 10px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: background-color 0.3s ease;
+    }
+    
+    .remove-others-btn:hover {
+        background-color: #c82333;
+    }
+    
+    .add-another-color-btn {
+        transition: background-color 0.3s ease;
+    }
+    
+    .add-another-color-btn:hover {
+        background-color: #9a6f08;
+    }
+    
+    @media (max-width: 768px) {
+        .others-color-container {
+            margin-top: 15px;
+            padding: 12px;
+        }
+        
+        .others-color-icon {
+            font-size: 20px;
+        }
+        
+        .others-text-field-container {
+            max-width: 250px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .others-color-container {
+            margin-top: 10px;
+            padding: 10px;
+        }
+        
+        .others-color-icon {
+            font-size: 18px;
+        }
+        
+        .others-text-field-container {
+            max-width: 200px;
         }
     }
     
@@ -973,6 +1141,24 @@
                     <div class="color-swatch" data-color="Skin Pink">
                         <img src="https://res.cloudinary.com/dzjrdqkiw/image/upload/v1757770573/skinpink_ibuunv.jpg" alt="Skin Pink" class="swatch-image">
                         <div class="swatch-label">Skin Pink</div>
+                    </div>
+                </div>
+                
+                <!-- Others Option -->
+                <div class="others-color-container">
+                    <div class="others-color-option">
+                        <div class="others-color-swatch" data-color="others">
+                            <div class="others-color-icon">✏️</div>
+                            <div class="swatch-label">Others:</div>
+                        </div>
+                        <div class="others-text-fields-container" style="display: none;">
+                            <div class="others-inputs-wrapper">
+                                <!-- Dynamic text fields will be added here -->
+                            </div>
+                            <button type="button" class="add-another-color-btn" style="margin-top: 10px; padding: 8px 16px; background-color: #B8860B; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                                + Add Another Custom Color
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -3233,6 +3419,156 @@ document.addEventListener('DOMContentLoaded', function() {
         colorSwatchesInitialized = true;
     }
     
+    // Initialize Others color option with multiple selections support
+    function initializeOthersColorOption() {
+        const othersSwatch = document.querySelector('.others-color-swatch');
+        const othersContainer = document.querySelector('.others-text-fields-container');
+        const othersInputsWrapper = document.querySelector('.others-inputs-wrapper');
+        const addAnotherBtn = document.querySelector('.add-another-color-btn');
+        
+        if (!othersSwatch || !othersContainer || !othersInputsWrapper || !addAnotherBtn) return;
+        
+        // Track custom colors separately
+        wizardData.customColors = wizardData.customColors || [];
+        
+        othersSwatch.addEventListener('click', function() {
+            const isSelected = this.classList.contains('selected');
+            
+            if (isSelected) {
+                // Deselect Others option
+                this.classList.remove('selected');
+                this.removeAttribute('data-order');
+                othersContainer.style.display = 'none';
+                
+                // Clear all custom colors
+                wizardData.customColors = [];
+                othersInputsWrapper.innerHTML = '';
+                
+                // Remove all custom colors from wizardData.colors
+                wizardData.colors = wizardData.colors.filter(color => !color.startsWith('custom_'));
+                
+                // Update order numbers for remaining selections
+                updateColorOrderNumbers();
+            } else {
+                // Check if we already have 3 colors selected
+                if (wizardData.colors.length >= 3) {
+                    showAlert('color', 'You can only select up to 3 colors.');
+                    return;
+                }
+                
+                // Select Others option
+                this.classList.add('selected');
+                const order = wizardData.colors.length + 1;
+                this.dataset.order = order;
+                othersContainer.style.display = 'block';
+                
+                // Add first custom color input
+                addCustomColorInput();
+            }
+            
+            updateColorPreview();
+            updateColorButtonState();
+            console.log('Colors selected:', wizardData.colors);
+            console.log('Custom colors:', wizardData.customColors);
+        });
+        
+        // Add another custom color button
+        addAnotherBtn.addEventListener('click', function() {
+            if (wizardData.colors.length >= 3) {
+                showAlert('color', 'You can only select up to 3 colors.');
+                return;
+            }
+            addCustomColorInput();
+        });
+        
+        // Function to add a new custom color input
+        function addCustomColorInput() {
+            const inputGroup = document.createElement('div');
+            inputGroup.className = 'others-input-group';
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Enter custom color name...';
+            input.maxLength = 50;
+            input.className = 'custom-color-input';
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'remove-others-btn';
+            removeBtn.textContent = '×';
+            removeBtn.title = 'Remove this custom color';
+            
+            inputGroup.appendChild(input);
+            inputGroup.appendChild(removeBtn);
+            othersInputsWrapper.appendChild(inputGroup);
+            
+            // Focus the new input
+            input.focus();
+            
+            // Add event listeners
+            input.addEventListener('input', function() {
+                updateCustomColors();
+            });
+            
+            input.addEventListener('blur', function() {
+                updateCustomColors();
+            });
+            
+            removeBtn.addEventListener('click', function() {
+                inputGroup.remove();
+                updateCustomColors();
+            });
+        }
+        
+        // Function to update custom colors array
+        function updateCustomColors() {
+            const inputs = othersInputsWrapper.querySelectorAll('.custom-color-input');
+            const customColors = [];
+            
+            inputs.forEach((input, index) => {
+                const value = input.value.trim();
+                if (value) {
+                    customColors.push(value);
+                }
+            });
+            
+            // Remove old custom colors from wizardData.colors
+            wizardData.colors = wizardData.colors.filter(color => !color.startsWith('custom_'));
+            
+            // Add new custom colors
+            customColors.forEach((color, index) => {
+                wizardData.colors.push(`custom_${color}`);
+            });
+            
+            wizardData.customColors = customColors;
+            updateColorPreview();
+            updateColorButtonState();
+            console.log('Custom colors updated:', customColors);
+        }
+    }
+    
+    // Helper function to update color order numbers
+    function updateColorOrderNumbers() {
+        const allSwatches = document.querySelectorAll('.color-swatch, .others-color-swatch');
+        const selectedSwatches = Array.from(allSwatches).filter(s => s.classList.contains('selected'));
+        
+        selectedSwatches.forEach((swatch, index) => {
+            swatch.dataset.order = index + 1;
+        });
+    }
+    
+    // Helper function to format colors for display
+    function formatColorsForDisplay(colors, separator = ' → ') {
+        if (!colors || colors.length === 0) return 'Not specified';
+        
+        return colors.map(color => {
+            if (color.startsWith('custom_')) {
+                return color.replace('custom_', '');
+            }
+            return color;
+        }).join(separator);
+    }
+    
     // Update the color stack preview
     function updateColorPreview() {
         const previewContainer = document.getElementById('color-selection-preview');
@@ -3250,12 +3586,24 @@ document.addEventListener('DOMContentLoaded', function() {
             const layerElement = document.getElementById(layerId);
             const colorDiv = layerElement.querySelector('.layer-color');
             
-            // Find the corresponding swatch image
-            const swatch = document.querySelector(`[data-color="${colorName}"]`);
-            if (swatch) {
-                const image = swatch.querySelector('.swatch-image');
-                if (image) {
-                    colorDiv.style.backgroundImage = `url('${image.src}')`;
+            // Handle custom colors (Others option)
+            if (colorName.startsWith('custom_')) {
+                const customColorName = colorName.replace('custom_', '');
+                // For custom colors, show a custom background or text
+                colorDiv.className = 'layer-color custom-color';
+                colorDiv.textContent = customColorName;
+            } else {
+                // Find the corresponding swatch image for regular colors
+                const swatch = document.querySelector(`[data-color="${colorName}"]`);
+                if (swatch) {
+                    const image = swatch.querySelector('.swatch-image');
+                    if (image) {
+                        colorDiv.className = 'layer-color';
+                        colorDiv.style.backgroundImage = `url('${image.src}')`;
+                        colorDiv.style.backgroundColor = 'transparent';
+                        colorDiv.style.border = '3px solid white';
+                        colorDiv.textContent = '';
+                    }
                 }
             }
         });
@@ -3270,8 +3618,11 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 layerElement.style.display = 'none';
                 const colorDiv = layerElement.querySelector('.layer-color');
+                colorDiv.className = 'layer-color';
                 colorDiv.style.backgroundImage = 'none';
                 colorDiv.style.backgroundColor = 'transparent';
+                colorDiv.style.border = '3px solid white';
+                colorDiv.textContent = '';
             }
         }
     }
@@ -3288,6 +3639,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (wizardData.colors.length < 1 || wizardData.colors.length > 3) {
             showAlert('color', 'Please select 1 to 3 colors for your event motif.');
             return;
+        }
+        
+        // Validate custom colors if Others option is selected
+        const customColors = wizardData.colors.filter(color => color.startsWith('custom_'));
+        if (customColors.length > 0) {
+            const customColorNames = customColors.map(color => color.replace('custom_', ''));
+            const emptyCustomColors = customColorNames.filter(name => !name.trim());
+            
+            if (emptyCustomColors.length > 0) {
+                showAlert('color', 'Please enter custom color names for all Others options.');
+                const firstEmptyInput = document.querySelector('.custom-color-input');
+                if (firstEmptyInput) firstEmptyInput.focus();
+                return;
+            }
         }
         
         updatePackageSummary();
@@ -3530,7 +3895,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     { label: 'Event Date', value: wizardData.date },
                     { label: 'Event Type', value: wizardData.eventType },
                     { label: 'Number of Guests', value: `${wizardData.pax} Pax` },
-                    { label: 'Color Motif', value: wizardData.colors.join(' → '), showColorPreview: true }
+                    { label: 'Color Motif', value: formatColorsForDisplay(wizardData.colors, ' → '), showColorPreview: true }
                 ]
             },
             {
@@ -3620,43 +3985,60 @@ document.addEventListener('DOMContentLoaded', function() {
                             swatchContainer.style.cssText = 'display: flex; gap: 3px;';
                             
                             wizardData.colors.forEach((colorName, index) => {
-                                const swatch = document.querySelector(`[data-color="${colorName}"]`);
-                                if (swatch) {
-                                    const image = swatch.querySelector('.swatch-image');
-                                    if (image) {
-                                        const colorPreview = document.createElement('div');
-                                        colorPreview.style.cssText = `
-                                            width: 25px; 
-                                            height: 25px; 
-                                            border-radius: 4px; 
-                                            background-image: url('${image.src}'); 
-                                            background-size: cover; 
-                                            background-position: center;
-                                            border: 1px solid #ccc;
-                                            position: relative;
-                                        `;
-                                        
-                                        // Add order number
-                                        const orderNum = document.createElement('div');
-                                        orderNum.textContent = index + 1;
-                                        orderNum.style.cssText = `
-                                            position: absolute;
-                                            bottom: -2px;
-                                            right: -2px;
-                                            background: #B8860B;
-                                            color: white;
-                                            width: 12px;
-                                            height: 12px;
-                                            border-radius: 50%;
-                                            font-size: 8px;
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                        `;
-                                        colorPreview.appendChild(orderNum);
-                                        swatchContainer.appendChild(colorPreview);
+                                const colorPreview = document.createElement('div');
+                                colorPreview.style.cssText = `
+                                    width: 25px; 
+                                    height: 25px; 
+                                    border-radius: 4px; 
+                                    border: 1px solid #ccc;
+                                    position: relative;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-size: 8px;
+                                    font-weight: bold;
+                                `;
+                                
+                                // Handle custom colors
+                                if (colorName.startsWith('custom_')) {
+                                    const customColorName = colorName.replace('custom_', '');
+                                    colorPreview.style.backgroundColor = '#f0f0f0';
+                                    colorPreview.style.border = '2px dashed #B8860B';
+                                    colorPreview.style.color = '#B8860B';
+                                    colorPreview.textContent = customColorName.substring(0, 3); // Show first 3 chars
+                                } else {
+                                    // Handle regular colors
+                                    const swatch = document.querySelector(`[data-color="${colorName}"]`);
+                                    if (swatch) {
+                                        const image = swatch.querySelector('.swatch-image');
+                                        if (image) {
+                                            colorPreview.style.backgroundImage = `url('${image.src}')`;
+                                            colorPreview.style.backgroundSize = 'cover';
+                                            colorPreview.style.backgroundPosition = 'center';
+                                            colorPreview.style.backgroundColor = 'transparent';
+                                        }
                                     }
                                 }
+                                
+                                // Add order number
+                                const orderNum = document.createElement('div');
+                                orderNum.textContent = index + 1;
+                                orderNum.style.cssText = `
+                                    position: absolute;
+                                    bottom: -2px;
+                                    right: -2px;
+                                    background: #B8860B;
+                                    color: white;
+                                    width: 12px;
+                                    height: 12px;
+                                    border-radius: 50%;
+                                    font-size: 8px;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                `;
+                                colorPreview.appendChild(orderNum);
+                                swatchContainer.appendChild(colorPreview);
                             });
                             
                             colorContainer.appendChild(swatchContainer);
@@ -3738,7 +4120,7 @@ document.addEventListener('DOMContentLoaded', function() {
             { label: 'Theme', value: wizardData.theme_name },
             { label: 'Venue', value: wizardData.location },
             { label: 'Package', value: wizardData.package },
-            { label: 'Color Motif', value: wizardData.colors.join(', ') }
+            { label: 'Color Motif', value: formatColorsForDisplay(wizardData.colors, ', ') }
         ];
 
         receiptItems.forEach(item => {
@@ -3951,7 +4333,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 { label: 'Theme:', value: wizardData.theme_name || 'Not specified' },
                 { label: 'Venue:', value: wizardData.location || 'Not specified' },
                 { label: 'Package:', value: wizardData.package || 'Not specified' },
-                { label: 'Color Motif:', value: wizardData.colors ? wizardData.colors.join(', ') : 'Not specified' }
+                { label: 'Color Motif:', value: formatColorsForDisplay(wizardData.colors, ', ') }
             ];
             
             receiptData.forEach(item => {
@@ -4505,6 +4887,7 @@ document.addEventListener('DOMContentLoaded', function() {
         originalShowStep(stepIndex);
         if (stepIndex === 2) { // step-3 is index 2
             setTimeout(initializeColorSwatches, 100);
+            setTimeout(initializeOthersColorOption, 100);
         }
         if (stepIndex === 8) { // step-8 is index 8 (food menu)
             updateFoodMenuMessage();
