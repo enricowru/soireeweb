@@ -1125,6 +1125,137 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // PDF Export functionality - adapted from bookhere.html
+  // Package pricing configuration - Based on actual package images analysis
+  const packagePricing = {
+      'Wedding': {
+          'Package A': { 
+              50: 40000, 60: 45000, 70: 50000, 80: 55000, 100: 60000, 
+              120: 65000, 130: 70000, 150: 75000, 160: 80000, 170: 85000, 
+              180: 95000, 200: 100000, 250: 125000 
+          },
+          'Package B': { 
+              50: 45000, 60: 50000, 70: 55000, 80: 60000, 100: 65000, 
+              120: 70000, 130: 75000, 150: 85000, 160: 90000, 170: 95000, 
+              180: 105000, 200: 110000, 250: 145000 
+          },
+          'Package C': { 
+              50: 50000, 60: 55000, 70: 60000, 80: 65000, 100: 70000, 
+              120: 75000, 130: 80000, 150: 95000, 160: 100000, 170: 105000, 
+              180: 115000, 200: 120000, 250: 165000 
+          }
+      },
+      'Birthday Party': {
+          'Package A': { 
+              50: 35000, 70: 40000, 80: 45000, 100: 50000, 
+              120: 60000, 130: 65000, 150: 70000, 160: 75000, 170: 80000, 
+              180: 85000, 200: 90000 
+          },
+          'Package B': { 
+              50: 40000, 70: 45000, 80: 50000, 100: 55000, 
+              120: 65000, 130: 70000, 150: 80000, 160: 85000, 170: 90000, 
+              180: 95000, 200: 100000 
+          },
+          'Package C': { 
+              50: 45000, 70: 50000, 80: 55000, 100: 60000, 
+              120: 70000, 130: 75000, 150: 90000, 160: 95000, 170: 100000, 
+              180: 105000, 200: 110000 
+          }
+      },
+      'Kiddie Party': {
+          'Package A': { 50: 30000, 70: 35000, 80: 40000, 100: 45000 },
+          'Package B': { 50: 35000, 70: 40000, 80: 45000, 100: 50000 },
+          'Package C': { 50: 40000, 70: 45000, 80: 50000, 100: 55000 }
+      },
+      'Baptismal': {
+          'Package A': { 50: 35000, 70: 40000, 80: 45000, 100: 50000, 120: 60000, 150: 70000 },
+          'Package B': { 50: 40000, 70: 45000, 80: 50000, 100: 55000, 120: 65000, 150: 80000 },
+          'Package C': { 50: 45000, 70: 50000, 80: 55000, 100: 60000, 120: 70000, 150: 90000 }
+      },
+      'Christening': {
+          'Package A': { 50: 35000, 70: 40000, 80: 45000, 100: 50000, 120: 60000, 150: 70000 },
+          'Package B': { 50: 40000, 70: 45000, 80: 50000, 100: 55000, 120: 65000, 150: 80000 },
+          'Package C': { 50: 45000, 70: 50000, 80: 55000, 100: 60000, 120: 70000, 150: 90000 }
+      }
+  };
+
+  // Custom event per-head pricing
+  const customEventPricing = {
+      'Below 100 pax': { 'Package A': 500, 'Package B': 600, 'Package C': 700 },
+      '100+ pax': { 'Package A': 450, 'Package B': 550, 'Package C': 650 }
+  };
+
+  // Add-ons pricing
+  const addonPricing = {
+      'Photo Booth': 8000,
+      'LED Wall': 15000,
+      'Ceremony Styling': 10000,
+      'Photo and Video Coverage': 5000,
+      'Face Painting and Bubble Show': 5000,
+      'Digital Invitations': 3000
+  };
+
+  // Calculate package price based on exact pax pricing
+  function calculatePackagePrice(packageName, eventType, pax) {
+      // Handle custom events with per-head pricing
+      if (eventType && !packagePricing[eventType]) {
+          // This is a custom event, use per-head pricing
+          const pricingTier = pax >= 100 ? '100+ pax' : 'Below 100 pax';
+          const perHeadPrice = customEventPricing[pricingTier][packageName];
+          if (perHeadPrice) {
+              return perHeadPrice * pax;
+          }
+          return 0;
+      }
+
+      const eventPricing = packagePricing[eventType];
+      if (!eventPricing || !eventPricing[packageName]) {
+          return 0;
+      }
+
+      const packagePrices = eventPricing[packageName];
+      
+      // Check if exact pax count exists
+      if (packagePrices[pax]) {
+          return packagePrices[pax];
+      }
+      
+      // Find the closest lower and higher pax counts for interpolation
+      const availablePax = Object.keys(packagePrices).map(Number).sort((a, b) => a - b);
+      let lowerPax = null;
+      let higherPax = null;
+      
+      for (let i = 0; i < availablePax.length; i++) {
+          if (availablePax[i] <= pax) {
+              lowerPax = availablePax[i];
+          }
+          if (availablePax[i] >= pax && !higherPax) {
+              higherPax = availablePax[i];
+              break;
+          }
+      }
+      
+      // If pax is lower than minimum, use minimum price
+      if (!lowerPax) {
+          return packagePrices[availablePax[0]];
+      }
+      
+      // If pax is higher than maximum, use maximum price
+      if (!higherPax) {
+          return packagePrices[lowerPax];
+      }
+      
+      // If exact match found, return it
+      if (lowerPax === pax) {
+          return packagePrices[lowerPax];
+      }
+      
+      // Interpolate between lower and higher pax
+      const lowerPrice = packagePrices[lowerPax];
+      const higherPrice = packagePrices[higherPax];
+      const ratio = (pax - lowerPax) / (higherPax - lowerPax);
+      return Math.round(lowerPrice + (higherPrice - lowerPrice) * ratio);
+  }
+
   function exportReceiptToPDF(booking) {
     try {
       console.log('Exporting PDF...');
@@ -1139,7 +1270,9 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       
       const { jsPDF } = window.jspdf;
+      console.log('jsPDF constructor:', jsPDF);
       const doc = new jsPDF();
+      console.log('PDF document created:', doc);
       
       // Set up the PDF document
       doc.setFontSize(20);
@@ -1164,85 +1297,130 @@ document.addEventListener('DOMContentLoaded', function() {
       doc.setFont(undefined, 'normal');
       
       const receiptData = [
-        { label: 'Booking Date:', value: new Date().toLocaleDateString() },
-        { label: 'Event Date:', value: booking.event_date || 'Not specified' },
-        { label: 'Celebrant:', value: booking.celebrant_name || 'Not specified' },
-        { label: 'Event Type:', value: booking.event_type || 'Not specified' },
-        { label: 'Number of Guests:', value: booking.pax ? `${booking.pax} Pax` : 'Not specified' },
-        { label: 'Theme:', value: booking.theme_name || 'Not specified' },
-        { label: 'Venue:', value: booking.venue || 'Not specified' },
-        { label: 'Package:', value: booking.package || 'Not specified' },
-        { label: 'Color Motif:', value: formatColorsForDisplay(booking.color_motif, ', ') }
+          { label: 'Booking Date:', value: new Date().toLocaleDateString() },
+          { label: 'Event Date:', value: booking.event_date || 'Not specified' },
+          { label: 'Celebrant:', value: booking.celebrant_name || 'Not specified' },
+          { label: 'Event Type:', value: booking.event_type || 'Not specified' },
+          { label: 'Number of Guests:', value: booking.pax ? `${booking.pax} Pax` : 'Not specified' },
+          { label: 'Theme:', value: booking.theme_name || 'Not specified' },
+          { label: 'Venue:', value: booking.venue || 'Not specified' },
+          { label: 'Package:', value: booking.package || 'Not specified' },
+          { label: 'Color Motif:', value: formatColorsForDisplay(booking.color_motif, ', ') }
       ];
       
       receiptData.forEach(item => {
-        doc.text(item.label, 20, yPosition);
-        doc.text(item.value, 80, yPosition);
-        yPosition += 7;
+          doc.text(item.label, 20, yPosition);
+          doc.text(item.value, 80, yPosition);
+          yPosition += 7;
       });
       
-      // Add food menu if available
+      // Add food menu if available - combined format like bookhere
+      const menuItems = [];
       if (booking.dishes_with_images && booking.dishes_with_images.length > 0) {
-        yPosition += 10;
-        doc.setFont(undefined, 'bold');
-        doc.text('Selected Dishes:', 20, yPosition);
-        yPosition += 7;
-        doc.setFont(undefined, 'normal');
-        
-        booking.dishes_with_images.forEach((dish, index) => {
-          doc.text(`${index + 1}. ${dish.name}`, 25, yPosition);
-          yPosition += 6;
-        });
+          booking.dishes_with_images.forEach(dish => {
+              menuItems.push(dish.name);
+          });
       }
-      
-      // Add pasta if available
       if (booking.pasta) {
-        yPosition += 5;
-        doc.setFont(undefined, 'bold');
-        doc.text('Pasta:', 20, yPosition);
-        yPosition += 7;
-        doc.setFont(undefined, 'normal');
-        doc.text(booking.pasta, 25, yPosition);
-        yPosition += 6;
+          menuItems.push(booking.pasta);
+      }
+      if (booking.drink) {
+          menuItems.push(booking.drink);
       }
       
-      // Add drink if available
-      if (booking.drink) {
-        yPosition += 5;
-        doc.setFont(undefined, 'bold');
-        doc.text('Drink:', 20, yPosition);
-        yPosition += 7;
-        doc.setFont(undefined, 'normal');
-        doc.text(booking.drink, 25, yPosition);
-        yPosition += 6;
+      if (menuItems.length > 0) {
+          yPosition += 10;
+          doc.setFont(undefined, 'bold');
+          doc.text('Selected Menu:', 20, yPosition);
+          yPosition += 7;
+          doc.setFont(undefined, 'normal');
+          
+          menuItems.forEach((item, index) => {
+              doc.text(`${index + 1}. ${item}`, 25, yPosition);
+              yPosition += 6;
+          });
+      } else {
+          yPosition += 10;
+          doc.setFont(undefined, 'bold');
+          doc.text('Selected Menu:', 20, yPosition);
+          yPosition += 7;
+          doc.setFont(undefined, 'normal');
+          doc.text('No menu selected', 25, yPosition);
+          yPosition += 6;
       }
       
       // Add floor plan if available
-      if (booking.floorplan_name) {
-        yPosition += 10;
-        doc.setFont(undefined, 'bold');
-        doc.text('Floor Plan:', 20, yPosition);
-        yPosition += 7;
-        doc.setFont(undefined, 'normal');
-        doc.text(booking.floorplan_name, 25, yPosition);
-        yPosition += 6;
+      if (booking.floorplan_display_name || booking.floorplan_name) {
+          yPosition += 10;
+          doc.setFont(undefined, 'bold');
+          doc.text('Floor Plan:', 20, yPosition);
+          yPosition += 7;
+          doc.setFont(undefined, 'normal');
+          doc.text(booking.floorplan_display_name || booking.floorplan_name, 25, yPosition);
+          yPosition += 6;
       }
       
-      // Add contact footer
-      yPosition += 20;
+      // Add pricing section
+      yPosition += 15;
+      doc.setFont(undefined, 'bold');
+      doc.setFontSize(12);
+      doc.text('PRICE ESTIMATION', 105, yPosition, { align: 'center' });
+      yPosition += 10;
+      
+      // Add a line
+      doc.setLineWidth(0.3);
+      doc.line(20, yPosition, 190, yPosition);
+      yPosition += 8;
+      
+      // Calculate package price
+      const packagePrice = calculatePackagePrice(booking.package, booking.event_type, booking.pax);
+      
+      // Package price
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'normal');
+      doc.text(`${booking.package}:`, 20, yPosition);
+      doc.text(`PHP ${packagePrice.toLocaleString()}`, 150, yPosition);
+      yPosition += 7;
+      
+      // Add-ons (placeholder - could be enhanced if add-on data is available)
+      // For now, we'll skip add-ons since booking data doesn't include them
+      
+      // Total price (same as package price for now)
+      const totalPrice = packagePrice;
+      yPosition += 8;
+      doc.setLineWidth(0.3);
+      doc.line(20, yPosition, 190, yPosition);
+      yPosition += 8;
+      
+      doc.setFont(undefined, 'bold');
+      doc.setFontSize(11);
+      doc.text('TOTAL:', 20, yPosition);
+      doc.text(`PHP ${totalPrice.toLocaleString()}`, 150, yPosition);
+      yPosition += 10;
+      
+      // Add footer
+      yPosition += 15;
       doc.setLineWidth(0.3);
       doc.line(20, yPosition, 190, yPosition);
       yPosition += 10;
       
-      doc.setFontSize(8);
-      doc.setFont(undefined, 'normal');
-      doc.text('Contact: nikes.catering@gmail.com | (02) 123-4567', 105, yPosition, { align: 'center' });
-      yPosition += 5;
-      doc.text('Thank you for choosing Nike\'s Catering!', 105, yPosition, { align: 'center' });
+      doc.setFontSize(9);
+      doc.text('Thank you for choosing Nike\'s Catering Services!', 105, yPosition, { align: 'center' });
+      yPosition += 6;
+      doc.text('Contact: nikescateringofficial@gmail.com', 105, yPosition, { align: 'center' });
+      yPosition += 6;
+      doc.text('Phone: +63 123 456 7890', 105, yPosition, { align: 'center' });
       
       // Save the PDF
-      const filename = `Booking-Receipt-${booking.celebrant_name || 'Unknown'}-${new Date().toLocaleDateString().replace(/\//g, '-')}.pdf`;
-      doc.save(filename);
+      const celebrantName = booking.celebrant_name ? booking.celebrant_name.replace(/[^a-zA-Z0-9]/g, '_') : 'Unknown';
+      const eventDate = booking.event_date ? booking.event_date.replace(/\//g, '-') : 'Unknown_Date';
+      const fileName = `Nike_Catering_Receipt_${celebrantName}_${eventDate}.pdf`;
+      
+      console.log('Saving PDF as:', fileName);
+      doc.save(fileName);
+      
+      // Show success message
+      alert('Receipt downloaded successfully!');
       
     } catch (error) {
       console.error('Error generating PDF:', error);

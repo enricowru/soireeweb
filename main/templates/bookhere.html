@@ -3772,6 +3772,29 @@ document.addEventListener('DOMContentLoaded', function() {
             sectionDiv.appendChild(gridDiv);
             container.appendChild(sectionDiv);
         });
+        
+        // Restore previously selected food items
+        restoreFoodSelections();
+    }
+    
+    // Restore previously selected food items based on wizardData.menu
+    function restoreFoodSelections() {
+        if (!wizardData.menu || wizardData.menu.length === 0) {
+            return; // No previous selections to restore
+        }
+        
+        console.log('Restoring food selections:', wizardData.menu);
+        
+        // Loop through all food items and mark selected ones
+        document.querySelectorAll('.food-item').forEach(foodItem => {
+            const foodName = foodItem.getAttribute('data-name');
+            
+            // Check if this food item was previously selected
+            if (wizardData.menu.includes(foodName)) {
+                foodItem.classList.add('selected');
+                console.log('Restored selection for:', foodName);
+            }
+        });
     }
     
     // Handle food item selection
