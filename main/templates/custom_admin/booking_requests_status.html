@@ -195,7 +195,7 @@
 
   <script>
 
-    const currentChat = {{ booking.id }};
+    const currentChat = {{ booking.chat.id }};
     const eventData = {{ event_json|safe }};
     const steps = document.querySelectorAll('.step-list li');
     const contentBox = document.getElementById('step-content');
@@ -314,27 +314,36 @@
         }
       }, 100);
 
-      document.getElementById('submitEventBtn').addEventListener('click', async () => {
-        const form = document.getElementById('eventCreationForm');
-        const formData = new FormData(form);
-        if (!form.title.value.trim() || !form.description.value.trim() || !form.date.value) {
-          alert('Please fill all required fields.');
-          return;
+      // Set up event listener for submit button with proper null check
+      setTimeout(() => {
+        const submitBtn = document.getElementById('submitEventBtn');
+        if (submitBtn) {
+          submitBtn.addEventListener('click', async () => {
+            const form = document.getElementById('eventCreationForm');
+            const formData = new FormData(form);
+            if (!form.title.value.trim() || !form.description.value.trim() || !form.date.value) {
+              alert('Please fill all required fields.');
+              return;
+            }
+
+            // Show confirmation modal for creating event
+            const confirmed = await showStepConfirmationModal('CREATED', 'Create Event', false);
+            if (!confirmed) return;
+
+            const response = await fetch('/admin/event/create/', {
+              method: 'POST',
+              body: formData,
+              headers: {
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+              }
+            });
+
+            if (response.ok) window.location.reload();
+            else alert('Failed to create event.');
+          });
         }
-
-        // Show confirmation modal for creating event
-        const confirmed = await showStepConfirmationModal('CREATED', 'Create Event', false);
-        if (!confirmed) return;
-
-        const response = await fetch('/admin/event/create/', {
-          method: 'POST',
-          body: formData,
-          headers: {'X-CSRFToken': formData.get('csrfmiddlewaretoken')}
-        });
-
-        if (response.ok) window.location.reload();
-        else alert('Failed to create event.');
-      });
+      }, 100);
     }
     
     // Add undo button handler for CREATED step

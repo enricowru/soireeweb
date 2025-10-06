@@ -351,8 +351,12 @@ const chatToggle  = document.getElementById('chat-toggle');
 const chatSidebar = document.getElementById('chat-sidebar');
 const closeChat   = document.getElementById('close-chat');
 
-chatToggle.addEventListener('click', () => chatSidebar.classList.add('open'));
-closeChat.addEventListener('click', () => chatSidebar.classList.remove('open'));
+if (chatToggle && chatSidebar) {
+  chatToggle.addEventListener('click', () => chatSidebar.classList.add('open'));
+}
+if (closeChat && chatSidebar) {
+  closeChat.addEventListener('click', () => chatSidebar.classList.remove('open'));
+}
 </script>
 {% comment %} <script>
 (async () => {

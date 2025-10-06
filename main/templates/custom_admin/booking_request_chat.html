@@ -264,6 +264,45 @@ html, body {
     </div>
   </section>
 </div>
+
+<!-- Add export button styling -->
+<style>
+.export-btn {
+  background: linear-gradient(135deg, #AD974F 0%, #8B7B3A 100%);
+  color: white !important;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(173, 151, 79, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.export-btn:hover {
+  background: linear-gradient(135deg, #8B7B3A 0%, #AD974F 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(173, 151, 79, 0.4);
+}
+
+.export-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(173, 151, 79, 0.3);
+}
+</style>
+
+<!-- Add jsPDF library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script>
 const clientId = {{ request.user.id }};
@@ -400,49 +439,388 @@ document.querySelectorAll('.booking-item').forEach(li => {
   });
 });
 
-composerForm.addEventListener('submit', submitMessage);
+// Global variables
+let currentBooking = null;
 
-openBtn?.addEventListener('click', () => {
-  sidebar.classList.add('show');
-});
-closeBtn?.addEventListener('click', () => {
-  sidebar.classList.remove('show');
-});
-
-document.getElementById('viewStatusBtn').addEventListener('click', function () {
-  const id = this.dataset.id;
-  if (id) {
-    window.location.href = `/admin/request-bookings/status/${id}`;
+// View Request button functionality - Fixed with DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+  // Setup form and button event listeners
+  if (composerForm) {
+    composerForm.addEventListener('submit', submitMessage);
   }
-});
 
-// View Details button functionality - Enhanced to match user booking summary
-document.getElementById('viewDetailsBtn').addEventListener('click', async function () {
-  const bookingId = this.dataset.bookingId;
-  if (bookingId) {
-    try {
-      // Fetch booking details from the API
-      const response = await fetch(`/admin/api/booking/${bookingId}/details/`);
-      if (response.ok) {
-        const booking = await response.json();
-        
-        // Generate booking summary exactly like my_bookings.html
-        showBookingSummary(booking);
-        
-        // Show the modal
-        const modal = new bootstrap.Modal(document.getElementById('bookingDetailsModal'));
-        modal.show();
-      } else {
-        alert('Failed to load booking details');
+  if (openBtn) {
+    openBtn.addEventListener('click', () => {
+      sidebar.classList.add('show');
+    });
+  }
+  
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      sidebar.classList.remove('show');
+    });
+  }
+  // View Status Button
+  const viewStatusBtn = document.getElementById('viewStatusBtn');
+  if (viewStatusBtn) {
+    viewStatusBtn.addEventListener('click', function () {
+      const id = this.dataset.id;
+      if (id) {
+        window.location.href = `/admin/request-bookings/status/${id}`;
       }
-    } catch (error) {
-      console.error('Error fetching booking details:', error);
-      alert('Error loading booking details');
-    }
+    });
+  }
+  const viewDetailsBtn = document.getElementById('viewDetailsBtn');
+  
+  if (viewDetailsBtn) {
+    viewDetailsBtn.addEventListener('click', async function () {
+      const bookingId = this.dataset.bookingId;
+      console.log('View Details button clicked, bookingId:', bookingId);
+      
+      if (bookingId) {
+        try {
+          // Get CSRF token from meta tag or form
+          const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+          const csrfTokenForm = document.querySelector('[name=csrfmiddlewaretoken]');
+          const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : 
+                           (csrfTokenForm ? csrfTokenForm.value : '');
+          
+          console.log('CSRF Token found:', !!csrfToken);
+          
+          // Fetch booking details from the API (using admin endpoint)
+          const apiUrl = `/admin/api/booking/${bookingId}/details/`;
+          console.log('Fetching from URL:', apiUrl);
+          
+          const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+              'X-CSRFToken': csrfToken,
+              'Content-Type': 'application/json',
+            },
+            credentials: 'same-origin'
+          });
+          
+          console.log('Response status:', response.status);
+          console.log('Response ok:', response.ok);
+          
+          if (response.ok) {
+            const data = await response.json();
+            console.log('Response data:', data);
+            
+            // Check if this is a wrapped response or direct booking data
+            if (data.success !== undefined) {
+              // Wrapped response format
+              if (data.success) {
+                const booking = data.booking;
+                
+                // Store current booking for PDF export
+                currentBooking = booking;
+                
+                // Generate the booking summary exactly like bookhere.html
+                showBookingSummaryContent(booking);
+                
+                // Show the modal
+                const modal = new bootstrap.Modal(document.getElementById('bookingDetailsModal'));
+                modal.show();
+              } else {
+                console.error('API returned error:', data.message);
+                alert('Failed to load booking details: ' + (data.message || 'Unknown error'));
+              }
+            } else {
+              // Direct booking data format (current API response)
+              const booking = data;
+              console.log('Using direct booking data format');
+              
+              // Store current booking for PDF export
+              currentBooking = booking;
+              
+              // Generate the booking summary exactly like bookhere.html
+              showBookingSummaryContent(booking);
+              
+              // Show the modal
+              const modal = new bootstrap.Modal(document.getElementById('bookingDetailsModal'));
+              modal.show();
+            }
+          } else {
+            console.error('HTTP Error:', response.status, response.statusText);
+            const errorText = await response.text();
+            console.error('Error response body:', errorText);
+            alert(`Failed to load booking details (${response.status}): ${response.statusText}`);
+          }
+        } catch (error) {
+          console.error('Error fetching booking details:', error);
+          alert('Error loading booking details: ' + error.message);
+        }
+      } else {
+        console.error('No booking ID found in dataset');
+        alert('No booking ID found');
+      }
+    });
+  }
+  
+  // Add event listener for PDF export button when modal is shown
+  const modal = document.getElementById('bookingDetailsModal');
+  if (modal) {
+    modal.addEventListener('shown.bs.modal', function() {
+      const exportBtn = document.getElementById('export-pdf-btn');
+      if (exportBtn && currentBooking) {
+        exportBtn.onclick = function() {
+          console.log('Export PDF button clicked!');
+          exportReceiptToPDF(currentBooking);
+        };
+      }
+    });
   }
 });
 
-// Show booking summary function - copied from my_bookings.html
+// Show booking summary function - EXACT COPY from my_bookings.html
+function showBookingSummaryContent(booking) {
+  const summaryContainer = document.getElementById('booking-summary-content');
+  const receiptContainer = document.getElementById('receipt-content');
+  if (!summaryContainer || !receiptContainer) return;
+
+  // Clear previous content
+  summaryContainer.innerHTML = '';
+  receiptContainer.innerHTML = '';
+
+  // Create summary sections exactly like bookhere.html
+  const sections = [
+    {
+      title: 'Event Details',
+      items: [
+        { label: 'Celebrant Name', value: booking.celebrant_name },
+        { label: 'Event Date', value: booking.event_date },
+        { label: 'Event Type', value: booking.event_type },
+        { label: 'Number of Guests', value: `${booking.pax} Pax` },
+        { label: 'Color Motif', value: booking.color_motif, showColorPreview: true, colors: booking.color_motif_with_images }
+      ]
+    },
+    {
+      title: 'Theme & Venue',
+      items: [
+        { label: 'Theme', value: booking.theme_name },
+        { label: 'Venue', value: booking.venue },
+        { label: 'Floor Plan', value: booking.floorplan_name || 'Not Selected' },
+        { label: 'Package', value: booking.package }
+      ]
+    },
+    {
+      title: 'Food Menu',
+      items: [],
+      showFoodImages: true,
+      dishes: booking.dishes_with_images || [],
+      pasta: { name: booking.pasta, image: booking.pasta_image },
+      drink: { name: booking.drink, image: booking.drink_image }
+    }
+  ];
+
+  sections.forEach(section => {
+    const sectionDiv = document.createElement('div');
+    sectionDiv.style.cssText = 'background: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 20px;';
+    
+    const titleDiv = document.createElement('h3');
+    titleDiv.textContent = section.title;
+    titleDiv.style.cssText = 'margin: 0 0 15px 0; color: #333; font-size: 1.1rem; border-bottom: 2px solid #AD974F; padding-bottom: 5px;';
+    sectionDiv.appendChild(titleDiv);
+
+    if (section.showFoodImages) {
+      // Show selected food items with images
+      const foodGrid = document.createElement('div');
+      foodGrid.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;';
+      
+      // Add dishes
+      if (section.dishes && section.dishes.length > 0) {
+        section.dishes.forEach(dish => {
+          const foodItem = document.createElement('div');
+          foodItem.style.cssText = 'display: flex; flex-direction: column; align-items: center; padding: 10px; background: white; border-radius: 8px; border: 1px solid #ddd;';
+          
+          if (dish.image_url) {
+            const img = document.createElement('img');
+            img.src = dish.image_url;
+            img.alt = dish.name;
+            img.style.cssText = 'width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;';
+            img.onerror = function() {
+              this.style.display = 'none';
+            };
+            foodItem.appendChild(img);
+          }
+          
+          const label = document.createElement('div');
+          label.textContent = dish.name;
+          label.style.cssText = 'text-align: center; font-size: 0.9rem; color: #333; font-weight: 500; line-height: 1.2;';
+          foodItem.appendChild(label);
+          
+          foodGrid.appendChild(foodItem);
+        });
+      }
+      
+      // Add pasta if exists
+      if (section.pasta && section.pasta.name) {
+        const foodItem = document.createElement('div');
+        foodItem.style.cssText = 'display: flex; flex-direction: column; align-items: center; padding: 10px; background: white; border-radius: 8px; border: 1px solid #ddd;';
+        
+        if (section.pasta.image) {
+          const img = document.createElement('img');
+          img.src = section.pasta.image;
+          img.alt = section.pasta.name;
+          img.style.cssText = 'width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;';
+          img.onerror = function() {
+            this.style.display = 'none';
+          };
+          foodItem.appendChild(img);
+        }
+        
+        const label = document.createElement('div');
+        label.textContent = section.pasta.name;
+        label.style.cssText = 'text-align: center; font-size: 0.9rem; color: #333; font-weight: 500; line-height: 1.2;';
+        foodItem.appendChild(label);
+        
+        foodGrid.appendChild(foodItem);
+      }
+      
+      // Add drink if exists
+      if (section.drink && section.drink.name) {
+        const foodItem = document.createElement('div');
+        foodItem.style.cssText = 'display: flex; flex-direction: column; align-items: center; padding: 10px; background: white; border-radius: 8px; border: 1px solid #ddd;';
+        
+        if (section.drink.image) {
+          const img = document.createElement('img');
+          img.src = section.drink.image;
+          img.alt = section.drink.name;
+          img.style.cssText = 'width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-bottom: 8px;';
+          img.onerror = function() {
+            this.style.display = 'none';
+          };
+          foodItem.appendChild(img);
+        }
+        
+        const label = document.createElement('div');
+        label.textContent = section.drink.name;
+        label.style.cssText = 'text-align: center; font-size: 0.9rem; color: #333; font-weight: 500; line-height: 1.2;';
+        foodItem.appendChild(label);
+        
+        foodGrid.appendChild(foodItem);
+      }
+      
+      sectionDiv.appendChild(foodGrid);
+    } else {
+      // Regular items
+      section.items.forEach(item => {
+        if (item.value) {
+          const itemDiv = document.createElement('div');
+          itemDiv.style.cssText = 'margin: 8px 0; display: flex; justify-content: space-between; align-items: center;';
+          
+          const labelSpan = document.createElement('span');
+          labelSpan.textContent = item.label + ':';
+          labelSpan.style.cssText = 'font-weight: 600; color: #555;';
+          
+          if (item.showColorPreview && item.colors && item.colors.length > 0) {
+            // Create color preview container
+            const colorContainer = document.createElement('div');
+            colorContainer.style.cssText = 'display: flex; align-items: center; gap: 10px;';
+            
+            // Add text value
+            const valueSpan = document.createElement('span');
+            valueSpan.textContent = item.value;
+            valueSpan.style.cssText = 'color: #333; font-size: 0.9rem;';
+            colorContainer.appendChild(valueSpan);
+            
+            // Add color swatches with actual images
+            const swatchContainer = document.createElement('div');
+            swatchContainer.style.cssText = 'display: flex; gap: 3px;';
+            
+            item.colors.forEach((colorItem, index) => {
+              
+              const colorPreview = document.createElement('div');
+              
+              // Always ensure the basic styling is applied first
+              colorPreview.style.cssText = `
+                width: 25px; 
+                height: 25px; 
+                border-radius: 4px; 
+                border: 2px solid #B8860B;
+                position: relative;
+                display: inline-block;
+              `;
+              
+              // Then apply the background image if available
+              if (colorItem.image_url) {
+                colorPreview.style.backgroundImage = `url('${colorItem.image_url}')`;
+                colorPreview.style.backgroundSize = 'cover';
+                colorPreview.style.backgroundPosition = 'center';
+              } else {
+                colorPreview.style.backgroundColor = '#f0f0f0';
+              }
+              
+              // Add order number
+              const orderNum = document.createElement('div');
+              orderNum.textContent = index + 1;
+              orderNum.style.cssText = `
+                position: absolute;
+                bottom: -2px;
+                right: -2px;
+                background: #B8860B;
+                color: white;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                font-size: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              `;
+              colorPreview.appendChild(orderNum);
+              swatchContainer.appendChild(colorPreview);
+            });
+            
+            colorContainer.appendChild(swatchContainer);
+            itemDiv.appendChild(colorContainer);
+          } else {
+            const valueSpan = document.createElement('span');
+            valueSpan.textContent = item.value;
+            valueSpan.style.cssText = 'color: #333; text-align: right; max-width: 60%; word-break: break-word;';
+            itemDiv.appendChild(valueSpan);
+          }
+          
+          itemDiv.insertBefore(labelSpan, itemDiv.firstChild);
+          sectionDiv.appendChild(itemDiv);
+        }
+      });
+    }
+
+    summaryContainer.appendChild(sectionDiv);
+  });
+
+  // Add theme images if available (same as bookhere.html)
+  if (booking.theme_urls && booking.theme_urls.length > 0) {
+    const themeImagesDiv = document.createElement('div');
+    themeImagesDiv.style.cssText = 'background: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px solid #ddd; height: 100%;';
+    
+    const themeTitle = document.createElement('h3');
+    themeTitle.textContent = 'Theme Images';
+    themeTitle.style.cssText = 'margin: 0 0 15px 0; color: #333; font-size: 1.1rem; border-bottom: 2px solid #AD974F; padding-bottom: 5px;';
+    themeImagesDiv.appendChild(themeTitle);
+
+    const imagesContainer = document.createElement('div');
+    imagesContainer.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;';
+    
+    booking.theme_urls.slice(0, 3).forEach(imageUrl => {
+      const img = document.createElement('img');
+      img.src = imageUrl;
+      img.style.cssText = 'width: 100%; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;';
+      img.alt = booking.theme_name;
+      imagesContainer.appendChild(img);
+    });
+
+    themeImagesDiv.appendChild(imagesContainer);
+    summaryContainer.appendChild(themeImagesDiv);
+  }
+  
+  // Generate the receipt
+  generateReceipt(receiptContainer, booking);
+}
+
+// Legacy function for compatibility  
 function showBookingSummary(booking) {
   const summaryContainer = document.getElementById('booking-summary-content');
   if (!summaryContainer) return;
@@ -697,6 +1075,215 @@ function showBookingSummary(booking) {
   }
 }
 
+// Generate receipt function - adapted from bookhere.html
+function generateReceipt(container, booking) {
+  // Receipt header
+  const header = document.createElement('div');
+  header.style.cssText = 'text-align: center; margin-bottom: 20px; border-bottom: 2px solid rgb(51, 51, 51); padding-bottom: 15px; display: flex; flex-direction: column';
+  
+  const companyName = document.createElement('h2');
+  companyName.textContent = 'NIKE\'S CATERING SERVICES';
+  companyName.style.cssText = 'margin: 0; color: #B8860B; font-size: 1.4rem; font-weight: bold;';
+  
+  const tagline = document.createElement('p');
+  tagline.textContent = 'Celebrate with Nikes!';
+  tagline.style.cssText = 'margin: 5px 0 0 0; color: #666; font-size: 0.9rem;';
+  
+  const receiptTitle = document.createElement('h3');
+  receiptTitle.textContent = 'BOOKING RECEIPT';
+  receiptTitle.style.cssText = 'margin: 15px 0 0 0; color: #333; font-size: 1.1rem;';
+  
+  header.appendChild(companyName);
+  header.appendChild(tagline);
+  header.appendChild(receiptTitle);
+  container.appendChild(header);
+
+  // Receipt details
+  const details = document.createElement('div');
+  details.style.cssText = 'display: flex; flex-direction: column; align-items: flex-start; justify-items: flex-start; margin-bottom: 20px;';
+  
+  const receiptItems = [
+      { label: 'Booking Date', value: new Date().toLocaleDateString() },
+      { label: 'Event Date', value: booking.event_date },
+      { label: 'Celebrant', value: booking.celebrant_name },
+      { label: 'Event Type', value: booking.event_type },
+      { label: 'Guests', value: `${booking.pax} Pax` },
+      { label: 'Theme', value: booking.theme_name },
+      { label: 'Venue', value: booking.venue },
+      { label: 'Package', value: booking.package },
+      { label: 'Color Motif', value: booking.color_motif }
+  ];
+
+  receiptItems.forEach(item => {
+      if (item.value) {
+          const itemDiv = document.createElement('div');
+          itemDiv.style.cssText = 'margin: 5px 0; display: flex; justify-content: space-between; width: 100%;';
+          
+          const label = document.createElement('span');
+          label.textContent = item.label + ':';
+          label.style.cssText = 'font-weight: 600; color: #555;';
+          
+          const value = document.createElement('span');
+          value.textContent = item.value;
+          value.style.cssText = 'color: #333;';
+          
+          itemDiv.appendChild(label);
+          itemDiv.appendChild(value);
+          details.appendChild(itemDiv);
+      }
+  });
+
+  container.appendChild(details);
+
+  // Contact info footer
+  const footer = document.createElement('div');
+  footer.style.cssText = 'margin-top: 30px; padding-top: 15px; border-top: 1px solid #ddd; text-align: center; font-size: 0.85rem; color: #666;';
+  footer.innerHTML = '<p style="margin: 0;">Contact: nikes.catering@gmail.com | (02) 123-4567</p><p style="margin: 5px 0 0 0;">Thank you for choosing Nike\'s Catering!</p>';
+  container.appendChild(footer);
+}
+
+// Helper function to format colors for display
+function formatColorsForDisplay(colors, separator = ' → ') {
+  if (!colors || colors.length === 0) return 'Not specified';
+  
+  if (typeof colors === 'string') {
+    return colors;
+  }
+  
+  return colors.map(color => {
+    if (color.startsWith('custom_')) {
+      return color.replace('custom_', '');
+    }
+    return color;
+  }).join(separator);
+}
+
+// PDF Export functionality - adapted from bookhere.html
+function exportReceiptToPDF(booking) {
+  try {
+    console.log('Exporting PDF...');
+    console.log('jsPDF available:', typeof window.jspdf);
+    console.log('booking data:', booking);
+    
+    // Check if jsPDF is available
+    if (typeof window.jspdf === 'undefined') {
+      console.error('jsPDF library not loaded');
+      alert('PDF library not loaded. Please refresh the page and try again.');
+      return;
+    }
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Set up the PDF document
+    doc.setFontSize(20);
+    doc.setFont(undefined, 'bold');
+    doc.text('NIKE\'S CATERING SERVICES', 105, 20, { align: 'center' });
+    
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'normal');
+    doc.text('Celebrate with Nikes!', 105, 30, { align: 'center' });
+    
+    doc.setFontSize(16);
+    doc.setFont(undefined, 'bold');
+    doc.text('BOOKING RECEIPT', 105, 45, { align: 'center' });
+    
+    // Add a line
+    doc.setLineWidth(0.5);
+    doc.line(20, 50, 190, 50);
+    
+    // Receipt details
+    let yPosition = 65;
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    
+    const receiptData = [
+      { label: 'Booking Date:', value: new Date().toLocaleDateString() },
+      { label: 'Event Date:', value: booking.event_date || 'Not specified' },
+      { label: 'Celebrant:', value: booking.celebrant_name || 'Not specified' },
+      { label: 'Event Type:', value: booking.event_type || 'Not specified' },
+      { label: 'Number of Guests:', value: booking.pax ? `${booking.pax} Pax` : 'Not specified' },
+      { label: 'Theme:', value: booking.theme_name || 'Not specified' },
+      { label: 'Venue:', value: booking.venue || 'Not specified' },
+      { label: 'Package:', value: booking.package || 'Not specified' },
+      { label: 'Color Motif:', value: formatColorsForDisplay(booking.color_motif, ', ') }
+    ];
+    
+    receiptData.forEach(item => {
+      doc.text(item.label, 20, yPosition);
+      doc.text(item.value, 80, yPosition);
+      yPosition += 7;
+    });
+    
+    // Add food menu if available
+    if (booking.dishes_with_images && booking.dishes_with_images.length > 0) {
+      yPosition += 10;
+      doc.setFont(undefined, 'bold');
+      doc.text('Selected Dishes:', 20, yPosition);
+      yPosition += 7;
+      doc.setFont(undefined, 'normal');
+      
+      booking.dishes_with_images.forEach((dish, index) => {
+        doc.text(`${index + 1}. ${dish.name}`, 25, yPosition);
+        yPosition += 6;
+      });
+    }
+    
+    // Add pasta if available
+    if (booking.pasta) {
+      yPosition += 5;
+      doc.setFont(undefined, 'bold');
+      doc.text('Pasta:', 20, yPosition);
+      yPosition += 7;
+      doc.setFont(undefined, 'normal');
+      doc.text(booking.pasta, 25, yPosition);
+      yPosition += 6;
+    }
+    
+    // Add drink if available
+    if (booking.drink) {
+      yPosition += 5;
+      doc.setFont(undefined, 'bold');
+      doc.text('Drink:', 20, yPosition);
+      yPosition += 7;
+      doc.setFont(undefined, 'normal');
+      doc.text(booking.drink, 25, yPosition);
+      yPosition += 6;
+    }
+    
+    // Add floor plan if available
+    if (booking.floorplan_name) {
+      yPosition += 10;
+      doc.setFont(undefined, 'bold');
+      doc.text('Floor Plan:', 20, yPosition);
+      yPosition += 7;
+      doc.setFont(undefined, 'normal');
+      doc.text(booking.floorplan_name, 25, yPosition);
+      yPosition += 6;
+    }
+    
+    // Add contact footer
+    yPosition += 20;
+    doc.setLineWidth(0.3);
+    doc.line(20, yPosition, 190, yPosition);
+    yPosition += 10;
+    
+    doc.setFontSize(8);
+    doc.setFont(undefined, 'normal');
+    doc.text('Contact: nikes.catering@gmail.com | (02) 123-4567', 105, yPosition, { align: 'center' });
+    yPosition += 5;
+    doc.text('Thank you for choosing Nike\'s Catering!', 105, yPosition, { align: 'center' });
+    
+    // Save the PDF
+    const filename = `Booking-Receipt-${booking.celebrant_name || 'Unknown'}-${new Date().toLocaleDateString().replace(/\//g, '-')}.pdf`;
+    doc.save(filename);
+    
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    alert('Error generating PDF. Please try again.');
+  }
+}
+
 // Auto-select booking if booking ID is provided in URL
 {% if selected_booking_id %}
 document.addEventListener('DOMContentLoaded', function() {
@@ -787,19 +1374,38 @@ function getCsrfToken() {
 {% endif %}
 </script>
 
-<!-- Booking Details Modal - Enhanced Booking Summary Layout -->
+<!-- Booking Details Modal - Popup Modal with bookhere.html content -->
 <div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-labelledby="bookingDetailsModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="bookingDetailsModalLabel" style="color: #333; font-size: 1.2rem;">
-          <strong>Booking Summary</strong>
-        </h5>
+        <h5 class="modal-title" id="bookingDetailsModalLabel">Booking Summary</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
-        <div id="booking-summary-content" style="display: grid; gap: 20px;">
-          <!-- Summary content will be generated by JavaScript -->
+      <div class="modal-body">
+        <!-- Booking Summary Section - Modal Version -->
+        <div class="summary-container" style="display: flex; gap: 2rem; margin: 0;">
+          <!-- Left column: Event Details -->
+          <div class="event-details" style="flex: 1 1 50%; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 20px; margin: 0;">
+            <div id="booking-summary-content">
+              <!-- Summary content will be generated by JavaScript -->
+            </div>
+          </div>
+
+          <!-- Right column: Receipt -->
+          <div class="booking-receipt" style="flex: 1 1 50%; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 20px; margin: 0; height: fit-content;">
+            <div id="booking-receipt">
+              <!-- Export PDF Button -->
+              <button type="button" id="export-pdf-btn" class="export-btn">
+                📄 Export PDF
+              </button>
+              
+              <!-- Receipt content will be generated by JavaScript -->
+              <div id="receipt-content">
+                <!-- Receipt will be generated here -->
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="modal-footer">

@@ -9,8 +9,41 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link rel="stylesheet" href="{% static 'css/my_bookings.css' %}">
   <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+  <link rel="stylesheet" href="{% static 'css/bookhere.css' %}">
+  
+  <!-- Add CSRF token for API calls -->
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  
+  <!-- Modal-specific styles -->
+  <style>
+    .modal-xl {
+      max-width: 1200px;
+    }
+    
+    #bookingDetailsModal .summary-container {
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    
+    #bookingDetailsModal .event-details,
+    #bookingDetailsModal .booking-receipt {
+      min-height: 400px;
+    }
+    
+    @media (max-width: 768px) {
+      #bookingDetailsModal .summary-container {
+        flex-direction: column;
+      }
+      
+      #bookingDetailsModal .event-details,
+      #bookingDetailsModal .booking-receipt {
+        flex: 1 1 100% !important;
+      }
+    }
+  </style>
   
 </head>
 <body>
@@ -134,8 +167,9 @@
   }
 
   function connectSockJS(chatId) {
-      if (sock) sock.close();
-      if (!chatId || chatId === "general") return;
+      try {
+        if (sock) sock.close();
+        if (!chatId || chatId === "general") return;
 
       const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
       sock = new WebSocket(`${wsProtocol}://${window.location.host}/ws/chat/${chatId}/`);
@@ -143,6 +177,7 @@
 
       sock.onopen = () => console.log("SockJS connection opened");
       sock.onclose = () => console.warn("SockJS connection closed");
+      sock.onerror = (error) => console.error("WebSocket error:", error);
       sock.onmessage = (e) => {
         try {
             const data = JSON.parse(e.data);
@@ -163,6 +198,9 @@
             console.error("Invalid SockJS data", err);
         }
     };
+      } catch (err) {
+        console.error("Error connecting WebSocket:", err);
+      }
   }
 
   form.addEventListener("submit", submitMessage);
@@ -560,27 +598,41 @@ function markAllUserNotificationsAsRead() {
 }
 
 function setupRealtimeUserNotifications() {
-  // Use Server-Sent Events for real-time notifications
-  const eventSource = new EventSource('/notifications/stream/');
-  
-  eventSource.onmessage = function(event) {
-    try {
-      const data = JSON.parse(event.data);
-      if (data.type === 'admin_message' || data.type === 'booking_update' || data.type === 'event_reminder' || data.type === 'payment_update') {
-        addUserNotification(data);
+  try {
+    // Use Server-Sent Events for real-time notifications
+    const eventSource = new EventSource('/notifications/stream/');
+    
+    eventSource.onmessage = function(event) {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'admin_message' || data.type === 'booking_update' || data.type === 'event_reminder' || data.type === 'payment_update') {
+          addUserNotification(data);
+        }
+      } catch (err) {
+        console.error('Error parsing user notification data:', err);
       }
-    } catch (err) {
-      console.error('Error parsing user notification data:', err);
-    }
-  };
-  
-  eventSource.onerror = function(event) {
-    console.warn('User notification stream error:', event);
-  };
+    };
+    
+    eventSource.onerror = function(event) {
+      console.warn('User notification stream error:', event);
+      // Optionally retry connection after a delay
+      setTimeout(() => {
+        if (eventSource.readyState === EventSource.CLOSED) {
+          setupRealtimeUserNotifications();
+        }
+      }, 5000);
+    };
+  } catch (err) {
+    console.error('Error setting up notification stream:', err);
+  }
 }
 
 // Handle notification click to navigate to booking or relevant page
 function handleUserNotificationClick(element) {
+  if (!element) {
+    console.error('Element is null or undefined');
+    return;
+  }
   const bookingId = element.getAttribute('data-booking-id');
   const notificationId = element.getAttribute('data-id');
   const notificationType = element.getAttribute('data-notification-type');
@@ -658,37 +710,39 @@ function getCsrfToken() {
 </script>
 {% endif %}
 
-<!-- Booking Details Modal -->
+<!-- Booking Details Modal - Popup Modal with bookhere.html content -->
 <div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-labelledby="bookingDetailsModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="bookingDetailsModalLabel">Request Details</h5>
+        <h5 class="modal-title" id="bookingDetailsModalLabel">Booking Summary</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <dl class="row">
-          <dt class="col-sm-3">Event Type</dt>
-          <dd class="col-sm-9" id="modal-event-type">-</dd>
-          <dt class="col-sm-3">Date</dt>
-          <dd class="col-sm-9" id="modal-event-date">-</dd>
-          <dt class="col-sm-3">Celebrant</dt>
-          <dd class="col-sm-9" id="modal-celebrant">-</dd>
-          <dt class="col-sm-3">Pax</dt>
-          <dd class="col-sm-9" id="modal-pax">-</dd>
-          <dt class="col-sm-3">Venue</dt>
-          <dd class="col-sm-9" id="modal-venue">-</dd>
-          <dt class="col-sm-3">Blue</dt>
-          <dd class="col-sm-9" id="modal-color-motif">-</dd>
-          <dt class="col-sm-3">Package</dt>
-          <dd class="col-sm-9" id="modal-package">-</dd>
-          <dt class="col-sm-3">Dishes</dt>
-          <dd class="col-sm-9" id="modal-dishes">-</dd>
-          <dt class="col-sm-3">Pasta</dt>
-          <dd class="col-sm-9" id="modal-pasta">-</dd>
-          <dt class="col-sm-3">Drink</dt>
-          <dd class="col-sm-9" id="modal-drink">-</dd>
-        </dl>
+        <!-- Booking Summary Section - Modal Version -->
+        <div class="summary-container" style="display: flex; gap: 2rem; margin: 0;">
+          <!-- Left column: Event Details -->
+          <div class="event-details" style="flex: 1 1 50%; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 20px; margin: 0;">
+            <div id="booking-summary-content">
+              <!-- Summary content will be generated by JavaScript -->
+            </div>
+          </div>
+
+          <!-- Right column: Receipt -->
+          <div class="booking-receipt" style="flex: 1 1 50%; background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 20px; margin: 0; height: fit-content;">
+            <div id="booking-receipt">
+              <!-- Export PDF Button -->
+              <button type="button" id="export-pdf-btn" class="export-btn">
+                📄 Export PDF
+              </button>
+              
+              <!-- Receipt content will be generated by JavaScript -->
+              <div id="receipt-content">
+                <!-- Receipt will be generated here -->
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -708,7 +762,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if (bookingId) {
         try {
           // Get CSRF token from meta tag
-          const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+          const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+          const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : '';
           
           // Fetch booking details from the API
           const response = await fetch(`/api/booking/${bookingId}/details/`, {
@@ -722,17 +777,8 @@ document.addEventListener('DOMContentLoaded', function() {
           if (response.ok) {
             const booking = await response.json();
             
-            // Populate modal with booking details
-            document.getElementById('modal-event-type').textContent = booking.event_type || '-';
-            document.getElementById('modal-event-date').textContent = booking.event_date || '-';
-            document.getElementById('modal-celebrant').textContent = booking.celebrant_name || '-';
-            document.getElementById('modal-pax').textContent = booking.pax || '-';
-            document.getElementById('modal-venue').textContent = booking.venue || '-';
-            document.getElementById('modal-color-motif').textContent = booking.color_motif || '-';
-            document.getElementById('modal-package').textContent = booking.package || '-';
-            document.getElementById('modal-dishes').textContent = booking.dishes || '-';
-            document.getElementById('modal-pasta').textContent = booking.pasta || '-';
-            document.getElementById('modal-drink').textContent = booking.drink || '-';
+            // Generate the booking summary exactly like bookhere.html
+            showBookingSummary(booking);
             
             // Show the modal
             const modal = new bootstrap.Modal(document.getElementById('bookingDetailsModal'));
@@ -751,10 +797,12 @@ document.addEventListener('DOMContentLoaded', function() {
   // Show booking summary function - copied and adapted from bookhere.html
   function showBookingSummary(booking) {
     const summaryContainer = document.getElementById('booking-summary-content');
-    if (!summaryContainer) return;
+    const receiptContainer = document.getElementById('receipt-content');
+    if (!summaryContainer || !receiptContainer) return;
 
     // Clear previous content
     summaryContainer.innerHTML = '';
+    receiptContainer.innerHTML = '';
 
     // Create summary sections exactly like bookhere.html
     const sections = [
@@ -988,7 +1036,240 @@ document.addEventListener('DOMContentLoaded', function() {
       themeImagesDiv.appendChild(imagesContainer);
       summaryContainer.appendChild(themeImagesDiv);
     }
+    
+    // Generate the receipt
+    generateReceipt(receiptContainer, booking);
   }
+
+  // Generate receipt function - adapted from bookhere.html
+  function generateReceipt(container, booking) {
+    // Receipt header
+    const header = document.createElement('div');
+    header.style.cssText = 'text-align: center; margin-bottom: 20px; border-bottom: 2px solid rgb(51, 51, 51); padding-bottom: 15px; display: flex; flex-direction: column';
+    
+    const companyName = document.createElement('h2');
+    companyName.textContent = 'NIKE\'S CATERING SERVICES';
+    companyName.style.cssText = 'margin: 0; color: #B8860B; font-size: 1.4rem; font-weight: bold;';
+    
+    const tagline = document.createElement('p');
+    tagline.textContent = 'Celebrate with Nikes!';
+    tagline.style.cssText = 'margin: 5px 0 0 0; color: #666; font-size: 0.9rem;';
+    
+    const receiptTitle = document.createElement('h3');
+    receiptTitle.textContent = 'BOOKING RECEIPT';
+    receiptTitle.style.cssText = 'margin: 15px 0 0 0; color: #333; font-size: 1.1rem;';
+    
+    header.appendChild(companyName);
+    header.appendChild(tagline);
+    header.appendChild(receiptTitle);
+    container.appendChild(header);
+
+    // Receipt details
+    const details = document.createElement('div');
+    details.style.cssText = 'display: flex; flex-direction: column; align-items: flex-start; justify-items: flex-start; margin-bottom: 20px;';
+    
+    const receiptItems = [
+        { label: 'Booking Date', value: new Date().toLocaleDateString() },
+        { label: 'Event Date', value: booking.event_date },
+        { label: 'Celebrant', value: booking.celebrant_name },
+        { label: 'Event Type', value: booking.event_type },
+        { label: 'Guests', value: `${booking.pax} Pax` },
+        { label: 'Theme', value: booking.theme_name },
+        { label: 'Venue', value: booking.venue },
+        { label: 'Package', value: booking.package },
+        { label: 'Color Motif', value: booking.color_motif }
+    ];
+
+    receiptItems.forEach(item => {
+        if (item.value) {
+            const itemDiv = document.createElement('div');
+            itemDiv.style.cssText = 'margin: 5px 0; display: flex; justify-content: space-between; width: 100%;';
+            
+            const label = document.createElement('span');
+            label.textContent = item.label + ':';
+            label.style.cssText = 'font-weight: 600; color: #555;';
+            
+            const value = document.createElement('span');
+            value.textContent = item.value;
+            value.style.cssText = 'color: #333;';
+            
+            itemDiv.appendChild(label);
+            itemDiv.appendChild(value);
+            details.appendChild(itemDiv);
+        }
+    });
+
+    container.appendChild(details);
+
+    // Contact info footer
+    const footer = document.createElement('div');
+    footer.style.cssText = 'margin-top: 30px; padding-top: 15px; border-top: 1px solid #ddd; text-align: center; font-size: 0.85rem; color: #666;';
+    footer.innerHTML = '<p style="margin: 0;">Contact: nikes.catering@gmail.com | (02) 123-4567</p><p style="margin: 5px 0 0 0;">Thank you for choosing Nike\'s Catering!</p>';
+    container.appendChild(footer);
+  }
+
+  // Helper function to format colors for display
+  function formatColorsForDisplay(colors, separator = ' → ') {
+    if (!colors || colors.length === 0) return 'Not specified';
+    
+    if (typeof colors === 'string') {
+      return colors;
+    }
+    
+    return colors.map(color => {
+      if (color.startsWith('custom_')) {
+        return color.replace('custom_', '');
+      }
+      return color;
+    }).join(separator);
+  }
+
+  // PDF Export functionality - adapted from bookhere.html
+  function exportReceiptToPDF(booking) {
+    try {
+      console.log('Exporting PDF...');
+      console.log('jsPDF available:', typeof window.jspdf);
+      console.log('booking data:', booking);
+      
+      // Check if jsPDF is available
+      if (typeof window.jspdf === 'undefined') {
+        console.error('jsPDF library not loaded');
+        alert('PDF library not loaded. Please refresh the page and try again.');
+        return;
+      }
+      
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // Set up the PDF document
+      doc.setFontSize(20);
+      doc.setFont(undefined, 'bold');
+      doc.text('NIKE\'S CATERING SERVICES', 105, 20, { align: 'center' });
+      
+      doc.setFontSize(12);
+      doc.setFont(undefined, 'normal');
+      doc.text('Celebrate with Nikes!', 105, 30, { align: 'center' });
+      
+      doc.setFontSize(16);
+      doc.setFont(undefined, 'bold');
+      doc.text('BOOKING RECEIPT', 105, 45, { align: 'center' });
+      
+      // Add a line
+      doc.setLineWidth(0.5);
+      doc.line(20, 50, 190, 50);
+      
+      // Receipt details
+      let yPosition = 65;
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'normal');
+      
+      const receiptData = [
+        { label: 'Booking Date:', value: new Date().toLocaleDateString() },
+        { label: 'Event Date:', value: booking.event_date || 'Not specified' },
+        { label: 'Celebrant:', value: booking.celebrant_name || 'Not specified' },
+        { label: 'Event Type:', value: booking.event_type || 'Not specified' },
+        { label: 'Number of Guests:', value: booking.pax ? `${booking.pax} Pax` : 'Not specified' },
+        { label: 'Theme:', value: booking.theme_name || 'Not specified' },
+        { label: 'Venue:', value: booking.venue || 'Not specified' },
+        { label: 'Package:', value: booking.package || 'Not specified' },
+        { label: 'Color Motif:', value: formatColorsForDisplay(booking.color_motif, ', ') }
+      ];
+      
+      receiptData.forEach(item => {
+        doc.text(item.label, 20, yPosition);
+        doc.text(item.value, 80, yPosition);
+        yPosition += 7;
+      });
+      
+      // Add food menu if available
+      if (booking.dishes_with_images && booking.dishes_with_images.length > 0) {
+        yPosition += 10;
+        doc.setFont(undefined, 'bold');
+        doc.text('Selected Dishes:', 20, yPosition);
+        yPosition += 7;
+        doc.setFont(undefined, 'normal');
+        
+        booking.dishes_with_images.forEach((dish, index) => {
+          doc.text(`${index + 1}. ${dish.name}`, 25, yPosition);
+          yPosition += 6;
+        });
+      }
+      
+      // Add pasta if available
+      if (booking.pasta) {
+        yPosition += 5;
+        doc.setFont(undefined, 'bold');
+        doc.text('Pasta:', 20, yPosition);
+        yPosition += 7;
+        doc.setFont(undefined, 'normal');
+        doc.text(booking.pasta, 25, yPosition);
+        yPosition += 6;
+      }
+      
+      // Add drink if available
+      if (booking.drink) {
+        yPosition += 5;
+        doc.setFont(undefined, 'bold');
+        doc.text('Drink:', 20, yPosition);
+        yPosition += 7;
+        doc.setFont(undefined, 'normal');
+        doc.text(booking.drink, 25, yPosition);
+        yPosition += 6;
+      }
+      
+      // Add floor plan if available
+      if (booking.floorplan_name) {
+        yPosition += 10;
+        doc.setFont(undefined, 'bold');
+        doc.text('Floor Plan:', 20, yPosition);
+        yPosition += 7;
+        doc.setFont(undefined, 'normal');
+        doc.text(booking.floorplan_name, 25, yPosition);
+        yPosition += 6;
+      }
+      
+      // Add contact footer
+      yPosition += 20;
+      doc.setLineWidth(0.3);
+      doc.line(20, yPosition, 190, yPosition);
+      yPosition += 10;
+      
+      doc.setFontSize(8);
+      doc.setFont(undefined, 'normal');
+      doc.text('Contact: nikes.catering@gmail.com | (02) 123-4567', 105, yPosition, { align: 'center' });
+      yPosition += 5;
+      doc.text('Thank you for choosing Nike\'s Catering!', 105, yPosition, { align: 'center' });
+      
+      // Save the PDF
+      const filename = `Booking-Receipt-${booking.celebrant_name || 'Unknown'}-${new Date().toLocaleDateString().replace(/\//g, '-')}.pdf`;
+      doc.save(filename);
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error generating PDF. Please try again.');
+    }
+  }
+
+  // Add event listener for PDF export button
+  let currentBooking = null;
+  
+  // Store booking data when modal is shown
+  const originalShowBookingSummary = showBookingSummary;
+  showBookingSummary = function(booking) {
+    currentBooking = booking;
+    originalShowBookingSummary(booking);
+    
+    // Set up PDF export listener
+    setTimeout(() => {
+      const exportBtn = document.getElementById('export-pdf-btn');
+      if (exportBtn) {
+        exportBtn.onclick = function() {
+          console.log('Export PDF button clicked!');
+          exportReceiptToPDF(currentBooking);
+        };
+      }
+    }, 100);
+  };
 });
 </script>
 

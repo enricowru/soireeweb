@@ -72,12 +72,27 @@ def event_detail(request, event_id):
 def create_event(request):
     if request.method == 'POST':
         chat_id = request.POST.get('chat')  # not 'booking'
+        print(f"Received chat_id: {chat_id}")
+        print(f"All POST data: {dict(request.POST)}")
+        
         if not chat_id:
+            print("Chat ID is missing in POST data")
+            # Check if this is an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+                return JsonResponse({'error': 'Chat ID is missing'}, status=400)
             messages.error(request, "Chat ID is missing.")
             form = EventForm()
             return render(request, 'custom_admin/create_event.html', {'form': form}, status=400)
 
-        booking = get_object_or_404(BookingRequest, chat_id=chat_id)
+        try:
+            booking = get_object_or_404(BookingRequest, chat_id=chat_id)
+            print(f"Found booking: {booking.id}")
+        except Exception as e:
+            print(f"Error finding booking with chat_id {chat_id}: {e}")
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'error': f'Booking not found for chat_id {chat_id}'}, status=404)
+            return JsonResponse({'error': str(e)}, status=400)
+            
         form = EventForm(request.POST)
 
         if form.is_valid():
@@ -107,15 +122,24 @@ def create_event(request):
                 create_booking_status_notification(booking, log, request.user)
 
                 print(f"Event saved with ID: {event.id}")
+                
+                # Return JSON response for AJAX requests
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({'success': True, 'event_id': event.id})
+                    
                 messages.success(request, "Event created successfully!")
                 return redirect('admin_dashboard')
 
             except Exception as e:
                 print("Error saving event:", e)
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({'error': f'Error saving event: {str(e)}'}, status=500)
                 messages.error(request, f"Error saving event: {e}")
                 return render(request, 'custom_admin/create_event.html', {'form': form}, status=400)
         else:
             print("Form errors:", form.errors)
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'error': 'Form validation failed', 'form_errors': form.errors}, status=400)
             messages.error(request, "Error creating event. Please check the form.")
             return render(request, 'custom_admin/create_event.html', {'form': form}, status=400)
     else:
