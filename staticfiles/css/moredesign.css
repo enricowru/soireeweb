@@ -52,25 +52,72 @@ html {
   overflow-y: scroll;
 }
 
+/* Back Button */
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    border-radius: 20px;
+    color: #2f5232;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    font-family: 'jostbold';
+    position: absolute;
+    left: 0;
+}
+
+.back-button:hover {
+    transform: translateY(-1px);
+}
+
+.back-button:hover span {
+    text-decoration: underline;
+    text-decoration-color: #2f5232;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+}
+
+.back-button i {
+    font-size: 12px;
+}
+
 .filter-bar {
     display: flex;
-    gap: 16px;
-    margin: 32px 0 24px 0;
+    align-items: center;
+    margin: 32px auto 24px auto;
+    justify-content: center;
+    max-width: 1200px;
+    position: relative;
+}
+
+.filter-buttons-group {
+    display: flex;
+    gap: 10px;
     justify-content: center;
 }
 .filter-btn {
-    padding: 10px 24px;
+    padding: 8px 16px;
+    margin: 0;
     border: none;
-    background: #eee;
-    color: #222;
+    background: white;
+    border: 2px solid #2f5232;
     border-radius: 20px;
+    color: #2f5232;
     cursor: pointer;
     font-size: 1rem;
     transition: background 0.2s, color 0.2s;
+    font-family: 'jostbold';
+    text-transform: uppercase;
 }
 .filter-btn.active {
-    background: #222;
-    color: #fff;
+    background: #2f5232;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(47, 82, 50, 0.3);
 }
 .category-grids {
     max-width: 1200px;
@@ -93,6 +140,7 @@ html {
 
 .design-set {
     margin-bottom: 100px;
+    animation: fadeIn 0.5s ease-in-out;
 }
 /* Default grid fallback */
 .design-grid {
@@ -152,4 +200,15 @@ html {
     object-fit: cover;
     border-radius: 8px;
     display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

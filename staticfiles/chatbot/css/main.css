@@ -60,6 +60,7 @@
 body {
     overflow-x: hidden;
     overflow-y: auto;
+    font-family: 'jostbook', Arial, sans-serif;
 }
 
 
@@ -70,31 +71,65 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    background-color: #333;
+    background: white;
     overflow-y: auto;
-    color: white;
-    padding-top: 60px;
+    color: #2f5232;
+    padding-top: 20px;
     z-index: 1000;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Back Button */
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    margin: 10px 20px 15px 20px;
+    background: white;
+    border: 2px solid #2f5232;
+    border-radius: 20px;
+    color: #2f5232;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    font-family: 'jostbold';
+}
+
+.back-button:hover {
+    background: #2f5232;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(47, 82, 50, 0.3);
+}
+
+.back-button i {
+    font-size: 12px;
 }
 
 .sidebar h1 {
-    position: absolute;
-    top: -5px;
+    position: static;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    color: white;
+    color: #2f5232;
     font-size: 48px;
+    margin: 0 0 5px 0;
+    font-family: 'jostblack';
+    line-height: 1;
 }
 
 .sidebar h3 {
     align-items: center;
-    padding: 10px 20px;
-    color: white;
+    padding: 0 20px 15px 20px;
+    color: #2f5232;
     font-size: 16px;
-    margin-top: 30%;
+    margin: 0;
     font-weight: normal;
+    font-family: 'jostbook';
 }
 
 .middle {
@@ -155,17 +190,20 @@ body {
 }
 
 .sidebar .convo:hover {
-    background-color: white;
+    background-color: rgba(47, 82, 50, 0.1);
+    border-radius: 8px;
+    margin: 0 10px;
+    transition: all 0.3s ease;
 }
 
 .sidebar .convo:hover a,
 .sidebar .convo:hover i {
-    color: #333;
+    color: #2f5232;
 }
 
 .sidebar .convo a {
     flex-grow: 1;
-    color: white;
+    color: #2f5232;
     text-decoration: none;
     overflow: hidden;
     white-space: nowrap;
@@ -175,7 +213,7 @@ body {
 .sidebar .convo button {
     background: none;
     border: none;
-    color: white;
+    color: #2f5232;
     cursor: pointer;
 }
 
@@ -196,8 +234,11 @@ body {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;background-color: #f0f0f0;
-    border-radius: 12px;
+    justify-content: space-between;
+    background: white;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(74, 157, 74, 0.2);
 }
 .top .left {
     display: flex;
@@ -215,41 +256,51 @@ body {
 }
 
 .top .right button {
-    background-color: transparent;
+    background: #b7edb7;
     border: none;
     cursor: pointer;
-    font-size: 16px;
-    text-decoration: underline;
-    color: #333;
+    font-size: 14px;
+    color: #2f5232;
     display: flex;
     align-items: center;
     gap: 8px;
     font-family: 'jostmedium';
+    padding: 12px 20px;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(168, 216, 168, 0.3);
 }
 
-.vertical-divider {
-    height: 50px;
-    width: 1.5px;
-    background-color: #ccc;
-    margin: 0 15px;
+.top .right button i {
+    font-size: 16px;
 }
 
-.top .right img {
-    border-radius: 50%; 
-    object-fit: cover;
-    cursor: pointer;
-    border: 2px solid #d4af37;
-    margin-right: 15px;
+.top .right button:hover {
+    background: #568756;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(139, 195, 74, 0.4);
+    color: white;
 }
+
+.top h2 {
+    color: #2f5232;
+    /* text-transform: uppercase; */
+    font-family: 'jostbook';
+    margin: 0;
+}
+
+
 
 
 /* Chatbox style */
 .chat-box {
-    background-color: #fff;
-    border: 1px solid #ccc;
+    background: #f7f7f7;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(74, 157, 74, 0.2);
+    border-top: none;
     padding: 20px;
-    margin-top: 15px;
-
+    margin-top: 0;
     max-height: 525px;
     overflow-y: auto;
     display: flex;
@@ -326,21 +377,23 @@ body {
 
 /* Bot message bubble */
 .bot.chat-message {
-    background-color: #333;
-    color: #ffffff;
-    border-left: 4px solid #d4af37;
+    background: #defde2;
+    color: #2f5232;
+    border-left: 4px solid #2f5232;
     align-self: flex-start;
     font-family: 'jostlight';
+    box-shadow: 0 2px 8px rgba(177, 217, 183, 0.3);
 }
 
 /* User message bubble */
 .user.chat-message {
-    background-color: #d4af37;
-    color: #1a1a1a;
-    border-right: 4px solid #333;
+    background: white;
+    color: #2f5232;
+    border-right: 4px solid #2f5232;
     align-self: flex-end;
     text-align: right;
     font-family: 'jostlight';
+    box-shadow: 0 2px 8px rgba(47, 82, 50, 0.2);
 }
 
 
@@ -363,9 +416,9 @@ body {
 
 .chat-form textarea {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    padding: 15px;
+    border: 2px solid rgba(74, 157, 74, 0.3);
+    border-radius: 12px;
     resize: none;
     min-height: 40px;
     max-height: 80px;
@@ -374,48 +427,72 @@ body {
     font-size: 14px;
     line-height: 1.4;
     box-sizing: border-box;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    transition: all 0.3s ease;
+}
+
+.chat-form textarea:focus {
+    border-color: #4a9d4a;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(74, 157, 74, 0.1);
+    outline: none;
 }
 
 .chat-form button {
     height: 60px;
     align-self: stretch;
     padding: 10px 16px;
-    background-color: #d4af37;
-    color: #333;
+    background: linear-gradient(135deg, #4a9d4a 0%, #2d7a2d 100%);
+    color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(74, 157, 74, 0.3);
 }
 
 .chat-form button:hover {
-    background-color: #333;
-    color: #ffffff;
+    background: linear-gradient(135deg, #2d7a2d 0%, #1a5a1a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(74, 157, 74, 0.4);
+}
+
+.chat-form button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
 .char-count {
     font-family: 'jostlight';
     font-size: 15px;
+    color: #4a9d4a;
+    margin-top: 5px;
+    text-align: right;
 }
 
 .ai-generated-theme {
     margin: 20px 0;
     padding: 15px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(74, 157, 74, 0.1) 0%, rgba(168, 216, 168, 0.1) 100%);
+    border-radius: 12px;
     transition: all 0.3s ease;
+    border: 1px solid rgba(74, 157, 74, 0.2);
 }
 
 .ai-generated-theme:hover {
-    background: rgba(255,255,255,0.15);
+    background: linear-gradient(135deg, rgba(74, 157, 74, 0.15) 0%, rgba(168, 216, 168, 0.15) 100%);
     transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(74, 157, 74, 0.2);
 }
 
 .ai-generated-theme strong {
     display: block;
     margin-bottom: 10px;
-    color: #fff;
+    color: #4a9d4a;
     font-size: 1.1em;
+    font-weight: 600;
 }
 
 .ai-generated-theme img {
@@ -424,10 +501,10 @@ body {
     margin: 8px 0;
     display: block;
     transition: transform 0.3s ease;
-    border: 2px solid rgba(255,255,255,0.2);
+    border: 2px solid rgba(74, 157, 74, 0.3);
 }
 
 .ai-generated-theme img:hover {
     transform: scale(1.05);
-    border-color: rgba(255,255,255,0.4);
+    border-color: rgba(74, 157, 74, 0.6);
 }

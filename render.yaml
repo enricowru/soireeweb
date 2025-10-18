@@ -11,3 +11,23 @@ services:
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: config.settings
+      - key: SENDGRID_API_KEY
+        value: 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
+      - key: DEFAULT_FROM_EMAIL
+        value: websoiree1@gmail.com
+      - key: EMAIL_HOST_USER
+        value: apikey
+      - key: EMAIL_HOST_PASSWORD
+        value: foxx uhhv hhbq ticf
+      - key: PG_DB
+        value: soireeweb
+      - key: PG_USER
+        value: postgres
+      - key: PG_PASS
+        value: 123
+      - key: PG_HOST
+        value: aws-0-ap-southeast-1.pooler.supabase.com
+      - key: PG_PORT
+        value: 5432
+      - key: DJANGO_ENV
+        value: prod
