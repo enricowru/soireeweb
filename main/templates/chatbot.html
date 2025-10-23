@@ -13,13 +13,13 @@
         <h3>By Nike's Catering Services</h3>
         <div class="middle" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
             <p style="margin: 0;">Previous conversations</p>
-            <a href="{% url 'new_chat_session' %}" id="newChatBtn" title="New Chat" style="background: white; color: #333; border-radius: 6px; padding: 4px 8px; display: flex; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.04); border: 1px solid #eee; margin-left: 8px;"><i class="fa-solid fa-pen-to-square"></i></a>
+            <a href="{% url 'new_chat_session' %}" id="newChatBtn" title="New Chat" aria-label="new chat" style="background: white; color: #333; border-radius: 6px; padding: 4px 8px; display: flex; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.04); border: 1px solid #eee; margin-left: 8px;"><i class="fa-solid fa-pen-to-square"></i></a>
         </div>
         <hr>
         <div class="convos">
             {% for session in saved_sessions %}
             <div class="convo" data-session-id="{{ session.id }}">
-                <a href="{% url 'load_chat_session' session.id %}">{{ session.title }}</a>
+                <a aria-label="conversation thread" href="{% url 'load_chat_session' session.id %}">{{ session.title }}</a>
                 {% if session.id == current_session_id %}
                     {% if session.id %}
                         <button class="clearCurrentBtn" title="Clear this chat" data-session-id="{{ session.id }}"><i class="fa-solid fa-trash"></i></button>
@@ -57,7 +57,7 @@
                     {% if msg.food_menu_images %}
                         <div class="image-gallery">
                             {% for img in msg.food_menu_images %}
-                                <a href="{{ img }}" target="_blank">
+                                <a aria-label="food menu image" href="{{ img }}" target="_blank">
                                     <img src="{{ img }}" alt="Food Menu" class="gallery-img">
                                 </a>
                             {% endfor %}
@@ -70,7 +70,7 @@
                             </div>
                             <div class="image-gallery">
                                 {% for img in msg.theme_confirm_images %}
-                                    <a href="{{ img }}" target="_blank">
+                                    <a aria-label="theme sample images" href="{{ img }}" target="_blank">
                                         <img src="{{ img }}" alt="{{ msg.theme_confirm_name }}" class="gallery-img">
                                     </a>
                                 {% endfor %}
@@ -78,7 +78,7 @@
                             {% if msg.ai_generated_image %}
                             <div class="ai-generated-theme" style="margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 8px;">
                                 <strong style="display: block; margin-bottom: 10px;">AI Generated Theme Suggestion:</strong>
-                                <a href="{{ msg.ai_generated_image }}" target="_blank">
+                                <a aria-label="AI generated image" href="{{ msg.ai_generated_image }}" target="_blank">
                                     <img src="{{ msg.ai_generated_image }}" alt="AI Generated Theme" style="width:200px; border-radius:8px; margin:8px 0; display:block;">
                                 </a>
                             </div>
@@ -92,7 +92,7 @@
                                     <li style="margin-bottom: 18px;">
                                         {{ name }}<br>
                                         {% if img %}
-                                            <a href="{{ img }}" target="_blank">
+                                            <a aria-label="theme selection images" href="{{ img }}" target="_blank">
                                                 <img src="{{ img }}" alt="{{ name }}" style="width:200px; border-radius:8px; margin:8px 0; display:block;">
                                             </a>
                                         {% endif %}
@@ -111,7 +111,7 @@
                                     <li style="margin-bottom: 18px;">
                                         {{ name }}<br>
                                         {% if img %}
-                                            <a href="{{ img }}" target="_blank">
+                                            <a aria-label="packages selection" href="{{ img }}" target="_blank">
                                                 <img src="{{ img }}" alt="{{ name }}" style="width:200px; border-radius:8px; margin:8px 0; display:block;">
                                             </a>
                                         {% endif %}
@@ -126,7 +126,7 @@
                         <div class="theme-confirm-gallery">
                             <div style="font-size: 1.15em; font-weight: bold; color: #fff; margin-bottom: 10px;">
                                 You selected: {{ msg.package_image_label }}<br>
-                                <a href="{{ msg.package_image_selected }}" target="_blank">
+                                <a aria-label="package details image" href="{{ msg.package_image_selected }}" target="_blank">
                                     <img src="{{ msg.package_image_selected }}" alt="{{ msg.package_image_label }}" class="gallery-img">
                                 </a>
                             </div>
@@ -143,12 +143,12 @@
                                         <li style="margin-bottom: 8px;">
                                             {{ line.value }}
                                             {% if line.type == 'theme' and line.img %}<br>
-                                                <a href="{{ line.img }}" target="_blank">
+                                                <a aria-label="theme image" href="{{ line.img }}" target="_blank">
                                                     <img src="{{ line.img }}" alt="Theme Image" class="gallery-img" style="max-width:180px; max-height:180px; border:2px solid #fff; margin:8px 0;">
                                                 </a>
                                             {% endif %}
                                             {% if line.type == 'package' and line.img %}<br>
-                                                <a href="{{ line.img }}" target="_blank">
+                                                <a aria-label="package image" href="{{ line.img }}" target="_blank">
                                                     <img src="{{ line.img }}" alt="Package Image" class="gallery-img" style="max-width:180px; max-height:180px; border:2px solid #fff; margin:8px 0;">
                                                 </a>
                                             {% endif %}
@@ -162,13 +162,13 @@
                         {% endif %}
                     {% endif %}
                     {% if msg.image %}
-                        <a href="{{ msg.image }}" target="_blank">
+                        <a aria-label="image" href="{{ msg.image }}" target="_blank">
                             <img src="{{ msg.image }}" alt="image" class="chat-image">
                         </a>
                     {% elif msg.images %}
                         <div class="image-gallery">
                             {% for img in msg.images %}
-                            <a href="{{ img }}" target="_blank">
+                            <a aria-label="image" href="{{ img }}" target="_blank">
                                 <img src="{{ img }}" alt="image" class="gallery-img">
                             </a>
                             {% endfor %}
@@ -178,7 +178,7 @@
                         <div class="theme-confirm-gallery">
                             <div class="image-gallery">
                                 {% for img in msg.selected_theme_images %}
-                                    <a href="{{ img }}" target="_blank">
+                                    <a aria-label="image" href="{{ img }}" target="_blank">
                                         <img src="{{ img }}" alt="{{ msg.theme_confirm_name }}" class="gallery-img">
                                     </a>
                                 {% endfor %}

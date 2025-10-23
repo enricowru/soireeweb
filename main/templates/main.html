@@ -59,13 +59,13 @@
         </div>
       </div>
       <div class="banner-download">
-        <a href="https://drive.google.com/uc?export=download&id=1RbqxenA-kVvVdjgGeLFZzAF5rlpZAsg8" class="download-icon">
+        <a href="https://drive.google.com/uc?export=download&id=1RbqxenA-kVvVdjgGeLFZzAF5rlpZAsg8" class="download-icon" aria-label="download icon expanded">
           <i class="fas fa-download"></i>
         </a>
       </div>
     </div>
     <div class="banner-minimized">
-      <a href="https://drive.google.com/uc?id=1BhXDuUqR79qebFQWRNUrEGx-VNbd9NFq&export=download" class="download-icon-mini">
+      <a href="https://drive.google.com/uc?id=1BhXDuUqR79qebFQWRNUrEGx-VNbd9NFq&export=download" class="download-icon-mini" aria-label="download icon collapsed">
         <i class="fas fa-download"></i>
       </a>
     </div>
@@ -285,7 +285,7 @@
             </div>
           </div>
           <div class="menu-button-container">
-           <a href="{% url 'menu' %}" class="view-menu-btn"><i class="fas fa-utensils"></i> View Menu</a>
+           <a href="{% url 'menu' %}" class="view-menu-btn" aria-label="menu button"><i class="fas fa-utensils"></i> View Menu</a>
           </div>
         </div>
       </div>  
@@ -358,11 +358,11 @@
     </div>
 
     <div class="packages-actions">
-      <a href="#services" class="explore-btn" onclick="openKiddieDropdown()">
+      <a href="#services" class="explore-btn" aria-label="explore packages button" onclick="openKiddieDropdown()">
         <i class="fas fa-gift"></i>
         Explore Packages
       </a>
-      <a href="{% url 'menu' %}" class="explore-btn">
+      <a href="{% url 'menu' %}" class="explore-btn" aria-label="explore menu button">
         <i class="fas fa-utensils"></i>
         Explore Menu
       </a>
@@ -402,7 +402,7 @@
               <span>Custom Design</span>
             </div>
           </div>
-          <a href="{% url 'moredesign' %}" class="learn-more-btn">VIEW DESIGNS</a>
+          <a href="{% url 'moredesign' %}" class="learn-more-btn" aria-label="view designs button">VIEW DESIGNS</a>
         </div>
       </div>
     </div>
@@ -411,7 +411,7 @@
       <h3 class="categories-title">Our Design Categories</h3>
 
       <div class="categories-grid">
-        <a class="design-category" href="{% url 'moredesign' %}?category=themed_backdrop">
+        <a class="design-category" aria-label="view more themed backdrop designs" href="{% url 'moredesign' %}?category=themed_backdrop">
           <div class="category-image">
             <img src="{% static 'images/upgraded balloon set-up/R1A.jpg' %}" alt="Themed Backdrop">
           </div>
@@ -421,7 +421,7 @@
           </div>
         </a>
         
-        <a class="design-category" href="{% url 'moredesign' %}?category=minimalist_setup">
+        <a class="design-category" aria-label="view more minimalist setup" href="{% url 'moredesign' %}?category=minimalist_setup">
           <div class="category-image">
             <img src="{% static 'images/minimalist set-up/R1A.jpg' %}" alt="Minimalist Setup">
           </div>
@@ -431,7 +431,7 @@
           </div>
         </a>
         
-        <a class="design-category" href="{% url 'moredesign' %}?category=signature_setup">
+        <a class="design-category" aria-label="view more signature setup" href="{% url 'moredesign' %}?category=signature_setup">
           <div class="category-image">
             <img src="{% static 'images/signature set-up/R1A.jpg' %}" alt="Signature Setup">
           </div>
@@ -596,8 +596,8 @@
       
       <div class="footer-address">
         <p>Bulacan, Philippines</p>
-        <p class="mobile"><a href="tel:+639662003092">+63 966 200 3092</a></p>
-        <p class="mobile"><a href="tel:+639283452913">+63 928 345 2913</a></p>
+        <p class="mobile"><a aria-label="mobile number 1" href="tel:+639662003092">+63 966 200 3092</a></p>
+        <p class="mobile"><a aria-label="mobile number 2" href="tel:+639283452913">+63 928 345 2913</a></p>
       </div>
 
       <div class="footer-copyright">
@@ -608,30 +608,30 @@
     <div class="footer-column">
       <h3 class="footer-heading">ABOUT</h3>
       <ul class="footer-links">
-        <li><a href="#about-us">Our Story</a></li>
-        <li><a href="#services">Services</a></li>
-        <li><a href="#packages">Packages</a></li>
-        <li><a href="#design">Designs</a></li>
+        <li><a aria-label="about us" href="#about-us">Our Story</a></li>
+        <li><a aria-label="services" href="#services">Services</a></li>
+        <li><a aria-label="packages" href="#packages">Packages</a></li>
+        <li><a aria-label="designs" href="#design">Designs</a></li>
       </ul>
     </div>
 
     <div class="footer-column">
       <h3 class="footer-heading">SERVICES</h3>
       <ul class="footer-links">
-        <li><a href="#services">Wedding</a></li>
-        <li><a href="#services">Birthday</a></li>
-        <li><a href="#services">Kiddie Party</a></li>
-        <li><a href="#services">Christening</a></li>
-        <li><a href="#services">Custom Events</a></li>
+        <li><a aria-label="wedding services" href="#services">Wedding</a></li>
+        <li><a aria-label="birthday services" href="#services">Birthday</a></li>
+        <li><a aria-label="kiddie party services" href="#services">Kiddie Party</a></li>
+        <li><a aria-label="christening services" href="#services">Christening</a></li>
+        <li><a aria-label="custom events services" href="#services">Custom Events</a></li>
       </ul>
     </div>
 
     <div class="footer-column">
       <h3 class="footer-heading">CONTACT</h3>
       <ul class="footer-links">
-        <li><a href="mailto:nikescateringofficial@gmail.com">Email Us</a></li>
-        <li><a href="https://www.facebook.com/nikescateringservicesofficial">Facebook</a></li>
-        <li><a href="tel:+639662003092">Call Us</a></li>
+        <li><a aria-label="company email address" href="mailto:nikescateringofficial@gmail.com">Email Us</a></li>
+        <li><a aria-label="company facebook page" href="https://www.facebook.com/nikescateringservicesofficial">Facebook</a></li>
+        <li><a aria-label="mobile number 1" href="tel:+639662003092">Call Us</a></li>
       </ul>
     </div>
   </div>
